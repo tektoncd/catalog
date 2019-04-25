@@ -1,0 +1,22 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: bazel
+spec:
+  inputs:
+    params:
+    - name: TARGET
+      description: The name of the Bazel target to run to build the image.
+
+    resources:
+    - name: source
+      type: git
+
+  # TODO: Define image output when Bazel's rules_docker writes image metadata
+  # about pushed images.
+
+  steps:
+  - name: build-and-push
+    image: gcr.io/cloud-builders/bazel
+    workingdir: /workspace/source
+    command: ['bazel', 'run', '${inputs.params.TARGET}']
