@@ -1,0 +1,46 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: kaniko
+spec:
+  inputs:
+    params:
+    - name: IMAGE
+      description: The name of the image to push
+    - name: DOCKERFILE
+      description: Path to the Dockerfile to build.
+      default: ./Dockerfile
+
+    resources:
+    - name: source
+      type: git
+
+  steps:
+  - name: build-and-push
+    workingdir: /workspace/source
+    image: gcr.io/kaniko-project/executor
+    command:
+    - /kaniko/executor
+    - --dockerfile=${inputs.params.DOCKERFILE}
+    - --destination=${inputs.params.IMAGE}
+
+---
+
+apiVersion: tekton.dev/v1alpha1
+kind: TaskRun
+metadata:
+  name: example-run
+spec:
+  taskRef:
+    name: kaniko
+  inputs:
+    params:
+    - name: IMAGE
+      value: gcr.io/my-repo/my-image
+    resources:
+    - name: source
+      resourceSpec:
+        type: git
+        params:
+        - name: url
+          value: https://gist.github.com/f1fb27779bc17009198e2cef946bf749.git
