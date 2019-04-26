@@ -1,0 +1,9 @@
+apiVersion: tekton.dev/v1alpha1
+kind: TaskRun
+metadata:
+  name: task-run-openshift-command
+  namespace: default
+spec:
+  serviceAccount: user
+  taskRef:
+    name: task-openshift-command

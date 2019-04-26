@@ -1,0 +1,22 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: task-openshift-command
+  namespace: default
+spec:
+  steps:
+    - name: version
+      image: quay.io/openshift-pipeline/openshift-cli
+      command:
+        - /usr/local/bin/oc
+      args: ["version"]
+    - name: user
+      image: quay.io/openshift-pipeline/openshift-cli
+      command:
+        - /usr/local/bin/oc
+      args: ["whoami"]
+    - name: pods
+      image: quay.io/openshift-pipeline/openshift-cli
+      command:
+        - /usr/local/bin/oc
+      args: ["get", "pods"]
