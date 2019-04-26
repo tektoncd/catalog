@@ -9,10 +9,10 @@ spec:
       description: The image you wish to create. For example, "repo/example", or "example.com/repo/image".
     - name: RUN_IMAGE
       description: The run image buildpacks will use as the base for IMAGE.
-      default: packs/run:rc
+      default: packs/run:v3alpha2
     - name: BUILDER_IMAGE
       description: The builder image (must include v3 lifecycle and compatible buildpacks).
-      default: heroku/buildpacks
+      default: packs/samples:v3alpha2
     - name: USE_CRED_HELPERS
       description: Use Docker credential helpers for Google's GCR, Amazon's ECR, or Microsoft's ACR.
       default: 'true'
