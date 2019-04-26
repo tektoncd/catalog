@@ -1,0 +1,17 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: cluster-details
+spec:
+  type: cluster
+  params:
+  - name: url
+    value: https://api.com
+  - name: name
+    value: oc-test
+  - name: username
+    value: test
+  - name: token
+    value: akakkakaaa
+  - name: cadata
+    value: data
