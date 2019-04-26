@@ -1,6 +1,6 @@
 # Tekton Task Catalog
 
-This repository contains a catalog of `Task` resoruces, which are designed to be
+This repository contains a catalog of `Task` resources, which are designed to be
 reusable in many pipelines.
 
 Each `Task` is provided in a separate directory along with a README.md and a
