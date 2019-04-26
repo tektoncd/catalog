@@ -1,7 +1,8 @@
-# Tekton Task Catalog
+# Tekton Catalog
 
-This repository contains a catalog of `Task` resources, which are designed to be
-reusable in many pipelines.
+This repository contains a catalog of `Task` resources (and someday
+`Pipeline`s and `Resource`s), which are designed to be reusable in many
+pipelines.
 
 Each `Task` is provided in a separate directory along with a README.md and a
 Kubernetes manifest, so you can choose which `Task`s to install on your
