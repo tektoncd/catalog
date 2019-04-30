@@ -1,6 +1,6 @@
 # Kaniko
 
-This build template builds source into a container image using Google's
+This Task builds source into a container image using Google's
 [`kaniko`](https://github.com/GoogleCloudPlatform/kaniko) tool.
 
 >kaniko doesn't depend on a Docker daemon and executes each command within a
