@@ -1,4 +1,4 @@
-## Bazel
+# Bazel
 
 This tasks builds source into a container image using the [Bazel build
 tool](https://bazel.build), and [Bazel's container image
