@@ -23,14 +23,16 @@ spec:
   steps:
   - name: build
     image: ${inputs.params.BUILDER_IMAGE}
-    args: ['bud', '--tls-verify=${inputs.params.TLSVERIFY}', '--layers', '-f', '${inputs.params.DOCKERFILE}', '-t', '${inputs.params.IMAGE}', '.']
+    workingdir: /workspace/source
+    command: ['buildah', 'bud', '--tls-verify=${inputs.params.TLSVERIFY}', '--layers', '-f', '${inputs.params.DOCKERFILE}', '-t', '${inputs.params.IMAGE}', '.']
     volumeMounts:
     - name: varlibcontainers
       mountPath: /var/lib/containers
 
   - name: push
     image: ${BUILDER_IMAGE}
-    args: ['push', '--tls-verify=${inputs.params.TLSVERIFY}', '${inputs.params.IMAGE}', 'docker://${inputs.params.IMAGE}']
+    workingdir: /workspace/source
+    command: ['buildah', 'push', '--tls-verify=${inputs.params.TLSVERIFY}', '${inputs.params.IMAGE}', 'docker://${inputs.params.IMAGE}']
     volumeMounts:
     - name: varlibcontainers
       mountPath: /var/lib/containers
