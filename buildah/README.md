@@ -17,11 +17,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/build
 
 ### Parameters
 
-* **BUILDER_IMAGE:**: The name of the image containing the Buildah tool. See
-  note below.
-  (_required_)
 * **IMAGE**: The Docker image name to apply to the newly built image.
   (_required_)
+* **BUILDER_IMAGE:**: The name of the image containing the Buildah tool. See
+  note below.  (_default:_ quay.io/openshift-pipeline/buildah)
 * **DOCKERFILE**: The path to the `Dockerfile` to execute (_default:_
   `./Dockerfile`)
 * **TLSVERIFY**: Verify the TLS on the registry endpoint (for push/pull to a
@@ -62,16 +61,3 @@ spec:
 
 In this example, the Git repo being built is expected to have a `Dockerfile` at
 the root of the repository.
-
-## Note: BUILDER_IMAGE
-
-Currently, you must build and host the builder image yourself. This is expected
-to change in the future. You can build the image from [the Dockerfile in this
-directory](./Dockerfile), e.g.:
-
-```
-docker build -t <user>/buildah . && docker push <user>/buildah
-```
-
-You need a relatively recent version of Docker (>= 17.05).
-You could also build the image using `buildah` itself, or `kaniko`
