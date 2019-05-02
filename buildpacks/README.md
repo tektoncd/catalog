@@ -15,7 +15,7 @@ The Cloud Native Buildpacks website describes v3 buildpacks as:
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/buildpacks/cnb.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/buildpacks/buildpacks-v3.yaml
 ```
 
 ## Inputs
