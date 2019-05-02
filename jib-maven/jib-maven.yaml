@@ -1,0 +1,42 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: jib-maven
+spec:
+  inputs:
+    params:
+    - name: DIRECTORY
+      description: The directory containing the app, relative to the source repository root
+      default: .
+    - name: CACHE
+      description: The name of the volume for caching Maven artifacts and base image layers
+      default: empty-dir-volume
+    resources:
+    - name: source
+      type: git
+  outputs:
+    resources:
+    - name: image
+      type: image
+
+  steps:
+  - name: build-and-push
+    image: gcr.io/cloud-builders/mvn
+    command:
+    - mvn
+    - compile
+    - com.google.cloud.tools:jib-maven-plugin:build
+    - -Duser.home=/builder/home
+    - -Dimage=${outputs.resources.image.url}
+    workingDir: /workspace/source/${inputs.params.DIRECTORY}
+    volumeMounts:
+    - name: ${inputs.params.CACHE}
+      mountPath: /builder/home/.m2
+      subPath: m2-cache
+    - name: ${inputs.params.CACHE}
+      mountPath: /builder/home/.cache
+      subPath: jib-cache
+
+  volumes:
+  - name: empty-dir-volume
+    emptyDir: {}
