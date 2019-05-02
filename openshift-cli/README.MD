@@ -1,14 +1,14 @@
 ## Openshift-Client
 
-`oc` is a tool which is used to interact with OpenShift from the command line. The following section provides two examples to interact with Openshift Cluster from Tekton Pipelines.
+`oc` is a tool which is used to interact with OpenShift from the command line. The following section provides two examples to interact with OpenShift Cluster from Tekton Pipelines.
 
-Dockerfile of the oc binary has also been added and the image is available [here]( https://quay.io/repository/openshift-pipeline/openshift-cli).
+The `Dockerfile` of the `oc` binary has been added and the image is available [here]( https://quay.io/repository/openshift-pipeline/openshift-cli).
 
 ## Examples:
 
-- Using oc on the same cluster using serviceAccount
+- Using `oc` on the same cluster using serviceAccount
 
-- Using oc on a different cluster using clusterResource
+- Using `oc` on a different cluster using clusterResource
 
 ## Prerequisite 
 
@@ -16,9 +16,9 @@ Tekton needs to be installed on your OpenShift Cluster. Documentation for the sa
 
 ## Using oc on the same cluster using serviceAccount
 
-You can use the serviceAccount to interact on the same cluster with oc as follows: 
+You can use the serviceAccount resource to interact on the same cluster with `oc` as follows: 
 
-1. To interact with OpenShift in the cluster using oc, you need to create the [serviceAccount](https://docs.openshift.com/container-platform/3.11/dev_guide/service_accounts.html) resource with the required permissions and use that in the taskrun.
+1. To interact with OpenShift in the cluster using `oc`, you need to create the [serviceAccount](https://docs.openshift.com/container-platform/3.11/dev_guide/service_accounts.html) resource with the required permissions and use that in the taskrun.
     
     - Create the serviceAccount resource.
     
@@ -38,7 +38,7 @@ You can use the serviceAccount to interact on the same cluster with oc as follow
         oc apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-cli/taskUsingServiceaccount/rolebinding.yaml 
         ```
     
-2. Create a task which lists the steps for interacting with OpenShift
+2. Create a task which lists the steps for interacting with OpenShift.
     ```
     oc apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-cli/taskUsingServiceaccount/octask.yaml 
     ```
@@ -52,9 +52,9 @@ You can use the serviceAccount to interact on the same cluster with oc as follow
 
 ## Using oc on a different cluster using clusterResource
 
-You can use the clusterResource to interact on different cluster with oc as follows: 
+You can use the clusterResource to interact on a different cluster with `oc` as follows: 
 
-1. Create a [ClusterResource](https://github.com/tektoncd/pipeline/blob/master/docs/resources.md#cluster-resource) with details for the second cluster. For example, here is a [sample ClusterResource](https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-cli/taskUsingClusterResource/resource.yaml):
+1. Create a [clusterResource](https://github.com/tektoncd/pipeline/blob/master/docs/resources.md#cluster-resource) with details for the second cluster. For example, here is a [sample ClusterResource](https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-cli/taskUsingClusterResource/resource.yaml):
 
     ```yaml
     apiVersion: tekton.dev/v1alpha1
