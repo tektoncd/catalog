@@ -7,9 +7,6 @@ This Task builds source into a container image using uber's
 >containerized environments such as Mesos or Kubernetes.
 > - [makisu website](https://github.com/uber/makisu)
 
-makisu is meant to be run as an image, `gcr.io/makisu-project/makisu`. This
-makes it a perfect tool to be part of a Tekton Task.
-
 ## Create the registry configuration
 
 makisu uses a [registry
