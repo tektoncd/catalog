@@ -35,8 +35,6 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/makis
 
 ### Parameters
 
-* **IMAGE**: The Docker image name to apply to the newly built image.
-  (_required_)
 * **CONTEXTPATH**: The path to the build context (_default:_
   `/workspace`)
 * **PUSH_REGISTRY**: The Registry to push the image to (_default:_
@@ -48,6 +46,12 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/makis
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
+
+## Outputs
+
+### Resources
+
+* **image**: An `image`-type `PipelineResource` specify the image that should be built.
 
 ## Usage
 
@@ -68,9 +72,6 @@ spec:
   taskRef:
     name: makisu
   inputs:
-    params:
-    - name: IMAGE
-      value: my-project/my-app
     resources:
     - name: source
       resourceSpec:
@@ -78,6 +79,14 @@ spec:
         params:
         - name: url
           value: https://github.com/my-user/my-repo
+  outputs:
+    resources:
+    - name: image
+      resourceSpec:
+        type: image
+        params:
+        - name: url
+          value: gcr.io/my-repo/my-image
 ```
 
 ### Other Registries
@@ -94,8 +103,6 @@ spec:
     name: makisu
   inputs:
     params:
-    - name: IMAGE
-      value: my-project/my-app
     - name: PUSH_REGISTRY # must match the registry in the secret
       value: eu.gcr.io
     - name: REGISTRY_SECRET
@@ -107,4 +114,12 @@ spec:
         params:
         - name: url
           value: https://github.com/my-user/my-repo
+  outputs:
+    resources:
+    - name: image
+      resourceSpec:
+        type: image
+        params:
+        - name: url
+          value: gcr.io/my-repo/my-image
 ```
