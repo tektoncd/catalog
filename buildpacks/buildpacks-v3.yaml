@@ -5,8 +5,6 @@ metadata:
 spec:
   inputs:
     params:
-    - name: IMAGE
-      description: The image you wish to create. For example, "repo/example", or "example.com/repo/image".
     - name: RUN_IMAGE
       description: The run image buildpacks will use as the base for IMAGE.
       default: packs/run:v3alpha2
@@ -29,6 +27,11 @@ spec:
     resources:
     - name: source
       type: git
+
+  outputs:
+    resources:
+    - name: image
+      type: image
 
   steps:
   - name: prepare
@@ -64,7 +67,7 @@ spec:
     - "-layers=/layers"
     - "-helpers=${inputs.params.USE_CRED_HELPERS}"
     - "-group=/layers/group.toml"
-    - "${inputs.params.IMAGE}"
+    - "${outputs.resources.image.url}"
     volumeMounts:
     - name: "${inputs.params.CACHE}"
       mountPath: /layers
@@ -90,9 +93,9 @@ spec:
     - "-layers=/layers"
     - "-helpers=${inputs.params.USE_CRED_HELPERS}"
     - "-app=."
-    - "-image=${inputs.params.RUN_IMAGE}"
+    - "-image=${outputs.resources.image.url}"
     - "-group=/layers/group.toml"
-    - "${inputs.params.IMAGE}"
+    - "${outputs.resources.image.url}"
     volumeMounts:
     - name: "${inputs.params.CACHE}"
       mountPath: /layers
