@@ -17,8 +17,6 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/build
 
 ### Parameters
 
-* **IMAGE**: The Docker image name to apply to the newly built image.
-  (_required_)
 * **BUILDER_IMAGE:**: The name of the image containing the Buildah tool. See
   note below.  (_default:_ quay.io/openshift-pipeline/buildah)
 * **DOCKERFILE**: The path to the `Dockerfile` to execute (_default:_
@@ -30,6 +28,13 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/build
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
+
+## Outputs
+
+### Resources
+
+* **image**: An `image`-type `PipelineResource` specify the image that should
+  be built.
 
 ## Usage
 
@@ -45,11 +50,6 @@ spec:
   taskRef:
     name: buildah
   inputs:
-    params:
-    - name: BUILDER_IMAGE
-      value: gcr.io/my-project/buildah
-    - name: IMAGE
-      value: gcr.io/my-project/my-app
     resorces:
     - name: source
       resourceSpec:
@@ -57,6 +57,14 @@ spec:
         params:
         - name: url
           value: https://github.com/my-user/my-repo
+  outputs:
+    resorces:
+    - name: image
+      resourceSpec:
+        type: image
+        params:
+        - name: url
+          value: gcr.io/my-repo/my-image
 ```
 
 In this example, the Git repo being built is expected to have a `Dockerfile` at
