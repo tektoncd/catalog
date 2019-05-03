@@ -22,8 +22,6 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/build
 
 ### Parameters
 
-* **IMAGE:** The image you wish to create. For example, "repo/example", or
-  "example.com/repo/image". (_required_)
 * **RUN_IMAGE:** The run image buildpacks will use as the base for IMAGE.
   (_default:_ `packs/run:v3alpha2`)
 * **BUILDER_IMAGE** The image on which builds will run. ( default:
@@ -40,6 +38,13 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/build
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
 
+## Outputs
+
+### Resources
+
+* **image**: An `image`-type `PipelineResource` specifying the image that should
+  be built.
+
 ## Usage
 
 This TaskRun runs the Task to fetch a Git repo, and build and push a container
@@ -54,9 +59,6 @@ spec:
   taskRef:
     name: buildpacks-v3
   inputs:
-    params:
-    - name: IMAGE
-      value: gcr.io/my-repo/my-image:tag
     resources:
     - name: source
       resourceSpec:
@@ -64,4 +66,12 @@ spec:
         params:
         - name: url
           value: https://github.com/my-user/my-repo
+  outputs:
+    resources:
+    - name: image
+      resourceSpec:
+        type: image
+        params:
+        - name: url
+          value: gcr.io/my-repo/my-image
 ```
