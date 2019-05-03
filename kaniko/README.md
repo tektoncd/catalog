@@ -22,8 +22,6 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/kanik
 
 ### Parameters
 
-* **IMAGE**: The Docker image name to apply to the newly built image.
-  (_required_)
 * **DOCKERFILE**: The path to the `Dockerfile` to execute (_default:_
   `./Dockerfile`)
 
@@ -57,9 +55,6 @@ spec:
   taskRef:
     name: kaniko
   inputs:
-    params:
-    - name: IMAGE
-      value: gcr.io/my-repo/my-image
     resources:
     - name: source
       resourceSpec:
@@ -67,4 +62,12 @@ spec:
         params:
         - name: url
           value: https://github.com/my-user/my-repo
+  outputs:
+    resources:
+    - name: image
+      resourceSpec:
+        type: image
+        params:
+        - name: url
+          value: gcr.io/my-repo/my-image
 ```
