@@ -30,6 +30,13 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/kanik
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
 
+## Outputs
+
+### Resources
+
+* **image**: An `image`-type `PipelineResource` specifying the image that should
+  be built.
+
 ## ServiceAccount
 
 kaniko builds an image and pushes it to the destination defined as a parameter.
