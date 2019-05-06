@@ -93,7 +93,7 @@ spec:
     - "-layers=/layers"
     - "-helpers=${inputs.params.USE_CRED_HELPERS}"
     - "-app=."
-    - "-image=${outputs.resources.image.url}"
+    - "-image=${inputs.params.RUN_IMAGE}"
     - "-group=/layers/group.toml"
     - "${outputs.resources.image.url}"
     volumeMounts:
