@@ -1,0 +1,25 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: pipeline-openshift-command
+  namespace: default
+spec:
+  tasks:
+    - name: version
+      taskRef:
+        name: openshift-cli
+      params:
+        - name: command
+          value: "version --short"
+    - name: user
+      taskRef:
+        name: openshift-cli
+      params:
+        - name: command
+          value: "whoami"
+    - name: list
+      taskRef:
+        name: openshift-cli
+      params:
+        - name: command
+          value: "get pods"
