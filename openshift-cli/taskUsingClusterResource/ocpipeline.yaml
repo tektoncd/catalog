@@ -1,0 +1,40 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: pipeline-cluster-openshift-command
+  namespace: default
+spec:
+  resources:
+    - name: clusterdetails-one
+      type: cluster
+  tasks:
+    - name: version
+      taskRef:
+        name: openshift-cli-kubecfg
+      resources:
+        inputs:
+          - name: clusterdetails
+            resource: clusterdetails-one
+      params:
+        - name: command
+          value: "--kubeconfig /workspace/${inputs.resources.clusterdetails.name}/kubeconfig --context ${inputs.resources.clusterdetails.name} version --short"
+    - name: user
+      taskRef:
+        name: openshift-cli-kubecfg
+      resources:
+        inputs:
+          - name: clusterdetails
+            resource: clusterdetails-one
+      params:
+        - name: command
+          value: "--kubeconfig /workspace/${inputs.resources.clusterdetails.name}/kubeconfig --context ${inputs.resources.clusterdetails.name} whoami"
+    - name: list
+      taskRef:
+        name: openshift-cli-kubecfg
+      resources:
+        inputs:
+          - name: clusterdetails
+            resource: clusterdetails-one
+      params:
+        - name: command
+          value: "--kubeconfig /workspace/${inputs.resources.clusterdetails.name}/kubeconfig --context ${inputs.resources.clusterdetails.name} get pods"
