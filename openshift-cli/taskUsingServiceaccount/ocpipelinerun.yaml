@@ -1,0 +1,11 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineRun
+metadata:
+  name: pipelinerun-openshift-command
+  namespace: default
+spec:
+  serviceAccount: user
+  trigger:
+    type: manual
+  pipelineRef:
+    name: pipeline-openshift-command
