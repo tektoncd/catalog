@@ -1,0 +1,37 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: buildkit
+spec:
+  inputs:
+    params:
+    - name: DOCKERFILE
+      description: The name of the Dockerfile
+      default: "Dockerfile"
+    - name: BUILDKIT_CLIENT_IMAGE
+      description: The name of the BuildKit client (buildctl) image
+ # The image needs to be rootful because Tekton creates /builder/home/.docker/config.json owned by root:root with 0600
+ # https://github.com/tektoncd/pipeline/issues/852
+      default: "moby/buildkit:v0.5.1@sha256:d45d15f3b22fcfc1b112ffafc40fd2f2d530245e63cfe346a65bd75acdc4d346"
+    - name: BUILDKIT_DAEMON_ADDRESS
+      description: The address of the BuildKit daemon (buildkitd) service
+      default: "tcp://buildkitd:1234"
+    resources:
+    - name: source
+      type: git
+  outputs:
+    resources:
+    - name: image
+      type: image
+  steps:
+  - name: build-and-push
+    image: ${inputs.params.BUILDKIT_CLIENT_IMAGE}
+    workingDir: /workspace/source
+    command: ["buildctl", "--debug", "--addr=${inputs.params.BUILDKIT_DAEMON_ADDRESS}", "build",
+              "--progress=plain",
+              "--frontend=dockerfile.v0",
+              "--opt", "filename=${inputs.params.DOCKERFILE}",
+              "--local", "context=.", "--local", "dockerfile=.",
+              "--output", "type=image,name=${outputs.resources.image.url},push=true",
+              "--export-cache", "type=inline",
+              "--import-cache", "type=registry,ref=${outputs.resources.image.url}"]
