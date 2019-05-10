@@ -22,6 +22,11 @@ spec:
   - name: build-and-push
     workingdir: /workspace/source
     image: gcr.io/kaniko-project/executor
+    # specifying DOCKER_CONFIG is required to allow kaniko to detect docker credential
+    # https://github.com/tektoncd/pipeline/pull/706
+    env:
+    - name: DOCKER_CONFIG
+      value: /builder/home/.docker
     command:
     - /kaniko/executor
     - --dockerfile=${inputs.params.DOCKERFILE}
