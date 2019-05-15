@@ -11,12 +11,26 @@ This Task builds source into a container image using uber's
 
 makisu uses a [registry
 configuration](https://github.com/uber/makisu/blob/master/docs/REGISTRY.md)
-which should be stored as a secret in Kubernetes. Adjust the `registry.yaml` in
-this diretroy to contain your user and password for the Docker hub (or
+which should be stored as a secret in Kubernetes.
+
+Create a `registry.yaml` containing your user and password for the Docker hub (or
 configure a different
 [registry](https://github.com/uber/makisu/blob/master/docs/REGISTRY.md#examples)).
 Keep in mind that the secret must exist in the same namespace as the build
-runs.:
+runs.
+
+For example:
+```yaml
+index.docker.io:
+  .*:
+    security:
+      tls:
+        client:
+          disabled: false
+      basic:
+        username: ""
+        password: ""
+```
 
 ```bash
 kubectl --namespace default create secret generic docker-registry-config --from-file=./registry.yaml

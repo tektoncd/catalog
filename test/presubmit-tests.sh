@@ -28,5 +28,4 @@ export DISABLE_MD_LINTING=1
 source $(dirname $0)/../vendor/github.com/tektoncd/plumbing/scripts/presubmit-tests.sh
 
 # We use the default build, unit and integration test runners.
-
 main $@
