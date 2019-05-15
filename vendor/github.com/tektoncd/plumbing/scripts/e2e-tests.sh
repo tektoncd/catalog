@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2019 The Knative Authors
+# Copyright 2019 The Tekton Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This is a helper script for Knative E2E test scripts.
+# This is a helper script for Tekton E2E test scripts.
 # See README.md for instructions on how to use it.
 
 source $(dirname ${BASH_SOURCE})/library.sh
@@ -51,13 +51,13 @@ readonly E2E_CLUSTER_MACHINE=${E2E_CLUSTER_MACHINE:-n1-standard-4}
 readonly E2E_GKE_ENVIRONMENT=${E2E_GKE_ENVIRONMENT:-prod}
 readonly E2E_GKE_COMMAND_GROUP=${E2E_GKE_COMMAND_GROUP:-beta}
 
-# Each knative repository may have a different cluster size requirement here,
+# Each tekton repository may have a different cluster size requirement here,
 # so we allow calling code to set these parameters.  If they are not set we
 # use some sane defaults.
 readonly E2E_MIN_CLUSTER_NODES=${E2E_MIN_CLUSTER_NODES:-1}
 readonly E2E_MAX_CLUSTER_NODES=${E2E_MAX_CLUSTER_NODES:-3}
 
-readonly E2E_BASE_NAME="k${REPO_NAME}"
+readonly E2E_BASE_NAME="t${REPO_NAME}"
 readonly E2E_CLUSTER_NAME=$(build_resource_name e2e-cls)
 readonly E2E_NETWORK_NAME=$(build_resource_name e2e-net)
 readonly TEST_RESULT_FILE=/tmp/${E2E_BASE_NAME}-e2e-result
@@ -71,7 +71,7 @@ function teardown_test_resources() {
   (( IS_BOSKOS )) && return
   header "Tearing down test environment"
   function_exists test_teardown && test_teardown
-  (( ! SKIP_KNATIVE_SETUP )) && function_exists knative_teardown && knative_teardown
+  (( ! SKIP_TEKTON_SETUP )) && function_exists tekton_teardown && tekton_teardown
   # Delete the kubernetes source downloaded by kubetest
   rm -fr kubernetes kubernetes.tar.gz
 }
@@ -128,7 +128,7 @@ EOF
 }
 
 # Delete target pools and health checks that might have leaked.
-# See https://github.com/knative/serving/issues/959 for details.
+# See https://github.com/tekton/serving/issues/959 for details.
 # TODO(adrcunha): Remove once the leak issue is resolved.
 function delete_leaked_network_resources() {
   # On boskos, don't bother with leaks as the janitor will delete everything in the project.
@@ -166,7 +166,7 @@ function create_test_cluster() {
 
   # Smallest cluster required to run the end-to-end-tests
   local CLUSTER_CREATION_ARGS=(
-    --gke-create-command="container clusters create --quiet --enable-autoscaling --min-nodes=${E2E_MIN_CLUSTER_NODES} --max-nodes=${E2E_MAX_CLUSTER_NODES} --scopes=cloud-platform --enable-basic-auth --no-issue-client-certificate ${GKE_ADDONS} ${EXTRA_CLUSTER_CREATION_FLAGS[@]}"
+    --gke-create-command="container clusters create --quiet --enable-autoscaling --min-nodes=${E2E_MIN_CLUSTER_NODES} --max-nodes=${E2E_MAX_CLUSTER_NODES} --scopes=cloud-platform --enable-basic-auth --no-issue-client-certificate ${EXTRA_CLUSTER_CREATION_FLAGS[@]}"
     --gke-shape={\"default\":{\"Nodes\":${E2E_MIN_CLUSTER_NODES}\,\"MachineType\":\"${E2E_CLUSTER_MACHINE}\"}}
     --provider=gke
     --deployment=gke
@@ -189,14 +189,13 @@ function create_test_cluster() {
   local gcloud_project="${GCP_PROJECT}"
   [[ -z "${gcloud_project}" ]] && gcloud_project="$(gcloud config get-value project)"
   echo "gcloud project is ${gcloud_project}"
-  echo "gcloud user is $(gcloud config get-value core/account)"
   (( IS_BOSKOS )) && echo "Using boskos for the test cluster"
   [[ -n "${GCP_PROJECT}" ]] && echo "GCP project for test cluster is ${GCP_PROJECT}"
   echo "Test script is ${E2E_SCRIPT}"
   # Set arguments for this script again
   local test_cmd_args="--run-tests"
   (( EMIT_METRICS )) && test_cmd_args+=" --emit-metrics"
-  (( SKIP_KNATIVE_SETUP )) && test_cmd_args+=" --skip-knative-setup"
+  (( SKIP_TEKTON_SETUP )) && test_cmd_args+=" --skip-tekton-setup"
   [[ -n "${GCP_PROJECT}" ]] && test_cmd_args+=" --gcp-project ${GCP_PROJECT}"
   [[ -n "${E2E_SCRIPT_CUSTOM_FLAGS[@]}" ]] && test_cmd_args+=" ${E2E_SCRIPT_CUSTOM_FLAGS[@]}"
   local extra_flags=()
@@ -259,7 +258,7 @@ function create_test_cluster_with_retries() {
       # Exit if test succeeded
       [[ "$(get_test_return_code)" == "0" ]] && return
       # If test failed not because of cluster creation stockout, return
-      [[ -z "$(grep -Eio 'does not have enough resources available to fulfill the request' ${cluster_creation_log})" ]] && return
+      [[ -z "$(grep -Eio 'does not have enough resources to fulfill the request' ${cluster_creation_log})" ]] && return
     done
   done
 }
@@ -304,8 +303,8 @@ function setup_test_cluster() {
   set +o errexit
   set +o pipefail
 
-  if (( ! SKIP_KNATIVE_SETUP )) && function_exists knative_setup; then
-    knative_setup || fail_test "Knative setup failed"
+  if (( ! SKIP_TEKTON_SETUP )) && function_exists tekton_setup; then
+    tekton_setup || fail_test "Tekton setup failed"
   fi
   if function_exists test_setup; then
     test_setup || fail_test "test setup failed"
@@ -349,12 +348,10 @@ function fail_test() {
 
 RUN_TESTS=0
 EMIT_METRICS=0
-SKIP_KNATIVE_SETUP=0
-SKIP_ISTIO_ADDON=0
+SKIP_TEKTON_SETUP=0
 GCP_PROJECT=""
 E2E_SCRIPT=""
 E2E_CLUSTER_VERSION=""
-GKE_ADDONS=""
 EXTRA_CLUSTER_CREATION_FLAGS=()
 EXTRA_KUBETEST_FLAGS=()
 E2E_SCRIPT_CUSTOM_FLAGS=()
@@ -385,8 +382,7 @@ function initialize() {
     case ${parameter} in
       --run-tests) RUN_TESTS=1 ;;
       --emit-metrics) EMIT_METRICS=1 ;;
-      --skip-knative-setup) SKIP_KNATIVE_SETUP=1 ;;
-      --skip-istio-addon) SKIP_ISTIO_ADDON=1 ;;
+      --skip-tekton-setup) SKIP_TEKTON_SETUP=1 ;;
       *)
         [[ $# -ge 2 ]] || abort "missing parameter after $1"
         shift
@@ -416,16 +412,13 @@ function initialize() {
   is_protected_gcr ${KO_DOCKER_REPO} && \
     abort "\$KO_DOCKER_REPO set to ${KO_DOCKER_REPO}, which is forbidden"
 
-  (( SKIP_ISTIO_ADDON )) || GKE_ADDONS="--addons=Istio"
-
   readonly RUN_TESTS
   readonly EMIT_METRICS
   readonly GCP_PROJECT
   readonly IS_BOSKOS
   readonly EXTRA_CLUSTER_CREATION_FLAGS
   readonly EXTRA_KUBETEST_FLAGS
-  readonly SKIP_KNATIVE_SETUP
-  readonly GKE_ADDONS
+  readonly SKIP_TEKTON_SETUP
 
   if (( ! RUN_TESTS )); then
     create_test_cluster
