@@ -1,9 +1,0 @@
-index.docker.io:
-  .*:
-    security:
-      tls:
-        client:
-          disabled: false
-      basic:
-        username: ""
-        password: ""
