@@ -1,19 +1,16 @@
 apiVersion: tekton.dev/v1alpha1
 kind: Task
 metadata:
-  name: openshift-cli-kubecfg
+  name: openshift-client
   namespace: default
 spec:
   inputs:
-    resources:
-      - name: clusterdetails
-        type: cluster
     params:
       - name: command
         description: The OpenShift CLI commands to run
   steps:
     - name: oc
-      image: quay.io/openshift-pipeline/openshift-cli:latest
+      image: quay.io/openshift-pipeline/openshift-client:latest
       command: ["/usr/local/bin/oc"]
       args:
         - "${inputs.params.command}"

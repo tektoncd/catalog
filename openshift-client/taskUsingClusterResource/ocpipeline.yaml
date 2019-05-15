@@ -10,7 +10,7 @@ spec:
   tasks:
     - name: version
       taskRef:
-        name: openshift-cli-kubecfg
+        name: openshift-client-kubecfg
       resources:
         inputs:
           - name: clusterdetails
@@ -20,7 +20,7 @@ spec:
           value: "--kubeconfig /workspace/${inputs.resources.clusterdetails.name}/kubeconfig --context ${inputs.resources.clusterdetails.name} version --short"
     - name: user
       taskRef:
-        name: openshift-cli-kubecfg
+        name: openshift-client-kubecfg
       resources:
         inputs:
           - name: clusterdetails
@@ -30,7 +30,7 @@ spec:
           value: "--kubeconfig /workspace/${inputs.resources.clusterdetails.name}/kubeconfig --context ${inputs.resources.clusterdetails.name} whoami"
     - name: list
       taskRef:
-        name: openshift-cli-kubecfg
+        name: openshift-client-kubecfg
       resources:
         inputs:
           - name: clusterdetails
