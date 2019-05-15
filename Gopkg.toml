@@ -25,14 +25,14 @@
 #   unused-packages = true
 
 required = [
-  "github.com/knative/test-infra/scripts",
+  "github.com/tektoncd/plumbing/scripts",
 ]
-
-[[prune.project]]
-  name = "github.com/knative/test-infra"
-  non-go = false
 
 [prune]
   non-go = true
   go-tests = true
   unused-packages = true
+
+[[prune.project]]
+  name = "github.com/tektoncd/plumbing"
+  non-go = false

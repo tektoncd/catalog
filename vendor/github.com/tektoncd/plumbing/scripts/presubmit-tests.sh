@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2018 The Knative Authors
+# Copyright 2018 The Tekton Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This is a helper script for Knative presubmit test scripts.
+# This is a helper script for Tekton presubmit test scripts.
 # See README.md for instructions on how to use it.
 
 source $(dirname ${BASH_SOURCE})/library.sh

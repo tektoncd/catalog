@@ -1,6 +1,6 @@
 # Helper scripts
 
-This directory contains helper scripts used by Prow test jobs, as well and
+This directory contains helper scripts used by Prow test jobs, as well as
 local development scripts.
 
 ## Using the `presubmit-tests.sh` helper script
@@ -52,7 +52,7 @@ This is a helper script to run the presubmit tests. To use it:
 
 1. [optional] Define the function `integration_tests()`. If you don't define
    this function, the default action for running the integration tests is to run
-   all run all `./test/e2e-*tests.sh` scripts, in sequence.
+   all `./test/e2e-*tests.sh` scripts, in sequence.
 
 1. [optional] Define the functions `pre_integration_tests()` and/or
    `post_integration_tests()`. These functions will be called before or after the
@@ -171,9 +171,6 @@ This is a helper script for Knative E2E test scripts. To use it:
 1. Calling your script with `--run-tests` and the variable `KO_DOCKER_REPO` set
    will immediately start the tests against the cluster currently configured for
    `kubectl`.
-
-1. By default Istio is installed on the cluster via Addon, use `--skip-istio-addon` if
-   you choose not to have it preinstalled.
 
 1. You can force running the tests against a specific GKE cluster version by using
    the `--cluster-version` flag and passing a full version as the flag value.

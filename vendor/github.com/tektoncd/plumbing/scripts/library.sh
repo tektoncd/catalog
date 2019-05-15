@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2018 The Knative Authors
+# Copyright 2018 The Tekton Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,15 +18,9 @@
 # to be used in test scripts and the like. It doesn't do anything when
 # called from command line.
 
-# Default GKE version to be used with Knative Serving
+# Default GKE version to be used with Tekton Serving
 readonly SERVING_GKE_VERSION=gke-latest
 readonly SERVING_GKE_IMAGE=cos
-
-# Public latest stable nightly images and yaml files.
-readonly KNATIVE_BASE_YAML_SOURCE=https://storage.googleapis.com/knative-nightly/@/latest
-readonly KNATIVE_SERVING_RELEASE=${KNATIVE_BASE_YAML_SOURCE/@/serving}/serving.yaml
-readonly KNATIVE_BUILD_RELEASE=${KNATIVE_BASE_YAML_SOURCE/@/build}/build.yaml
-readonly KNATIVE_EVENTING_RELEASE=${KNATIVE_BASE_YAML_SOURCE/@/eventing}/release.yaml
 
 # Conveniently set GOPATH if unset
 if [[ -z "${GOPATH:-}" ]]; then
@@ -131,7 +125,7 @@ function wait_until_pods_running() {
         [[ ${status[0]} -lt 1 ]] && all_ready=0 && break
         [[ ${status[1]} -lt 1 ]] && all_ready=0 && break
         [[ ${status[0]} -ne ${status[1]} ]] && all_ready=0 && break
-      done <<< "$(echo "${pods}" | grep -v Completed)"
+      done <<< $(echo "${pods}" | grep -v Completed)
       if (( all_ready )); then
         echo -e "\nAll pods are up:\n${pods}"
         return 0
@@ -303,7 +297,7 @@ function report_go_test() {
   local xml=$(mktemp ${ARTIFACTS}/junit_XXXXXXXX.xml)
   cat ${report} \
       | go-junit-report \
-      | sed -e "s#\"github.com/knative/${REPO_NAME}/#\"#g" \
+      | sed -e "s#\"github.com/tekton/${REPO_NAME}/#\"#g" \
       > ${xml}
   echo "XML report written to ${xml}"
   if (( ! IS_PROW )); then
@@ -316,13 +310,21 @@ function report_go_test() {
   return ${failed}
 }
 
-# Install the latest stable Knative/serving in the current cluster.
-function start_latest_knative_serving() {
-  header "Starting Knative Serving"
-  subheader "Installing Knative Serving"
-  echo "Installing Serving from ${KNATIVE_SERVING_RELEASE}"
-  kubectl apply -f ${KNATIVE_SERVING_RELEASE} || return 1
-  wait_until_pods_running knative-serving || return 1
+# Install the latest stable Tekton/serving in the current cluster.
+function start_latest_tekton_serving() {
+  header "Starting Tekton Serving"
+  subheader "Installing Istio"
+  echo "Running Istio CRD from ${TEKTON_ISTIO_CRD_YAML}"
+  kubectl apply -f ${TEKTON_ISTIO_CRD_YAML} || return 1
+  wait_until_batch_job_complete istio-system || return 1
+  echo "Installing Istio from ${TEKTON_ISTIO_YAML}"
+  kubectl apply -f ${TEKTON_ISTIO_YAML} || return 1
+  wait_until_pods_running istio-system || return 1
+  kubectl label namespace default istio-injection=enabled || return 1
+  subheader "Installing Tekton Serving"
+  echo "Installing Serving from ${TEKTON_SERVING_RELEASE}"
+  kubectl apply -f ${TEKTON_SERVING_RELEASE} || return 1
+  wait_until_pods_running tekton-serving || return 1
 }
 
 # Run a go tool, installing it first if necessary.
@@ -347,7 +349,7 @@ function update_licenses() {
   cd ${REPO_ROOT_DIR} || return 1
   local dst=$1
   shift
-  run_go_tool ./vendor/github.com/knative/test-infra/tools/dep-collector dep-collector $@ > ./${dst}
+  run_go_tool ./vendor/github.com/tekton/test-infra/tools/dep-collector dep-collector $@ > ./${dst}
 }
 
 # Run dep-collector to check for forbidden liceses.
@@ -356,7 +358,7 @@ function check_licenses() {
   # Fetch the google/licenseclassifier for its license db
   go get -u github.com/google/licenseclassifier
   # Check that we don't have any forbidden licenses in our images.
-  run_go_tool ./vendor/github.com/knative/test-infra/tools/dep-collector dep-collector -check $@
+  run_go_tool ./vendor/github.com/tekton/test-infra/tools/dep-collector dep-collector -check $@
 }
 
 # Run the given linter on the given files, checking it exists first.
@@ -384,7 +386,7 @@ function run_lint_tool() {
 function check_links_in_markdown() {
   # https://github.com/raviqqe/liche
   local config="${REPO_ROOT_DIR}/test/markdown-link-check-config.rc"
-  [[ ! -e ${config} ]] && config="${_TEST_INFRA_SCRIPTS_DIR}/markdown-link-check-config.rc"
+  [[ ! -e ${config} ]] && config="${_PLUMBING_SCRIPTS_DIR}/markdown-link-check-config.rc"
   local options="$(grep '^-' ${config} | tr \"\n\" ' ')"
   run_lint_tool liche "checking links in markdown files" "-d ${REPO_ROOT_DIR} ${options}" $@
 }
@@ -394,7 +396,7 @@ function check_links_in_markdown() {
 function lint_markdown() {
   # https://github.com/markdownlint/markdownlint
   local config="${REPO_ROOT_DIR}/test/markdown-lint-config.rc"
-  [[ ! -e ${config} ]] && config="${_TEST_INFRA_SCRIPTS_DIR}/markdown-lint-config.rc"
+  [[ ! -e ${config} ]] && config="${_PLUMBING_SCRIPTS_DIR}/markdown-lint-config.rc"
   run_lint_tool mdl "linting markdown files" "-c ${config}" $@
 }
 
@@ -404,10 +406,10 @@ function is_int() {
   [[ -n $1 && $1 =~ ^[0-9]+$ ]]
 }
 
-# Return whether the given parameter is the knative release/nightly GCF.
-# Parameters: $1 - full GCR name, e.g. gcr.io/knative-foo-bar
+# Return whether the given parameter is the tekton release/nightly GCF.
+# Parameters: $1 - full GCR name, e.g. gcr.io/tekton-foo-bar
 function is_protected_gcr() {
-  [[ -n $1 && "$1" =~ "^gcr.io/knative-(releases|nightly)/?$" ]]
+  [[ -n $1 && "$1" =~ "^gcr.io/tekton-(releases|nightly)/?$" ]]
 }
 
 # Remove symlinks in a path that are broken or lead outside the repo.
@@ -424,17 +426,17 @@ function remove_broken_symlinks() {
     target="${target##* -> }"
     [[ ${target} == /* ]] || target="./${target}"
     target="$(cd `dirname ${link}` && cd ${target%/*} && echo $PWD/${target##*/})"
-    if [[ ${target} != *github.com/knative/* ]]; then
+    if [[ ${target} != *github.com/tekton/* ]]; then
       unlink ${link}
       continue
     fi
   done
 }
 
-# Return whether the given parameter is knative-tests.
+# Return whether the given parameter is tekton-tests.
 # Parameters: $1 - project name
 function is_protected_project() {
-  [[ -n "$1" && "$1" == "knative-tests" ]]
+  [[ -n "$1" && "$1" == "tekton-tests" ]]
 }
 
 # Returns the canonical path of a filesystem object.
@@ -451,5 +453,5 @@ function get_canonical_path() {
 # Initializations that depend on previous functions.
 # These MUST come last.
 
-readonly _TEST_INFRA_SCRIPTS_DIR="$(dirname $(get_canonical_path ${BASH_SOURCE[0]}))"
-readonly REPO_NAME_FORMATTED="Knative $(capitalize ${REPO_NAME//-/})"
+readonly _PLUMBING_SCRIPTS_DIR="$(dirname $(get_canonical_path ${BASH_SOURCE[0]}))"
+readonly REPO_NAME_FORMATTED="Tekton $(capitalize ${REPO_NAME//-/})"
