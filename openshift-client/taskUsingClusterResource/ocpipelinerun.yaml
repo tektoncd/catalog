@@ -9,6 +9,6 @@ spec:
   pipelineRef:
     name: pipeline-cluster-openshift-command
   resources:
-    - name: clusterdetails-one
+    - name: cluster-one
       resourceRef:
         name: cluster-details
