@@ -4,8 +4,10 @@ set -e
 
 command="/usr/local/bin/oc-origin"
 
-for arg in $1; do
-    command+=" $arg"
+for args in "$@"; do
+    for arg in $args; do
+        command+=" $arg"
+    done
 done
 
 exec $command
