@@ -18,7 +18,7 @@ Tekton needs to be installed on your OpenShift Cluster. Documentation for the sa
 
 ### Parameters
 
- - command - command to execute like `get pods` (default: `help`)
+ - args - args to execute like `get pods` (default: `help`)
 
 ## Usage:
 
@@ -100,7 +100,7 @@ You can use the clusterResource to interact on a different cluster with `oc` as 
 2. Create a task which will used for executing every command
     
     ```
-    oc apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-client/taskUsingClusterResource/openshift-client-kubecfg-task.yaml
+    oc apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-client/openshift-client-kubecfg-task.yaml
     ```
  
 3. Create a pipeline which have the tasks used to interact with the OpenShift Cluster
