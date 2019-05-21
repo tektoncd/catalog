@@ -50,7 +50,7 @@ spec:
   taskRef:
     name: buildah
   inputs:
-    resorces:
+    resources:
     - name: source
       resourceSpec:
         type: git
@@ -58,7 +58,7 @@ spec:
         - name: url
           value: https://github.com/my-user/my-repo
   outputs:
-    resorces:
+    resources:
     - name: image
       resourceSpec:
         type: image
