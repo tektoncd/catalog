@@ -9,7 +9,7 @@ This Task builds source into a container image using Google's
 >standard Kubernetes cluster.
 > - [Kaniko website](https://github.com/GoogleCloudPlatform/kaniko)
 
-kaniko is meant to be run as an image, `gcr.io/kaniko-project/executor`. This
+kaniko is meant to be run as an image, `gcr.io/kaniko-project/executor:v0.9.0`. This
 makes it a perfect tool to be part of Tekton.
 
 ## Install the Task
@@ -24,6 +24,9 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/kanik
 
 * **DOCKERFILE**: The path to the `Dockerfile` to execute (_default:_
   `./Dockerfile`)
+
+* **CONTEXT**: The build context used by Kaniko (_default:_
+  `./`)
 
 ### Resources
 
