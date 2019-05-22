@@ -8,7 +8,9 @@ spec:
     - name: DOCKERFILE
       description: Path to the Dockerfile to build.
       default: ./Dockerfile
-
+    - name: CONTEXT
+      description: The build context used by Kaniko.
+      default: ./
     resources:
     - name: source
       type: git
@@ -21,7 +23,7 @@ spec:
   steps:
   - name: build-and-push
     workingdir: /workspace/source
-    image: gcr.io/kaniko-project/executor
+    image: gcr.io/kaniko-project/executor:v0.9.0
     # specifying DOCKER_CONFIG is required to allow kaniko to detect docker credential
     # https://github.com/tektoncd/pipeline/pull/706
     env:
@@ -30,4 +32,5 @@ spec:
     command:
     - /kaniko/executor
     - --dockerfile=${inputs.params.DOCKERFILE}
+    - --context=/workspace/source/${inputs.params.CONTEXT} # The user does not need to care the workspace and the source.
     - --destination=${outputs.resources.image.url}
