@@ -31,3 +31,4 @@ spec:
     - /kaniko/executor
     - --dockerfile=${inputs.params.DOCKERFILE}
     - --destination=${outputs.resources.image.url}
+    - --context=/workspace/source
