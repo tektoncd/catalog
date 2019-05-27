@@ -2,19 +2,19 @@ apiVersion: tekton.dev/v1alpha1
 kind: Task
 metadata:
   name: openshift-client-kubecfg
-  namespace: default
 spec:
   inputs:
     resources:
-      - name: clusterdetails
+      - name: cluster
         type: cluster
     params:
-      - name: args
+      - name: ARGS
         description: The OpenShift CLI arguments to run
+        default: help
   steps:
     - name: oc
       image: quay.io/openshift-pipeline/openshift-cli:latest
       command: ["/usr/local/bin/oc"]
       args:
-        - "--kubeconfig /workspace/${inputs.resources.clusterdetails.name}/kubeconfig --context ${inputs.resources.clusterdetails.name}"
-        - "${inputs.params.args}"
+        - "--kubeconfig /workspace/${inputs.resources.cluster.name}/kubeconfig --context ${inputs.resources.cluster.name}"
+        - "${inputs.params.ARGS}"
