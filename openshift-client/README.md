@@ -1,118 +1,83 @@
-## Openshift-Client
+## OpenShift Client Task
 
-`oc` is a tool which is used to interact with OpenShift from the command line. The following section provides two examples to interact with OpenShift Cluster from Tekton Pipelines.
+[OpenShift](http://www.openshift.com) is a Kubernetes distribution from Red Hat which provides `oc`, the [OpenShift CLI](https://docs.openshift.com/container-platform/4.1/cli_reference/getting-started-cli.html) that complements `kubectl` for simplifying deployment and configuration applications on OpenShift.
 
-The `Dockerfile` of the `oc` binary has been added and the image is available [here]( https://quay.io/repository/openshift-pipeline/openshift-cli).
+There are two tasks provided for the OpenShift CLI which differ only in their target clusters:
+* `openshift-client`: runs commands against the cluster where the task run is being executed
+* `openshift-client-kubecfg`: runs commands against any cluster that is provided to it as an input
 
-## Prerequisite 
+## Install the Tasks
 
-Tekton needs to be installed on your OpenShift Cluster. Documentation for the same can be found [here](https://github.com/tektoncd/pipeline/blob/master/docs/install.md#installing-tekton-pipelines-on-openshift).
+Install `openshift-client` task:
+```
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-client/openshift-client-task.yaml
+```
 
-## Install the Task
+Install `openshift-client-kubecfg` task:
+```
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-client/openshift-client-kubecfg-task.yaml
+```
 
-   ```
-   oc apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-client/openshift-client-task.yaml
-   ```
-
-## Inputs
+## Inputs `openshift-client`
 
 ### Parameters
 
- - args - args to execute like `get pods` (default: `help`)
+* **ARGS:** args to execute which are appended to `oc` e.g. `start-build myapp` (_default_: `help`)
 
-## Usage:
+## Inputs `openshift-client-kubecfg`
 
-- Using `oc` on the same cluster using serviceAccount
+### Parameters
 
-- Using `oc` on a different cluster using clusterResource
+* **ARGS:** args to execute which are appended to `oc` e.g. `start-build myapp` (_default_: `help`)
 
-## Using oc on the same cluster using serviceAccount
+### Resources
 
-You can use the serviceAccount resource to interact on the same cluster with `oc` as follows: 
+* **cluster**: a `cluster`-type `PipelineResource` specifying the target OpenShift cluster to execute the commands against it
 
-1. To interact with OpenShift in the cluster using `oc`, you need to create the [serviceAccount](https://docs.openshift.com/container-platform/3.11/dev_guide/service_accounts.html) resource with the required permissions and use that in the taskrun.
-    
-    - Create the serviceAccount resource.
-    
-        ```
-        oc apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-client/taskUsingServiceaccount/serviceaccount.yaml 
-        ```
-    
-    - Create the role for the serviceAccount resource.
-    
-        ```
-        oc apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-client/taskUsingServiceaccount/role.yaml 
-        ```
-    
-    - Create the roleBinding for the serviceAccount resource.
-    
-        ```
-        oc apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-client/taskUsingServiceaccount/rolebinding.yaml 
-        ```
-        
-2. Create a task which will used for executing every command
-    
-    ```
-    oc apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-client/taskUsingServiceaccount/openshift-client-task.yaml
-    ```
-    
-3. Create a pipeline which have the tasks for interacting with OpenShift.
-   
-    ```
-    oc apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-client/taskUsingServiceaccount/ocpipeline.yaml 
-    ```
+## ServiceAccount
 
-4. Create a pipelinerun to execute the pipeline just created.
-    
-    ```
-    oc apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-client/taskUsingServiceaccount/ocpipelinerun.yaml 
-    ```
+If you don't specify a service account to be used for running the `TaskRun` or `PipelineRun`, the `default` [service account](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#use-the-default-service-account-to-access-the-api-server). OpenShift by default does not allow the default service account to modify objects in the namespace. Therefore you should either explicitly grant permission to the default service account (by creating rolebindings) or [create a new service account with sufficient privileges](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#service-account-permissions) and specify it on the [`TaskRun`](https://github.com/tektoncd/pipeline/blob/master/docs/taskruns.md#service-account) or [`PipelineRun`](https://github.com/tektoncd/pipeline/blob/master/docs/pipelineruns.md#service-account).
 
-5. Check the logs of the pipeline by accessing the logs of a freshly created pods(Each task have one Pod).
+You can do the former via `oc` and running the following command, replacing `<namespace>` with your target namespace:
+```
+oc policy add-role-to-user edit -z default -n <namespace>
+```
 
-## Using oc on a different cluster using clusterResource
+## Usage
 
-You can use the clusterResource to interact on a different cluster with `oc` as follows: 
+This `TaskRun` runs an `oc rollout` command to deploy the latest image version for `myapp` on OpenShift.
 
-1. Create a [clusterResource](https://github.com/tektoncd/pipeline/blob/master/docs/resources.md#cluster-resource) with details for the second cluster. For example, here is a [sample ClusterResource](https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-client/taskUsingClusterResource/resource.yaml):
+```
+apiVersion: tekton.dev/v1alpha1
+kind: TaskRun
+metadata:
+  name: deploy-myapp
+spec:
+  taskRef:
+    name: openshift-client
+  inputs:
+    params:
+    - name: ARGS
+      value: rollout latest myapp
+```
 
-    ```yaml
-    apiVersion: tekton.dev/v1alpha1
-    kind: PipelineResource
-    metadata:
-      name: cluster-details
-    spec:
-      type: cluster
-      params:
-      - name: url
-        value: cluster url
-      - name: name
-        value: oc-test
-      - name: username
-        value: test
-      - name: token
-        value: akakkakaaa
-      - name: cadata
-        value: data
-    ```
+The following `TaskRun` runs the commands against a different cluster than the one the `TaskRun` is running on. The cluster credentials are provided via a `PipelineResource` called `stage-cluster`.
 
-        
-2. Create a task which will used for executing every command
-    
-    ```
-    oc apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-client/openshift-client-kubecfg-task.yaml
-    ```
- 
-3. Create a pipeline which have the tasks used to interact with the OpenShift Cluster
-    
-    ```
-    oc apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-client/taskUsingClusterResource/ocpipeline.yaml 
-    ```
 
-4. Create a pipelinerun to execute the pipeline you created. Make sure that the ClusterResource Name is used correctly in the pipelinerun.
-
-    ```
-    oc apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-client/taskUsingClusterResource/ocpipelinerun.yaml 
-    ```
-
-5. Check the logs of the pipelinerun by accessing the logs of the freshly created pods(Each task have one Pod).
+```
+apiVersion: tekton.dev/v1alpha1
+kind: TaskRun
+metadata:
+  name: deploy-myapp-stage
+spec:
+  taskRef:
+    name: openshift-client-kubecfg
+  inputs:
+    resources:
+    - name: cluster
+      resourceRef:
+        name: stage-cluster
+    params:
+    - name: ARGS
+      value: rollout latest myapp
+```

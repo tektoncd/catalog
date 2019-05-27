@@ -2,15 +2,15 @@ apiVersion: tekton.dev/v1alpha1
 kind: Task
 metadata:
   name: openshift-client
-  namespace: default
 spec:
   inputs:
     params:
-      - name: args
+      - name: ARGS
         description: The OpenShift CLI arguments to run
+        default: help
   steps:
     - name: oc
       image: quay.io/openshift-pipeline/openshift-cli:latest
       command: ["/usr/local/bin/oc"]
       args:
-        - "${inputs.params.args}"
+        - "${inputs.params.ARGS}"
