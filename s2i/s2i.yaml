@@ -5,15 +5,11 @@ metadata:
 spec:
   inputs:
     resources:
-     - name: git-source
+     - name: source
        type: git
     params:
     - name: BUILDER_IMAGE
-      description: The location of the builder image.
-      default: quay.io/openshift-pipeline/s2i
-    - name: S2I_IMAGE
       description: The location of the s2i builder image.
-      default: docker.io/centos/nodejs-8-centos7
     - name: PATH_CONTEXT
       description: The location of the path to run s2i from.
       default: .
@@ -28,9 +24,9 @@ spec:
 
   steps:
   - name: generate
-    image: ${inputs.params.BUILDER_IMAGE}
-    workingdir: /workspace/git-source
-    command: ['s2i', 'build', '${inputs.params.PATH_CONTEXT}', '${inputs.params.S2I_IMAGE}', '--as-dockerfile', '/gen-source/Dockerfile.gen']
+    image: quay.io/openshift-pipeline/s2i
+    workingdir: /workspace/source
+    command: ['s2i', 'build', '${inputs.params.PATH_CONTEXT}', '${inputs.params.BUILDER_IMAGE}', '--as-dockerfile', '/gen-source/Dockerfile.gen']
     volumeMounts:
      - name: gen-source
        mountPath: /gen-source
