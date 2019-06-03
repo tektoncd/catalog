@@ -1,0 +1,21 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: curl
+spec:
+  inputs:
+    params:
+    - name: ARGS
+      description: Arguments for curl.
+      default: ""
+    - name: URL
+      description: URL to be curl'ed.
+      default: ""
+
+  steps:
+  - name: curl
+    image: plerionio/curl
+    command:
+    - curl
+    - ${inputs.params.URL}
+    - ${inputs.params.ARGS}
