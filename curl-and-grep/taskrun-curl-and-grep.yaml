@@ -1,0 +1,13 @@
+apiVersion: tekton.dev/v1alpha1
+kind: TaskRun
+metadata:
+  name: tekton-dev-task-run-curl-and-grep-1
+spec:
+  inputs:
+    params:
+    - name: url
+      value: https://tekton.dev
+    - name: text
+      value: Tekton Pipelines
+  taskRef:
+    name: curl-and-grep
