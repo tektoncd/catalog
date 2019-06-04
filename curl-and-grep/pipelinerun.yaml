@@ -73,7 +73,7 @@ spec:
 apiVersion: tekton.dev/v1alpha1
 kind: PipelineRun
 metadata:
-  name: productpage-pipeline-run-4
+  name: productpage-pipeline-run-1
 spec:
   trigger:
     type: manual

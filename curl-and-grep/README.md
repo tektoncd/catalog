@@ -15,7 +15,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/curl-
 * **url:** URL to be curl'ed. 
 * **text:** text to grep (default: HTTP)
 
-## Usage
+## TaskRun Usage
 
 This TaskRun runs the Task to curl https://tekton.dev and grep the response in order to find the "Tekton Pipelines" string.
 
@@ -34,6 +34,8 @@ spec:
   taskRef:
     name: curl-and-grep
 ```
+
+## PipelineRun Usage
 
 This PipelineRun runs the Pipeline to build and deploy bookinfo-productpage on top of Knative and curl-and-grep the response in order to find the "The Comedy of Errors" string.
 
@@ -113,7 +115,7 @@ spec:
 apiVersion: tekton.dev/v1alpha1
 kind: PipelineRun
 metadata:
-  name: productpage-pipeline-run-5
+  name: productpage-pipeline-run-1
 spec:
   trigger:
     type: manual
