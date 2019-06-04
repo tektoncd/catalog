@@ -23,7 +23,7 @@ This TaskRun runs the Task to curl https://tekton.dev and grep the response in o
 apiVersion: tekton.dev/v1alpha1
 kind: TaskRun
 metadata:
-  name: tekton-dev-task-run-curl-and-grep-1
+  name: tekton-dev-task-run-curl-and-grep-0
 spec:
   inputs:
     params:
@@ -115,7 +115,7 @@ spec:
 apiVersion: tekton.dev/v1alpha1
 kind: PipelineRun
 metadata:
-  name: productpage-pipeline-run-1
+  name: productpage-pipeline-run-0
 spec:
   trigger:
     type: manual

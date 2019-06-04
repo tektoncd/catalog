@@ -7,7 +7,6 @@ spec:
     params:
     - name: url
       description: URL to be curl'ed.
-#     default: "google.com"
     - name: text
       description: text to grep
       default: "HTTP"
@@ -15,7 +14,7 @@ spec:
       description: file to save output
       default: '/workspace/buffer.txt'
   steps:
-  - name: curl
+  - name: grep
     image: plerionio/curl
     command: 
     - 'curl'
@@ -23,7 +22,7 @@ spec:
     - ${inputs.params.url} 
     - '-o' 
     - ${inputs.params.buffer}
-  - name: read
+  - name: curl
     image: plerionio/curl
     command:
     - 'grep'
