@@ -1,0 +1,30 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: curl-and-grep
+spec:
+  inputs:
+    params:
+    - name: url
+      description: URL to be curl'ed.
+    - name: text
+      description: text to grep
+      default: "HTTP"
+    - name: buffer
+      description: file to save output
+      default: '/workspace/buffer.txt'
+  steps:
+  - name: grep
+    image: plerionio/curl
+    command: 
+    - 'curl'
+    - '-iL'
+    - ${inputs.params.url} 
+    - '-o' 
+    - ${inputs.params.buffer}
+  - name: curl
+    image: plerionio/curl
+    command:
+    - 'grep'
+    - ${inputs.params.text}
+    - ${inputs.params.buffer}
