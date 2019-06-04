@@ -12,8 +12,8 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/curl-
 
 ### Parameters
 
-* **url:**: URL to be curl'ed. 
-* **text:**: text to grep (default: HTTP)
+* **url:** URL to be curl'ed. 
+* **text:** text to grep (default: HTTP)
 
 ## Usage
 
@@ -59,7 +59,8 @@ spec:
   params:
     - name: url
       value: docker.io/ochorny/bookinfo-productpage
-piVersion: tekton.dev/v1alpha1
+---
+apiVersion: tekton.dev/v1alpha1
 kind: Pipeline
 metadata:
   name: productpage-pipeline
