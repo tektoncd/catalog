@@ -1,0 +1,41 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: golangci-lint
+spec:
+  inputs:
+    params:
+    - name: package
+      description: base package (and its children) under validation
+    - name: flags
+      description: flags to use for the test command
+      default: --verbose
+    - name: version
+      default: golangci-lint version to use
+      default: "v1.16"
+    - name: GOOS
+      description: "operating system target (default: node operating system)"
+      default:
+    - name: GOARCH
+      description: "architecture target (default: node architecture)"
+      default:
+    resources:
+    - name: source
+      type: git
+      targetPath: src/${inputs.params.package}
+  steps:
+  - name: lint
+    image: golangci/golangci-lint:${inputs.params.version}
+    workingdir: /workspace/src/${inputs.params.package}
+    command:
+    - /bin/bash
+    args:
+    - -c
+    - "golangci-lint run ${inputs.params.flags}"
+    env:
+    - name: GOPATH
+      value: /workspace
+    - name: GOOS
+      value: "${inputs.params.GOOS}"
+    - name: GOARCH
+      value: "${inputs.params.GOARCH}"
