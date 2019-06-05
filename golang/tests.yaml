@@ -1,0 +1,44 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: golang-test
+spec:
+  inputs:
+    params:
+    - name: package
+      description: package (and its children) under test
+    - name: packages
+      description: "packages to test (default: ./...)"
+      default: "./..."
+    - name: version
+      description: golang version to use for tests
+      default: "1.12"
+    - name: flags
+      description: flags to use for the test command
+      default: -race -cover -v
+    - name: GOOS
+      description: "running program's operating system target"
+      default: linux
+    - name: GOARCH
+      description: "running program's architecture target"
+      default: amd64
+    resources:
+    - name: source
+      type: git
+      targetPath: src/${inputs.params.package}
+  steps:
+  - name: unit-test
+    image: golang:${inputs.params.version}
+    workingdir: /workspace/src/${inputs.params.package}
+    command:
+    - /bin/bash
+    args:
+    - -c
+    - "go test ${inputs.params.flags} ${inputs.params.packages}"
+    env:
+    - name: GOPATH
+      value: /workspace
+    - name: GOOS
+      value: "${inputs.params.GOOS}"
+    - name: GOARCH
+      value: "${inputs.params.GOARCH}"
