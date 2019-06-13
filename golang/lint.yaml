@@ -14,11 +14,11 @@ spec:
       default: golangci-lint version to use
       default: "v1.16"
     - name: GOOS
-      description: "operating system target (default: node operating system)"
-      default:
+      description: "running operating system target"
+      default: linux
     - name: GOARCH
-      description: "architecture target (default: node architecture)"
-      default:
+      description: "running architecture target"
+      default: amd64
     resources:
     - name: source
       type: git
