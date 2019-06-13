@@ -5,9 +5,9 @@ These Tasks are Golang task to build, test and validate Go projects.
 ## Install the tasks
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golang/golangci-lint.yaml
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golang/golang-build.yaml
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golang/golang-test.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golang/lint.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golang/build.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golang/tests.yaml
 ```
 
 ## `golangci-lint`
