@@ -36,7 +36,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golan
 * **package**: base package under test
 * **packages**: packages to test (_default:_ ./...)
 * **version**: golang version to use for tests (_default:_ 1.12)
-* **flags**: flags to use for `go test` command (_default:_ -race  -cover -v)
+* **flags**: flags to use for `go test` command (_default:_ -v)
 * **GOOS**: operating system target (_default:_ linux)
 * **GOARCH**: architecture target (_default:_ amd64)
 
@@ -54,7 +54,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golan
 * **package**: base package to build in
 * **packages**: packages to test (_default:_ ./cmd/...)
 * **version**: golang version to use for builds (_default:_ 1.12)
-* **flags**: flags to use for `go test` command (_default:_ -v)
+* **flags**: flags to use for `go test` command (_default:_ -race -cover -v)
 * **GOOS**: operating system target (_default:_ linux)
 * **GOARCH**: architecture target (_default:_ amd64)
 
