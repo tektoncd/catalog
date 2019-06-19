@@ -1,0 +1,38 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: argocd-task-sync-and-wait
+spec:
+  inputs:
+    params:
+      - name: server
+        description: address of the Argo CD server
+      - name: username
+        description: Argo CD username
+        default: admin
+      - name: password
+        description: Argo CD password
+        default: admin
+      - name: token
+        description: Argo CD token (leave blank to use username/password login instead)
+        default: none
+      - name: application-name
+        description: name of the application to sync
+      - name: revision
+        description: the revision to sync to
+        default: HEAD
+      - name: flags
+        default: --
+  steps:
+    - name: login
+      image: argoproj/argocd
+      command: ["bash", "-c", "if [ ${inputs.params.token} = 'none' ]; \
+        then yes | argocd login ${inputs.params.server} --username=${inputs.params.username} --password=${inputs.params.password}; \
+        else echo 'export ARGOCD_SERVER=${inputs.params.server} ; export ARGOCD_AUTH_TOKEN=${inputs.params.token}' > ~/env.sh; \
+        chmod 777 ~/env.sh; fi"]
+    - name: sync
+      image: argoproj/argocd
+      command: ["bash", "-c", "source ~/env.sh > /dev/null ; argocd app sync ${inputs.params.application-name} --revision ${inputs.params.revision} ${inputs.params.flags}"]
+    - name: wait
+      image: argoproj/argocd
+      command: ["bash", "-c", "source ~/env.sh > /dev/null ; argocd app wait ${inputs.params.application-name} --health ${inputs.params.flags}"]
