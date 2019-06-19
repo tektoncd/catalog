@@ -1,6 +1,6 @@
 # Argo CD
 
-This task syncs an Argo CD application and waits for it to be healthy. To do so, it requires the address of the Argo CD server and some form of authentication - either a username/password or an authentication token.
+This task syncs (deploys) an [Argo CD](https://argoproj.github.io/argo-cd/) application and waits for it to be healthy. To do so, it requires the address of the Argo CD server and some form of authentication - either a username/password or an authentication token.
 
 ## Install the Task
 
@@ -28,7 +28,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/argoc
 
 ## Usage
 
-This Pipeline runs a sample Task that makes and pushes a change to a Git repository, after which it runs the Argo CD task to sync an application based on that repository.
+This `Pipeline` implements the typical CD flow using GitOps, as explained [here](https://argoproj.github.io/argo-cd/user-guide/ci_automation/). It runs a sample `Task` that makes and pushes a change to a Git repository, after which it runs the Argo CD `Task` to sync an application based on that repository.
 
 ```YAML
 apiVersion: tekton.dev/v1alpha1
