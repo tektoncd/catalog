@@ -26,13 +26,19 @@ spec:
   steps:
     - name: login
       image: argoproj/argocd
-      command: ["bash", "-c", "if [ ${inputs.params.token} = 'none' ]; \
-        then yes | argocd login ${inputs.params.server} --username=${inputs.params.username} --password=${inputs.params.password}; \
-        else echo 'export ARGOCD_SERVER=${inputs.params.server} ; export ARGOCD_AUTH_TOKEN=${inputs.params.token}' > ~/env.sh; \
-        chmod 777 ~/env.sh; fi"]
+      command: ["/bin/bash", "-c"]
+      args:
+        - if [ ${inputs.params.token} = 'none' ];
+          then yes | argocd login ${inputs.params.server} --username=${inputs.params.username} --password=${inputs.params.password};
+          else echo 'export ARGOCD_SERVER=${inputs.params.server}; export ARGOCD_AUTH_TOKEN=${inputs.params.token}' > ~/env.sh; chmod 777 ~/env.sh;
+          fi
     - name: sync
       image: argoproj/argocd
-      command: ["bash", "-c", "source ~/env.sh > /dev/null ; argocd app sync ${inputs.params.application-name} --revision ${inputs.params.revision} ${inputs.params.flags}"]
+      command: ["/bin/bash", "-c"]
+      args:
+        - source ~/env.sh > /dev/null; argocd app sync ${inputs.params.application-name} --revision ${inputs.params.revision} ${inputs.params.flags}
     - name: wait
       image: argoproj/argocd
-      command: ["bash", "-c", "source ~/env.sh > /dev/null ; argocd app wait ${inputs.params.application-name} --health ${inputs.params.flags}"]
+      command: ["/bin/bash", "-c"]
+      args:
+        - source ~/env.sh > /dev/null; argocd app wait ${inputs.params.application-name} --health ${inputs.params.flags}
