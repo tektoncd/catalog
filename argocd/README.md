@@ -12,17 +12,9 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/argoc
 
 ### Parameters
 
-* **server:** Argo CD server address
-
-* **username:** Login username (_default:_ admin)
-
-* **password:** Login password (_default:_ admin)
-
-* **token:** Login token, used in place of username/password if default is overridden (_default:_ none)
-
 * **application-name:** Name of the application to sync
 
-* **revision:** The revision to sync to
+* **revision:** The revision to sync to (_default:_ `HEAD`)
 
 * **flags:** Flags to append after commands, e.g. `--insecure` (_default:_ `--`)
 
@@ -30,7 +22,26 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/argoc
 
 This `Pipeline` implements the typical CD flow using GitOps, as explained [here](https://argoproj.github.io/argo-cd/user-guide/ci_automation/). It runs a sample `Task` that makes and pushes a change to a Git repository, after which it runs the Argo CD `Task` to sync an application based on that repository.
 
+The `ConfigMap` and `Secret` give an example of how to define the Argo CD server address and give credentials for logging in.
+
 ```YAML
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-env-configmap
+data:
+  ARGOCD_SERVER: <Argo CD server address>
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: argocd-env-secret
+data:
+  # choose one of username/password or auth token
+  ARGOCD_USERNAME: <username>
+  ARGOCD_PASSWORD: <password>
+  ARGOCD_AUTH_TOKEN: <token>
+---
 apiVersion: tekton.dev/v1alpha1
 kind: Pipeline
 metadata:
@@ -44,32 +55,21 @@ spec:
       taskRef:
         name: argocd-task-sync-and-wait
       params:
-        - name: server
-          value: argocd-server.argocd.svc.cluster.local
         - name: application-name
           value: some-application
-        - name: username
-          value: admin
-        - name: password
-          value: password123
         - name: flags
           value: --insecure # needed in this example only because the Argo CD server is locally hosted
 ```
 
-Note that 
+For the `Secret`, choose one of username/password or auth token for logging in. Either of the following are acceptable:
 
 ```YAML
-- name: username
-  value: admin
-- name: password
-  value: password123
+data:
+  ARGOCD_USERNAME: <username>
+  ARGOCD_PASSWORD: <password>
 ```
 
-can be replaced with
-
-``` YAML
-- name: token
-  value: some-token
+```YAML
+data:
+  ARGOCD_AUTH_TOKEN: <token>
 ```
-
-as another way to log in.
