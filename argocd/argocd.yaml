@@ -5,17 +5,6 @@ metadata:
 spec:
   inputs:
     params:
-      - name: server
-        description: address of the Argo CD server
-      - name: username
-        description: Argo CD username
-        default: admin
-      - name: password
-        description: Argo CD password
-        default: admin
-      - name: token
-        description: Argo CD token (leave blank to use username/password login instead)
-        default: none
       - name: application-name
         description: name of the application to sync
       - name: revision
@@ -23,22 +12,27 @@ spec:
         default: HEAD
       - name: flags
         default: --
+  containerTemplate:
+    envFrom:
+      - configMapRef:
+          name: argocd-env-configmap # used for server address
+      - secretRef:
+          name: argocd-env-secret # used for authentication (username/password or auth token)
   steps:
     - name: login
       image: argoproj/argocd
       command: ["/bin/bash", "-c"]
       args:
-        - if [ ${inputs.params.token} = 'none' ];
-          then yes | argocd login ${inputs.params.server} --username=${inputs.params.username} --password=${inputs.params.password};
-          else echo 'export ARGOCD_SERVER=${inputs.params.server}; export ARGOCD_AUTH_TOKEN=${inputs.params.token}' > ~/env.sh; chmod 777 ~/env.sh;
+        - if [ -z $ARGOCD_AUTH_TOKEN ]; then
+            yes | argocd login $ARGOCD_SERVER --username=ARGOCD_USERNAME --password=ARGOCD_PASSWORD;
           fi
     - name: sync
       image: argoproj/argocd
       command: ["/bin/bash", "-c"]
       args:
-        - source ~/env.sh > /dev/null; argocd app sync ${inputs.params.application-name} --revision ${inputs.params.revision} ${inputs.params.flags}
+        - argocd app sync ${inputs.params.application-name} --revision ${inputs.params.revision} ${inputs.params.flags}
     - name: wait
       image: argoproj/argocd
       command: ["/bin/bash", "-c"]
       args:
-        - source ~/env.sh > /dev/null; argocd app wait ${inputs.params.application-name} --health ${inputs.params.flags}
+        - argocd app wait ${inputs.params.application-name} --health ${inputs.params.flags}
