@@ -5,15 +5,11 @@ metadata:
 spec:
   inputs:
     params:
-    - name: RUN_IMAGE
-      description: The run image buildpacks will use as the base for IMAGE.
-      default: packs/run:v3alpha2
     - name: BUILDER_IMAGE
-      description: The builder image (must include v3 lifecycle and compatible buildpacks).
-      default: packs/samples:v3alpha2
+      description: The image on which builds will run (must include v3 lifecycle and compatible buildpacks).
     - name: USE_CRED_HELPERS
       description: Use Docker credential helpers for Google's GCR, Amazon's ECR, or Microsoft's ACR.
-      default: 'true'
+      default: 'false'
     - name: CACHE
       description: The name of the persistent app cache volume
       default: empty-dir
@@ -36,32 +32,50 @@ spec:
   steps:
   - name: prepare
     image: alpine
+    imagePullPolicy: Always
     command: ["/bin/sh"]
     args:
     - "-c"
     - >
       chown -R "${inputs.params.USER_ID}:${inputs.params.GROUP_ID}" "/builder/home" &&
-      chown -R "${inputs.params.USER_ID}:${inputs.params.GROUP_ID}" /layers &&
-      chown -R "${inputs.params.USER_ID}:${inputs.params.GROUP_ID}" /workspace
+      chown -R "${inputs.params.USER_ID}:${inputs.params.GROUP_ID}" "/layers" &&
+      chown -R "${inputs.params.USER_ID}:${inputs.params.GROUP_ID}" "/cache" &&
+      chown -R "${inputs.params.USER_ID}:${inputs.params.GROUP_ID}" "/workspace/source"
     volumeMounts:
-    - name: "${inputs.params.CACHE}"
+    - name: "layers-dir"
       mountPath: /layers
+    - name: "${inputs.params.CACHE}"
+      mountPath: /cache
 
   - name: detect
     image: ${inputs.params.BUILDER_IMAGE}
-    workingdir: /workspace/source
+    imagePullPolicy: Always
     command: ["/lifecycle/detector"]
     args:
-    - "-app=."
+    - "-app=/workspace/source"
     - "-group=/layers/group.toml"
     - "-plan=/layers/plan.toml"
     volumeMounts:
+    - name: "layers-dir"
+      mountPath: /layers
+    
+  - name: restore
+    image: ${inputs.params.BUILDER_IMAGE}
+    imagePullPolicy: Always
+    command: ["/lifecycle/restorer"]
+    args:
+    - "-group=/layers/group.toml"
+    - "-layers=/layers"
+    - "-path=/cache"
+    volumeMounts:
     - name: "${inputs.params.CACHE}"
+      mountPath: /cache
+    - name: "layers-dir"
       mountPath: /layers
 
   - name: analyze
     image: ${inputs.params.BUILDER_IMAGE}
-    workingdir: /workspace/source
+    imagePullPolicy: Always
     command: ["/lifecycle/analyzer"]
     args:
     - "-layers=/layers"
@@ -69,37 +83,52 @@ spec:
     - "-group=/layers/group.toml"
     - "${outputs.resources.image.url}"
     volumeMounts:
-    - name: "${inputs.params.CACHE}"
+    - name: "layers-dir"
       mountPath: /layers
 
   - name: build
     image: ${inputs.params.BUILDER_IMAGE}
-    workingdir: /workspace/source
+    imagePullPolicy: Always
     command: ["/lifecycle/builder"]
     args:
+    - "-app=/workspace/source"
     - "-layers=/layers"
-    - "-app=."
     - "-group=/layers/group.toml"
     - "-plan=/layers/plan.toml"
     volumeMounts:
-    - name: "${inputs.params.CACHE}"
+    - name: "layers-dir"
       mountPath: /layers
 
   - name: export
     image: ${inputs.params.BUILDER_IMAGE}
-    workingdir: /workspace/source
+    imagePullPolicy: Always
     command: ["/lifecycle/exporter"]
     args:
+    - "-app=/workspace/source"
     - "-layers=/layers"
     - "-helpers=${inputs.params.USE_CRED_HELPERS}"
-    - "-app=."
-    - "-image=${inputs.params.RUN_IMAGE}"
     - "-group=/layers/group.toml"
     - "${outputs.resources.image.url}"
     volumeMounts:
+    - name: "layers-dir"
+      mountPath: /layers
+
+  - name: cache
+    image: ${inputs.params.BUILDER_IMAGE}
+    imagePullPolicy: Always
+    command: ["/lifecycle/cacher"]
+    args:
+    - "-layers=/layers"
+    - "-group=/layers/group.toml"
+    - "-path=/cache"
+    volumeMounts:
     - name: "${inputs.params.CACHE}"
+      mountPath: /cache
+    - name: "layers-dir"
       mountPath: /layers
 
   volumes:
   - name: empty-dir
+    emptyDir: {}
+  - name: layers-dir
     emptyDir: {}

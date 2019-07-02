@@ -22,16 +22,13 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/build
 
 ### Parameters
 
-* **RUN_IMAGE:** The run image buildpacks will use as the base for IMAGE.
-  (_default:_ `packs/run:v3alpha2`)
-* **BUILDER_IMAGE** The image on which builds will run. ( default:
-  `packs/samples:v3alpha2`)
+* **BUILDER_IMAGE** The image on which builds will run (must include v3 lifecycle and compatible buildpacks; _required_)
 * **USE_CRED_HELPERS:** Use Docker credential helpers. Set to `"true"` or
-  `"false"` as string values. (_default:_ `"true"`)
+  `"false"` as string a value. (_default:_ `"false"`)
 * **CACHE** The name of the persistent app cache volume (_default:_ an empty
   directory -- effectively no cache)
-* **USER_ID** The user ID of the builder image user (_default:_ 1000)
-* **GROUP_ID** The group ID of the builder image user (_default:_ 1000)
+* **USER_ID** The user ID of the builder image user, as a string value (_default:_ `"1000"`)
+* **GROUP_ID** The group ID of the builder image user, as a string value (_default:_ `"1000"`)
 
 ### Resources
 
@@ -47,8 +44,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/build
 
 ## Usage
 
-This TaskRun runs the Task to fetch a Git repo, and build and push a container
-image using buildpacks.
+This `TaskRun` will use the `buildpacks-v3` task to fetch source code from a Git repo, build the source code, then publish a container image.
 
 ```
 apiVersion: tekton.dev/v1alpha1
@@ -66,6 +62,11 @@ spec:
         params:
         - name: url
           value: https://github.com/my-user/my-repo
+    params:
+    - name: BUILDER_IMAGE
+      value: gcr.io/cncf-buildpacks-ci/tekton-cnb-test:bionic
+    - name: CACHE
+      value: my-cache
   outputs:
     resources:
     - name: image
@@ -74,4 +75,8 @@ spec:
         params:
         - name: url
           value: gcr.io/my-repo/my-image
+  volumes:
+  - name: my-cache
+    persistentVolumeClaim:
+      claimName: my-volume-claim
 ```
