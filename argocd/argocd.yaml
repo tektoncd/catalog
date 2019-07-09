@@ -12,6 +12,8 @@ spec:
         default: HEAD
       - name: flags
         default: --
+      - name: argocd-version
+        default: v1.0.2
   containerTemplate:
     envFrom:
       - configMapRef:
@@ -20,19 +22,19 @@ spec:
           name: argocd-env-secret # used for authentication (username/password or auth token)
   steps:
     - name: login
-      image: argoproj/argocd
+      image: argoproj/argocd:${inputs.params.argocd-version}
       command: ["/bin/bash", "-c"]
       args:
         - if [ -z $ARGOCD_AUTH_TOKEN ]; then
-            yes | argocd login $ARGOCD_SERVER --username=ARGOCD_USERNAME --password=ARGOCD_PASSWORD;
+            yes | argocd login $ARGOCD_SERVER --username=$ARGOCD_USERNAME --password=$ARGOCD_PASSWORD;
           fi
     - name: sync
-      image: argoproj/argocd
+      image: argoproj/argocd:${inputs.params.argocd-version}
       command: ["/bin/bash", "-c"]
       args:
         - argocd app sync ${inputs.params.application-name} --revision ${inputs.params.revision} ${inputs.params.flags}
     - name: wait
-      image: argoproj/argocd
+      image: argoproj/argocd:${inputs.params.argocd-version}
       command: ["/bin/bash", "-c"]
       args:
         - argocd app wait ${inputs.params.application-name} --health ${inputs.params.flags}
