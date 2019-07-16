@@ -54,6 +54,11 @@ metadata:
 spec:
   taskRef:
     name: buildpacks-v3
+  podTemplate:
+    volumes:
+    - name: my-cache
+      persistentVolumeClaim:
+        claimName: my-volume-claim
   inputs:
     resources:
     - name: source
@@ -75,8 +80,4 @@ spec:
         params:
         - name: url
           value: gcr.io/my-repo/my-image
-  volumes:
-  - name: my-cache
-    persistentVolumeClaim:
-      claimName: my-volume-claim
 ```
