@@ -18,6 +18,8 @@ The Cloud Native Buildpacks website describes v3 buildpacks as:
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/buildpacks/buildpacks-v3.yaml
 ```
 
+> **NOTE:** This task is currently only compatible with Tekton **v0.6.0** and above.
+
 ## Inputs
 
 ### Parameters
