@@ -1,0 +1,23 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: kn-create
+spec:
+  inputs:
+    params:
+    - name: service
+      description: Name of the service to create
+    resources:
+    - name: image
+      type: image
+  steps:
+  - name: create
+    image: gcr.io/knative-releases/github.com/knative/client/cmd/kn
+    command: ["/ko-app/kn"]
+    args:
+    - service
+    - create
+    - ${inputs.params.service}
+    - --image
+    - ${inputs.resources.image.url}
+    # TODO(jasonhall): Support limits/resources, env vars, etc.
