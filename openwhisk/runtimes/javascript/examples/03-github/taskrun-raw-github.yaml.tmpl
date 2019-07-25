@@ -1,0 +1,59 @@
+# Git Pipeline Resource for OpenWhisk NodeJS Runtime
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+    name: openwhisk-nodejs-runtime-git
+spec:
+    type: git
+    params:
+        - name: revision
+          value: master
+        - name: url
+          value: https://github.com/apache/openwhisk-runtime-nodejs.git
+---
+
+# Image Pipeline Resource for OpenWhisk NodeJS Sample Application
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+    name: openwhisk-nodejs-raw-github-image
+spec:
+    type: image
+    params:
+        - name: url
+          value: docker.io/${DOCKER_USERNAME}/openwhisk-nodejs-raw-github
+---
+
+# Task Run to build NodeJS image with the action source
+apiVersion: tekton.dev/v1alpha1
+kind: TaskRun
+metadata:
+    name: openwhisk-nodejs-raw-github
+spec:
+    serviceAccount: openwhisk-runtime-builder
+    taskRef:
+        name: openwhisk
+    trigger:
+        type: manual
+    inputs:
+        resources:
+            - name: runtime-git
+              resourceRef:
+                name: openwhisk-nodejs-runtime-git
+        params:
+            - name: DOCKERFILE
+              value: "./runtime-git/core/nodejs10Action/knative/Dockerfile"
+            - name: OW_ACTION_NAME
+              value: "nodejs-helloworld"
+            - name: OW_ACTION_CODE
+              value: ""
+            - name: OW_PROJECT_URL
+              value: "https://raw.githubusercontent.com/tektoncd/catalog/openwhisk/openwhisk/runtimes/javascript/examples/03-github/hello.js"
+    outputs:
+        resources:
+            - name: runtime-image
+              resourceRef:
+                name: openwhisk-nodejs-raw-github-image
+---
+
+
