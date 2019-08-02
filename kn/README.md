@@ -15,6 +15,8 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/kn/kn
 ### Parameters
 
 * **service:**: The name of the service to create
+* **force**: Whether to force creation, which overwrites existing services
+  (_default_: false)
 
 ### Resources
 
