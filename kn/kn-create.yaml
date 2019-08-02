@@ -7,6 +7,9 @@ spec:
     params:
     - name: service
       description: Name of the service to create
+    - name: force
+      description: Whether to force creation, which overrites existing services.
+      default: false
     resources:
     - name: image
       type: image
@@ -20,4 +23,6 @@ spec:
     - ${inputs.params.service}
     - --image
     - ${inputs.resources.image.url}
+    - --force
+    - ${inputs.params.force}
     # TODO(jasonhall): Support limits/resources, env vars, etc.
