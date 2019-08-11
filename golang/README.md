@@ -71,7 +71,7 @@ This TaskRun runs the Task to validate
 [`tektoncd/pipeline`](https://github.com/tektoncd/pipeline) `pkg` package with
 `golangci-lint`.
 
-```
+```yaml
 apiVersion: tekton.dev/v1alpha1
 kind: TaskRun
 metadata:
@@ -99,7 +99,7 @@ spec:
 This TaskRun runs the Task to run unit-tests on
 [`tektoncd/pipeline`](https://github.com/tektoncd/pipeline).
 
-```
+```yaml
 apiVersion: tekton.dev/v1alpha1
 kind: TaskRun
 metadata:
@@ -128,7 +128,7 @@ This TaskRun runs the Task to compile commands from
 [`tektoncd/pipeline`](https://github.com/tektoncd/pipeline).
 `golangci-lint`.
 
-```
+```yaml
 apiVersion: tekton.dev/v1alpha1
 kind: TaskRun
 metadata:
