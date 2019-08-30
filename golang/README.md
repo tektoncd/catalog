@@ -16,13 +16,14 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golan
 
 #### Parameters
 
-#### Resources
-
 * **package**: base package under validation
 * **flags**: flags to use for `golangci-lint` command (_default:_--verbose)
 * **version**: golangci-lint version to use (_default:_ v1.16)
 * **GOOS**: operating system target (_default:_ linux)
 * **GOARCH**: architecture target (_default:_ amd64)
+* **GO111MODULE**: value of module support (_default:_ auto)
+
+#### Resources
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
@@ -39,6 +40,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golan
 * **flags**: flags to use for `go test` command (_default:_ -v)
 * **GOOS**: operating system target (_default:_ linux)
 * **GOARCH**: architecture target (_default:_ amd64)
+* **GO111MODULE**: value of module support (_default:_ auto)
 
 #### Resources
 
@@ -57,6 +59,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golan
 * **flags**: flags to use for `go test` command (_default:_ -race -cover -v)
 * **GOOS**: operating system target (_default:_ linux)
 * **GOARCH**: architecture target (_default:_ amd64)
+* **GO111MODULE**: value of module support (_default:_ auto)
 
 #### Resources
 
