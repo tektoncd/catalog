@@ -22,6 +22,9 @@ spec:
     - name: GOARCH
       description: "running program's architecture target"
       default: amd64
+    - name: GO111MODULE
+      description: "value of module support"
+      default: auto
     resources:
     - name: source
       type: git
@@ -42,3 +45,5 @@ spec:
       value: "${inputs.params.GOOS}"
     - name: GOARCH
       value: "${inputs.params.GOARCH}"
+    - name: GO111MODULE
+      value: "${inputs.params.GO111MODULE}"
