@@ -1,0 +1,67 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: update-image-digests
+spec:
+  inputs:
+    params:
+    - name: pipelineTask
+      type: string
+      description: The name of the task in the pipeline that outputs image resources
+  volumes:
+  - name: data
+    emptyDir: {}
+  stepTemplate:
+    image: lachlanevenson/k8s-kubectl
+    volumeMounts:
+    - name: data
+      mountPath: /data
+  steps:
+  - name: get-digests
+    command:
+    - sh
+    - -c
+    - >-
+      kubectl get taskrun.tekton.dev
+      --selector='tekton.dev/pipelineRun=$(PIPELINE_RUN),tekton.dev/pipelineTask=$(inputs.params.pipelineTask)'
+      --output='jsonpath={range ..resourcesResult[*]}{.name} {.digest}{"\n"}{end}'
+      > /data/digests
+    env:
+    - name: PIPELINE_RUN
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.labels['tekton.dev/pipelineRun']
+  - name: check-digests
+    command:
+    - sh
+    - -c
+    - |-
+      xargs -n 2 -I {} sh -c 'egrep "^[0-9a-z.-]+ sha256:[0-9a-f]{64}$" <<EOF
+      {}
+      EOF' < /data/digests
+  - name: get-image-resources
+    command:
+    - sh
+    - -c
+    - >-
+      xargs -n 2 sh -c
+      'kubectl get pipelineresource.tekton.dev/$1 --output=json > /data/image-$1.json'
+      -- < /data/digests
+  - name: create-patches
+    image: stedolan/jq
+    command:
+    - sh
+    - -c
+    - >-
+      xargs -n 2 sh -c
+      'jq -c "{spec:{params:(.spec.params|[(.[]|select(.name!=\"digest\"))]+[{name:\"digest\",value:\"$2\"}])}}"
+      /data/image-$1.json > /data/patch-$1.json'
+      -- < /data/digests
+  - name: patch-image-resources
+    command:
+    - sh
+    - -c
+    - >-
+      xargs -n 2 sh -c
+      'kubectl patch pipelineresource.tekton.dev/$1 --type=merge --patch=$(cat < /data/patch-$1.json)'
+      -- < /data/digests
