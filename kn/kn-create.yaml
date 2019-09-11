@@ -9,7 +9,7 @@ spec:
       description: Name of the service to create
     - name: force
       description: Whether to force creation, which overrites existing services.
-      default: false
+      default: "false"
     resources:
     - name: image
       type: image
