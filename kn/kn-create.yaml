@@ -18,11 +18,9 @@ spec:
     image: gcr.io/knative-releases/github.com/knative/client/cmd/kn
     command: ["/ko-app/kn"]
     args:
-    - service
-    - create
-    - ${inputs.params.service}
-    - --image
-    - ${inputs.resources.image.url}
-    - --force
-    - ${inputs.params.force}
+    - 'service'
+    - 'create'
+    - '$(inputs.params.service)'
+    - '--image=$(inputs.resources.image.url)'
+    - '--force=$(inputs.params.force)'
     # TODO(jasonhall): Support limits/resources, env vars, etc.
