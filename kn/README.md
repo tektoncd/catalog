@@ -13,10 +13,12 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/kn/kn
 ## Inputs
 
 ### Parameters
+- **kn-image**: The kn binary container image to use for creating Knative services
 
-* **service:**: The name of the service to create
-* **force**: Whether to force creation, which overwrites existing services
-  (_default_: false)
+    _default_: `gcr.io/knative-releases/github.com/knative/client/cmd/kn`
+- **service**: The name of the service to create
+- **force**: Whether to force creation, which overwrites existing services
+  (_default_: `false`)
 
 ### Resources
 

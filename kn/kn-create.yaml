@@ -5,6 +5,9 @@ metadata:
 spec:
   inputs:
     params:
+    - name: kn-image
+      description: kn binary image to be used to create Knative services
+      default: gcr.io/knative-releases/github.com/knative/client/cmd/kn
     - name: service
       description: Name of the service to create
     - name: force
@@ -15,12 +18,12 @@ spec:
       type: image
   steps:
   - name: create
-    image: gcr.io/knative-releases/github.com/knative/client/cmd/kn
+    image: $(inputs.params.kn-image)
     command: ["/ko-app/kn"]
     args:
-    - 'service'
-    - 'create'
-    - '$(inputs.params.service)'
-    - '--image=$(inputs.resources.image.url)'
-    - '--force=$(inputs.params.force)'
+    - service
+    - create
+    - $(inputs.params.service)
+    - --image=$(inputs.resources.image.url)
+    - --force=$(inputs.params.force)
     # TODO(jasonhall): Support limits/resources, env vars, etc.
