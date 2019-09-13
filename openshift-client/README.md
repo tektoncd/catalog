@@ -58,7 +58,7 @@ spec:
   inputs:
     params:
     - name: ARGS
-      value: rollout latest myapp
+      value: ["rollout", "latest", "myapp"]
 ```
 
 The following `TaskRun` runs the commands against a different cluster than the one the `TaskRun` is running on. The cluster credentials are provided via a `PipelineResource` called `stage-cluster`.
@@ -79,5 +79,5 @@ spec:
         name: stage-cluster
     params:
     - name: ARGS
-      value: rollout latest myapp
+      value: ["rollout", "latest", "myapp"]
 ```
