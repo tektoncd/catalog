@@ -7,9 +7,7 @@ spec:
     params:
       - name: ARGS
         description: The OpenShift CLI arguments to run
-        type: array
-        default:
-          - "help"
+        default: help
   steps:
     - name: oc
       image: quay.io/openshift-pipeline/openshift-cli:latest
