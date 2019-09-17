@@ -6,8 +6,12 @@ RUN cd /tmp \
   && yum clean all \
   && wget https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/linux/oc.tar.gz \
   && tar -xvzf oc.tar.gz \
-  && mv oc /usr/local/bin/oc \
+  && mv oc /usr/local/bin/oc-origin \
   && rm -rf oc.tar.gz
+
+ADD script.sh /usr/local/bin/oc
+
+RUN chmod +x /usr/local/bin/oc
 
 ENTRYPOINT ["/usr/local/bin/oc"]
 
