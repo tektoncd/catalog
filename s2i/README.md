@@ -53,7 +53,7 @@ containers run as privileged containers by default unless explicitly
 configured, due to security considerations.
 
 Run the following in order to create a service account named
-`pipelines` on OpenShift and allow it to run privileged containers:
+`pipeline` on OpenShift and allow it to run privileged containers:
 
 ```
 oc create serviceaccount pipeline
