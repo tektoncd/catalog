@@ -1,0 +1,25 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: kn
+spec:
+  inputs:
+    params:
+    - name: kn-image
+      description: kn CLI container image to run this task
+      default: gcr.io/knative-releases/github.com/knative/client/cmd/kn
+    - name: ARGS
+      type: array
+      description: kn CLI arguments to run
+      default:
+      - "help"
+    resources:
+    - name: image
+      type: image
+  steps:
+  - name: kn
+    image: "$(inputs.params.kn-image)"
+    command: ["/ko-app/kn"]
+    args: ["$(inputs.params.ARGS)"]
+    # reference the container image resource in your taskrun/pipelinerun
+    # parameters array as "--image=$(inputs.resources.image.url)"
