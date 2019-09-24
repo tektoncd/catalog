@@ -26,14 +26,14 @@ spec:
   - name: generate
     image: quay.io/openshift-pipeline/s2i
     workingdir: /workspace/source
-    command: ['s2i', 'build', '${inputs.params.PATH_CONTEXT}', '${inputs.params.BUILDER_IMAGE}', '--as-dockerfile', '/gen-source/Dockerfile.gen']
+    command: ['s2i', 'build', '$(inputs.params.PATH_CONTEXT)', '$(inputs.params.BUILDER_IMAGE)', '--as-dockerfile', '/gen-source/Dockerfile.gen']
     volumeMounts:
      - name: gen-source
        mountPath: /gen-source
   - name: build
     image: quay.io/buildah/stable
     workingdir: /gen-source
-    command: ['buildah', 'bud', '--tls-verify=${inputs.params.TLSVERIFY}', '--layers', '-f', '/gen-source/Dockerfile.gen', '-t', '${outputs.resources.image.url}', '.']
+    command: ['buildah', 'bud', '--tls-verify=$(inputs.params.TLSVERIFY)', '--layers', '-f', '/gen-source/Dockerfile.gen', '-t', '$(outputs.resources.image.url)', '.']
     volumeMounts:
     - name: varlibcontainers
       mountPath: /var/lib/containers
@@ -44,7 +44,7 @@ spec:
 
   - name: push
     image: quay.io/buildah/stable
-    command: ['buildah', 'push', '--tls-verify=${inputs.params.TLSVERIFY}', '${outputs.resources.image.url}', 'docker://${outputs.resources.image.url}']
+    command: ['buildah', 'push', '--tls-verify=$(inputs.params.TLSVERIFY)', '$(outputs.resources.image.url)', 'docker://$(outputs.resources.image.url)']
     volumeMounts:
     - name: varlibcontainers
       mountPath: /var/lib/containers

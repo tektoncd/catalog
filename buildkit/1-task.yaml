@@ -30,8 +30,8 @@ spec:
     command: ["buildctl", "--debug", "--addr=${inputs.params.BUILDKIT_DAEMON_ADDRESS}", "build",
               "--progress=plain",
               "--frontend=dockerfile.v0",
-              "--opt", "filename=${inputs.params.DOCKERFILE}",
+              "--opt", "filename=$(inputs.params.DOCKERFILE)",
               "--local", "context=.", "--local", "dockerfile=.",
-              "--output", "type=image,name=${outputs.resources.image.url},push=true",
+              "--output", "type=image,name=$(outputs.resources.image.url),push=true",
               "--export-cache", "type=inline",
-              "--import-cache", "type=registry,ref=${outputs.resources.image.url}"]
+              "--import-cache", "type=registry,ref=$(outputs.resources.image.url)"]
