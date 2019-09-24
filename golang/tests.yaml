@@ -28,22 +28,22 @@ spec:
     resources:
     - name: source
       type: git
-      targetPath: src/${inputs.params.package}
+      targetPath: src/$(inputs.params.package)
   steps:
   - name: unit-test
-    image: golang:${inputs.params.version}
-    workingdir: /workspace/src/${inputs.params.package}
+    image: golang:$(inputs.params.version)
+    workingdir: /workspace/src/$(inputs.params.package)
     command:
     - /bin/bash
     args:
     - -c
-    - "go test ${inputs.params.flags} ${inputs.params.packages}"
+    - "go test $(inputs.params.flags) $(inputs.params.packages)"
     env:
     - name: GOPATH
       value: /workspace
     - name: GOOS
-      value: "${inputs.params.GOOS}"
+      value: "$(inputs.params.GOOS)"
     - name: GOARCH
-      value: "${inputs.params.GOARCH}"
+      value: "$(inputs.params.GOARCH)"
     - name: GO111MODULE
-      value: "${inputs.params.GO111MODULE}"
+      value: "$(inputs.params.GO111MODULE)"

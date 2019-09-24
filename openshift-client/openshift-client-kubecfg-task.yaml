@@ -16,5 +16,5 @@ spec:
       image: quay.io/openshift-pipeline/openshift-cli:0.5.0
       command: ["/usr/local/bin/oc"]
       args:
-        - "--kubeconfig /workspace/${inputs.resources.cluster.name}/kubeconfig --context ${inputs.resources.cluster.name}"
-        - "${inputs.params.ARGS}"
+        - "--kubeconfig /workspace/$(inputs.resources.cluster.name)/kubeconfig --context $(inputs.resources.cluster.name)"
+        - "$(inputs.params.ARGS)"

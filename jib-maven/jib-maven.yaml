@@ -27,13 +27,13 @@ spec:
     - compile
     - com.google.cloud.tools:jib-maven-plugin:build
     - -Duser.home=/builder/home
-    - -Dimage=${outputs.resources.image.url}
-    workingDir: /workspace/source/${inputs.params.DIRECTORY}
+    - -Dimage=$(outputs.resources.image.url)
+    workingDir: /workspace/source/$(inputs.params.DIRECTORY)
     volumeMounts:
-    - name: ${inputs.params.CACHE}
+    - name: $(inputs.params.CACHE)
       mountPath: /builder/home/.m2
       subPath: m2-cache
-    - name: ${inputs.params.CACHE}
+    - name: $(inputs.params.CACHE)
       mountPath: /builder/home/.cache
       subPath: jib-cache
 
