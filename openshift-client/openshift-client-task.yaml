@@ -13,4 +13,4 @@ spec:
       image: quay.io/openshift-pipeline/openshift-cli:0.5.0
       command: ["/usr/local/bin/oc"]
       args:
-        - "${inputs.params.ARGS}"
+        - "$(inputs.params.ARGS)"

@@ -24,6 +24,6 @@ spec:
     args:
     - deploy
     - --service
-    - ${inputs.params.service}
+    - $(inputs.params.service)
     - --image
-    - ${inputs.resources.image.url}
+    - $(inputs.resources.image.url)
