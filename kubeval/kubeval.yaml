@@ -24,7 +24,7 @@ spec:
     command:
       - kubeval
       - -d
-      - ${inputs.params.files}
+      - $(inputs.params.files)
       - -o      
-      - ${inputs.params.output}
+      - $(inputs.params.output)
       - $(inputs.params.args)

@@ -25,9 +25,9 @@ spec:
     command:
       - conftest
       - test
-      - ${inputs.params.files}
+      - $(inputs.params.files)
       - -p
-      - ${inputs.params.policy}
+      - $(inputs.params.policy)
       - -o      
-      - ${inputs.params.output}
+      - $(inputs.params.output)
       - $(inputs.params.args)

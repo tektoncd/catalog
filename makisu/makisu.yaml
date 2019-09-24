@@ -31,12 +31,12 @@ spec:
     command:
     - /makisu-internal/makisu
     - build
-    - --push=${inputs.params.PUSH_REGISTRY}
+    - --push=$(inputs.params.PUSH_REGISTRY)
     - --registry-config=/registry-config
     - --modifyfs=true
-    - --tag=${outputs.resources.image.url}
+    - --tag=$(outputs.resources.image.url)
     - --registry-config=/registry-config/registry.yaml
-    - ${inputs.params.CONTEXTPATH}
+    - $(inputs.params.CONTEXTPATH)
     env:
     - name: DOCKER_CONFIG
       value: /builder/home/.docker
@@ -46,4 +46,4 @@ spec:
   volumes:
   - name: registry-config
     secret:
-      secretName: ${inputs.params.REGISTRY_SECRET}
+      secretName: $(inputs.params.REGISTRY_SECRET)
