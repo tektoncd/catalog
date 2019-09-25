@@ -22,14 +22,23 @@ source $(dirname $0)/../vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
 # Install the latest Tekton CRDs.
 kubectl apply --filename https://storage.googleapis.com/tekton-releases/latest/release.yaml
 
+# Allow ignoring some tests, space separated, should be the basename of the test
+# i.e: kn-deployer
+IGNORES=${IGNORES:-}
+
 set -ex
 set -o pipefail
 # Validate that all the Task CRDs in this repo are valid by creating them in a NS.
 readonly ns="task-ns"
-kubectl create ns "${ns}"
+kubectl create ns "${ns}" || true
 for f in $(find ${REPO_ROOT_DIR} -maxdepth 2 -name '*.yaml'); do
+    skipit=
+    for ignore in ${IGNORES};do
+        [[ ${ignore} == $(basename $(echo ${f%.yaml})) ]] && skipit=True
+    done
+    [[ -n ${skipit} ]] && break
     echo "Checking ${f}"
-    kubectl apply -f "${f}"
+    kubectl -n ${ns} apply -f <(sed "s/namespace:.*/namespace: task-ns/" "${f}")
 done
 
 success
