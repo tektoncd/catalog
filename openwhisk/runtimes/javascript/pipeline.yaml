@@ -1,0 +1,154 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: build-openwhisk-app
+spec:
+  params:
+    - name: OW_APP_PATH
+      description: "Relative or Absolute path of the application source in the GitHub repo"
+      type: string
+      default: ""
+    - name: OW_APP_NODE_VERSION
+      description: "Any specific Node version needed to compile/run application source on"
+      type: string
+      default: "node"
+    - name: OW_ACTION_ARCHIVE_NAME
+      type: string
+      default: "action.zip"
+    - name: DOCKERFILE
+      description: "The path to the dockerfile to build from Runtime Repo"
+      type: string
+    - name: OW_RUNTIME_DEBUG
+      description: "flag to indicate debug mode should be on/off"
+      type: string
+      default: "false"
+    - name: OW_RUNTIME_PLATFORM
+      description: "flag to indicate the platform, one of [openwhisk, knative, ... ]"
+      type: string
+      default: "knative"
+    - name: OW_ACTION_NAME
+      description: "name of the action"
+      type: string
+      default: ""
+    - name: OW_ACTION_CODE
+      description: "JavaScript source code to be evaluated"
+      type: string
+      default: ""
+    - name: OW_ACTION_MAIN
+      description: "name of the function in the __OW_ACTION_CODE to call as the action handler"
+      type: string
+      default: "main"
+    - name: OW_ACTION_BINARY
+      description: "flag to indicate zip function, for zip actions, __OW_ACTION_CODE must be base64 encoded string"
+      type: string
+      default: "true"
+    - name: OW_HTTP_METHODS
+      description: "list of HTTP methods, any combination of [GET, POST, PUT, and DELETE], default is [POST]"
+      type: string
+      default: "[POST]"
+    - name: OW_ACTION_RAW
+      description: "flag to indicate raw HTTP handling, interpret and process an incoming HTTP body directly"
+      type: string
+      default: "false"
+  resources:
+    - name: app-git
+      type: git
+    - name: runtime-git
+      type: git
+    - name: app-image
+      type: image
+  tasks:
+    #####################################################################
+    # Task to Clone Application Source and Install necessary Dependencies
+    - name: install-npm-packages
+      taskRef:
+        name: task-install-npm-packages
+      conditions:
+        - conditionRef: is-nodejs-runtime
+          params:
+            - name: OW_APP_PATH
+              value: $(params.OW_APP_PATH)
+          resources:
+            - name: app-git
+              resource: app-git
+      resources:
+        inputs:
+          - name: app-git
+            resource: app-git
+        outputs:
+          - name: app-git
+            resource: app-git
+      params:
+        - name: OW_APP_PATH
+          value: $(params.OW_APP_PATH)
+        - name: OW_APP_NODE_VERSION
+          value: $(params.OW_APP_NODE_VERSION)
+    #####################################################################
+    # Task to archive application source
+    - name: build-archive
+      taskRef:
+        name: task-build-archive
+      conditions:
+        - conditionRef: is-nodejs-runtime
+          params:
+            - name: OW_APP_PATH
+              value: $(params.OW_APP_PATH)
+          resources:
+            - name: app-git
+              resource: app-git
+      resources:
+        inputs:
+          - name: app-git
+            resource: app-git
+            from:
+              - install-npm-packages
+        outputs:
+          - name: app-git
+            resource: app-git
+      params:
+        - name: OW_APP_PATH
+          value: $(params.OW_APP_PATH)
+        - name: OW_APP_NODE_VERSION
+          value: $(params.OW_APP_NODE_VERSION)
+        - name: OW_ACTION_ARCHIVE_NAME
+          value: $(params.OW_ACTION_ARCHIVE_NAME)
+    #####################################################################
+    # Task to build an image with OpenWhisk Runtime and Application Source
+    - name: build-openwhisk-app-image
+      taskRef:
+        name: openwhisk
+      resources:
+        inputs:
+          - name: app-git
+            resource: app-git
+            from:
+              - build-archive
+          - name: runtime-git
+            resource: runtime-git
+        outputs:
+          - name: app-image
+            resource: app-image
+      params:
+        - name: DOCKERFILE
+          value: $(params.DOCKERFILE)
+        - name: OW_RUNTIME_DEBUG
+          value: $(params.OW_RUNTIME_DEBUG)
+        - name: OW_RUNTIME_PLATFORM
+          value: $(params.OW_RUNTIME_PLATFORM)
+        - name: OW_ACTION_NAME
+          value: $(params.OW_ACTION_NAME)
+        - name: OW_ACTION_CODE
+          value: $(params.OW_ACTION_CODE)
+        - name: OW_ACTION_MAIN
+          value: $(params.OW_ACTION_MAIN)
+        - name: OW_ACTION_BINARY
+          value: $(params.OW_ACTION_BINARY)
+        - name: OW_HTTP_METHODS
+          value: $(params.OW_HTTP_METHODS)
+        - name: OW_ACTION_RAW
+          value: $(params.OW_ACTION_RAW)
+        - name: OW_APP_PATH
+          value: $(params.OW_APP_PATH)
+        - name: OW_ACTION_ARCHIVE_NAME
+          value: $(params.OW_ACTION_ARCHIVE_NAME)
+    #####################################################################

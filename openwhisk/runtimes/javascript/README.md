@@ -570,3 +570,84 @@ curl -H "Host: nodejs-zip.default.example.com" -H "Content-Type: application/jso
 {"payload":"Hello, Bob from NY!"}
 ```
 
+## Example 5: OpenWhisk Application from GitHub
+
+### Pull the application source from GitHub repo and build image
+
+#### Configure pipelinerun.yaml
+
+This example needs ```pipeline``` and ```pipelineRun``` with params such as ```OW_APP_PATH```, ```DOCKERFILE```, and ```OW_ACTION_NAME```.
+
+<details>
+    <summary>pipelinerun.yaml.tmpl contents</summary>
+
+```
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineRun
+metadata:
+  name: build-app-image
+spec:
+  serviceAccount: openwhisk-app-builder
+  pipelineRef:
+    name: build-openwhisk-app
+  params:
+    - name: OW_APP_PATH
+      value: "app-git/packages/left-pad/"
+    - name: DOCKERFILE
+      value: "./runtime-git/core/nodejs10Action/knative/Dockerfile"
+    - name: OW_ACTION_NAME
+      value: "openwhisk-padding-app"
+  resources:
+    - name: app-git
+      resourceSpec:
+        type: git
+        params:
+          - name: url
+            value: https://github.com/apache/openwhisk-test.git
+    - name: runtime-git
+      resourceSpec:
+        type: git
+        params:
+          - name: url
+            value: https://github.com/apache/openwhisk-runtime-nodejs.git
+    - name: app-image
+      resourceSpec:
+        type: image
+        params:
+          - name: url
+            value: docker.io/${DOCKER_UESRNAME}/openwhisk-padding-app:latest
+```
+</details>
+
+### Create Image
+
+```bash
+./deploy.sh
+```
+
+### Create Knative Service
+
+```bash
+kn service create nodejs-zip --image docker.io/${DOCKER_USERNAME}/openwhisk-padding-app
+Service 'openwhisk-padding-app' successfully created in namespace 'default'.
+Waiting for service 'openwhisk-padding-app' to become ready ... OK
+
+Service URL:
+http://openwhisk-padding-app.default.example.com
+```
+
+### Access Knative Service
+
+```bash
+curl -H "Host: openwhisk-padding-app.default.example.com" -X POST http://${IP_ADDRESS}
+{"OK":true}
+
+curl -H "Host: openwhisk-padding-app.default.example.com" -H "Content-Type: application/json" -d '{"value":{"lines" : ["Hello","How are you?"]}}' http://${IP_ADDRESS}
+{
+    "padded":[
+        ".........................Hello",
+        "..................How are you?"
+    ]
+}
+```
+
