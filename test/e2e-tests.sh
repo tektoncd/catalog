@@ -17,7 +17,7 @@
 source $(dirname $0)/../vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
 
 # Setup a test cluster.
-initialize $@
+[[ -z ${LOCAL_CI_RUN} ]] && initialize $@
 
 # Install the latest Tekton CRDs.
 kubectl apply --filename https://storage.googleapis.com/tekton-releases/latest/release.yaml
