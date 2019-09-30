@@ -25,9 +25,9 @@ spec:
       type: image
   steps:
   - name: build-and-push
-    image: ${inputs.params.BUILDKIT_CLIENT_IMAGE}
+    image: $(inputs.params.BUILDKIT_CLIENT_IMAGE)
     workingDir: /workspace/source
-    command: ["buildctl", "--debug", "--addr=${inputs.params.BUILDKIT_DAEMON_ADDRESS}", "build",
+    command: ["buildctl", "--debug", "--addr=$(inputs.params.BUILDKIT_DAEMON_ADDRESS)", "build",
               "--progress=plain",
               "--frontend=dockerfile.v0",
               "--opt", "filename=$(inputs.params.DOCKERFILE)",

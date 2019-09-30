@@ -26,7 +26,7 @@ spec:
 
   steps:
   - name: build
-    image: ${inputs.params.BUILDER_IMAGE}
+    image: $(inputs.params.BUILDER_IMAGE)
     workingDir: /workspace/source
     command: ['buildah', 'bud', '--tls-verify=$(inputs.params.TLSVERIFY)', '--layers', '-f', '$(inputs.params.DOCKERFILE)', '-t', '$(outputs.resources.image.url)', '.']
     volumeMounts:
@@ -36,7 +36,7 @@ spec:
       privileged: true
 
   - name: push
-    image: ${inputs.params.BUILDER_IMAGE}
+    image: $(inputs.params.BUILDER_IMAGE)
     workingDir: /workspace/source
     command: ['buildah', 'push', '--tls-verify=$(inputs.params.TLSVERIFY)', '$(outputs.resources.image.url)', 'docker://$(outputs.resources.image.url)']
     volumeMounts:
