@@ -3,11 +3,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:5558ceef0c045f9c8a0c08c6e0de89bb0895b1aad69d9722b3748f003564b8cb"
+  digest = "1:52353264b6df3bd5c5da47f84904456a0c81f7f59d224b4da9675d0dc78bbf3e"
   name = "github.com/tektoncd/plumbing"
   packages = ["scripts"]
   pruneopts = "UT"
-  revision = "373083123d6a795a29afd25b4b8f3efc4b7d14bc"
+  revision = "933f0722e02cf10a891027381ba8a01ac4c8530e"
 
 [solve-meta]
   analyzer-name = "dep"
