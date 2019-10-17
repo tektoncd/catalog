@@ -11,6 +11,8 @@ spec:
     - name: CONTEXT
       description: The build context used by Kaniko.
       default: ./
+    - name: EXTRA_ARGS
+      default: ""
     resources:
     - name: source
       type: git
@@ -31,6 +33,7 @@ spec:
       value: /builder/home/.docker
     command:
     - /kaniko/executor
+    - $(inputs.params.EXTRA_ARGS)
     - --dockerfile=$(inputs.params.DOCKERFILE)
     - --context=/workspace/source/$(inputs.params.CONTEXT) # The user does not need to care the workspace and the source.
     - --destination=$(outputs.resources.image.url)
