@@ -10,12 +10,15 @@ spec:
       default: "Dockerfile"
     - name: BUILDKIT_CLIENT_IMAGE
       description: The name of the BuildKit client (buildctl) image
- # The image needs to be rootful because Tekton creates /builder/home/.docker/config.json owned by root:root with 0600
- # https://github.com/tektoncd/pipeline/issues/852
-      default: "moby/buildkit:v0.5.1@sha256:d45d15f3b22fcfc1b112ffafc40fd2f2d530245e63cfe346a65bd75acdc4d346"
+# The image needs to be rootful because Tekton creates /builder/home/.docker/config.json owned by root:root with 0600
+# https://github.com/tektoncd/pipeline/issues/852
+      default: "moby/buildkit:v0.6.2"
     - name: BUILDKIT_DAEMON_ADDRESS
       description: The address of the BuildKit daemon (buildkitd) service
       default: "tcp://buildkitd:1234"
+    - name: BUILDKIT_CLIENT_CERTS
+      description: The name of Secret that contains ca.pem, cert.pem, key.pem for mTLS connection to BuildKit daemon
+      default: "buildkit-client-certs"
     resources:
     - name: source
       type: git
@@ -23,11 +26,24 @@ spec:
     resources:
     - name: image
       type: image
+  volumes:
+  - name: certs
+    secret:
+      secretName: $(inputs.params.BUILDKIT_CLIENT_CERTS)
   steps:
   - name: build-and-push
     image: $(inputs.params.BUILDKIT_CLIENT_IMAGE)
     workingDir: /workspace/source
-    command: ["buildctl", "--debug", "--addr=$(inputs.params.BUILDKIT_DAEMON_ADDRESS)", "build",
+    volumeMounts:
+    - name: certs
+      readOnly: true
+      mountPath: /certs
+    command: ["buildctl", "--debug",
+              "--addr=$(inputs.params.BUILDKIT_DAEMON_ADDRESS)",
+              "--tlscacert", "/certs/ca.pem",
+              "--tlscert", "/certs/cert.pem",
+              "--tlskey", "/certs/key.pem",
+              "build",
               "--progress=plain",
               "--frontend=dockerfile.v0",
               "--opt", "filename=$(inputs.params.DOCKERFILE)",
