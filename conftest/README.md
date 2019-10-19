@@ -1,6 +1,6 @@
 # Conftest
 
-This task makes it possible to use [Conftest](https://github.com/instrumenta/conftest) within
+These task make it possible to use [Conftest](https://github.com/instrumenta/conftest) within
 your Tekton pipelines. Conftest is a tool for testing configuration files using [Open Policy Agent](https://openpolicyagent.org).
 
 ## Installation
@@ -10,6 +10,13 @@ In order to use Conftest with Tekton you need to first install the task.
 ```console
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/conftest/conftest.yaml
 ```
+
+Conftest also has a Helm plugin, which redners the Helm chart before applying the policy. For that task use:
+
+```console
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/conftest/helm-conftest.yaml
+```
+
 
 ## Usage
 
@@ -62,9 +69,60 @@ container step-conftest has failed  : Error
 * **files**: The files to test against the specified policies
 * **policy**: Where to find the policies (_default:_ `policy`)
 * **output**: Which output format to use (_default:_ `stdout`)
+* **args**: An arrag of additional arguments to pass to Conftest (_defaultt `[]`_)
+
+### Resources
+
+* **source**: A `git`-type `PipelineResource` specifying the location of the
+  source to build.
+
+
+## Helm usage
+
+
+Once installed, the Helm task can be used as follows:
+
+```yaml
+apiVersion: tekton.dev/v1alpha1
+kind: TaskRun
+metadata:
+  name: helm-conftest-example
+spec:
+  taskRef:
+    name: helm-conftest
+  inputs:
+    resources:
+    - name: source
+      resourceSpec:
+        type: git
+        params:
+        - name: revision
+          value: master
+        - name: url
+          value: https://github.com/helm/charts.git
+    params:
+    - name: chart
+      value: stable/mysql
+    - name: policy
+      value: stable/mysql/policy
+```
+
+If you apply the above `TaskRun` you can see the output in the `taskrun` logs. For example:
+
+
+## Inputs
+
+### Parameters
+
+* **chart**: The chart to test against the specified policies (_default:_ `.`)
+* **policy**: Where to find the policies (_default:_ `policy`)
+* **output**: Which output format to use (_default:_ `stdout`)
 * **args**: An arrag of additional arguments to pass to Conftest (_defaultt `[]`)
 
 ### Resources
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
+
+
+
