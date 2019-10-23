@@ -11,6 +11,9 @@ spec:
     - name: CACHE
       description: The name of the volume for caching Maven artifacts and base image layers
       default: empty-dir-volume
+    - name: INSECUREREGISTRY
+      description: Wether to allow insecure registry
+      default: "false"
     resources:
     - name: source
       type: git
@@ -18,7 +21,6 @@ spec:
     resources:
     - name: image
       type: image
-
   steps:
   - name: build-and-push
     image: gcr.io/cloud-builders/mvn
@@ -27,6 +29,7 @@ spec:
     - compile
     - com.google.cloud.tools:jib-maven-plugin:build
     - -Duser.home=/builder/home
+    - -Djib.allowInsecureRegistries=$(inputs.params.INSECUREREGISTRY)
     - -Dimage=$(outputs.resources.image.url)
     workingDir: /workspace/source/$(inputs.params.DIRECTORY)
     volumeMounts:
