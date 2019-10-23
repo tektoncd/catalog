@@ -1,6 +1,6 @@
 # Conftest
 
-These task make it possible to use [Conftest](https://github.com/instrumenta/conftest) within
+These tasks make it possible to use [Conftest](https://github.com/instrumenta/conftest) within
 your Tekton pipelines. Conftest is a tool for testing configuration files using [Open Policy Agent](https://openpolicyagent.org).
 
 ## Installation
@@ -69,7 +69,7 @@ container step-conftest has failed  : Error
 * **files**: The files to test against the specified policies
 * **policy**: Where to find the policies (_default:_ `policy`)
 * **output**: Which output format to use (_default:_ `stdout`)
-* **args**: An arrag of additional arguments to pass to Conftest (_defaultt `[]`_)
+* **args**: An array of additional arguments to pass to Conftest (_default `[]`_)
 
 ### Resources
 
@@ -107,9 +107,6 @@ spec:
       value: stable/mysql/policy
 ```
 
-If you apply the above `TaskRun` you can see the output in the `taskrun` logs. For example:
-
-
 ## Inputs
 
 ### Parameters
@@ -117,7 +114,7 @@ If you apply the above `TaskRun` you can see the output in the `taskrun` logs. F
 * **chart**: The chart to test against the specified policies (_default:_ `.`)
 * **policy**: Where to find the policies (_default:_ `policy`)
 * **output**: Which output format to use (_default:_ `stdout`)
-* **args**: An arrag of additional arguments to pass to Conftest (_defaultt `[]`)
+* **args**: An array of additional arguments to pass to Conftest (_default `[]`)
 
 ### Resources
 
