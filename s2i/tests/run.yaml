@@ -1,0 +1,23 @@
+---
+apiVersion: tekton.dev/v1alpha1
+kind: TaskRun
+metadata:
+  name: s2i-run
+spec:
+  taskRef:
+    name: s2i
+  outputs:
+    resources:
+      - name: image
+        resourceRef:
+          name: image
+  inputs:
+    resources:
+      - name: source
+        resourceRef:
+          name: nodejs-s2i-example
+    params:
+      - name: BUILDER_IMAGE
+        value: nodeshift/centos7-s2i-nodejs:latest
+      - name: TLSVERIFY
+        value: "false"

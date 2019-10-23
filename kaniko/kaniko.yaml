@@ -37,5 +37,3 @@ spec:
     - --dockerfile=$(inputs.params.DOCKERFILE)
     - --context=/workspace/source/$(inputs.params.CONTEXT) # The user does not need to care the workspace and the source.
     - --destination=$(outputs.resources.image.url)
-    securityContext:
-      privileged: true

@@ -1,0 +1,21 @@
+---
+apiVersion: tekton.dev/v1alpha1
+kind: TaskRun
+metadata:
+  name: kaniko-run
+spec:
+  taskRef:
+    name: kaniko
+  outputs:
+    resources:
+      - name: image
+        resourceRef:
+          name: image
+  inputs:
+    resources:
+      - name: source
+        resourceRef:
+          name: nocode
+    params:
+      - name: EXTRA_ARGS
+        value: "--skip-tls-verify"
