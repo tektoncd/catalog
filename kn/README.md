@@ -109,7 +109,7 @@ spec:
       - "update"
       - "hello"
       - "--image=$(inputs.resources.image.url)"
-      - "--env TARGET=Tekton"
+      - "--env=TARGET=Tekton"
 ```
 
 Run this with:
