@@ -21,6 +21,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/build
   note below.  (_default:_ quay.io/buildah/stable)
 * **DOCKERFILE**: The path to the `Dockerfile` to execute (_default:_
   `./Dockerfile`)
+* **CONTEXT**: The path to the context directory where the `Dockerfile` is (default: `.`)
 * **TLSVERIFY**: Verify the TLS on the registry endpoint (for push/pull to a
   non-TLS registry) (_default:_ `true`)
 
@@ -69,3 +70,38 @@ spec:
 
 In this example, the Git repo being built is expected to have a `Dockerfile` at
 the root of the repository.
+
+```
+apiVersion: tekton.dev/v1alpha1
+kind: TaskRun
+metadata:
+  name: buildah-build-my-repo
+spec:
+  taskRef:
+    name: buildah
+  inputs:
+    params:
+    - name: DOCKERFILE
+      value: ./subdir/Dockerfile
+    - name: CONTEXT
+      value: ./subdir
+    resources:
+    - name: source
+      resourceSpec:
+        type: git
+        params:
+        - name: url
+          value: https://github.com/my-user/my-repo
+  outputs:
+    resources:
+    - name: image
+      resourceSpec:
+        type: image
+        params:
+        - name: url
+          value: gcr.io/my-repo/my-image
+```
+
+In this example, the build `CONTEXT` parameter is set to `./subdir` since the
+`DOCKERFILE` is nested in the repository at `./subdir/Dockerfile`.
+

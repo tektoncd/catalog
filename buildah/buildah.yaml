@@ -11,6 +11,9 @@ spec:
     - name: DOCKERFILE
       description: Path to the Dockerfile to build.
       default: ./Dockerfile
+    - name: CONTEXT
+      description: Path to the Dockerfile context directory.
+      default: .
     - name: TLSVERIFY
       description: Verify the TLS on the registry endpoint (for push/pull to a non-TLS registry)
       default: "true"
@@ -28,7 +31,7 @@ spec:
   - name: build
     image: $(inputs.params.BUILDER_IMAGE)
     workingDir: /workspace/source
-    command: ['buildah', 'bud', '--tls-verify=$(inputs.params.TLSVERIFY)', '--layers', '-f', '$(inputs.params.DOCKERFILE)', '-t', '$(outputs.resources.image.url)', '.']
+    command: ['buildah', 'bud', '--tls-verify=$(inputs.params.TLSVERIFY)', '--layers', '-f', '$(inputs.params.DOCKERFILE)', '-t', '$(outputs.resources.image.url)', '$(inputs.params.CONTEXT)']
     volumeMounts:
     - name: varlibcontainers
       mountPath: /var/lib/containers
