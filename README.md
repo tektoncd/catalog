@@ -100,7 +100,7 @@ status:
 
 If you want to contribute to this repository, please see our [contributing](./CONTRIBUTING.md) guidelines.
 
-If you are looking for support, enter an [issue](https://github.com/tektoncd/catalog/issues/new) or join our [Slack workspace](https://tektoncd.slack.com/)
+If you are looking for support, enter an [issue](https://github.com/tektoncd/catalog/issues/new) or join our [Slack workspace](https://github.com/tektoncd/community/blob/master/contact.md#slack)
 
 ## Status of the Project
 
