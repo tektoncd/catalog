@@ -18,7 +18,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/build
 ### Parameters
 
 * **BUILDER_IMAGE:**: The name of the image containing the Buildah tool. See
-  note below.  (_default:_ quay.io/buildah/stable)
+  note below.  (_default:_ quay.io/buildah/stable:v1.11.0)
 * **DOCKERFILE**: The path to the `Dockerfile` to execute (_default:_
   `./Dockerfile`)
 * **TLSVERIFY**: Verify the TLS on the registry endpoint (for push/pull to a
