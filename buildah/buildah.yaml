@@ -7,7 +7,7 @@ spec:
     params:
     - name: BUILDER_IMAGE
       description: The location of the buildah builder image.
-      default: quay.io/buildah/stable
+      default: quay.io/buildah/stable:v1.11.0
     - name: DOCKERFILE
       description: Path to the Dockerfile to build.
       default: ./Dockerfile
