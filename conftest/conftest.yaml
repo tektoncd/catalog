@@ -10,6 +10,7 @@ spec:
       targetPath: source
     params:
     - name: files
+      type: string
     - name: policy
       default: "policy"
     - name: output
