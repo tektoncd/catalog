@@ -1,0 +1,20 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: tower-cli-example
+spec:
+  tasks:
+  - name: tower
+    taskRef: 
+      name: ansible-tower-cli
+    params:
+     - name: SSLVERIFY
+       value: "false"
+     - name: HOST
+       value: "10.8.109.202"
+     - name: tower-secret
+       value: "tower-creds"
+     - name: ARGS
+       value:
+         - user
+         - list
