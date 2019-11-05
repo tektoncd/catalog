@@ -1,0 +1,55 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: ansible-tower-cli
+spec:
+  inputs:
+    params:
+      - name: SSLVERIFY
+        description: Disable tower ssl verification
+        default: "false"
+        type: string
+      - name: ARGS
+        description: The tower-cli commands to tun
+        type: array
+        default:
+          - "--help"
+      - name: HOST
+        description: The Ansible Tower host
+        type: string
+        default: ""
+      - name: tower-secret
+        description: The Ansible Tower secret with credentials
+        type: string
+        default: "tower-creds"
+  steps:
+    - name: config
+      image: quay.io/rcmendes/ansible-tower-cli:latest
+      command: 
+        - '/bin/sh'
+        - '-c'
+      args:
+        - |-
+            echo -e "verify_ssl = $(inputs.params.SSLVERIFY)\nverbose = true\nhost = $(inputs.params.HOST)\nusername = $USER\npassword = $PASS" > ~/.tower_cli.cfg
+            chmod 600 ~/.tower_cli.cfg 
+            echo "Generated tower_cli.cfg file"
+            echo "-----------------------------"
+            ls -lah ~/ | grep tower_cli
+            echo "-----------------------------"
+      env:
+        - name: USER
+          valueFrom:
+            secretKeyRef: 
+              name: $(inputs.params.tower-secret)
+              key: USER
+        - name: PASS
+          valueFrom:
+            secretKeyRef: 
+              name: $(inputs.params.tower-secret)
+              key: PASS
+    - name: tower-cli
+      image: quay.io/rcmendes/ansible-tower-cli:latest
+      command: ["/usr/bin/tower-cli"]
+      args:
+        - "$(inputs.params.ARGS)"
+
