@@ -1,7 +1,7 @@
 
 ## Ansible Tower CLI Task
 
-[Ansible Tower](https://ansible.com/tower) (formerly ‘AWX’) is a web-based solution that makes Ansible even more easy to use for IT teams of all kinds, It provides the `tower-cli`[Tower-CLI]([https://docs.ansible.com/ansible-tower/latest/html/towerapi/tower_cli.html](https://docs.ansible.com/ansible-tower/latest/html/towerapi/tower_cli.html)) that simplifies the tasks of starting jobs, workflow jobs, manage users, projects etc.
+[Ansible Tower](https://ansible.com/tower) (formerly ‘AWX’) is a web-based solution that makes Ansible even more easy to use for IT teams of all kinds, It provides the `tower-cli`([Tower-CLI]([https://docs.ansible.com/ansible-tower/latest/html/towerapi/tower_cli.html](https://docs.ansible.com/ansible-tower/latest/html/towerapi/tower_cli.html))) command line tool that simplifies the tasks of starting jobs, workflow jobs, manage users, projects etc.
 
 ## Install the Task
 
@@ -15,7 +15,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/ansib
 ### Parameters
 
 * **ARGS:** args to execute which are appended to `tower-cli` e.g. `user-list` (_default_: `--help`)
- * **SSLVERIFY:** args to disable Tower SSL  (_default_: `false`)
+ * **SSLVERIFY:** args to disable Tower SSL verification (_default_: `false`)
 * **HOST:** The Ansible Tower HOST
 * **tower-secret:** the name of the secret containing the user and password for authentication on the ansible tower host (_default_: `tower-creds`)
 
