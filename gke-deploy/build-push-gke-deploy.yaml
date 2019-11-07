@@ -1,0 +1,142 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: build-and-push
+spec:
+  inputs:
+    resources:
+    - name: source-repo
+      type: git
+    params:
+    - name: pathToContext
+      description: The path to the build context, used by Kaniko, relative to your source repo's root.
+      default: .
+    - name: pathToDockerFile
+      description: The path to the dockerfile to build, relative to the context.
+      default: Dockerfile
+    - name: imageUrl
+      description: URL of image repository.
+    - name: imageTag
+      description: Tag to apply to the built image.
+      default: latest
+  steps:
+  - name: build-and-push
+    image: gcr.io/kaniko-project/executor
+    command:
+    - /kaniko/executor
+    args:
+    - --dockerfile=$(inputs.params.pathToDockerFile)
+    - --destination=$(inputs.params.imageUrl):$(inputs.params.imageTag)
+    - --context=$(inputs.resources.source-repo.path)/$(inputs.params.pathToContext)
+---
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: deploy-using-gke-deploy
+spec:
+  inputs:
+    resources:
+    - name: source-repo
+      type: git
+    params:
+    - name: pathToKubernetesConfigs
+      description: The path to the Kubernetes configs to deploy, relative to your source repo's root.
+    - name: imageUrl
+      description: URL of image repository
+    - name: imageTag
+      description: Tag of the images to be used.
+      default: latest
+    - name: clusterName
+      description: Name of target GKE cluster to deploy to.
+    - name: clusterLocation
+      description: Zone/region of target GKE cluster to deploy to.
+    - name: clusterProject
+      description: Project of target GKE cluster to deploy to.
+      default: ""
+  steps:
+  - name: deploy-using-gke-deploy
+    image: gcr.io/cloud-builders/gke-deploy
+    command: ["/gke-deploy"]
+    args:
+    - "run"
+    - "--image=$(inputs.params.imageUrl):$(inputs.params.imageTag)"
+    - "--filename=$(inputs.resources.source-repo.path)/$(inputs.params.pathToKubernetesConfigs)"
+    - "--cluster=$(inputs.params.clusterName)"
+    - "--location=$(inputs.params.clusterLocation)"
+    - "--project=$(inputs.params.clusterProject)"
+    - "--output=/var/tmp/gke-deploy"
+---
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: build-push-gke-deploy
+spec:
+  resources:
+  - name: source-repo
+    type: git
+  params:
+  - name: pathToContext
+    type: string
+    description: The path to the build context, used by Kaniko, relative to your source repo's root.
+    default: .
+  - name: pathToDockerFile
+    type: string
+    description: The path to the dockerfile to build, relative to the context.
+    default: Dockerfile
+  - name: pathToKubernetesConfigs
+    type: string
+    description: The path to the Kubernetes configs to deploy, relative to your source repo's root.
+  - name: imageUrl
+    type: string
+    description: URL of image repository.
+  - name: imageTag
+    type: string
+    description: Tag to apply to the built image.
+    default: latest
+  - name: clusterName
+    type: string
+    description: Name of target GKE cluster to deploy to.
+  - name: clusterLocation
+    type: string
+    description: Zone/region of target GKE cluster to deploy to.
+  - name: clusterProject
+    type: string
+    description: Project of target GKE cluster to deploy to.
+    default: ""
+  tasks:
+  - name: build-and-push
+    taskRef:
+      name: build-and-push
+    params:
+    - name: pathToContext
+      value: "$(params.pathToContext)"
+    - name: imageUrl
+      value: "$(params.imageUrl)"
+    - name: imageTag
+      value: "$(params.imageTag)"
+    resources:
+      inputs:
+      - name: source-repo
+        resource: source-repo
+  - name: deploy-using-gke-deploy
+    taskRef:
+      name: deploy-using-gke-deploy
+    runAfter:
+    - build-and-push
+    params:
+    - name: pathToKubernetesConfigs
+      value: "$(params.pathToKubernetesConfigs)"
+    - name: imageUrl
+      value: "$(params.imageUrl)"
+    - name: imageTag
+      value: "$(params.imageTag)"
+    - name: clusterName
+      value: "$(params.clusterName)"
+    - name: clusterLocation
+      value: "$(params.clusterLocation)"
+    - name: clusterProject
+      value: "$(params.clusterProject)"
+    resources:
+      inputs:
+      - name: source-repo
+        resource: source-repo
