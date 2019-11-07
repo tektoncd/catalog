@@ -7,7 +7,7 @@ spec:
     params:
     - name: kn-image
       description: kn CLI container image to run this task
-      default: gcr.io/knative-releases/knative.dev/client/cmd/kn:v0.9.0
+      default: gcr.io/knative-releases/knative.dev/client/cmd/kn:v0.10.0
     - name: ARGS
       type: array
       description: kn CLI arguments to run
