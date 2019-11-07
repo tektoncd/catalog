@@ -15,7 +15,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/kn/kn
 
 * **kn-image**: `kn` CLI container image to run this task.
 
-  _default_: `gcr.io/knative-releases/knative.dev/client/cmd/kn:v0.9.0`
+  _default_: `gcr.io/knative-releases/knative.dev/client/cmd/kn:v0.10.0`
 
   You can use nightly build of the `kn` CLI using
   `gcr.io/knative-nightly/knative.dev/client/cmd/kn`.
