@@ -35,5 +35,5 @@ spec:
     - /kaniko/executor
     - $(inputs.params.EXTRA_ARGS)
     - --dockerfile=$(inputs.params.DOCKERFILE)
-    - --context=/workspace/source/$(inputs.params.CONTEXT) # The user does not need to care the workspace and the source.
+    - --context=/workspace/source/$(inputs.params.CONTEXT)  # The user does not need to care the workspace and the source.
     - --destination=$(outputs.resources.image.url)

@@ -17,9 +17,9 @@ spec:
   stepTemplate:
     envFrom:
       - configMapRef:
-          name: argocd-env-configmap # used for server address
+          name: argocd-env-configmap  # used for server address
       - secretRef:
-          name: argocd-env-secret # used for authentication (username/password or auth token)
+          name: argocd-env-secret  # used for authentication (username/password or auth token)
   steps:
     - name: login
       image: argoproj/argocd:$(inputs.params.argocd-version)
