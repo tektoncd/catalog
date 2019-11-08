@@ -5,8 +5,8 @@ metadata:
 spec:
   inputs:
     resources:
-     - name: source
-       type: git
+    - name: source
+      type: git
     params:
     - name: BUILDER_IMAGE
       description: The location of the s2i builder image.
@@ -28,8 +28,8 @@ spec:
     workingdir: /workspace/source
     command: ['s2i', 'build', '$(inputs.params.PATH_CONTEXT)', '$(inputs.params.BUILDER_IMAGE)', '--as-dockerfile', '/gen-source/Dockerfile.gen']
     volumeMounts:
-     - name: gen-source
-       mountPath: /gen-source
+    - name: gen-source
+      mountPath: /gen-source
   - name: build
     image: quay.io/buildah/stable
     workingdir: /gen-source

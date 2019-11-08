@@ -29,6 +29,6 @@ spec:
       - $(inputs.params.chart)
       - -p
       - $(inputs.params.policy)
-      - -o      
+      - -o
       - $(inputs.params.output)
       - $(inputs.params.args)

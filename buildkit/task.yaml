@@ -10,8 +10,8 @@ spec:
       default: "Dockerfile"
     - name: BUILDKIT_CLIENT_IMAGE
       description: The name of the BuildKit client (buildctl) image
-# The image needs to be rootful because Tekton creates /builder/home/.docker/config.json owned by root:root with 0600
-# https://github.com/tektoncd/pipeline/issues/852
+      # The image needs to be rootful because Tekton creates /builder/home/.docker/config.json owned by root:root with 0600
+      # https://github.com/tektoncd/pipeline/issues/852
       default: "moby/buildkit:v0.6.2"
     - name: BUILDKIT_DAEMON_ADDRESS
       description: The address of the BuildKit daemon (buildkitd) service
