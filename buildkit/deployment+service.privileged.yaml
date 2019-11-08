@@ -38,7 +38,7 @@ spec:
           readOnly: true
           mountPath: /certs
       volumes:
-# buildkit-daemon-certs must contain ca.pem, cert.pem, and key.pem
+      # buildkit-daemon-certs must contain ca.pem, cert.pem, and key.pem
       - name: certs
         secret:
           secretName: buildkit-daemon-certs
