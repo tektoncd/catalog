@@ -4,9 +4,9 @@ metadata:
   name: gke-deploy
 spec:
   inputs:
-    # resources:
-    # - name: source-repo
-    #   type: git
+    resources:
+    - name: source-repo
+      type: git
     params:
     - name: ARGS
       type: array
