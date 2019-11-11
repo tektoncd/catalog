@@ -65,7 +65,7 @@ This guide walks through a detailed example that demonstrates using the `build-p
 
   ```bash
   IMAGE_REGISTRY_PROJECT=[PROJECT_ID]
-  sed -i "s/@IMAGE_REGISTRY_PROJECT@/$IMAGE_REGISTRY_PROJECT/g" gke-deploy/app/config/app.yaml
+  sed -i "s/@IMAGE_REGISTRY_PROJECT@/$IMAGE_REGISTRY_PROJECT/g" gke-deploy/example/app/config/app.yaml
   ```
 
 4. Commit and push your changes to a new branch.
@@ -141,9 +141,9 @@ This guide walks through a detailed example that demonstrates using the `build-p
           value: gke-deploy-demo
     params:
     - name: pathToContext
-      value: gke-deploy/app
+      value: gke-deploy/example/app
     - name: pathToKubernetesConfigs
-      value: gke-deploy/app/config
+      value: gke-deploy/example/app/config
     - name: imageUrl
       value: gcr.io/$IMAGE_REGISTRY_PROJECT/gke-deploy-tekton-demo
     - name: imageTag
@@ -171,9 +171,9 @@ This guide walks through a detailed example that demonstrates using the `build-p
 
   e.g.,
 
-  ![deployed-resources](images/deployed-resources.png)
+  ![deployed-resources](deployed-resources.png)
 
-  ![response](images/response.png)
+  ![response](response.png)
 
 ## Cleaning up
 
