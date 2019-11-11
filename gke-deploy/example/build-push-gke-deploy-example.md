@@ -57,11 +57,11 @@ This guide walks through a detailed example that demonstrates using the `build-p
   ```bash
   GITHUB_USER=[YOUR_USERNAME]
   git clone https://github.com/$GITHUB_USER/catalog
-  # Use git clone git@github.com:$GITHUB_USER/catalog.git if you use two factor authentication
+  # Use `git clone git@github.com:$GITHUB_USER/catalog.git` if you use two-factor authentication
   cd catalog
   ```
 
-3. Modify the manifests in the demo app to use a project you own for its image (this project may be in the same project as the one with the cluster that is running Tekton Pipelines).
+3. Modify the manifests in the demo app to use a project you own for its image (this may be the same project as the one with the cluster that is running Tekton Pipelines).
 
   ```bash
   IMAGE_REGISTRY_PROJECT=[PROJECT_ID]
@@ -87,7 +87,7 @@ This guide walks through a detailed example that demonstrates using the `build-p
   gcloud container clusters create $DEPLOY_CLUSTER_NAME --zone=$DEPLOY_CLUSTER_LOCATION --project=$DEPLOY_CLUSTER_PROJECT
   ```
 
-2. Add the `roles/storage.admin` role to the Google service account set up above in the project of the image will be pushed to (this project may be in the same project as the one with the cluster that is running Tekton Pipelines). This will allow the Pipeline to push an image to your project, as defined [here](https://cloud.google.com/container-registry/docs/access-control).
+2. Add the `roles/storage.admin` role to the Google service account set up above in the project that the image will be pushed to (this may be the same project as the one with the cluster that is running Tekton Pipelines). This will allow the Pipeline to push an image to your project, as defined [here](https://cloud.google.com/container-registry/docs/access-control).
 
   ```bash
   IMAGE_REGISTRY_PROJECT=[PROJECT_ID]
@@ -96,7 +96,7 @@ This guide walks through a detailed example that demonstrates using the `build-p
   gcloud projects add-iam-policy-binding $IMAGE_REGISTRY_PROJECT --role roles/storage.admin --member "serviceAccount:$GOOGLE_SA_NAME@$TEKTON_CLUSTER_PROJECT.iam.gserviceaccount.com" --project=$IMAGE_REGISTRY_PROJECT
   ```
 
-3. Add the `roles/container.developer` role to the Google service account set up above in the project of the target cluster (this project may be in the same project as the one with the cluster that is running Tekton Pipelines). This will allow the Pipeline to deploy your application to your cluster.
+3. Add the `roles/container.developer` role to the Google service account set up above in the project of the target cluster (this may be the same project as the one with the cluster that is running Tekton Pipelines). This will allow the Pipeline to deploy your application to your cluster.
 
   ```bash
   DEPLOY_CLUSTER_PROJECT=[PROJECT_ID]
@@ -111,7 +111,7 @@ This guide walks through a detailed example that demonstrates using the `build-p
   kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/gke-deploy/build-push-gke-deploy.yaml
   ```
 
-5. Create the PipelineRun config to run your Pipeline.
+5. Create the `PipelineRun` config to run your Pipeline.
 
   ```bash
   K8S_SA_NAME=[KUBERNETES_SERVICE_ACCOUNT_NAME]
@@ -167,7 +167,7 @@ This guide walks through a detailed example that demonstrates using the `build-p
 
   See other ways of logging your Tekton PipelineRun [here](https://github.com/tektoncd/pipeline/blob/master/docs/logs.md).
 
-  If your deployment is successful, `gke-deploy` will print a table displaying deployed reouces. You can visit the IP address printed the Service row.
+  If your deployment is successful, `gke-deploy` will print a table displaying deployed resources. You can visit the IP address printed on the Service row.
 
   e.g.,
 
