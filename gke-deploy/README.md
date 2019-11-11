@@ -21,7 +21,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/gke-d
   _default_: `["--help"]`
 
   See [here](https://github.com/GoogleCloudPlatform/cloud-builders/tree/master/gke-deploy#usage)
-  to the arguments of `gke-deploy`.
+  for the arguments to `gke-deploy`.
 
 ## Usage
 
@@ -29,8 +29,8 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/gke-d
 
 See [Authorizing `gcloud`
 commands](../gcloud/README.md#authorizing-gcloud-commands) for authorizing the
-`gke-deploy` Task using a Google IAM Service Account (the instructions will
-describe authorizing `gcloud`, but the steps are the same).
+`gke-deploy` Task using a Google IAM Service Account (the instructions describe
+authorizing `gcloud`, but the steps are the same).
 
 In order for the `gke-deploy` Task to deploy to a GKE cluster in your project,
 the service account that the Task runs as must have the
@@ -82,7 +82,7 @@ for more on how to use the Git Resource.
 
 See
 [here](https://github.com/tektoncd/pipeline/blob/master/docs/auth.md#ssh-authentication-git)
-to learn how to access private Git repositories in Tekton.
+to learn how to access private Git repositories using Tekton.
 
 
 # `build-push-gke-deploy` `Pipeline`
@@ -99,11 +99,11 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/gke-d
 
 ### Resources
 
-* **source-repo**: The Git source repository that contains your application's Dockerfile and Kubernetes configs.
+* **source-repo**: The Git repository that contains your application's Dockerfile and Kubernetes configs.
 
 ### Parameters
 
-* **pathToContext**: The path to the build context, used by Kaniko, relative to your source repo's root.
+* **pathToContext**: The path to the build context relative to your source repo's root. This is used by Kaniko.
 
   _default_: `.`
 
