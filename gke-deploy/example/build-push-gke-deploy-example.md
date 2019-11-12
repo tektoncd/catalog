@@ -46,7 +46,7 @@ This guide walks through a detailed example that demonstrates using the `build-p
 
 ## Install Tekton Pipelines CLI
 
-1. Install the Tekton Pipelines CLI to view your logs by following the instructions for your machine at https://github.com/tektoncd/cli.
+Install the Tekton Pipelines CLI to view your logs by following the instructions for your machine at https://github.com/tektoncd/cli.
 
 ## Set up your repo
 
