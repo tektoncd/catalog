@@ -1,3 +1,4 @@
+---
 apiVersion: tekton.dev/v1alpha1
 kind: Task
 metadata:
@@ -12,7 +13,7 @@ spec:
         description: The OpenShift CLI arguments to run
         type: array
         default:
-        - "help"
+          - "help"
   steps:
     - name: oc
       image: quay.io/openshift/origin-cli:latest

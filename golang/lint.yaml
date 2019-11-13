@@ -11,7 +11,7 @@ spec:
       description: flags to use for the test command
       default: --verbose
     - name: version
-      default: golangci-lint version to use
+      description: golangci-lint version to use
       default: "v1.17.1"
     - name: GOOS
       description: "running operating system target"

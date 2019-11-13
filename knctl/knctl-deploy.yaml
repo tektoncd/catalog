@@ -13,7 +13,7 @@ spec:
   steps:
   # the first step is required as knctl doesn't support inCluster configuration.
   - name: kubeconfig
-    image: gcr.io/cloud-builders/kubectl # it is huge
+    image: gcr.io/cloud-builders/kubectl  # it is huge
     command: ["/bin/bash"]
     args:
     - -c

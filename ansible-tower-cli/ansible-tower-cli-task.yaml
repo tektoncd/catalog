@@ -1,3 +1,4 @@
+---
 apiVersion: tekton.dev/v1alpha1
 kind: Task
 metadata:
@@ -25,13 +26,19 @@ spec:
   steps:
     - name: config
       image: quay.io/rcmendes/ansible-tower-cli:latest
-      command: 
+      command:
         - '/bin/sh'
         - '-c'
       args:
         - |-
-            echo -e "verify_ssl = $(inputs.params.SSLVERIFY)\nverbose = true\nhost = $(inputs.params.HOST)\nusername = $USER\npassword = $PASS" > ~/.tower_cli.cfg
-            chmod 600 ~/.tower_cli.cfg 
+            cat <<EOF>~/.tower_cli.cfg
+            verify_ssl = $(inputs.params.SSLVERIFY)
+            verbose = true
+            host = $(inputs.params.HOST)
+            username = $USER
+            password = $PASS
+            EOF
+            chmod 600 ~/.tower_cli.cfg
             echo "Generated tower_cli.cfg file"
             echo "-----------------------------"
             ls -lah ~/ | grep tower_cli
@@ -39,12 +46,12 @@ spec:
       env:
         - name: USER
           valueFrom:
-            secretKeyRef: 
+            secretKeyRef:
               name: $(inputs.params.tower-secret)
               key: USER
         - name: PASS
           valueFrom:
-            secretKeyRef: 
+            secretKeyRef:
               name: $(inputs.params.tower-secret)
               key: PASS
     - name: tower-cli
@@ -52,4 +59,3 @@ spec:
       command: ["/usr/bin/tower-cli"]
       args:
         - "$(inputs.params.ARGS)"
-

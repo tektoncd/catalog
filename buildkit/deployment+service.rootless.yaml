@@ -1,3 +1,4 @@
+---
 # from https://github.com/moby/buildkit/tree/a038b5d98379646995275830a4f778bc707b2356/examples/kubernetes
 apiVersion: apps/v1
 kind: Deployment
@@ -17,7 +18,7 @@ spec:
       annotations:
         container.apparmor.security.beta.kubernetes.io/buildkitd: unconfined
         container.seccomp.security.alpha.kubernetes.io/buildkitd: unconfined
-# see buildkit/docs/rootless.md for caveats of rootless mode
+    # see buildkit/docs/rootless.md for caveats of rootless mode
     spec:
       containers:
       - name: buildkitd
@@ -35,7 +36,7 @@ spec:
         - /certs/key.pem
         - --oci-worker-no-process-sandbox
         securityContext:
-# To change UID/GID, you need to rebuild the image
+          # To change UID/GID, you need to rebuild the image
           runAsUser: 1000
           runAsGroup: 1000
         ports:
@@ -45,7 +46,7 @@ spec:
           readOnly: true
           mountPath: /certs
       volumes:
-# buildkit-daemon-certs must contain ca.pem, cert.pem, and key.pem
+      # buildkit-daemon-certs must contain ca.pem, cert.pem, and key.pem
       - name: certs
         secret:
           secretName: buildkit-daemon-certs
