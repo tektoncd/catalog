@@ -20,15 +20,17 @@ TMPF=$(mktemp /tmp/.mm.XXXXXX)
 clean() { rm -f ${TMPF}; }
 trap clean EXIT
 
+LOCAL_CI_RUN=${LOCAL_CI_RUN:-false}
 
 # Setup a test cluster.
 [[ -z ${LOCAL_CI_RUN} ]] && {
+
     # Initialize cluster
     initialize $@
-
-    # Install the latest Tekton CRDs.
-    kubectl apply --filename https://storage.googleapis.com/tekton-releases/latest/release.yaml
 }
+
+# Install the latest Tekton CRDs.
+kubectl apply --filename https://storage.googleapis.com/tekton-releases/latest/release.yaml
 
 # You can ignore some yaml tests by providing the TEST_YAML_IGNORES variable
 # with the test name separated by a space, for example:
