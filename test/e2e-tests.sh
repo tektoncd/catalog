@@ -15,19 +15,20 @@
 # limitations under the License.
 
 source $(dirname $0)/../vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
+source $(dirname $0)/e2e-common.sh
 
 TMPF=$(mktemp /tmp/.mm.XXXXXX)
 clean() { rm -f ${TMPF}; }
 trap clean EXIT
 
-
 # Setup a test cluster.
 [[ -z ${LOCAL_CI_RUN} ]] && {
+
     # Initialize cluster
     initialize $@
 
     # Install the latest Tekton CRDs.
-    kubectl apply --filename https://storage.googleapis.com/tekton-releases/latest/release.yaml
+    install_pipeline_crd
 }
 
 # You can ignore some yaml tests by providing the TEST_YAML_IGNORES variable
