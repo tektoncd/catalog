@@ -28,6 +28,6 @@ spec:
       - $(inputs.params.files)
       - -p
       - $(inputs.params.policy)
-      - -o      
+      - -o
       - $(inputs.params.output)
       - $(inputs.params.args)

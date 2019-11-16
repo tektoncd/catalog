@@ -58,7 +58,7 @@ spec:
     volumeMounts:
     - name: "layers-dir"
       mountPath: /layers
-    
+
   - name: restore
     image: $(inputs.params.BUILDER_IMAGE)
     imagePullPolicy: Always

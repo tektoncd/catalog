@@ -44,52 +44,51 @@ spec:
               type: image
     steps:
         - name: add-ow-env-to-dockerfile
-          image: ubuntu 
+          image: ubuntu
           command:
-            - bash
+              - bash
           args:
-            - -c
-            - |
-              if [ -z $(inputs.params.OW_PROJECT_URL) ]; then
-                OW_ACTION_CODE="$(inputs.params.OW_ACTION_CODE)"
-              else
-                TEMPDIR="knative-"$((1 + RANDOM % 100))
-                TEMPFILE=`basename "$(inputs.params.OW_PROJECT_URL)"`
-                mkdir $TEMPDIR
-                cd $TEMPDIR
-                wget -O $TEMPFILE "$(inputs.params.OW_PROJECT_URL)"
-                if [ "$(inputs.params.OW_ACTION_BINARY)" = true ]; then
-                    OW_ACTION_CODE=`base64 $TEMPFILE | tr -d '[:space:]'`
+              - -c
+              - |
+                if [ -z $(inputs.params.OW_PROJECT_URL) ]; then
+                  OW_ACTION_CODE="$(inputs.params.OW_ACTION_CODE)"
                 else
-                    OW_ACTION_CODE=`cat $TEMPFILE`
+                  TEMPDIR="knative-"$((1 + RANDOM % 100))
+                  TEMPFILE=`basename "$(inputs.params.OW_PROJECT_URL)"`
+                  mkdir $TEMPDIR
+                  cd $TEMPDIR
+                  wget -O $TEMPFILE "$(inputs.params.OW_PROJECT_URL)"
+                  if [ "$(inputs.params.OW_ACTION_BINARY)" = true ]; then
+                      OW_ACTION_CODE=`base64 $TEMPFILE | tr -d '[:space:]'`
+                  else
+                      OW_ACTION_CODE=`cat $TEMPFILE`
+                  fi
+                  cd ..
                 fi
-                cd ..
-              fi
-              cat <<EOF >> $(inputs.params.DOCKERFILE)
-                ENV __OW_RUNTIME_DEBUG "$(inputs.params.OW_RUNTIME_DEBUG)"
-                ENV __OW_RUNTIME_PLATFORM "$(inputs.params.OW_RUNTIME_PLATFORM)"
-                ENV __OW_ACTION_NAME "$(inputs.params.OW_ACTION_NAME)"
-                ENV __OW_ACTION_CODE "$(OW_ACTION_CODE)"
-                ENV __OW_ACTION_MAIN "$(inputs.params.OW_ACTION_MAIN)"
-                ENV __OW_ACTION_BINARY "$(inputs.params.OW_ACTION_BINARY)"
-                ENV __OW_HTTP_METHODS "$(inputs.params.OW_HTTP_METHODS)"
-                ENV __OW_ACTION_RAW "$(inputs.params.OW_ACTION_RAW)"
-                ENV __OW_PROJECT_URL "$(inputs.params.OW_PROJECT_URL)"
-              EOF
+                cat <<EOF >> $(inputs.params.DOCKERFILE)
+                  ENV __OW_RUNTIME_DEBUG "$(inputs.params.OW_RUNTIME_DEBUG)"
+                  ENV __OW_RUNTIME_PLATFORM "$(inputs.params.OW_RUNTIME_PLATFORM)"
+                  ENV __OW_ACTION_NAME "$(inputs.params.OW_ACTION_NAME)"
+                  ENV __OW_ACTION_CODE "$(OW_ACTION_CODE)"
+                  ENV __OW_ACTION_MAIN "$(inputs.params.OW_ACTION_MAIN)"
+                  ENV __OW_ACTION_BINARY "$(inputs.params.OW_ACTION_BINARY)"
+                  ENV __OW_HTTP_METHODS "$(inputs.params.OW_HTTP_METHODS)"
+                  ENV __OW_ACTION_RAW "$(inputs.params.OW_ACTION_RAW)"
+                  ENV __OW_PROJECT_URL "$(inputs.params.OW_PROJECT_URL)"
+                EOF
         - name: update-dockerfile-for-tekton
-          image: ubuntu 
+          image: ubuntu
           command:
-            - sed
+              - sed
           args:
-            - -i
-            - -e
-            - 's/COPY ./COPY .\/runtime-git/g'
-            - $(inputs.params.DOCKERFILE)
+              - -i
+              - -e
+              - 's/COPY ./COPY .\/runtime-git/g'
+              - $(inputs.params.DOCKERFILE)
         - name: build-openwhisk-nodejs-runtime
           image: "gcr.io/kaniko-project/executor:latest"
           command:
-            - /kaniko/executor
+              - /kaniko/executor
           args:
-            - --dockerfile=$(inputs.params.DOCKERFILE)
-            - --destination=$(outputs.resources.runtime-image.url)
-
+              - --dockerfile=$(inputs.params.DOCKERFILE)
+              - --destination=$(outputs.resources.runtime-image.url)
