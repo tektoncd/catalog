@@ -43,3 +43,70 @@ function install_pipeline_crd() {
   # Wait for pods to be running in the namespaces we are deploying to
   wait_until_pods_running tekton-pipelines || fail_test "Tekton Pipeline did not come up"
 }
+
+function test_yaml_can_install() {
+    # Validate that all the Task CRDs in this repo are valid by creating them in a NS.
+    readonly ns="task-ns"
+    kubectl create ns "${ns}" || true
+    for runtest in $(find ${REPO_ROOT_DIR} -maxdepth 2 -name '*.yaml'); do
+        skipit=
+        for ignore in ${TEST_YAML_IGNORES};do
+            [[ ${ignore} == $(basename $(echo ${runtest%.yaml})) ]] && skipit=True
+        done
+        [[ -n ${skipit} ]] && break
+        echo "Checking ${runtest}"
+        kubectl -n ${ns} apply -f <(sed "s/namespace:.*/namespace: task-ns/" "${runtest}")
+    done
+}
+
+function test_task_creation() {
+    for runtest in ${@};do
+        testname=${runtest%%/*}
+        tns="${testname}-$$"
+        skipit=
+
+        for ignore in ${TEST_TASKRUN_IGNORES};do
+            [[ ${ignore} == ${testname} ]] && skipit=True
+        done
+        [[ -n ${skipit} ]] && continue
+
+        kubectl create namespace ${tns}
+
+        # Install the task itself first
+        for yaml in ${testname}/*.yaml;do
+            cp ${yaml} ${TMPF}
+            [[ -f ${testname}/tests/pre-apply-task-hook.sh ]] && source ${testname}/tests/pre-apply-task-hook.sh
+            function_exists pre-apply-task-hook && pre-apply-task-hook
+            kubectl -n ${tns} create -f ${TMPF}
+        done
+
+        # Install resource and run
+        for yaml in ${runtest}/*.yaml;do
+            cp ${yaml} ${TMPF}
+            [[ -f ${testname}/tests/pre-apply-taskrun-hook.sh ]] && source ${testname}/tests/pre-apply-taskrun-hook.sh
+            function_exists pre-apply-taskrun-hook && pre-apply-taskrun-hook
+            kubectl -n ${tns} create -f ${TMPF}
+        done
+
+        while true;do
+            status=$(kubectl get -n ${tns} tr --output=jsonpath='{.items[*].status.conditions[*].status}')
+            reason=$(kubectl get -n ${tns} tr --output=jsonpath='{.items[*].status.conditions[*].reason}')
+            [[ ${status} == *ERROR || ${reason} == *Failed || ${reason} == CouldntGetTask ]] && {
+                echo "FAILED: ${testname} task has failed to comeback properly" ;
+                echo "--- TR Dump"
+                kubectl get -n ${tns} tr -o yaml
+                echo "--- Container Logs"
+                kubectl get pod -o name -n ${tns}|xargs kubectl logs --all-containers -n ${tns}
+                exit 1
+            }
+            [[ ${status} == True ]] && {
+                echo -n "SUCCESS: ${testname} taskrun has successfully executed: " ;
+                kubectl get pod -o name -n ${tns}|xargs kubectl logs --all-containers -n ${tns}|tail -1
+                break
+            }
+            sleep 5
+        done
+
+        kubectl delete ns ${tns}
+    done
+}
