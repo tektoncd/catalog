@@ -47,76 +47,10 @@ TEST_YAML_IGNORES=${TEST_YAML_IGNORES:-""}
 # s2i: task is not working by default on vanilla kubernetes (ie not openshift) so disabling it here
 TEST_TASKRUN_IGNORES=${TEST_TASKRUN_IGNORES:-"s2i"}
 
-# Specify the default serviceAccount
-SERVICE_ACCOUNT=${SERVICE_ACCOUNT:-default}
-
 set -ex
 set -o pipefail
 
-function test_yaml_can_install() {
-    # Validate that all the Task CRDs in this repo are valid by creating them in a NS.
-    readonly ns="task-ns"
-    kubectl create ns "${ns}" || true
-    for runtest in $(find ${REPO_ROOT_DIR} -maxdepth 2 -name '*.yaml'); do
-        skipit=
-        for ignore in ${TEST_YAML_IGNORES};do
-            [[ ${ignore} == $(basename $(echo ${runtest%.yaml})) ]] && skipit=True
-        done
-        [[ -n ${skipit} ]] && break
-        echo "Checking ${runtest}"
-        kubectl -n ${ns} apply -f <(sed "s/namespace:.*/namespace: task-ns/" "${runtest}")
-    done
-}
-
-function test_task_creation() {
-    for runtest in */tests;do
-        testname=${runtest%%/*}
-        tns="${testname}-$$"
-        skipit=
-
-        for ignore in ${TEST_TASKRUN_IGNORES};do
-            [[ ${ignore} == ${testname} ]] && skipit=True
-        done
-        [[ -n ${skipit} ]] && continue
-
-        kubectl create namespace ${tns}
-
-        # Install the task itself first
-        for yaml in ${testname}/*.yaml;do
-            sed "s/%SERVICE_ACCOUNT%/${SERVICE_ACCOUNT}/g" < ${yaml} > ${TMPF}
-            [[ -f ${testname}/tests/pre-apply-task-hook.sh ]] && source ${testname}/tests/pre-apply-task-hook.sh
-            cp ${TMPF} /tmp/t.yaml
-            kubectl -n ${tns} create -f ${TMPF}
-        done
-
-        # Install resource and run
-        for yaml in ${runtest}/*.yaml;do
-            sed "s/%SERVICE_ACCOUNT%/${SERVICE_ACCOUNT}/g" < ${yaml} > ${TMPF}
-            [[ -f ${testname}/tests/pre-apply-taskrun-hook.sh ]] && source ${testname}/tests/pre-apply-taskrun-hook.sh
-            cp ${TMPF} /tmp/tr.yaml
-            kubectl -n ${tns} create -f ${TMPF}
-        done
-
-        while true;do
-            status=$(kubectl get -n ${tns} tr --output=jsonpath='{.items[*].status.conditions[*].status}')
-            reason=$(kubectl get -n ${tns} tr --output=jsonpath='{.items[*].status.conditions[*].reason}')
-            [[ ${status} == "ERROR" || ${reason} == Failed || ${reason} == CouldntGetTask ]] && {
-                echo "FAILED: ${testname} task has failed to comeback properly" ;
-                echo "--- TR Dump"
-                kubectl get -n ${tns} tr -o yaml
-                echo "--- Container Logs"
-                kubectl get pod -o name -n ${tns}|xargs kubectl logs --all-containers -n ${tns}
-                exit 1
-            }
-            [[ ${status} == True ]] && { echo "SUCCESS: ${testname} taskrun has successfully executed" ; break ;}
-            sleep 5
-        done
-
-        kubectl delete ns ${tns}
-    done
-}
-
 test_yaml_can_install
-test_task_creation
+test_task_creation */tests
 
 success
