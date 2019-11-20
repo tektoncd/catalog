@@ -1,0 +1,19 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: buildah-build-kn-create-source
+spec:
+  type: git
+  params:
+    - name: url
+      value: "https://github.com/navidshaikh/helloworld-go"
+---
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: buildah-build-kn-create-image
+spec:
+  type: image
+  params:
+    - name: url
+      value: "quay.io/navidshaikh/helloworld-go"
