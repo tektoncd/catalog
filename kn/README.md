@@ -118,5 +118,9 @@ Run this with:
 kubectl create -f kn-update-taskrun.yaml
 ```
 
-In these example, the `image` resource can be built before hand, most
+In these examples, the `image` resource can be built before hand, most
 likely using a previous task.
+
+## Pipeline
+Checkout the sample Pipelines for building your git source and deploying
+as Knative Service [here](./knative-dockerfile-deploy/README.md).
