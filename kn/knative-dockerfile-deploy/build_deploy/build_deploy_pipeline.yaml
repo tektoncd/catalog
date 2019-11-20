@@ -1,0 +1,44 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: buildah-build-kn-create
+spec:
+  resources:
+  - name: source
+    type: git
+  - name: image
+    type: image
+  params:
+  - name: ARGS
+    type: array
+    description: Arguments to pass to kn CLI
+    default:
+      - "help"
+  tasks:
+  - name: buildah-build
+    taskRef:
+      name: buildah
+    resources:
+      inputs:
+        - name: source
+          resource: source
+      outputs:
+        - name: image
+          resource: image
+  - name: kn-service-create
+    taskRef:
+      name: kn
+    runAfter:
+      - buildah-build
+    resources:
+      inputs:
+      - name: image
+        resource: image
+        from:
+          - buildah-build
+    params:
+    - name: kn-image
+      value: "gcr.io/knative-nightly/knative.dev/client/cmd/kn"
+    - name: ARGS
+      value:
+        - "$(params.ARGS)"
