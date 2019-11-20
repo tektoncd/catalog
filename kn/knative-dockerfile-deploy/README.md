@@ -10,8 +10,8 @@ It uses [buildah task](../../buildah/README.md) for building the source code and
 1. Latest Tekton Pipelines [install](https://github.com/tektoncd/pipeline/blob/master/docs/install.md)ed.
 2. `kubectl` CLI [install](https://kubernetes.io/docs/tasks/tools/install-kubectl/)ed.
 3. `tkn` CLI [install](https://github.com/tektoncd/cli#installing-tkn)ed.
-4. User account exists at a container registry for example: [quay.io](https://quay.io)
-5. A `ServiceAccount` to enable access to perform the required operations in the Pipeline,
+4. User account exists at a container registry (e.g. [quay.io](https://quay.io))
+5. A ServiceAccount to enable access to perform the required operations in the Pipeline,
    we'll configure one in following section.
 
 ### One time setup:
@@ -34,8 +34,7 @@ kubectl create secret docker-registry container-registry --docker-server=<DOCKER
  - link `container-registry` secret created above in step 2
  - create cluster role `kn-deployer` to access the Knative resources
  - binds the ServiceAccount with cluster role `kn-deployer` in namespace `tkn-kn`
-
-  Save following YAML in for e.g. `kn_deployer.yaml` and apply using `kubectl apply -f kn_deployer.yaml`.
+ - Save following YAML in e.g. `kn_deployer.yaml` and apply using `kubectl apply -f kn_deployer.yaml`.
 
 ```yaml
 # Define a ServiceAccount named kn-deployer-account that has permission to
@@ -92,7 +91,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/kn/kn
 
 ## Piplines:
 
-Let's create some Pipelines using `buildah` and `kn` task:
+Let's create some Pipelines using `buildah` and `kn` tasks:
 1. Create an image from git source and deploy to the Knative Service [pipeline](./build_deploy/README.md)
 2. Deploy a new Revision to the Knative Service [pipeline](./service_update/README.md)
 3. Perform traffic operations on the Knative Service [pipeline](./service_traffic/README.md)
