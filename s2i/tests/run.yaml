@@ -15,9 +15,11 @@ spec:
     resources:
       - name: source
         resourceRef:
-          name: nodejs-s2i-example
+          name: django-s2i-example
     params:
       - name: BUILDER_IMAGE
-        value: nodeshift/centos7-s2i-nodejs:latest
+        value: centos/python-36-centos7
       - name: TLSVERIFY
         value: "false"
+      - name: LOGLEVEL
+        value: "10"

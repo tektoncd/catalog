@@ -40,12 +40,9 @@ trap clean EXIT
 #
 TEST_YAML_IGNORES=${TEST_YAML_IGNORES:-""}
 
-# Allow ignoring some yaml tests, space separated, should be the basename of the test
-#
-# Disabled by default:
-#
-# s2i: task is not working by default on vanilla kubernetes (ie not openshift) so disabling it here
-TEST_TASKRUN_IGNORES=${TEST_TASKRUN_IGNORES:-"s2i"}
+# Allow ignoring some yaml tests, space separated, should be the basename of the
+# test for example "s2i"
+TEST_TASKRUN_IGNORES=${TEST_TASKRUN_IGNORES:-""}
 
 set -ex
 set -o pipefail
