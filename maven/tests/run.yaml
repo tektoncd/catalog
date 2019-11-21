@@ -1,0 +1,12 @@
+apiVersion: tekton.dev/v1alpha1
+kind: TaskRun
+metadata:
+  name: maven-run
+spec:
+  inputs:
+    resources:
+    - name: source
+      resourceRef:
+        name: maven-resource-petclinic
+  taskRef:
+    name: maven
