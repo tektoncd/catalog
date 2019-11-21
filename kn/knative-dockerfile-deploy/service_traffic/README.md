@@ -64,8 +64,8 @@ spec:
         - "hello"
         - "--tag=hello-v1=v1"
         - "--tag=hello-v2=v2"
-        - "--traffic=v1=90"
-        - "--traffic=v2=10"
+        - "--traffic=v1=50"
+        - "--traffic=v2=50"
 ```
 - You can also create this PipelineRun using the YAML file present in this repo using
 ```
