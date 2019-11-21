@@ -2,14 +2,14 @@
 apiVersion: tekton.dev/v1alpha1
 kind: PipelineResource
 metadata:
-  name: nodejs-s2i-example
+  name: django-s2i-example
 spec:
   type: git
   params:
     - name: revision
       value: master
     - name: url
-      value: https://github.com/chmouel/nodejs-health-check
+      value: https://github.com/sclorg/django-ex
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: PipelineResource
@@ -19,4 +19,4 @@ spec:
   type: image
   params:
     - name: url
-      value: localhost:5000/nodejs-health-check-tekton
+      value: localhost:5000/python-example-tekton
