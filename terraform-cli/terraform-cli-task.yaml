@@ -1,0 +1,36 @@
+---
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: terraform-cli
+spec:
+  inputs:
+    resources:
+      - name: source
+        type: git
+    params:
+      - name: ARGS
+        description: The terraform cli commands to tun
+        type: array
+        default:
+          - "--help"
+      - name: terraform-secret
+        description: The terraform secret with credentials
+        type: string
+        default: "terraform-creds"
+  steps:
+    - name: init
+      image: quay.io/rcmendes/terraform-cli:latest
+      workingDir: /workspace/source
+      command: ["/usr/local/bin/terraform"]
+      args:
+        - "init"
+    - name: terraform-cli
+      image: quay.io/rcmendes/terraform-cli:latest
+      workingDir: /workspace/source
+      command: ["/usr/local/bin/terraform"]
+      args:
+        - "$(inputs.params.ARGS)"
+      envFrom:
+        - secretRef:
+            name: $(inputs.params.terraform-secret)
