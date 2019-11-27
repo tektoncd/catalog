@@ -1,0 +1,19 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: az
+spec:
+  inputs:
+    params:
+    - name: az-image
+      description: Azure CLI container image to run this task
+      default: mcr.microsoft.com/azure-cli:2.0.77
+    - name: ARGS
+      type: array
+      description: Azure CLI arguments to run
+      default: ["help"]
+  steps:
+  - name: az
+    image: "$(inputs.params.az-image)"
+    command: ["az"]
+    args: ["$(inputs.params.ARGS)"]
