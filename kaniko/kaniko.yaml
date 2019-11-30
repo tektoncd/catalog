@@ -13,6 +13,9 @@ spec:
       default: ./
     - name: EXTRA_ARGS
       default: ""
+    - name: BUILDER_IMAGE
+      description: The image on which builds will run
+      default: gcr.io/kaniko-project/executor:v0.13.0
     resources:
     - name: source
       type: git
@@ -25,7 +28,7 @@ spec:
   steps:
   - name: build-and-push
     workingdir: /workspace/source
-    image: gcr.io/kaniko-project/executor:v0.13.0
+    image: $(inputs.params.BUILDER_IMAGE)
     # specifying DOCKER_CONFIG is required to allow kaniko to detect docker credential
     # https://github.com/tektoncd/pipeline/pull/706
     env:
