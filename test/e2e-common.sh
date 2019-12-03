@@ -68,11 +68,23 @@ function test_yaml_can_install() {
     done
 }
 
+function show_failure() {
+    local testname=$1 tns=$2
+
+    echo "FAILED: ${testname} task has failed to comeback properly" ;
+    echo "--- TR Dump"
+    kubectl get -n ${tns} tr -o yaml
+    echo "--- Container Logs"
+    kubectl get pod -o name -n ${tns}|xargs kubectl logs --all-containers -n ${tns}
+    exit 1
+
+}
 function test_task_creation() {
     for runtest in ${@};do
-        testname=${runtest%%/*}
-        tns="${testname}-$$"
-        skipit=
+        local testname=${runtest%%/*}
+        local tns="${testname}-$$"
+        local skipit=
+        local maxloop=60 # 10 minutes max
 
         for ignore in ${TEST_TASKRUN_IGNORES};do
             [[ ${ignore} == ${testname} ]] && skipit=True
@@ -97,23 +109,20 @@ function test_task_creation() {
             kubectl -n ${tns} create -f ${TMPF}
         done
 
+        local cnt=0
         while true;do
+            [[ ${cnt} == ${maxloop} ]] && show_failure ${testname} ${tns}
+
             status=$(kubectl get -n ${tns} tr --output=jsonpath='{.items[*].status.conditions[*].status}')
             reason=$(kubectl get -n ${tns} tr --output=jsonpath='{.items[*].status.conditions[*].reason}')
-            [[ ${status} == *ERROR || ${reason} == *Failed || ${reason} == CouldntGetTask ]] && {
-                echo "FAILED: ${testname} task has failed to comeback properly" ;
-                echo "--- TR Dump"
-                kubectl get -n ${tns} tr -o yaml
-                echo "--- Container Logs"
-                kubectl get pod -o name -n ${tns}|xargs kubectl logs --all-containers -n ${tns}
-                exit 1
-            }
+            [[ ${status} == *ERROR || ${reason} == *Failed || ${reason} == CouldntGetTask ]] && show_failure ${testname} ${tns}
             [[ ${status} == True ]] && {
                 echo -n "SUCCESS: ${testname} taskrun has successfully executed: " ;
                 kubectl get pod -o name -n ${tns}|xargs kubectl logs --all-containers -n ${tns}|tail -1
                 break
             }
-            sleep 5
+            sleep 10
+            cnt=$((cnt+1))
         done
 
         kubectl delete ns ${tns}
