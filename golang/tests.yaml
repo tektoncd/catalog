@@ -12,7 +12,7 @@ spec:
       default: "./..."
     - name: version
       description: golang version to use for tests
-      default: "1.12"
+      default: "latest"
     - name: flags
       description: flags to use for the test command
       default: -race -cover -v
