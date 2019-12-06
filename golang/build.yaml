@@ -12,7 +12,7 @@ spec:
       default: "./cmd/..."
     - name: version
       description: golang version to use for builds
-      default: "1.12"
+      default: "latest"
     - name: flags
       description: flags to use for the test command
       default: -v
