@@ -1,0 +1,101 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: orka-script
+spec:
+  inputs:
+    # This also requires a secret called "macstadium" to exist with the following keys:
+    # token: the orka API auth token. Can be obtained from the $HOME/./.config/configstore/orka-cli.json file
+    #        after an `orka login`
+    # license: the orka API license. Can be obtained from your IP plan.
+    params:
+    - name: script
+      type: string
+    - name: api_url
+      default: http://10.221.188.100
+      type: string
+  steps:
+  - image: gcr.io/dlorenc-vmtest2/orka
+    env:
+    - name: TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: macstadium
+          key: token
+    - name: LICENSE
+      valueFrom:
+        secretKeyRef:
+          name: macstadium
+          key: license
+    script: |
+      #!/bin/bash
+      set -ex
+
+      # Decide our vm name.
+      rand=$(openssl rand -hex 5)
+      vm="tekton-vm-$rand"
+
+      function finish {
+        orka vm delete -v $vm -y
+        orka vm purge -v $vm -y
+      }
+      trap finish EXIT
+
+      # setup orka
+      mkdir -p $HOME/.config/configstore/
+      cat << EOF > $HOME/.config/configstore/orka-cli.json
+      {
+        "api-url": "$(inputs.params.api_url)",
+        "licenseKey": "$LICENSE",
+        "outputStyle": "TABLE",
+        "api-version": "1.0.8",
+        "minimum-password-length": 6,
+        "default-base-image": "Mojave.img",
+        "token": "$TOKEN"
+      }
+      EOF
+
+      # Create the VM
+      # The orka vm create command errors if it isn't run inside a terminal, so we simulate it
+      # using the script command.
+      # https://stackoverflow.com/questions/32910661/pretend-to-be-a-tty-in-bash-for-any-command
+      script -qfec "orka vm create --vm=$vm --c 3 --C 3 -b 90GCatalinaisoSSH.img -y"
+
+      # Get the IP and port for SSH
+      t=$(mktemp)
+      orka vm status -v $vm -y > $t
+      ip=$(cat $t | grep 'IP' | head -n 1 | awk -F ' ' '{ print $2 }')
+      port=$(cat $t | grep 'SSH ' | head -n 1 | awk -F ' ' '{ print $2 }' | cut -c2-)
+
+      # Wait for ssh
+      # We use sshpass for all of these operations to pass in the password over the commandline.
+      # Normally this is insecure, but these machines are all behind a vpn and the user/password is
+      # admin/admin, so this is OK.
+      set +e
+      n=0
+      until [ $n -ge 10 ]; do
+        sshpass -p admin ssh -o StrictHostKeyChecking=no -p $port admin@$ip 'echo true' && break
+        n=$[$n+1]
+        sleep 5
+      done
+      set -e
+
+      # Setup the Mac VM for work.
+      sshpass -p admin ssh -o StrictHostKeyChecking=no -p $port admin@$ip 'echo admin | sudo -S mount -uw /'
+      sshpass -p admin ssh -o StrictHostKeyChecking=no -p $port admin@$ip 'echo admin | sudo -S mkdir -p /workspace'
+      sshpass -p admin ssh -o StrictHostKeyChecking=no -p $port admin@$ip 'echo admin | sudo -S chown -R admin /workspace'
+      
+      # Copy the workspace over
+      sshpass -p admin scp -o StrictHostKeyChecking=no -P $port -r /workspace/ admin@$ip:/
+
+      # Write our script to disk and copy it over.
+      script=$(mktemp)
+      echo "$(inputs.params.script)" > $script
+      chmod +x $script
+      sshpass -p admin scp -o StrictHostKeyChecking=no -P $port $script admin@$ip:/tmp
+
+      # Execute it!
+      sshpass -p admin ssh -o StrictHostKeyChecking=no -p $port admin@$ip $script
+
+      # Copy the workspace back.
+      sshpass -p admin scp -o StrictHostKeyChecking=no -P $port -r admin@$ip:/workspace /
