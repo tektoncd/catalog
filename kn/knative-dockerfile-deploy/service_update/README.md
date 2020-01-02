@@ -79,7 +79,7 @@ kind: PipelineRun
 metadata:
   generateName: kn-service-update-
 spec:
-  serviceAccount: kn-deployer-account
+  serviceAccountName: kn-deployer-account
   pipelineRef:
     name: kn-service-update
   resources:
