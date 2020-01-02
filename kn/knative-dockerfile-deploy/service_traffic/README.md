@@ -53,7 +53,7 @@ kind: PipelineRun
 metadata:
   generateName: kn-service-traffic-splitting-
 spec:
-  serviceAccount: kn-deployer-account
+  serviceAccountName: kn-deployer-account
   pipelineRef:
     name: kn-service-traffic-splitting
   params:
