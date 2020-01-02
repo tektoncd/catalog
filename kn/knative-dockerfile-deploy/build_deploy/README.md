@@ -113,7 +113,7 @@ kind: PipelineRun
 metadata:
   generateName: buildah-build-kn-create-
 spec:
-  serviceAccount: kn-deployer-account
+  serviceAccountName: kn-deployer-account
   pipelineRef:
     name: buildah-build-kn-create
   resources:
