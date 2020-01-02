@@ -3,7 +3,7 @@
 Let's create a container image from a git source having a Dockerfile and deploy it to a Knative Service.
 This Pipeline builds and push the git source using `buildah` and deploys the container as Knative Service using `kn`.
 
-## Pipline:
+## Pipeline:
 
 The following Pipeline definition refers:
  - `buildah` and `kn` tasks (we've installed these tasks in One time Setup section)
