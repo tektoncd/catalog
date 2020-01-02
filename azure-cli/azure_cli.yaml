@@ -7,11 +7,10 @@ spec:
     params:
     - name: az-image
       description: Azure CLI container image to run this task
-      default: mcr.microsoft.com/azure-cli:2.0.77
+      default: mcr.microsoft.com/azure-cli:2.0.78
     - name: ARGS
       type: array
       description: Azure CLI arguments to run
-      default: ["help"]
   steps:
   - name: az
     image: "$(inputs.params.az-image)"

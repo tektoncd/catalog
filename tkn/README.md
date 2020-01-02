@@ -16,4 +16,4 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/tkn/t
 name      | description                                 | default
 --------- | ------------------------------------------- | -------
 tkn-image | `tkn` CLI container image to run this task. | gcr.io/tekton-releases/dogfooding/tkn
-ARGS      | The arguments to pass to the `tkn` CLI.     | `["help"]`
+ARGS      | The arguments to pass to the `tkn` CLI.     | No default. Required.
