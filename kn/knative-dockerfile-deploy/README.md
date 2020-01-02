@@ -25,10 +25,11 @@ kubectl create namespace tkn-kn
 ```bash
 kubectl create secret docker-registry container-registry --docker-server=<DOCKER-REGISTRY> --docker-username=<USERNAME> --docker-password=<PASSWORD> --docker-email=<EMAIL>
 ```
+More about secrets for [`interacting with a private registry`](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/).
+
 #### Note:
-- If you are using `docker.io`: Push to (a new private repo at) `docker.io` via buildah and pull via `imagePullSecrets` does not work!
-  Please [create a new](https://hub.docker.com/repository/create) empty public repository for this tutorial and refer it in subsequent steps.
-- If you are using `quay.io`: Push to `quay.io` via buildah and pull via `imagePullSecrets` works well. [Get](https://quay.io/signin/) an account created at quay.
+- For using `docker.io`: Please [create a new](https://hub.docker.com/repository/create) empty public repository and refer it in subsequent steps.
+- For using `quay.io`: No need to create a repository beforehand.
 
 3. Create a ServiceAccount `kn-deployer-account` and
  - link `container-registry` secret created above in step 2
@@ -74,7 +75,7 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 ```
 
-  - If you've used the same names for namespace and secrets as mentioned above, you can configure the ServiceAccount with YAML file in this repo using:
+  - If you've used the same names for namespace and secrets as mentioned above, you can configure the ServiceAccount with the YAML file in this repo using:
 ```bash
 kubectl create -f https://raw.githubusercontent.com/tektoncd/catalog/master/kn/knative-dockerfile-deploy/kn_deployer.yaml
 ```
