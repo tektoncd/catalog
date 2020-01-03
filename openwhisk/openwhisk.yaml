@@ -69,7 +69,7 @@ spec:
               ENV __OW_RUNTIME_DEBUG "$(inputs.params.OW_RUNTIME_DEBUG)"
               ENV __OW_RUNTIME_PLATFORM "$(inputs.params.OW_RUNTIME_PLATFORM)"
               ENV __OW_ACTION_NAME "$(inputs.params.OW_ACTION_NAME)"
-              ENV __OW_ACTION_CODE "$(OW_ACTION_CODE)"
+              ENV __OW_ACTION_CODE "${OW_ACTION_CODE}"
               ENV __OW_ACTION_MAIN "$(inputs.params.OW_ACTION_MAIN)"
               ENV __OW_ACTION_BINARY "$(inputs.params.OW_ACTION_BINARY)"
               ENV __OW_HTTP_METHODS "$(inputs.params.OW_HTTP_METHODS)"
