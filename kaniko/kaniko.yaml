@@ -33,7 +33,7 @@ spec:
     # https://github.com/tektoncd/pipeline/pull/706
     env:
     - name: DOCKER_CONFIG
-      value: /builder/home/.docker
+      value: /tekton/home/.docker
     command:
     - /kaniko/executor
     - $(inputs.params.EXTRA_ARGS)
