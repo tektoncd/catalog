@@ -21,6 +21,8 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/build
   note below.  (_default:_ quay.io/buildah/stable:v1.11.0)
 * **DOCKERFILE**: The path to the `Dockerfile` to execute (_default:_
   `./Dockerfile`)
+* **CONTEXT**: Path to the directory to use as context (_default:_
+  `.`)
 * **TLSVERIFY**: Verify the TLS on the registry endpoint (for push/pull to a
   non-TLS registry) (_default:_ `true`)
 
