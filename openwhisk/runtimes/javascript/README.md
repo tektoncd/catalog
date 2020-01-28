@@ -115,7 +115,7 @@ kind: TaskRun
 metadata:
     name: openwhisk-nodejs-helloworld
 spec:
-    serviceAccount: openwhisk-runtime-builder
+    serviceAccountName: openwhisk-runtime-builder
     taskRef:
         name: task-openwhisk
     trigger:
@@ -308,7 +308,7 @@ kind: TaskRun
 metadata:
     name: openwhisk-nodejs-helloworld-with-params
 spec:
-    serviceAccount: openwhisk-runtime-builder
+    serviceAccountName: openwhisk-runtime-builder
     taskRef:
         name: task-openwhisk
     trigger:
@@ -408,7 +408,7 @@ kind: TaskRun
 metadata:
     name: openwhisk-nodejs-raw-github
 spec:
-    serviceAccount: openwhisk-runtime-builder
+    serviceAccountName: openwhisk-runtime-builder
     taskRef:
         name: openwhisk
     trigger:
@@ -511,7 +511,7 @@ kind: TaskRun
 metadata:
     name: openwhisk-nodejs-zip
 spec:
-    serviceAccount: openwhisk-runtime-builder
+    serviceAccountName: openwhisk-runtime-builder
     taskRef:
         name: openwhisk
     trigger:
