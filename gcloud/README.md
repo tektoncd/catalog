@@ -77,7 +77,7 @@ kind: TaskRun
 metadata:
   generateName: auth-check-
 spec:
-  serviceAccount: workload-identity-sa  # <-- a SA configured with Workload Identity
+  serviceAccountName: workload-identity-sa  # <-- a SA configured with Workload Identity
   taskRef:
     name: gcloud
   inputs:
@@ -101,7 +101,7 @@ kind: TaskRun
 metadata:
   generateName: run-deploy
 spec:
-  serviceAccount: workload-identity-sa  # <-- a SA configured with Workload Identity
+  serviceAccountName: workload-identity-sa  # <-- a SA configured with Workload Identity
   taskRef:
     name: gcloud
   inputs:
@@ -132,7 +132,7 @@ kind: TaskRun
 metadata:
   generateName: run-deploy
 spec:
-  serviceAccount: workload-identity-sa  # <-- a SA configured with Workload Identity
+  serviceAccountName: workload-identity-sa  # <-- a SA configured with Workload Identity
   taskRef:
     name: gcloud
   inputs:
