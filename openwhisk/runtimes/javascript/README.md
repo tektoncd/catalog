@@ -256,7 +256,7 @@ kubectl apply -f service.yaml
 service.serving.knative.dev/nodejs-helloworld created
 ```
 
-### Run HelloWorld 
+### Run HelloWorld
 
 ```bash
 curl -H "Host: nodejs-helloworld.default.example.com" -X POST http://${IP_ADDRESS}
@@ -267,10 +267,10 @@ curl -H "Host: nodejs-helloworld.default.example.com" -X POST http://${IP_ADDRES
 
 ## Example 2: Actions with JSON in / JSON out Interface
 
-### Build HelloWorld with JSON Payload as Parameters 
+### Build HelloWorld with JSON Payload as Parameters
 #### Configure taskrun.yaml
 
-Now, let's update the OpenWhisk Task parameter ```OW_ACTION_CODE``` to ```function main(params) {return {payload: 'Hello ' + params.name + ' from ' + params.place + '!'};}``` 
+Now, let's update the OpenWhisk Task parameter ```OW_ACTION_CODE``` to ```function main(params) {return {payload: 'Hello ' + params.name + ' from ' + params.place + '!'};}```
 
 <details>
     <summary>taskrun.yaml.tmpl contents</summary>
@@ -339,7 +339,7 @@ spec:
 ```bash
 kubectl apply -f taskrun.yaml
 pipelineresource.tekton.dev/openwhisk-nodejs-runtime-git unchanged
-pipelineresource.tekton.dev/openwhisk-nodejs-helloworld-with-params-image created 
+pipelineresource.tekton.dev/openwhisk-nodejs-helloworld-with-params-image created
 taskrun.tekton.dev/openwhisk-nodejs-helloworld-with-params created
 ```
 
@@ -354,7 +354,7 @@ Service URL:
 http://nodejs-helloworld-with-params.default.example.com
 ```
 
-### Run HelloWorld 
+### Run HelloWorld
 
 ```bash
 curl -H "Host: nodejs-helloworld-with-params.default.example.com" -H "Content-Type: application/json" -d '{"value":{"name": "Jill", "place": "OK"}}' http://${IP_ADDRESS}
@@ -473,7 +473,7 @@ error building image: parsing dockerfile: Dockerfile parse error line 43: unknow
 
 #### Configure taskrun.yaml
 
-Now, let's update the OpenWhisk Task parameter ```OW_PROJECT_URL``` to ```https://github.com/tektoncd/catalog/blob/openwhisk/openwhisk/runtimes/javascript/examples/04-zip/action.zip?raw=true```
+Now, let's update the OpenWhisk Task parameter ```OW_PROJECT_URL``` to ```https://github.com/tektoncd/catalog/raw/master/openwhisk/runtimes/javascript/examples/04-zip/action.zip```
 
 <details>
     <summary>taskrun.yaml.tmpl contents</summary>
@@ -529,7 +529,7 @@ spec:
             - name: OW_ACTION_CODE
               value: ""
             - name: OW_PROJECT_URL
-              value: "https://github.com/tektoncd/catalog/blob/openwhisk/openwhisk/runtimes/javascript/examples/04-zip/action.zip?raw=true"
+              value: "https://github.com/tektoncd/catalog/raw/master/openwhisk/runtimes/javascript/examples/04-zip/action.zip"
     outputs:
         resources:
             - name: runtime-image
@@ -569,4 +569,3 @@ curl -H "Host: nodejs-zip.default.example.com" -X POST http://${IP_ADDRESS}
 curl -H "Host: nodejs-zip.default.example.com" -H "Content-Type: application/json" -d '{"value":{"name": "Bob", "place": "NY"}}' http://${IP_ADDRESS}
 {"payload":"Hello, Bob from NY!"}
 ```
-
