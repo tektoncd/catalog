@@ -56,7 +56,7 @@ kind: TaskRun
 metadata:
   generateName: kn-create-
 spec:
-  serviceAccount: kn-deployer-account  # <-- run as the authorized SA
+  serviceAccountName: kn-deployer-account  # <-- run as the authorized SA
   taskRef:
     name: kn
   inputs:
@@ -91,7 +91,7 @@ kind: TaskRun
 metadata:
   generateName: kn-update-
 spec:
-  serviceAccount: kn-deployer-account  # <-- run as the authorized SA
+  serviceAccountName: kn-deployer-account  # <-- run as the authorized SA
   taskRef:
     name: kn
   inputs:
