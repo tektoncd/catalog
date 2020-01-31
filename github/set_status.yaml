@@ -1,0 +1,88 @@
+---
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: github-set-status
+  description: |
+    This task will set the CI as running and add a link to the openshift console
+    viewer url.
+spec:
+  inputs:
+    params:
+      - name: GITHUB_HOST_URL
+        description: |
+          The GitHub host, adjust this if you run a GitHub enteprise.
+        default: "api.github.com"
+
+      - name: REPO_FULL_NAME
+        description: |
+          The GitHub repository full name, i.e: tektoncd/catalog
+
+      - name: SHA
+        description: |
+          Commit SHA to set the status for.
+
+      - name: TARGET_URL
+        description: |
+          The target URL to associate with this status. This URL will be linked
+          from the GitHub UI to allow users to easily see the source of the
+          status.
+
+      - name: DESCRIPTION
+        description: |
+          A short description of the status.
+
+      - name: CONTEXT
+        description: |
+          The GitHUB context, A string label to differentiate this status from
+          the status of other systems. ie: "continuous-integration/tekton"
+        default: "continuous-integration/tekton"
+
+      - name: STATE
+        description: |
+          The state of the status. Can be one of the following `error`,
+          `failure`, `pending`, or `success`.
+  steps:
+    - name: set-status
+      env:
+        - name: GITHUBTOKEN
+          valueFrom:
+            secretKeyRef:
+              name: github
+              key: token
+
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      script: |
+        #!/usr/libexec/platform-python
+        import json
+        import os
+        import http.client
+
+        status_url = "/repos/$(inputs.params.REPO_FULL_NAME)/" + \
+            "statuses/$(inputs.params.SHA)"
+
+        data = {
+            "state": "$(inputs.params.STATE)",
+            "target_url": "$(inputs.params.TARGET_URL)",
+            "description": "$(inputs.params.DESCRIPTION)",
+            "context": "$(inputs.params.CONTEXT)"
+        }
+        print("Sending this data to GitHUB: ")
+        print(data)
+
+        conn = http.client.HTTPSConnection("$(inputs.params.GITHUB_HOST_URL)")
+        r = conn.request(
+            "POST",
+            status_url,
+            body=json.dumps(data),
+            headers={
+                "User-Agent": "TektonCD, the peaceful cat",
+                "Authorization": "Bearer " + os.environ["GITHUBTOKEN"],
+            })
+        resp = conn.getresponse()
+        if not str(resp.status).startswith("2"):
+            print("Error: %d" % (resp.status))
+            print(resp.read())
+        else:
+          print("GitHub status '$(inputs.params.STATE)' has been set on "
+                "$(inputs.params.REPO_FULL_NAME)#$(inputs.params.SHA) ")
