@@ -34,7 +34,7 @@ spec:
 
       - name: CONTEXT
         description: |
-          The GitHUB context, A string label to differentiate this status from
+          The GitHub context, A string label to differentiate this status from
           the status of other systems. ie: "continuous-integration/tekton"
         default: "continuous-integration/tekton"
 
@@ -67,7 +67,7 @@ spec:
             "description": "$(inputs.params.DESCRIPTION)",
             "context": "$(inputs.params.CONTEXT)"
         }
-        print("Sending this data to GitHUB: ")
+        print("Sending this data to GitHub: ")
         print(data)
 
         conn = http.client.HTTPSConnection("$(inputs.params.GITHUB_HOST_URL)")
