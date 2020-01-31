@@ -32,25 +32,26 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/githu
 
 #### Parameters
 
-* **REPO_FULL_NAME:**: The GitHub repository full name, e.g: _tektoncd/catalog_
-* **GITHUB_HOST_URL:**: The GitHub host domain (_default:_ `api.github.com`)
-* **SHA:**: The commit SHA to set the status for i.e: _tektoncd/catalog_
+* **REPO_FULL_NAME:**: The GitHub repository full name, _e.g:_ `tektoncd/catalog`
+* **GITHUB_HOST_URL:**: The GitHub host domain _default:_ `api.github.com`
+* **SHA:**: The commit SHA to set the status for _e.g_: `tektoncd/catalog`
 * **TARGET_URL:**: The target URL to associate with this status. This URL will
   be linked from the GitHub UI to allow users to easily see the source of the
   status. For example you can link to a
   [dashboard](https://github.com/tektoncd/dahsboard) URL so users can follow a
   Pipeline/Task run.
-* **DESCRIPTION:**: A short description of the status. e.g: _"Building your PR"_
+* **DESCRIPTION:**: A short description of the status. _e.g:_ `Building your PR`
 * **CONTEXT:** The GitHub context, A string label to differentiate this status
-  from the status of other systems. e.g: `"continuous-integration/tekton"`
+  from the status of other systems. _e.g:_ `continuous-integration/tekton`
 * **STATE:** The state of the status. Can be one of the following `error`,
   `failure`, `pending`, or `success`.
 
 ## Usage
 
-This TaskRun runs the Task to set a successfull status on a commit
+This TaskRun sets a commit on GitHub to `pending` getting tested by the CI.
 
-```
+```yaml
+---
 apiVersion: tekton.dev/v1alpha1
 kind: TaskRun
 metadata:
@@ -91,15 +92,16 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/githu
 #### Parameters
 
 * **GITHUB_HOST_URL:**: The GitHub host domain (_default:_ `api.github.com`)
-* **REQUEST_NAME:**: The GitHub pull request or issue url, e.g:
-  _https://github.com/tektoncd/catalog/issues/46_
-* **COMMENT:**: The actual comment to add (_default_: `don't forget to eat your vegetables before commiting.`)
+* **REQUEST_URL:**: The GitHub pull request or issue url, _e.g:_
+  `https://github.com/tektoncd/catalog/issues/46`
+* **COMMENT:**: The actual comment to add _e.g:_ `don't forget to eat your vegetables before commiting.`.
 
 ## Usage
 
-This TaskRun runs the Task to add a comment to an issue
+This TaskRun add a comment to an issue.
 
-```
+```yaml
+---
 apiVersion: tekton.dev/v1alpha1
 kind: TaskRun
 metadata:
@@ -124,4 +126,45 @@ spec:
             For, wander and wail as he would,
             The pure cold light in the sky
             Troubled his animal blood.
+```
+
+## Close an issue or a pull request
+
+The `github-close-issue` task let you close a pull request or an
+issue.
+
+### Install the Task
+
+```
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/github/close_issue.yaml
+```
+
+### Inputs
+
+#### Parameters
+
+* **GITHUB_HOST_URL:**: The GitHub host domain (_default:_ `api.github.com`)
+* **REQUEST_URL:**: The GitHub pull request or issue url, (_e.g:_
+  `https://github.com/tektoncd/catalog/issues/46`)
+
+## Usage
+
+This TaskRun close an issue on a task.
+
+```yaml
+---
+apiVersion: tekton.dev/v1alpha1
+kind: TaskRun
+metadata:
+  labels:
+    tekton.dev/task: github-close-issue
+  name: github-close-issue-to-pr-46
+spec:
+  taskRef:
+    kind: Task
+    name: github-close-issue
+  inputs:
+    params:
+      - name: REQUEST_URL
+        value: https://github.com/chmouel/scratchpad/pull/46
 ```
