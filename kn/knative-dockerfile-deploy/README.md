@@ -31,7 +31,7 @@ More about secrets for [`interacting with a private registry`](https://kubernete
 - For using `docker.io`: Please [create a new](https://hub.docker.com/repository/create) empty public repository and refer it in subsequent steps.
 - For using `quay.io`: No need to create a repository beforehand.
 
-3. Create a ServiceAccount `kn-deployer-account` and
+3 - Create a ServiceAccount `kn-deployer-account` and
  - link `container-registry` secret created above in step 2
  - create cluster role `kn-deployer` to access the Knative resources
  - binds the ServiceAccount with cluster role `kn-deployer` in namespace `tkn-kn`
@@ -80,17 +80,17 @@ roleRef:
 kubectl create -f https://raw.githubusercontent.com/tektoncd/catalog/master/kn/knative-dockerfile-deploy/kn_deployer.yaml
 ```
 
-4. Install buildah task from tektoncd/atalog
+4 - Install buildah task from tektoncd/atalog
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/buildah/buildah.yaml
 ```
 
-5. Install the kn task from the tektoncd/atalog
+5 - Install the kn task from the tektoncd/atalog
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/kn/kn.yaml
 ```
 
-## Piplines:
+## Pipelines:
 
 Let's create some Pipelines using `buildah` and `kn` tasks:
 1. Create an image from git source and deploy to the Knative Service [pipeline](./build_deploy/README.md)
