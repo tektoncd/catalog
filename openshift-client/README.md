@@ -24,11 +24,15 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/opens
 
 * **ARGS:** args to execute which are appended to `oc` e.g. `start-build myapp` (_default_: `help`)
 
+* **SCRIPT:** script of oc commands to execute  e.g. `oc get pod $1 -0 yaml` This will take the first value of ARGS as pod name (_default_: `oc $@`)
+
 ## Inputs `openshift-client-kubecfg`
 
 ### Parameters
 
 * **ARGS:** args to execute which are appended to `oc` e.g. `start-build myapp` (_default_: `help`)
+
+* **SCRIPT:** script of oc commands to execute  e.g. `oc get pod $1 -o yaml` This will take the first value of ARGS as pod name (_default_: `oc $@`)
 
 ### Resources
 
@@ -65,7 +69,6 @@ spec:
 ```
 
 The following `TaskRun` runs the commands against a different cluster than the one the `TaskRun` is running on. The cluster credentials are provided via a `PipelineResource` called `stage-cluster`.
-
 
 ```
 apiVersion: tekton.dev/v1alpha1
