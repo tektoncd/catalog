@@ -5,6 +5,10 @@ metadata:
 spec:
   inputs:
     params:
+      - name: SCRIPT
+        description: The OpenShift CLI arguments to run
+        type: string
+        default: "oc $@"
       - name: ARGS
         description: The OpenShift CLI arguments to run
         type: array
@@ -13,6 +17,6 @@ spec:
   steps:
     - name: oc
       image: quay.io/openshift/origin-cli:latest
-      command: ["/usr/bin/oc"]
+      script: "$(inputs.params.SCRIPT)"
       args:
         - "$(inputs.params.ARGS)"
