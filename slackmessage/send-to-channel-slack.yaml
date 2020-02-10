@@ -1,0 +1,28 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: send-to-channel-slack
+spec:
+  inputs:
+    params:
+    - name: token-secret
+      type: string
+      description: seret name of the slack app access token (key is token)
+    - name: channel
+      type: string
+      description: channel id or channel name
+    - name: message
+      type: string
+      description: plain text message
+  steps:
+  - name: post
+    image: curlimages/curl:7.68.0
+    script: |
+      #!/bin/sh
+      /usr/bin/curl -X POST -H 'Content-type: application/json' -H 'Authorization: Bearer '$TOKEN --data '{"channel":"$(inputs.params.channel)", "text":"$(inputs.params.message)"}' https://slack.com/api/chat.postMessage
+    env:
+    - name: TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: $(inputs.params.token-secret)
+          key: token
