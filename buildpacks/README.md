@@ -18,30 +18,36 @@ The Cloud Native Buildpacks website describes v3 buildpacks as:
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/buildpacks/buildpacks-v3.yaml
 ```
 
-> **NOTE:** This task is currently only compatible with Tekton **v0.6.0** and above.
+> **NOTE:** This task is currently only compatible with Tekton **v0.6.0** and above, and CNB Platform API 0.2 (lifecycle v0.6.0 and above). For previous Platform API versions, [see below](#previous-platform-api-versions).
 
 ## Inputs
 
 ### Parameters
 
-* **BUILDER_IMAGE** The image on which builds will run (must include v3 lifecycle and compatible buildpacks; _required_)
-* **USE_CRED_HELPERS:** Use Docker credential helpers. Set to `"true"` or
+* **`BUILDER_IMAGE`**: The image on which builds will run (must include v3 lifecycle and compatible buildpacks; _required_)
+
+* **`USE_CRED_HELPERS`**: Use Docker credential helpers. Set to `"true"` or
   `"false"` as string a value. (_default:_ `"false"`)
-* **CACHE** The name of the persistent app cache volume (_default:_ an empty
+
+* **`CACHE`**: The name of the persistent app cache volume (_default:_ an empty
   directory -- effectively no cache)
-* **USER_ID** The user ID of the builder image user, as a string value (_default:_ `"1000"`)
-* **GROUP_ID** The group ID of the builder image user, as a string value (_default:_ `"1000"`)
+
+* **`USER_ID`**: The user ID of the builder image user, as a string value (_default:_ `"1000"`)
+
+* **`GROUP_ID`**: The group ID of the builder image user, as a string value (_default:_ `"1000"`)
+
+* **`SOURCE_SUBPATH`**: A subpath within the `source` input where the source to build is located (_default:_ `""`)
 
 ### Resources
 
-* **source**: A `git`-type `PipelineResource` specifying the location of the
-  source to build.
+* **`source`**: A `git`-type `PipelineResource` specifying the location of the
+  source to build. See `SOURCE_SUBPATH` above if source is located within a subpath of this input.
 
 ## Outputs
 
 ### Resources
 
-* **image**: An `image`-type `PipelineResource` specifying the image that should
+* **`image`**: An `image`-type `PipelineResource` specifying the image that should
   be built.
 
 ## Usage
@@ -56,11 +62,12 @@ metadata:
 spec:
   taskRef:
     name: buildpacks-v3
-  podTemplate:
-    volumes:
-    - name: my-cache
-      persistentVolumeClaim:
-        claimName: my-volume-claim
+# Uncomment the lines below to use an existing cache
+#  podTemplate:
+#    volumes:
+#    - name: my-cache
+#      persistentVolumeClaim:
+#        claimName: task-pv-claim
   inputs:
     resources:
     - name: source
@@ -68,12 +75,15 @@ spec:
         type: git
         params:
         - name: url
-          value: https://github.com/my-user/my-repo
+          value: <your git repo, e.g. "https://github.com/buildpacks/samples">
     params:
+    - name: SOURCE_SUBPATH
+      value: <optional subpath within your source repo, e.g. "apps/java-maven">
     - name: BUILDER_IMAGE
-      value: gcr.io/cncf-buildpacks-ci/tekton-cnb-test:bionic
-    - name: CACHE
-      value: my-cache
+      value: <your builder image tag, see below for suggestions, e.g. "builder-repo/builder-image:builder-tag">
+# Uncomment the lines below to use an existing cache
+#    - name: CACHE
+#      value: my-cache
   outputs:
     resources:
     - name: image
@@ -81,5 +91,26 @@ spec:
         type: image
         params:
         - name: url
-          value: gcr.io/my-repo/my-image
+          value: <your output image tag, e.g. "gcr.io/app-repo/app-image:app-tag">
+```
+
+### Example builders
+
+Cloud Foundry:
+ - `cloudfoundry/cnb:bionic`
+ - `cloudfoundry/cnb:cflinuxfs3`
+
+Heroku:
+ - `heroku/buildpacks:18`
+
+## Previous Platform API Versions
+
+Use one of the following commands to install a previous version of this task. Be sure to also supply a compatible builder image (`BUILDER_IMAGE` input) when running the task (i.e. one that has a lifecycle implementing the expected platform API).
+
+### CNB Platform API 0.1
+
+Commit: [5c2ab7d6](https://github.com/tektoncd/catalog/tree/5c2ab7d6c3b2507d43b49577d7f1bee9c49ed8ab/buildpacks#inputs)
+
+```
+kubectl -f https://github.com/tektoncd/catalog/blob/5c2ab7d6c3b2507d43b49577d7f1bee9c49ed8ab/buildpacks/buildpacks-v3.yaml
 ```
