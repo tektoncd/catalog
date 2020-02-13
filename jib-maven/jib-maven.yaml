@@ -12,7 +12,7 @@ spec:
       description: The name of the volume for caching Maven artifacts and base image layers
       default: empty-dir-volume
     - name: INSECUREREGISTRY
-      description: Wether to allow insecure registry
+      description: Whether to allow insecure registry
       default: "false"
     resources:
     - name: source
@@ -26,18 +26,19 @@ spec:
     image: gcr.io/cloud-builders/mvn
     command:
     - mvn
+    - -B
     - compile
     - com.google.cloud.tools:jib-maven-plugin:build
-    - -Duser.home=/builder/home
+    - -Duser.home=/tekton/home
     - -Djib.allowInsecureRegistries=$(inputs.params.INSECUREREGISTRY)
-    - -Dimage=$(outputs.resources.image.url)
+    - -Djib.to.image=$(outputs.resources.image.url)
     workingDir: /workspace/source/$(inputs.params.DIRECTORY)
     volumeMounts:
     - name: $(inputs.params.CACHE)
-      mountPath: /builder/home/.m2
+      mountPath: /tekton/home/.m2
       subPath: m2-cache
     - name: $(inputs.params.CACHE)
-      mountPath: /builder/home/.cache
+      mountPath: /tekton/home/.cache
       subPath: jib-cache
 
   volumes:

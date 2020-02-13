@@ -1,0 +1,67 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: jib-gradle
+spec:
+  inputs:
+    params:
+    - name: DIRECTORY
+      description: The directory containing the app, relative to the source repository root
+      default: .
+    - name: CACHE
+      description: The name of the volume for caching Gradle artifacts, local Maven repository, and base image layers
+      default: empty-dir-volume
+    - name: INSECUREREGISTRY
+      description: Whether to allow insecure registry
+      default: "false"
+    resources:
+    - name: source
+      type: git
+  outputs:
+    resources:
+    - name: image
+      type: image
+  steps:
+  - name: build-and-push
+    image: gcr.io/cloud-builders/gradle
+    command: ["sh", "-c"]
+    args:
+      - |
+        # Adds Gradle init script that applies the Jib Gradle plugin.
+        echo "initscript {
+                repositories { maven { url 'https://plugins.gradle.org/m2' } }
+                dependencies { classpath 'gradle.plugin.com.google.cloud.tools:jib-gradle-plugin:+' }
+              }
+              rootProject {
+                afterEvaluate {
+                  if (!project.plugins.hasPlugin('com.google.cloud.tools.jib')) {
+                    project.apply plugin: com.google.cloud.tools.jib.gradle.JibPlugin
+                  }
+                }
+              }" > /tekton/home/init-script.gradle
+        # Runs the Gradle Jib build.
+        gradle jib \
+          --stacktrace --console=plain \
+          --init-script=/tekton/home/init-script.gradle \
+          -Duser.home=/tekton/home \
+          -Dgradle.user.home=/tekton/home/.gradle \
+          -Djib.allowInsecureRegistries=$(inputs.params.INSECUREREGISTRY) \
+          -Djib.to.image=$(outputs.resources.image.url)
+    workingDir: /workspace/source/$(inputs.params.DIRECTORY)
+    volumeMounts:
+    - name: $(inputs.params.CACHE)
+      mountPath: /tekton/home/.gradle/caches
+      subPath: gradle-caches
+    - name: $(inputs.params.CACHE)
+      mountPath: /tekton/home/.gradle/wrapper
+      subPath: gradle-wrapper
+    - name: $(inputs.params.CACHE)
+      mountPath: /tekton/home/.m2
+      subPath: m2-cache
+    - name: $(inputs.params.CACHE)
+      mountPath: /tekton/home/.cache
+      subPath: jib-cache
+
+  volumes:
+  - name: empty-dir-volume
+    emptyDir: {}
