@@ -56,7 +56,7 @@ test resources (`PipelineResource`) and a yaml files to run the tasks
 
 Sometime you may need to be able to launch some scripts before applying the
 tested task or the other yaml files. Some may pre-setup something on the
-`Namespace` or have to do something externally or sometime you may even want to do
+`Namespace` or have to do something externally or sometimes you may even want to do
 some manipulation of the main `Task`.
 
 For example on the *image builders* tasks like `kaniko` or `jib` we want to
