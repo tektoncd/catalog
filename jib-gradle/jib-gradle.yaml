@@ -24,29 +24,29 @@ spec:
   steps:
   - name: build-and-push
     image: gcr.io/cloud-builders/gradle
-    command: ["sh", "-c"]
-    args:
-      - |
-        # Adds Gradle init script that applies the Jib Gradle plugin.
-        echo "initscript {
-                repositories { maven { url 'https://plugins.gradle.org/m2' } }
-                dependencies { classpath 'gradle.plugin.com.google.cloud.tools:jib-gradle-plugin:+' }
-              }
-              rootProject {
-                afterEvaluate {
-                  if (!project.plugins.hasPlugin('com.google.cloud.tools.jib')) {
-                    project.apply plugin: com.google.cloud.tools.jib.gradle.JibPlugin
-                  }
+    script: |
+      #!/bin/sh
+      set -o errexit
+      # Adds Gradle init script that applies the Jib Gradle plugin.
+      echo "initscript {
+              repositories { maven { url 'https://plugins.gradle.org/m2' } }
+              dependencies { classpath 'gradle.plugin.com.google.cloud.tools:jib-gradle-plugin:+' }
+            }
+            rootProject {
+              afterEvaluate {
+                if (!project.plugins.hasPlugin('com.google.cloud.tools.jib')) {
+                  project.apply plugin: com.google.cloud.tools.jib.gradle.JibPlugin
                 }
-              }" > /tekton/home/init-script.gradle
-        # Runs the Gradle Jib build.
-        gradle jib \
-          --stacktrace --console=plain \
-          --init-script=/tekton/home/init-script.gradle \
-          -Duser.home=/tekton/home \
-          -Dgradle.user.home=/tekton/home/.gradle \
-          -Djib.allowInsecureRegistries=$(inputs.params.INSECUREREGISTRY) \
-          -Djib.to.image=$(outputs.resources.image.url)
+              }
+            }" > /tekton/home/init-script.gradle
+      # Runs the Gradle Jib build.
+      gradle jib \
+        --stacktrace --console=plain \
+        --init-script=/tekton/home/init-script.gradle \
+        -Duser.home=/tekton/home \
+        -Dgradle.user.home=/tekton/home/.gradle \
+        -Djib.allowInsecureRegistries=$(inputs.params.INSECUREREGISTRY) \
+        -Djib.to.image=$(outputs.resources.image.url)
     workingDir: /workspace/source/$(inputs.params.DIRECTORY)
     volumeMounts:
     - name: $(inputs.params.CACHE)
