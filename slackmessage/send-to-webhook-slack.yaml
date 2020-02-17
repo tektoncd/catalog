@@ -16,7 +16,7 @@ spec:
     image: curlimages/curl:7.68.0
     script: |
       #!/bin/sh
-      /usr/bin/curl -p X POST -H 'Content-type: application/json' --data '{"text":"$(inputs.params.message)"}' $URL
+      /usr/bin/curl -X POST -H 'Content-type: application/json' --data '{"text":"$(inputs.params.message)"}' $URL
     env:
     - name: URL
       valueFrom:
