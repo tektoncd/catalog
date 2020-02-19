@@ -1,13 +1,25 @@
 # Git Tasks
 
-These Tasks are Git tasks to clone a repository in the workspace to be
-used by other tasks in a Pipeline.
-
-This is a `Task` that does the job of the `GitResource`
-`PipelineResource`. This is linked to
-[tektoncd/pipeline#1369](https://github.com/tektoncd/pipeline/issues/1369).
+These `Tasks` are Git tasks to work with repositories used by other tasks
+in your Pipeline.
 
 ## `git-clone`
+
+This `Task` has two required inputs:
+
+1. The URL of a git repo to clone provided with the `url` param.
+2. A Workspace called `output`.
+
+The `git-clone` `Task` will clone a repo from the provided `url` into the
+`output` Workspace. By default the repo will be cloned into a subdirectory
+called "src" in your Workspace. You can clone into an alternative subdirectory
+by setting this `Task`'s `subdirectory` param.
+
+This `Task` does the job of the legacy `GitResource` `PipelineResource` and
+is intended as its replacement. This is part of our plan to [offer replacement
+`Tasks` for Pipeline Resources](https://github.com/tektoncd/catalog/issues/95)
+as well as
+[document those replacements](https://github.com/tektoncd/pipeline/issues/1369).
 
 ### Workspaces
 
@@ -30,11 +42,13 @@ This is a `Task` that does the job of the `GitResource`
 
 ### Notes On Usage
 
-The `git-init` binary that this task uses to perform a clone will error out if the directory you're
-cloning into is already a git repo. In particular this can become a problem when you reuse a directory on a
-Persistent Volume Claim as git-clone's "output" workspace multiple times. One simple fix for this is to add a
-Task before git-clone that "cleans" the workspace first by running `rm -rf` if the directory already
-exists in the workspace. This may become a configurable parameter of this task at some point in the future.
+Please ensure that the Workspace subdirectory you are cloning into is *empty*
+before giving the Workspace to this Task. The `git-init` binary that this task
+uses to perform a clone will error out if the directory you're cloning into is
+already a git repo. This problem can appear when you reuse a directory on a
+`PersistentVolumeClaim` as the "output" workspace multiple times. The current
+suggested workaround is to add a Task before git-clone that "cleans" the
+workspace first by running `rm -rf` on the directory if it exists.
 
 ## Usage
 
