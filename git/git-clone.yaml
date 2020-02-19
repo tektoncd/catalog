@@ -40,42 +40,78 @@ spec:
     description: The precise commit SHA that was fetched by this Task
   steps:
   - name: clone
-    image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:latest
+    image: alpine/git:latest
     script: |
+      #!/usr/bin/env sh
+      # Most errors handling are handled by the set -eux
+      set -eux
       CHECKOUT_DIR="$(workspaces.output.path)/$(inputs.params.subdirectory)"
+      URL="$(inputs.params.url)"
+      REVISION="$(inputs.params.revision)"
+      SUBMODULES="$(inputs.params.submodules)"
+      SSLVERIFY="$(inputs.params.sslVerify)"
+      DEPTH="$(inputs.params.depth)"
 
-      cleandir() {
-        # Delete any existing contents of the repo directory if it exists.
-        #
-        # We don't just "rm -rf $CHECKOUT_DIR" because $CHECKOUT_DIR might be "/"
-        # or the root of a mounted volume.
-        if [[ -d "$CHECKOUT_DIR" ]] ; then
-          # Delete non-hidden files and directories
-          rm -rf "$CHECKOUT_DIR"/*
-          # Delete files and directories starting with . but excluding ..
-          rm -rf "$CHECKOUT_DIR"/.[!.]*
-          # Delete files and directories starting with .. plus any other character
-          rm -rf "$CHECKOUT_DIR"/..?*
-        fi
+      [[ "$(inputs.params.deleteExisting)" == "true" && -d ${CHECKOUT_DIR} ]] && {
+        find ${CHECKOUT_DIR}/|grep -v "^${CHECKOUT_DIR}/$"|xargs  rm -rf
       }
 
-      if [[ "$(inputs.params.deleteExisting)" == "true" ]] ; then
-        cleandir
-      fi
+      # https://git.io/JvBCV
+      ensureHomeEnv() {
+          local realhomedir=$(getent passwd $(whoami)|cut -f6 -d:)
+          if [[ ! -d ${realhomedir} ]];then
+              mkdir -p ${realhomedir}
+          fi
 
-      /ko-app/git-init \
-        -url "$(inputs.params.url)" \
-        -revision "$(inputs.params.revision)" \
-        -path "$CHECKOUT_DIR" \
-        -sslVerify "$(inputs.params.sslVerify)" \
-        -submodules "$(inputs.params.submodules)" \
-        -depth "$(inputs.params.depth)"
-      cd "$CHECKOUT_DIR"
-      RESULT_SHA="$(git rev-parse HEAD | tr -d '\n')"
-      EXIT_CODE="$?"
-      if [ "$EXIT_CODE" != 0 ]
-      then
-        exit $EXIT_CODE
-      fi
-      # Make sure we don't add a trailing newline to the result!
-      echo -n "$RESULT_SHA" > $(results.commit.path)
+          if [[ ${realhomedir} == ${HOME} ]];then
+              return
+          fi
+
+          if [[ ! -e ${realhomedir}/.ssh && -w ${realhomedir}/.ssh ]];then
+              ln -svf ${HOME}/.ssh ${realhomedir}/.ssh
+          fi
+      }
+
+      # https://git.io/JvBCr
+      fetch() {
+          local revision=${REVISION:-master}
+          [[ -n ${CHECKOUT_DIR} ]] && {
+            mkdir -p ${CHECKOUT_DIR}
+            cd ${CHECKOUT_DIR}
+          }
+
+          git init .
+
+          trimmedURL=$(echo ${URL}|sed -e 's/^[ ]*//' -e 's/[ ]*$//')
+          git remote add origin ${trimmedURL}
+
+          git config http.sslVerify ${SSLVERIFY}
+
+          fetchArgs="fetch"
+          if [[ ${DEPTH} > 0 ]];then
+              fetchArgs="${fetchArgs} --tags  --depth=${DEPTH}"
+          fi
+
+          # Translating original go code from https://git.io/JvEtG
+          # original comment: Fetch can fail if an old commitid was used so try
+          # git pull, performing regardless of error as no guarantee that the
+          # same error is returned by all git servers gitlab, github etc...
+          if git ${fetchArgs} && git reset --hard ${revision};then
+             true
+          else
+              git reset --hard FETCH_HEAD
+          fi
+
+          if [[ ${SUBMODULES} == "true" || ${SUBMODULES} == "yes" ]];then
+              git submodule init
+              git submodule update --recursive
+              git submodule status
+          fi
+
+          echo "Successfully cloned ${trimmedURL} @ ${revision} in path $(readlink -f .)"
+      }
+
+      ensureHomeEnv
+      fetch
+
+      git rev-parse HEAD | tr -d '\n' > "$(results.commit.path)"
