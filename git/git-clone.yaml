@@ -40,12 +40,14 @@ spec:
     script: |
       CHECKOUT_DIR="$(workspaces.output.path)/$(inputs.params.subdirectory)"
       /ko-app/git-init \
-        -url $(inputs.params.url) \
-        -revision $(inputs.params.revision) \
+        -url "$(inputs.params.url)" \
+        -revision "$(inputs.params.revision)" \
         -path "$CHECKOUT_DIR" \
-        -submodules $(inputs.params.submodules)
+        -sslVerify "$(inputs.params.sslVerify)" \
+        -submodules "$(inputs.params.submodules)" \
+        -depth "$(inputs.params.depth)"
       cd $CHECKOUT_DIR
-      RESULT_SHA=$(git rev-parse HEAD | tr -d '\n')
+      RESULT_SHA="$(git rev-parse HEAD | tr -d '\n')"
       EXIT_CODE="$?"
       if [ "$EXIT_CODE" != 0 ]
       then
