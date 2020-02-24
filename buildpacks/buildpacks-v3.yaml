@@ -76,8 +76,11 @@ spec:
         - "-layers=/layers"
         - "-helpers=$(inputs.params.USE_CRED_HELPERS)"
         - "-group=/layers/group.toml"
+        - "-cache-dir=/cache"
         - "$(outputs.resources.image.url)"
       volumeMounts:
+        - name: $(inputs.params.CACHE)
+          mountPath: /cache
         - name: layers-dir
           mountPath: /layers
 
