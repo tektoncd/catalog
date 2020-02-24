@@ -1,0 +1,38 @@
+---
+apiVersion: tekton.dev/v1alpha1
+kind: TaskRun
+metadata:
+  name: buildpacks-run
+spec:
+  taskRef:
+    name: buildpacks-v3
+# Uncomment the lines below to use an existing cache
+#  podTemplate:
+#    volumes:
+#    - name: my-cache
+#      persistentVolumeClaim:
+#        claimName: task-pv-claim
+  inputs:
+    resources:
+    - name: source
+      resourceSpec:
+        type: git
+        params:
+        - name: url
+          value: https://github.com/buildpacks/samples
+    params:
+    - name: SOURCE_SUBPATH
+      value: apps/java-maven
+    - name: BUILDER_IMAGE
+      value: cnbs/sample-builder:alpine-p0.2
+# Uncomment the lines below to use an existing cache
+#    - name: CACHE
+#      value: my-cache
+  outputs:
+    resources:
+    - name: image
+      resourceSpec:
+        type: image
+        params:
+        - name: url
+          value: localhost:5000/test-app
