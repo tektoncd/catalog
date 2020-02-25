@@ -1,0 +1,33 @@
+---
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: buildpacks-samples
+spec:
+  type: git
+  params:
+    - name: url
+      value: https://github.com/buildpacks/samples
+    - name: revision
+      value: master
+---
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: buildpacks-app-image
+spec:
+  type: image
+  params:
+    - name: url
+      value: localhost:5000/buildpacks-app
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: buildpacks-cache-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
