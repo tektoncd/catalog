@@ -5,7 +5,7 @@ API](https://developer.github.com/v3/).
 
 ## GitHub token
 
-Most tasks would expect to have a secret set in the kubernetes secret `github-secret`
+Most tasks would expect to have a secret set in the kubernetes secret `github`
 with a GitHub token in the key `token`, you can easily create it on the
 command line with `kubectl` like this :
 
@@ -32,6 +32,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/githu
 
 * **REPO_FULL_NAME:**: The GitHub repository full name, _e.g:_ `tektoncd/catalog`
 * **GITHUB_HOST_URL:**: The GitHub host domain _default:_ `api.github.com`
+* **API_PATH_PREFIX:**: The GitHub Enterprise has a prefix for the API path. _e.g:_ `/api/v3`
 * **SHA:**: The commit SHA to set the status for _e.g_: `tektoncd/catalog`
 * **TARGET_URL:**: The target URL to associate with this status. This URL will
   be linked from the GitHub UI to allow users to easily see the source of the
@@ -87,6 +88,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/githu
 ### Parameters
 
 * **GITHUB_HOST_URL:**: The GitHub host domain (_default:_ `api.github.com`)
+* **API_PATH_PREFIX:**: The GitHub Enterprise has a prefix for the API path. _e.g:_ `/api/v3`
 * **REQUEST_URL:**: The GitHub pull request or issue url, _e.g:_
   `https://github.com/tektoncd/catalog/issues/46`
 * **COMMENT:**: The actual comment to add _e.g:_ `don't forget to eat your vegetables before commiting.`.
@@ -136,6 +138,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/githu
 ### Parameters
 
 * **GITHUB_HOST_URL:**: The GitHub host domain (_default:_ `api.github.com`)
+* **API_PATH_PREFIX:**: The GitHub Enterprise has a prefix for the API path. _e.g:_ `/api/v3`
 * **REQUEST_URL:**: The GitHub pull request or issue url, (_e.g:_
   `https://github.com/tektoncd/catalog/issues/46`)
 
