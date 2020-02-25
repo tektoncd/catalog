@@ -11,10 +11,19 @@ spec:
     description: |
       The GitHub host, adjust this if you run a GitHub enteprise.
     default: "api.github.com"
+    type: string
+
+  - name: API_PATH_PREFIX
+    description: |
+      The API path prefix, GitHub Enterprise has a prefix e.g. /api/v3
+    default: ""
+    type: string
+
   - name: REQUEST_URL
     description: |
       The GitHub issue or pull request URL where we want to add a new
       comment.
+    type: string
   steps:
     - name: close-issue
       env:
@@ -37,7 +46,7 @@ spec:
 
         # This will convert https://github.com/foo/bar/pull/202 to
         # api url path /repos/foo/issues/202
-        api_url = "/repos/" + "/".join(split_url[1:3]) + \
+        api_url = "$(params.API_PATH_PREFIX)" + "/repos/" + "/".join(split_url[1:3]) + \
                   "/issues/" + split_url[-1]
 
         # Trying to avoid quotes issue as much as possible by using triple
