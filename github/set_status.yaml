@@ -12,29 +12,48 @@ spec:
     description: |
       The GitHub host, adjust this if you run a GitHub enteprise.
     default: "api.github.com"
+    type: string
+
+  - name: API_PATH_PREFIX
+    description: |
+      The API path prefix, GitHub Enterprise has a prefix e.g. /api/v3
+    default: ""
+    type: string
+
   - name: REPO_FULL_NAME
     description: |
       The GitHub repository full name, i.e: tektoncd/catalog
+    type: string
+
   - name: SHA
     description: |
       Commit SHA to set the status for.
+    type: string
+
   - name: TARGET_URL
     description: |
       The target URL to associate with this status. This URL will be linked
       from the GitHub UI to allow users to easily see the source of the
       status.
+    type: string
+
   - name: DESCRIPTION
     description: |
       A short description of the status.
+    type: string
+
   - name: CONTEXT
     description: |
       The GitHub context, A string label to differentiate this status from
       the status of other systems. ie: "continuous-integration/tekton"
     default: "continuous-integration/tekton"
+    type: string
+
   - name: STATE
     description: |
       The state of the status. Can be one of the following `error`,
       `failure`, `pending`, or `success`.
+    type: string
   steps:
     - name: set-status
       env:
@@ -51,7 +70,7 @@ spec:
         import os
         import http.client
 
-        status_url = "/repos/$(params.REPO_FULL_NAME)/" + \
+        status_url = "$(params.API_PATH_PREFIX)" + "/repos/$(params.REPO_FULL_NAME)/" + \
             "statuses/$(params.SHA)"
 
         data = {
