@@ -6,33 +6,25 @@ metadata:
 spec:
   taskRef:
     name: buildpacks-v3
-# Uncomment the lines below to use an existing cache
-#  podTemplate:
-#    volumes:
-#    - name: my-cache
-#      persistentVolumeClaim:
-#        claimName: task-pv-claim
+  podTemplate:
+    volumes:
+    - name: buildpacks-cache
+      persistentVolumeClaim:
+        claimName: buildpacks-cache-pvc
   inputs:
     resources:
     - name: source
-      resourceSpec:
-        type: git
-        params:
-        - name: url
-          value: https://github.com/buildpacks/samples
+      resourceRef:
+        name: buildpacks-samples
     params:
     - name: SOURCE_SUBPATH
       value: apps/java-maven
     - name: BUILDER_IMAGE
       value: cnbs/sample-builder:alpine-p0.2
-# Uncomment the lines below to use an existing cache
-#    - name: CACHE
-#      value: my-cache
+    - name: CACHE
+      value: buildpacks-cache
   outputs:
     resources:
     - name: image
-      resourceSpec:
-        type: image
-        params:
-        - name: url
-          value: localhost:5000/test-app
+      resourceRef:
+        name: buildpacks-app-image
