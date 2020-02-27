@@ -42,6 +42,7 @@ spec:
       # Runs the Gradle Jib build.
       gradle jib \
         --stacktrace --console=plain \
+        -g gradle-user-home \
         --init-script=/tekton/home/init-script.gradle \
         -Duser.home=/tekton/home \
         -Dgradle.user.home=/tekton/home/.gradle \
