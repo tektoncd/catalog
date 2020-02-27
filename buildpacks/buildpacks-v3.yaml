@@ -55,6 +55,8 @@ spec:
           mountPath: /layers
         - name: $(inputs.params.CACHE)
           mountPath: /cache
+      securityContext:
+        privileged: true
 
     - name: detect
       image: $(inputs.params.BUILDER_IMAGE)
@@ -67,6 +69,8 @@ spec:
       volumeMounts:
         - name: layers-dir
           mountPath: /layers
+      securityContext:
+        privileged: true
 
     - name: analyze
       image: $(inputs.params.BUILDER_IMAGE)
@@ -83,6 +87,8 @@ spec:
           mountPath: /cache
         - name: layers-dir
           mountPath: /layers
+      securityContext:
+        privileged: true
 
     - name: restore
       image: $(inputs.params.BUILDER_IMAGE)
@@ -97,6 +103,8 @@ spec:
           mountPath: /cache
         - name: layers-dir
           mountPath: /layers
+      securityContext:
+        privileged: true
 
     - name: build
       image: $(inputs.params.BUILDER_IMAGE)
@@ -110,6 +118,8 @@ spec:
       volumeMounts:
         - name: layers-dir
           mountPath: /layers
+      securityContext:
+        privileged: true
 
     - name: export
       image: $(inputs.params.BUILDER_IMAGE)
@@ -127,6 +137,8 @@ spec:
           mountPath: /layers
         - name: $(inputs.params.CACHE)
           mountPath: /cache
+      securityContext:
+        privileged: true
 
   volumes:
     - name: empty-dir
