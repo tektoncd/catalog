@@ -31,6 +31,10 @@ spec:
       description: subdirectory inside the "output" workspace to clone the git repo into
       type: string
       default: "src"
+    - name: deleteExisting
+      description: clean out the contents of the repo's destination directory (if it already exists) before trying to clone the repo there
+      type: string
+      default: "false"
   results:
   - name: commit
     description: The precise commit SHA that was fetched by this Task
@@ -39,6 +43,27 @@ spec:
     image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:latest
     script: |
       CHECKOUT_DIR="$(workspaces.output.path)/$(inputs.params.subdirectory)"
+
+      cleandir() {
+        # Delete any existing contents of the repo directory if it exists.
+        #
+        # We don't just "rm -rf $CHECKOUT_DIR" because $CHECKOUT_DIR might be "/"
+        # or the root of a mounted volume.
+        if [[ -d "$CHECKOUT_DIR" ]] ; then
+          # Delete non-hidden files and directories
+          rm -rf "$CHECKOUT_DIR"/*
+          # Delete files and directories starting with . but excluding ..
+          rm -rf "$CHECKOUT_DIR"/.[!.]*
+          # Delete files and directories starting with .. plus any other character
+          rm -rf "$CHECKOUT_DIR"/..?*
+        fi
+      }
+
+      if [[ "$(inputs.params.deleteExisting)" == "true" ]] ; then
+        cleandir
+        ls -lah "$CHECKOUT_DIR"
+      fi
+
       /ko-app/git-init \
         -url "$(inputs.params.url)" \
         -revision "$(inputs.params.revision)" \
@@ -46,7 +71,7 @@ spec:
         -sslVerify "$(inputs.params.sslVerify)" \
         -submodules "$(inputs.params.submodules)" \
         -depth "$(inputs.params.depth)"
-      cd $CHECKOUT_DIR
+      cd "$CHECKOUT_DIR"
       RESULT_SHA="$(git rev-parse HEAD | tr -d '\n')"
       EXIT_CODE="$?"
       if [ "$EXIT_CODE" != 0 ]
