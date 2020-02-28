@@ -35,20 +35,11 @@ as well as
 * **depth**: performs a shallow clone where only the most recent commit(s) will be fetched (_default_: 1)
 * **sslVerify**: defines if http.sslVerify should be set to true or false in the global git config (_default_: true)
 * **subdirectory**: subdirectory inside the "output" workspace to clone the git repo into (_default:_ src)
+* **deleteExisting**: clean out the contents of the repo's destination directory if it already exists before cloning the repo there (_default_: false)
 
 ### Results
 
 * **commit**: The precise commit SHA that was fetched by this Task
-
-### Notes On Usage
-
-Please ensure that the Workspace subdirectory you are cloning into is *empty*
-before giving the Workspace to this Task. The `git-init` binary that this task
-uses to perform a clone will error out if the directory you're cloning into is
-already a git repo. This problem can appear when you reuse a directory on a
-`PersistentVolumeClaim` as the "output" workspace multiple times. The current
-suggested workaround is to add a Task before git-clone that "cleans" the
-workspace first by running `rm -rf` on the directory if it exists.
 
 ## Usage
 
