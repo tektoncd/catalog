@@ -30,11 +30,8 @@ spec:
   - name: lint
     image: golangci/golangci-lint:$(inputs.params.version)
     workingdir: /workspace/src/$(inputs.params.package)
-    command:
-    - /bin/bash
-    args:
-    - -c
-    - "golangci-lint run $(inputs.params.flags)"
+    script: |
+      golangci-lint run $(inputs.params.flags)
     env:
     - name: GOPATH
       value: /workspace

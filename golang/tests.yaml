@@ -33,11 +33,8 @@ spec:
   - name: unit-test
     image: golang:$(inputs.params.version)
     workingdir: /workspace/src/$(inputs.params.package)
-    command:
-    - /bin/bash
-    args:
-    - -c
-    - "go test $(inputs.params.flags) $(inputs.params.packages)"
+    script: |
+      go test $(inputs.params.flags) $(inputs.params.packages)
     env:
     - name: GOPATH
       value: /workspace
