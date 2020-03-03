@@ -21,7 +21,7 @@ spec:
   steps:
     - name: mvn-settings
       image: registry.access.redhat.com/ubi8/ubi-minimal:latest
-      workingdir: /.m2
+      workingDir: /.m2
       command:
         - '/bin/bash'
         - '-c'

@@ -27,7 +27,7 @@ spec:
 
   steps:
   - name: build-and-push
-    workingdir: /workspace/source
+    workingDir: /workspace/source
     image: $(inputs.params.BUILDER_IMAGE)
     # specifying DOCKER_CONFIG is required to allow kaniko to detect docker credential
     # https://github.com/tektoncd/pipeline/pull/706

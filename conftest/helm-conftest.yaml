@@ -21,7 +21,7 @@ spec:
 
   steps:
   - name: helm-conftest
-    workingdir: /workspace/source
+    workingDir: /workspace/source
     image: instrumenta/helm-conftest:latest
     command:
       - helm

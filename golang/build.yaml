@@ -32,7 +32,7 @@ spec:
   steps:
   - name: build
     image: golang:$(inputs.params.version)
-    workingdir: /workspace/src/$(inputs.params.package)
+    workingDir: /workspace/src/$(inputs.params.package)
     script: |
       go build $(inputs.params.flags) $(inputs.params.packages)
     env:

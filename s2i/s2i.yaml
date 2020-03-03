@@ -38,7 +38,7 @@ spec:
     volumeMounts:
     - mountPath: /gen-source
       name: gen-source
-    workingdir: /workspace/source
+    workingDir: /workspace/source
   - command:
     - buildah
     - bud
@@ -58,7 +58,7 @@ spec:
       name: varlibcontainers
     - mountPath: /gen-source
       name: gen-source
-    workingdir: /gen-source
+    workingDir: /gen-source
   - command:
     - buildah
     - push

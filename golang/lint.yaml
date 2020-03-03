@@ -29,7 +29,7 @@ spec:
   steps:
   - name: lint
     image: golangci/golangci-lint:$(inputs.params.version)
-    workingdir: /workspace/src/$(inputs.params.package)
+    workingDir: /workspace/src/$(inputs.params.package)
     script: |
       golangci-lint run $(inputs.params.flags)
     env:

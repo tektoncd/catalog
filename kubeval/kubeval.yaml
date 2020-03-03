@@ -19,7 +19,7 @@ spec:
 
   steps:
   - name: kubeval
-    workingdir: /workspace/source
+    workingDir: /workspace/source
     image: garethr/kubeval:latest
     command:
       - kubeval
