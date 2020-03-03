@@ -27,7 +27,7 @@ spec:
   steps:
   - name: build-and-push
     image: gcr.io/makisu-project/makisu:v0.1.10
-    workingdir: /workspace/source
+    workingDir: /workspace/source
     command:
     - /makisu-internal/makisu
     - build
