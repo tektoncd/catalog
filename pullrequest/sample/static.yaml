@@ -1,0 +1,48 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: count-comments
+spec:
+  results:
+  - name: count
+    description: the number of comments on the PR
+  workspaces:
+  - name: pr
+  steps:
+  - name: count
+    image: ubuntu
+    script: |
+      #!/usr/bin/env bash
+      set -xe
+
+      NUM=$(ls $(workspaces.pr.path)/comments | wc -l )
+      echo -n $NUM > /tekton/results/count
+---
+# TODO(pipeline#1986) Once we have some kind of "auto workspace mode" we can avoid
+# having to manually create a PVC and manually clear it repeatedly
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: shared-task-storage
+spec:
+  resources:
+    requests:
+      storage: 16Mi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: clear-workspace
+spec:
+  workspaces:
+  - name: w
+  steps:
+  - name: clear
+    image: ubuntu
+    script: |
+      #!/usr/bin/env bash
+      set -xe
+      rm -rf $(workspaces.w.path)/*
