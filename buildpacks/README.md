@@ -55,7 +55,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/build
 This `TaskRun` will use the `buildpacks-v3` task to fetch source code from a Git repo, build the source code, then publish a container image.
 
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: example-run
@@ -68,24 +68,23 @@ spec:
 #    - name: my-cache
 #      persistentVolumeClaim:
 #        claimName: task-pv-claim
-  inputs:
-    resources:
+  params:
+  - name: SOURCE_SUBPATH
+    value: <optional subpath within your source repo, e.g. "apps/java-maven">
+  - name: BUILDER_IMAGE
+    value: <your builder image tag, see below for suggestions, e.g. "builder-repo/builder-image:builder-tag">
+# Uncomment the lines below to use an existing cache
+#  - name: CACHE
+#    value: my-cache
+  resources:
+    inputs:
     - name: source
       resourceSpec:
         type: git
         params:
         - name: url
           value: <your git repo, e.g. "https://github.com/buildpacks/samples">
-    params:
-    - name: SOURCE_SUBPATH
-      value: <optional subpath within your source repo, e.g. "apps/java-maven">
-    - name: BUILDER_IMAGE
-      value: <your builder image tag, see below for suggestions, e.g. "builder-repo/builder-image:builder-tag">
-# Uncomment the lines below to use an existing cache
-#    - name: CACHE
-#      value: my-cache
-  outputs:
-    resources:
+    outputs:
     - name: image
       resourceSpec:
         type: image
