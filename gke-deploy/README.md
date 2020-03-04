@@ -48,7 +48,7 @@ You can invoke `gke-deploy` to deploy manifests in a Git repository by
 providing a TaskRun:
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: gke-deploy-repo
@@ -56,8 +56,8 @@ spec:
   serviceAccountName: workload-identity-sa  # <-- a SA configured with Workload Identity
   taskRef:
     name: gke-deploy
-  inputs:
-    resources:
+  resources:
+    inputs:
     - name: source-repo
       resourceSpec:
         type: git
@@ -66,14 +66,14 @@ spec:
           value: [GIT_REPO_URL]
         - name: revision
           value: [GIT_REPO_REVISION]
-    params:
-    - name: ARGS
-      value:
-      - run
-      - --filename="$(inputs.resources.source-repo.path)/[PATH_TO_KUBERNETES_CONFIGS]"
-      - --cluster=[CLUSTER_NAME]
-      - --location=[CLUSTER_LOCATION]
-      - --project=[CLUSTER_PROJECT]
+  params:
+  - name: ARGS
+    value:
+    - run
+    - --filename="$(inputs.resources.source-repo.path)/[PATH_TO_KUBERNETES_CONFIGS]"
+    - --cluster=[CLUSTER_NAME]
+    - --location=[CLUSTER_LOCATION]
+    - --project=[CLUSTER_PROJECT]
 ```
 
 See
@@ -159,7 +159,7 @@ gcloud iam service-accounts [DEPLOY_CLUSTER_PROJECT] add-iam-policy-binding \
 You can invoke `build-push-gke-deploy` to build, push, and deploy your application in a Git repository to a GKE cluster by providing a PipelineRun:
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
   name: build-push-gke-deploy-run

@@ -122,7 +122,7 @@ Install the Tekton Pipelines CLI to view your logs by following the instructions
   DEPLOY_CLUSTER_PROJECT=[PROJECT_ID]
 
   cat >build-push-gke-deploy-run.yaml <<EOF
-  apiVersion: tekton.dev/v1alpha1
+  apiVersion: tekton.dev/v1beta1
   kind: PipelineRun
   metadata:
     name: build-push-gke-deploy-run
@@ -217,4 +217,3 @@ You may want to clean up created resources that incur charges on your Google Clo
   DEPLOY_CLUSTER_PROJECT=[PROJECT_ID]
   gcloud container clusters delete $DEPLOY_CLUSTER_NAME --zone=$DEPLOY_CLUSTER_LOCATION --project=$DEPLOY_CLUSTER_PROJECT --async -q
   ```
-
