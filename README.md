@@ -26,24 +26,16 @@ There are two kinds of `Task`s:
 First, install a `Task` onto your cluster:
 
 ```
-$ kubectl apply -f bazel.yaml
-task.tekton.dev/bazel created
+$ kubectl apply -f golang/build.yaml
+task.tekton.dev/golang-build created
 ```
 
 You can see which `Task`s are installed using `kubectl` as well:
 
 ```
 $ kubectl get tasks
-NAME    AGE
-bazel   3s
-```
-
-*OR*
-
-```
-$ kubectl get clustertasks
-NAME            AGE
-cluster-bazel   3s
+NAME           AGE
+golang-build   3s
 ```
 
 With the `Task` installed, you can define a `TaskRun` that runs that `Task`,
@@ -56,18 +48,18 @@ metadata:
   name: example-run
 spec:
   taskRef:
-    name: bazel
+    name: golang-build
   inputs:
     params:
-    - name: TARGET
-      value: //path/to/image:publish
+    - name: package
+      value: github.com/tektoncd/pipeline
     resources:
     - name: source
       resourceSpec:
         type: git
         params:
         - name: url
-          value: https://github.com/my-user/my-repo
+          value: https://github.com/tektoncd/pipeline
 ```
 
 Next, create the `TaskRun` you defined:
