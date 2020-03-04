@@ -46,30 +46,29 @@ spec:
 ```
 
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: example-jib-gradle
 spec:
   taskRef:
     name: jib-gradle
-  inputs:
-    params:
-    - name: DIRECTORY
-      value: ./examples/helloworld
-    resources:
+  params:
+  - name: DIRECTORY
+    value: ./examples/helloworld
+  resources:
+    inputs:
     - name: source
       resourceSpec:
         type: git
         params:
         - name: url
           value: https://github.com/my-user/my-repo
-  outputs:
-    resources:
+    outputs:
     - name: image
       resourceRef:
         name: example-image
 ```
 
-If you would like to customize the container, configure the `jib-gradle-plugin` in your `build.gradle`. 
+If you would like to customize the container, configure the `jib-gradle-plugin` in your `build.gradle`.
 See [setup instructions for Gradle](https://github.com/GoogleContainerTools/jib/tree/master/jib-gradle-plugin#setup) for more information.
