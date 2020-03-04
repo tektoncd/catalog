@@ -23,15 +23,15 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/conft
 Once installed, the task can be used as follows:
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: conftest-example
 spec:
   taskRef:
     name: conftest
-  inputs:
-    resources:
+  resources:
+    inputs:
     - name: source
       resourceSpec:
         type: git
@@ -40,11 +40,11 @@ spec:
           value: master
         - name: url
           value: https://github.com/instrumenta/conftest.git
-    params:
-    - name: files
-      value: examples/kubernetes/deployment.yaml
-    - name: policy
-      value: examples/kubernetes/policy
+  params:
+  - name: files
+    value: examples/kubernetes/deployment.yaml
+  - name: policy
+    value: examples/kubernetes/policy
 ```
 
 Note that the above respository contains both a configuration file we want to test (`examples/kubernetes/deployment.yaml`) and a directory (`examples/kubernetes/policy`) containing OPA policy files. When using the task you would provide the details of the repository you want to test.
@@ -83,15 +83,15 @@ container step-conftest has failed  : Error
 Once installed, the Helm task can be used as follows:
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: helm-conftest-example
 spec:
   taskRef:
     name: helm-conftest
-  inputs:
-    resources:
+  resources:
+    inputs:
     - name: source
       resourceSpec:
         type: git
@@ -100,11 +100,11 @@ spec:
           value: master
         - name: url
           value: https://github.com/helm/charts.git
-    params:
-    - name: chart
-      value: stable/mysql
-    - name: policy
-      value: stable/mysql/policy
+  params:
+  - name: chart
+    value: stable/mysql
+  - name: policy
+    value: stable/mysql/policy
 ```
 
 ## Inputs
@@ -120,6 +120,3 @@ spec:
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
-
-
-
