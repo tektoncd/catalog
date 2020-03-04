@@ -42,7 +42,7 @@ data:
   ARGOCD_PASSWORD: <password>
   ARGOCD_AUTH_TOKEN: <token>
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: argocd-pipeline
