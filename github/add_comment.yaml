@@ -1,26 +1,23 @@
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: github-add-comment
   description: |
     This Task will add a comment to a pull request or an issue.
 spec:
-  inputs:
-    params:
-      - name: GITHUB_HOST_URL
-        description: |
-          The GitHub host, adjust this if you run a GitHub enteprise.
-        default: "api.github.com"
-
-      - name: REQUEST_URL
-        description: |
-          The GitHub issue or pull request URL where we want to add a new
-          comment.
-
-      - name: COMMENT
-        description: |
-          The actual comment to add.
+  params:
+  - name: GITHUB_HOST_URL
+    description: |
+      The GitHub host, adjust this if you run a GitHub enteprise.
+    default: "api.github.com"
+  - name: REQUEST_URL
+    description: |
+      The GitHub issue or pull request URL where we want to add a new
+      comment.
+  - name: COMMENT
+    description: |
+      The actual comment to add.
   steps:
     - name: add-comment
       env:
@@ -39,7 +36,7 @@ spec:
         import urllib.parse
 
         split_url = urllib.parse.urlparse(
-            "$(inputs.params.REQUEST_URL)").path.split("/")
+            "$(params.REQUEST_URL)").path.split("/")
 
         # This will convert https://github.com/foo/bar/pull/202 to
         # api url path /repos/foo/issues/202
@@ -48,7 +45,7 @@ spec:
 
         # Trying to avoid quotes issue as much as possible by using triple
         # quotes
-        comment = """$(inputs.params.COMMENT)"""
+        comment = """$(params.COMMENT)"""
         data = {
             "body": comment,
         }
@@ -56,7 +53,7 @@ spec:
         print("Sending this data to GitHub: ")
         print(data)
 
-        conn = http.client.HTTPSConnection("$(inputs.params.GITHUB_HOST_URL)")
+        conn = http.client.HTTPSConnection("$(params.GITHUB_HOST_URL)")
         r = conn.request(
             "POST",
             api_url + "/comments",
@@ -71,4 +68,4 @@ spec:
             print(resp.read())
         else:
           print("a GitHub comment has been added to "
-                "$(inputs.params.REQUEST_URL)")
+                "$(params.REQUEST_URL)")

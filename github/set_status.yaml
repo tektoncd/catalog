@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: github-set-status
@@ -7,41 +7,34 @@ metadata:
     This task will set the CI as running and add a link to the openshift console
     viewer url.
 spec:
-  inputs:
-    params:
-      - name: GITHUB_HOST_URL
-        description: |
-          The GitHub host, adjust this if you run a GitHub enteprise.
-        default: "api.github.com"
-
-      - name: REPO_FULL_NAME
-        description: |
-          The GitHub repository full name, i.e: tektoncd/catalog
-
-      - name: SHA
-        description: |
-          Commit SHA to set the status for.
-
-      - name: TARGET_URL
-        description: |
-          The target URL to associate with this status. This URL will be linked
-          from the GitHub UI to allow users to easily see the source of the
-          status.
-
-      - name: DESCRIPTION
-        description: |
-          A short description of the status.
-
-      - name: CONTEXT
-        description: |
-          The GitHub context, A string label to differentiate this status from
-          the status of other systems. ie: "continuous-integration/tekton"
-        default: "continuous-integration/tekton"
-
-      - name: STATE
-        description: |
-          The state of the status. Can be one of the following `error`,
-          `failure`, `pending`, or `success`.
+  params:
+  - name: GITHUB_HOST_URL
+    description: |
+      The GitHub host, adjust this if you run a GitHub enteprise.
+    default: "api.github.com"
+  - name: REPO_FULL_NAME
+    description: |
+      The GitHub repository full name, i.e: tektoncd/catalog
+  - name: SHA
+    description: |
+      Commit SHA to set the status for.
+  - name: TARGET_URL
+    description: |
+      The target URL to associate with this status. This URL will be linked
+      from the GitHub UI to allow users to easily see the source of the
+      status.
+  - name: DESCRIPTION
+    description: |
+      A short description of the status.
+  - name: CONTEXT
+    description: |
+      The GitHub context, A string label to differentiate this status from
+      the status of other systems. ie: "continuous-integration/tekton"
+    default: "continuous-integration/tekton"
+  - name: STATE
+    description: |
+      The state of the status. Can be one of the following `error`,
+      `failure`, `pending`, or `success`.
   steps:
     - name: set-status
       env:
@@ -58,19 +51,19 @@ spec:
         import os
         import http.client
 
-        status_url = "/repos/$(inputs.params.REPO_FULL_NAME)/" + \
-            "statuses/$(inputs.params.SHA)"
+        status_url = "/repos/$(params.REPO_FULL_NAME)/" + \
+            "statuses/$(params.SHA)"
 
         data = {
-            "state": "$(inputs.params.STATE)",
-            "target_url": "$(inputs.params.TARGET_URL)",
-            "description": "$(inputs.params.DESCRIPTION)",
-            "context": "$(inputs.params.CONTEXT)"
+            "state": "$(params.STATE)",
+            "target_url": "$(params.TARGET_URL)",
+            "description": "$(params.DESCRIPTION)",
+            "context": "$(params.CONTEXT)"
         }
         print("Sending this data to GitHub: ")
         print(data)
 
-        conn = http.client.HTTPSConnection("$(inputs.params.GITHUB_HOST_URL)")
+        conn = http.client.HTTPSConnection("$(params.GITHUB_HOST_URL)")
         r = conn.request(
             "POST",
             status_url,
@@ -84,5 +77,5 @@ spec:
             print("Error: %d" % (resp.status))
             print(resp.read())
         else:
-          print("GitHub status '$(inputs.params.STATE)' has been set on "
-                "$(inputs.params.REPO_FULL_NAME)#$(inputs.params.SHA) ")
+          print("GitHub status '$(params.STATE)' has been set on "
+                "$(params.REPO_FULL_NAME)#$(params.SHA) ")
