@@ -1,22 +1,20 @@
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: github-close-issue
   description: |
     This Task will close a pull request or an issue.
 spec:
-  inputs:
-    params:
-      - name: GITHUB_HOST_URL
-        description: |
-          The GitHub host, adjust this if you run a GitHub enteprise.
-        default: "api.github.com"
-
-      - name: REQUEST_URL
-        description: |
-          The GitHub issue or pull request URL where we want to add a new
-          comment.
+  params:
+  - name: GITHUB_HOST_URL
+    description: |
+      The GitHub host, adjust this if you run a GitHub enteprise.
+    default: "api.github.com"
+  - name: REQUEST_URL
+    description: |
+      The GitHub issue or pull request URL where we want to add a new
+      comment.
   steps:
     - name: close-issue
       env:
@@ -35,7 +33,7 @@ spec:
         import urllib.parse
 
         split_url = urllib.parse.urlparse(
-            "$(inputs.params.REQUEST_URL)").path.split("/")
+            "$(params.REQUEST_URL)").path.split("/")
 
         # This will convert https://github.com/foo/bar/pull/202 to
         # api url path /repos/foo/issues/202
@@ -49,7 +47,7 @@ spec:
         print("Sending this data to GitHub on : ")
         print(data)
 
-        conn = http.client.HTTPSConnection("$(inputs.params.GITHUB_HOST_URL)")
+        conn = http.client.HTTPSConnection("$(params.GITHUB_HOST_URL)")
         r = conn.request(
             "PATCH",
             api_url,
@@ -63,4 +61,4 @@ spec:
             print("Error: %d" % (resp.status))
             print(resp.read())
         else:
-          print(f"$(inputs.params.REQUEST_URL) has been closed.")
+          print(f"$(params.REQUEST_URL) has been closed.")
