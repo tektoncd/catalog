@@ -59,7 +59,7 @@ named `commit` in the PipelineRun's Status with the commit SHA that was
 fetched by the `git-clone` Task.
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: cat-readme
@@ -67,17 +67,16 @@ spec:
   workspaces:
   - name: source
     mountPath: /source
-  inputs:
-    params:
-    - name: subdirectory
-      description: Subdirectory inside "source" workspace that contains the README.md.
-      default: "."
+  params:
+  - name: subdirectory
+    description: Subdirectory inside "source" workspace that contains the README.md.
+    default: "."
   steps:
   - name: cat-readme
     image: ubuntu
-    script: cat "$(workspaces.source.path)/$(inputs.params.subdirectory)/README.md"
+    script: cat "$(workspaces.source.path)/$(params.subdirectory)/README.md"
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: cat-pipeline-readme
@@ -124,7 +123,7 @@ spec:
     requests:
       storage: 500Mi
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
   name: cat-pipeline-readme-run
