@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: buildpacks-run
@@ -11,20 +11,19 @@ spec:
     - name: buildpacks-cache
       persistentVolumeClaim:
         claimName: buildpacks-cache-pvc
-  inputs:
-    resources:
+  params:
+  - name: SOURCE_SUBPATH
+    value: apps/java-maven
+  - name: BUILDER_IMAGE
+    value: cnbs/sample-builder:alpine-p0.2
+  - name: CACHE
+    value: buildpacks-cache
+  resources:
+    inputs:
     - name: source
       resourceRef:
         name: buildpacks-samples
-    params:
-    - name: SOURCE_SUBPATH
-      value: apps/java-maven
-    - name: BUILDER_IMAGE
-      value: cnbs/sample-builder:alpine-p0.2
-    - name: CACHE
-      value: buildpacks-cache
-  outputs:
-    resources:
+    outputs:
     - name: image
       resourceRef:
         name: buildpacks-app-image
