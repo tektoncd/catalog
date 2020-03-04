@@ -75,26 +75,26 @@ This TaskRun runs the Task to validate
 `golangci-lint`.
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: lint-my-code
 spec:
   taskRef:
     name: golangci-lint
-  inputs:
-    resources:
+  resources:
+    inputs:
     - name: source
       resourceSpec:
         type: git
         params:
         - name: url
           value: https://github.com/tektoncd/pipeline
-    params:
-    - name: package
-      value: github.com/tektoncd/pipeline
-    - name: flags
-      value: --verbose
+  params:
+  - name: package
+    value: github.com/tektoncd/pipeline
+  - name: flags
+    value: --verbose
 ```
 
 ### `golang-test`
@@ -103,26 +103,26 @@ This TaskRun runs the Task to run unit-tests on
 [`tektoncd/pipeline`](https://github.com/tektoncd/pipeline).
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: test-my-code
 spec:
   taskRef:
     name: golang-test
-  inputs:
-    resources:
+  resources:
+    inputs:
     - name: source
       resourceSpec:
         type: git
         params:
         - name: url
           value: https://github.com/tektoncd/pipeline
-    params:
-    - name: package
-      value: github.com/tektoncd/pipeline
-    - name: packages
-      value: ./pkg/...
+  params:
+  - name: package
+    value: github.com/tektoncd/pipeline
+  - name: packages
+    value: ./pkg/...
 ```
 
 ### `golang-build`
@@ -132,22 +132,22 @@ This TaskRun runs the Task to compile commands from
 `golangci-lint`.
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: build-my-code
 spec:
   taskRef:
     name: golang-build
-  inputs:
-    resources:
+  resources:
+    inputs:
     - name: source
       resourceSpec:
         type: git
         params:
         - name: url
           value: https://github.com/tektoncd/pipeline
-    params:
-    - name: package
-      value: github.com/tektoncd/pipeline
+  params:
+  - name: package
+    value: github.com/tektoncd/pipeline
 ```
