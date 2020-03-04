@@ -46,30 +46,29 @@ spec:
 ```
 
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: example-jib-maven
 spec:
   taskRef:
     name: jib-maven
-  inputs:
-    params:
-    - name: DIRECTORY
-      value: ./examples/helloworld
-    resources:
+  params:
+  - name: DIRECTORY
+    value: ./examples/helloworld
+  resources:
+    inputs
     - name: source
       resourceSpec:
         type: git
         params:
         - name: url
           value: https://github.com/my-user/my-repo
-  outputs:
-    resources:
+    outputs:
     - name: image
       resourceRef:
         name: example-image
 ```
 
-If you would like to customize the container, configure the `jib-maven-plugin` in your `pom.xml`. 
+If you would like to customize the container, configure the `jib-maven-plugin` in your `pom.xml`.
 See [setup instructions for Maven](https://github.com/GoogleContainerTools/jib/tree/master/jib-maven-plugin#setup) for more information.
