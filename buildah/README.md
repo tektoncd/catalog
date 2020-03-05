@@ -44,23 +44,22 @@ This TaskRun runs the Task to fetch a Git repo, and build and push a container
 image using Buildah.
 
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: buildah-build-my-repo
 spec:
   taskRef:
     name: buildah
-  inputs:
-    resources:
+  resources:
+    inputs:
     - name: source
       resourceSpec:
         type: git
         params:
         - name: url
           value: https://github.com/my-user/my-repo
-  outputs:
-    resources:
+    outputs:
     - name: image
       resourceSpec:
         type: image
