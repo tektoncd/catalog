@@ -1,34 +1,32 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: kaniko
 spec:
-  inputs:
-    params:
-    - name: DOCKERFILE
-      description: Path to the Dockerfile to build.
-      default: ./Dockerfile
-    - name: CONTEXT
-      description: The build context used by Kaniko.
-      default: ./
-    - name: EXTRA_ARGS
-      default: ""
-    - name: BUILDER_IMAGE
-      description: The image on which builds will run
-      default: gcr.io/kaniko-project/executor:v0.13.0
-    resources:
+  params:
+  - name: DOCKERFILE
+    description: Path to the Dockerfile to build.
+    default: ./Dockerfile
+  - name: CONTEXT
+    description: The build context used by Kaniko.
+    default: ./
+  - name: EXTRA_ARGS
+    default: ""
+  - name: BUILDER_IMAGE
+    description: The image on which builds will run
+    default: gcr.io/kaniko-project/executor:v0.13.0
+  resources:
+    inputs:
     - name: source
       type: git
-
-  outputs:
-    resources:
+    outputs:
     - name: image
       type: image
 
   steps:
   - name: build-and-push
     workingDir: /workspace/source
-    image: $(inputs.params.BUILDER_IMAGE)
+    image: $(params.BUILDER_IMAGE)
     # specifying DOCKER_CONFIG is required to allow kaniko to detect docker credential
     # https://github.com/tektoncd/pipeline/pull/706
     env:
@@ -36,9 +34,9 @@ spec:
       value: /tekton/home/.docker
     command:
     - /kaniko/executor
-    - $(inputs.params.EXTRA_ARGS)
-    - --dockerfile=$(inputs.params.DOCKERFILE)
-    - --context=/workspace/source/$(inputs.params.CONTEXT)  # The user does not need to care the workspace and the source.
-    - --destination=$(outputs.resources.image.url)
+    - $(params.EXTRA_ARGS)
+    - --dockerfile=$(params.DOCKERFILE)
+    - --context=/workspace/source/$(params.CONTEXT)  # The user does not need to care the workspace and the source.
+    - --destination=$(resources.outputs.image.url)
     securityContext:
       runAsUser: 0
