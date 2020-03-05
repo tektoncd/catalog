@@ -40,13 +40,13 @@ spec:
 ### With Defaults
 
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: maven-run
 spec:
-  inputs:
-    resources:
+  resources:
+    inputs:
     - name: source
       resourceRef:
         name: maven-resource-petclinic
@@ -58,26 +58,26 @@ spec:
 ### With Custom Params
 
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: maven-run
 spec:
-  inputs:
-    resources:
+  resources:
+    inputs:
     - name: source
       resourceRef:
         name: maven-resource-petclinic
-    params:
-    - name: MAVEN_MIRROR_URL
-      value: "http://localhost:8080/bucketrepo/"
+  params:
+  - name: MAVEN_MIRROR_URL
+    value: "http://localhost:8080/bucketrepo/"
   taskRef:
     name: maven
 ```
 ---
 ### With Custom /.m2/settings.yaml
 
-A user provided custom `settings.xml` can be used with the Maven Task. To do this we need to mount the `settings.xml` on the Maven Task. 
+A user provided custom `settings.xml` can be used with the Maven Task. To do this we need to mount the `settings.xml` on the Maven Task.
 Following steps demostrate the use of a ConfigMap to mount a custom `settings.xml`.
 
 1. create configmap
@@ -87,23 +87,23 @@ oc create configmap `maven-settings-cm` --from-flie settings.xml
 
 1. modify Maven Task (mount config map to `maven-settings` step in Task definition. also add `maven-settings-cm` to volumes).
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: maven
 spec:
-  inputs:
-    params:
-    - name: GOALS
-      description: The Maven goals to run
-      type: array
-      default:
-      - "package"
-    - name: MAVEN_MIRROR_URL
-      description: The Maven bucketrepo- mirror
-      type: string
-      default: ""
-    resources:
+  params:
+  - name: GOALS
+    description: The Maven goals to run
+    type: array
+    default:
+    - "package"
+  - name: MAVEN_MIRROR_URL
+    description: The Maven bucketrepo- mirror
+    type: string
+    default: ""
+  resources:
+    inputs:
     - name: source
       targetPath: /
       type: git
@@ -120,14 +120,14 @@ spec:
         echo 'using already existing /.m2/settings.xml' && \
         cat /.m2/settings.xml && exit 0
 
-        [[ -n '$(inputs.params.MAVEN_MIRROR_URL)' ]] && \
+        [[ -n '$(params.MAVEN_MIRROR_URL)' ]] && \
         cat > /.m2/settings.xml <<EOF
         <settings>
           <mirrors>
             <mirror>
               <id>mirror.default</id>
               <name>mirror.default</name>
-              <url>$(inputs.params.MAVEN_MIRROR_URL)</url>
+              <url>$(params.MAVEN_MIRROR_URL)</url>
               <mirrorOf>*</mirrorOf>
             </mirror>
           </mirrors>
@@ -147,7 +147,7 @@ spec:
       command:
         - /usr/bin/mvn
       args:
-        - "$(inputs.params.GOALS)"
+        - "$(params.GOALS)"
       volumeMounts:
         - name: m2-repository
           mountPath: /.m2
@@ -159,4 +159,3 @@ spec:
         name: maven-settings-cm
 ```
 1. create TaskRun
- 
