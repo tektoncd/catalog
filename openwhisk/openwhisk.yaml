@@ -1,94 +1,93 @@
 # Task to define Runtime Parameters
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-    name: openwhisk
+  name: openwhisk
 spec:
+  resources:
     inputs:
-        resources:
-            - name: runtime-git
-              type: git
-        params:
-            - name: DOCKERFILE
-              description: The path to the dockerfile to build from Runtime Repo
-            - name: OW_RUNTIME_DEBUG
-              description: flag to indicate debug mode should be on/off
-              default: "false"
-            - name: OW_RUNTIME_PLATFORM
-              description: flag to indicate the platform, one of ["openwhisk", "knative", ... ]
-              default: "knative"
-            - name: OW_ACTION_NAME
-              description: name of the action
-              default: ""
-            - name: OW_ACTION_CODE
-              description: JavaScript source code to be evaluated
-              default: ""
-            - name: OW_ACTION_MAIN
-              description: name of the function in the "__OW_ACTION_CODE" to call as the action handler
-              default: "main"
-            - name: OW_ACTION_BINARY
-              description: flag to indicate zip function, for zip actions, "__OW_ACTION_CODE" must be base64 encoded string
-              default: "false"
-            - name: OW_HTTP_METHODS
-              description: list of HTTP methods, any combination of [GET, POST, PUT, and DELETE], default is [POST]
-              default: "[POST]"
-            - name: OW_ACTION_RAW
-              description: flag to indicate raw HTTP handling, interpret and process an incoming HTTP body directly
-              default: "false"
-            - name: OW_PROJECT_URL
-              description: Location to local or remote file storage or public or private GitHub repo from where action source code needs to be evaluated
-              default: ""
+    - name: runtime-git
+      type: git
     outputs:
-        resources:
-            - name: runtime-image
-              type: image
-    steps:
-        - name: add-ow-env-to-dockerfile
-          image: ubuntu
-          command:
-          - bash
-          args:
-          - -c
-          - |
-            if [ -z $(inputs.params.OW_PROJECT_URL) ]; then
-              OW_ACTION_CODE="$(inputs.params.OW_ACTION_CODE)"
-            else
-              TEMPDIR="knative-"$((1 + RANDOM % 100))
-              TEMPFILE=`basename "$(inputs.params.OW_PROJECT_URL)"`
-              mkdir $TEMPDIR
-              cd $TEMPDIR
-              wget -O $TEMPFILE "$(inputs.params.OW_PROJECT_URL)"
-              if [ "$(inputs.params.OW_ACTION_BINARY)" = true ]; then
-                  OW_ACTION_CODE=`base64 $TEMPFILE | tr -d '[:space:]'`
-              else
-                  OW_ACTION_CODE=`cat $TEMPFILE`
-              fi
-              cd ..
-            fi
-            cat <<EOF >> $(inputs.params.DOCKERFILE)
-              ENV __OW_RUNTIME_DEBUG "$(inputs.params.OW_RUNTIME_DEBUG)"
-              ENV __OW_RUNTIME_PLATFORM "$(inputs.params.OW_RUNTIME_PLATFORM)"
-              ENV __OW_ACTION_NAME "$(inputs.params.OW_ACTION_NAME)"
-              ENV __OW_ACTION_CODE "${OW_ACTION_CODE}"
-              ENV __OW_ACTION_MAIN "$(inputs.params.OW_ACTION_MAIN)"
-              ENV __OW_ACTION_BINARY "$(inputs.params.OW_ACTION_BINARY)"
-              ENV __OW_HTTP_METHODS "$(inputs.params.OW_HTTP_METHODS)"
-              ENV __OW_ACTION_RAW "$(inputs.params.OW_ACTION_RAW)"
-              ENV __OW_PROJECT_URL "$(inputs.params.OW_PROJECT_URL)"
-            EOF
-        - name: update-dockerfile-for-tekton
-          image: ubuntu
-          command:
-          - sed
-          args:
-          - -i
-          - -e
-          - 's/COPY ./COPY .\/runtime-git/g'
-          - $(inputs.params.DOCKERFILE)
-        - name: build-openwhisk-nodejs-runtime
-          image: "gcr.io/kaniko-project/executor:latest"
-          command:
-          - /kaniko/executor
-          args:
-          - --dockerfile=$(inputs.params.DOCKERFILE)
-          - --destination=$(outputs.resources.runtime-image.url)
+    - name: runtime-image
+      type: image
+  params:
+    - name: DOCKERFILE
+      description: The path to the dockerfile to build from Runtime Repo
+    - name: OW_RUNTIME_DEBUG
+      description: flag to indicate debug mode should be on/off
+      default: "false"
+    - name: OW_RUNTIME_PLATFORM
+      description: flag to indicate the platform, one of ["openwhisk", "knative", ... ]
+      default: "knative"
+    - name: OW_ACTION_NAME
+      description: name of the action
+      default: ""
+    - name: OW_ACTION_CODE
+      description: JavaScript source code to be evaluated
+      default: ""
+    - name: OW_ACTION_MAIN
+      description: name of the function in the "__OW_ACTION_CODE" to call as the action handler
+      default: "main"
+    - name: OW_ACTION_BINARY
+      description: flag to indicate zip function, for zip actions, "__OW_ACTION_CODE" must be base64 encoded string
+      default: "false"
+    - name: OW_HTTP_METHODS
+      description: list of HTTP methods, any combination of [GET, POST, PUT, and DELETE], default is [POST]
+      default: "[POST]"
+    - name: OW_ACTION_RAW
+      description: flag to indicate raw HTTP handling, interpret and process an incoming HTTP body directly
+      default: "false"
+    - name: OW_PROJECT_URL
+      description: Location to local or remote file storage or public or private GitHub repo from where action source code needs to be evaluated
+      default: ""
+  steps:
+  - name: add-ow-env-to-dockerfile
+    image: ubuntu
+    command:
+    - bash
+    args:
+    - -c
+    - |
+        if [ -z $(params.OW_PROJECT_URL) ]; then
+          OW_ACTION_CODE="$(params.OW_ACTION_CODE)"
+        else
+          TEMPDIR="knative-"$((1 + RANDOM % 100))
+          TEMPFILE=`basename "$(params.OW_PROJECT_URL)"`
+          mkdir $TEMPDIR
+          cd $TEMPDIR
+          wget -O $TEMPFILE "$(params.OW_PROJECT_URL)"
+          if [ "$(params.OW_ACTION_BINARY)" = true ]; then
+              OW_ACTION_CODE=`base64 $TEMPFILE | tr -d '[:space:]'`
+          else
+              OW_ACTION_CODE=`cat $TEMPFILE`
+          fi
+          cd ..
+        fi
+        cat <<EOF >> $(params.DOCKERFILE)
+          ENV __OW_RUNTIME_DEBUG "$(params.OW_RUNTIME_DEBUG)"
+          ENV __OW_RUNTIME_PLATFORM "$(params.OW_RUNTIME_PLATFORM)"
+          ENV __OW_ACTION_NAME "$(params.OW_ACTION_NAME)"
+          ENV __OW_ACTION_CODE "${OW_ACTION_CODE}"
+          ENV __OW_ACTION_MAIN "$(params.OW_ACTION_MAIN)"
+          ENV __OW_ACTION_BINARY "$(params.OW_ACTION_BINARY)"
+          ENV __OW_HTTP_METHODS "$(params.OW_HTTP_METHODS)"
+          ENV __OW_ACTION_RAW "$(params.OW_ACTION_RAW)"
+          ENV __OW_PROJECT_URL "$(params.OW_PROJECT_URL)"
+        EOF
+  - name: update-dockerfile-for-tekton
+    image: ubuntu
+    command:
+    - sed
+    args:
+    - -i
+    - -e
+    - 's/COPY ./COPY .\/runtime-git/g'
+    - $(params.DOCKERFILE)
+  - name: build-openwhisk-nodejs-runtime
+    image: "gcr.io/kaniko-project/executor:latest"
+    command:
+    - /kaniko/executor
+    args:
+    - --dockerfile=$(params.DOCKERFILE)
+    - --destination=$(resources.outputs.runtime-image.url)
