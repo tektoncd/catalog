@@ -52,41 +52,40 @@ oc policy add-role-to-user edit -z default -n <namespace>
 This `TaskRun` runs an `oc rollout` command to deploy the latest image version for `myapp` on OpenShift.
 
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: deploy-myapp
 spec:
   taskRef:
     name: openshift-client
-  inputs:
-    params:
-    - name: ARGS
-      value:
-        - "rollout"
-        - "latest"
-        - "myapp"
+  params:
+  - name: ARGS
+    value:
+      - "rollout"
+      - "latest"
+      - "myapp"
 ```
 
 The following `TaskRun` runs the commands against a different cluster than the one the `TaskRun` is running on. The cluster credentials are provided via a `PipelineResource` called `stage-cluster`.
 
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: deploy-myapp-stage
 spec:
   taskRef:
     name: openshift-client-kubecfg
-  inputs:
-    resources:
+  resources:
+    inputs:
     - name: cluster
       resourceRef:
         name: stage-cluster
-    params:
-    - name: ARGS
-      value:
-        - "rollout"
-        - "latest"
-        - "myapp"
+  params:
+  - name: ARGS
+    value:
+      - "rollout"
+      - "latest"
+      - "myapp"
 ```
