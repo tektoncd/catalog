@@ -26,18 +26,18 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/knctl
 This TaskRun runs the Task to deploy the given image as a Knative service.
 
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: knctl-deploy-my-service
 spec:
   taskRef:
     name: knctl-deploy
-  inputs:
-    params:
-    - name: service
-      value: my-service
-    resources:
+  params:
+  - name: service
+    value: my-service
+  resources:
+    inputs:
     - name: images
       resourceSpec:
         type: image

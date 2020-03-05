@@ -1,13 +1,13 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: knctl-deploy
 spec:
-  inputs:
-    params:
-    - name: service
-      description: Name of the service to deploy
-    resources:
+  params:
+  - name: service
+    description: Name of the service to deploy
+  resources:
+    inputs:
     - name: image
       type: image
   steps:
@@ -24,6 +24,6 @@ spec:
     args:
     - deploy
     - --service
-    - $(inputs.params.service)
+    - $(params.service)
     - --image
-    - $(inputs.resources.image.url)
+    - $(resources.inputs.image.url)
