@@ -67,7 +67,7 @@ This TaskRun runs the Task to fetch a Git repo, and build and push a
 container image using s2i and a nodejs builder image.
 
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: s2i-nodejs-taskrun
@@ -76,26 +76,24 @@ spec:
   serviceAccountName: pipeline
   taskRef:
     name: s2i
-  inputs:
-    params:
-	- name: BUILDER_IMAGE
-	  value: docker.io/centos/nodejs-8-centos7
-    resources:
+  params:
+  - name: BUILDER_IMAGE
+    value: docker.io/centos/nodejs-8-centos7
+  resources:
+    inputs:
     - name: source
       resourceSpec:
         type: git
         params:
         - name: url
           value: https://github.com/sclorg/nodejs-ex
-  outputs:
-    resources:
+    outputs:
     - name: image
       resourceSpec:
         type: image
         params:
         - name: url
           value: gcr.io/my-repo/nodejs-s2i-ex
-
 ```
 
 Here is a non-exhaustive list of well maintained s2i builder image
