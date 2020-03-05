@@ -16,15 +16,15 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/kubev
 Once installed, the task can be used as follows:
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: kubeval-example
 spec:
   taskRef:
     name: kubeval
-  inputs:
-    resources:
+  resources:
+    inputs:
     - name: source
       resourceSpec:
         type: git
@@ -49,4 +49,3 @@ By default the task will recursively scan the provided repository for YAML files
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
-
