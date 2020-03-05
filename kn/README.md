@@ -51,7 +51,7 @@ Let's take examples of creating and updating a Knative Service using `kn` task.
 1. Following TaskRun runs the Task to create a Knative Service using given image.
 
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   generateName: kn-create-
@@ -59,22 +59,22 @@ spec:
   serviceAccountName: kn-deployer-account  # <-- run as the authorized SA
   taskRef:
     name: kn
-  inputs:
-    resources:
+  resources:
+    inputs:
     - name: image
       resourceSpec:
         type: image
         params:
         - name: url
           value: gcr.io/knative-samples/helloworld-go
-    params:
-    - name: ARGS
-      value:
-      - "service"
-      - "create"
-      - "hello"
-      - "--force"
-      - "--image=$(inputs.resources.image.url)"
+  params:
+  - name: ARGS
+    value:
+    - "service"
+    - "create"
+    - "hello"
+    - "--force"
+    - "--image=$(inputs.resources.image.url)"
 ```
 
 Run this with:
@@ -86,7 +86,7 @@ kubectl create -f kn-create-taskrun.yaml
 2. Following TaskRun runs the Task to update a Knative Service using given image or parameters.
 
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   generateName: kn-update-
@@ -94,22 +94,22 @@ spec:
   serviceAccountName: kn-deployer-account  # <-- run as the authorized SA
   taskRef:
     name: kn
-  inputs:
-    resources:
+  resources:
+    inputs:
     - name: image
       resourceSpec:
         type: image
         params:
         - name: url
           value: gcr.io/knative-samples/helloworld-go
-    params:
-    - name: ARGS
-      value:
-      - "service"
-      - "update"
-      - "hello"
-      - "--image=$(inputs.resources.image.url)"
-      - "--env=TARGET=Tekton"
+  params:
+  - name: ARGS
+    value:
+    - "service"
+    - "update"
+    - "hello"
+    - "--image=$(inputs.resources.image.url)"
+    - "--env=TARGET=Tekton"
 ```
 
 Run this with:
