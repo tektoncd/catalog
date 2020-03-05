@@ -1,25 +1,24 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: send-to-webhook-slack
 spec:
-  inputs:
-    params:
-    - name: webhook-secret
-      type: string
-      description: seret name of the slcak app webhook URL (key is url)
-    - name: message
-      type: string
-      description: plain text message
+  params:
+  - name: webhook-secret
+    type: string
+    description: seret name of the slcak app webhook URL (key is url)
+  - name: message
+    type: string
+    description: plain text message
   steps:
   - name: post
     image: curlimages/curl:7.68.0
     script: |
       #!/bin/sh
-      /usr/bin/curl -X POST -H 'Content-type: application/json' --data '{"text":"$(inputs.params.message)"}' $URL
+      /usr/bin/curl -X POST -H 'Content-type: application/json' --data '{"text":"$(params.message)"}' $URL
     env:
     - name: URL
       valueFrom:
         secretKeyRef:
-          name: $(inputs.params.webhook-secret)
+          name: $(params.webhook-secret)
           key: url
