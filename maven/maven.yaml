@@ -3,18 +3,18 @@ kind: Task
 metadata:
   name: maven
 spec:
-  inputs:
-    params:
-    - name: GOALS
-      description: The Maven goals to run
-      type: array
-      default:
-      - "package"
-    - name: MAVEN_MIRROR_URL
-      description: The Maven bucketrepo- mirror
-      type: string
-      default: ""
-    resources:
+  params:
+  - name: GOALS
+    description: The Maven goals to run
+    type: array
+    default:
+    - "package"
+  - name: MAVEN_MIRROR_URL
+    description: The Maven bucketrepo- mirror
+    type: string
+    default: ""
+  resources:
+    inputs:
     - name: source
       targetPath: /
       type: git
@@ -31,14 +31,14 @@ spec:
           echo 'using existing /.m2/settings.xml' && \
           cat /.m2/settings.xml && exit 0
 
-          [[ -n '$(inputs.params.MAVEN_MIRROR_URL)' ]] && \
+          [[ -n '$(params.MAVEN_MIRROR_URL)' ]] && \
           cat > /.m2/settings.xml <<EOF
           <settings>
             <mirrors>
               <mirror>
                 <id>mirror.default</id>
                 <name>mirror.default</name>
-                <url>$(inputs.params.MAVEN_MIRROR_URL)</url>
+                <url>$(params.MAVEN_MIRROR_URL)</url>
                 <mirrorOf>*</mirrorOf>
               </mirror>
             </mirrors>
@@ -55,7 +55,7 @@ spec:
       command:
         - /usr/bin/mvn
       args:
-        - "$(inputs.params.GOALS)"
+        - "$(params.GOALS)"
       volumeMounts:
         - name: m2-repository
           mountPath: /.m2
