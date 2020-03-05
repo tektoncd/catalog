@@ -58,24 +58,22 @@ kubectl apply -f server-secret.yaml
 This TaskRun runs the Task to send an email to the receivers via the SMTP server.
 
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: mail-taskrun
 spec:
-  inputs:
-    params:
-    - name: server
-      value: server-secret
-    - name: subject
-      value: Hi, again!
-    - name: body
-      value: "Tekton email"
-    - name: sender
-      value: "<me@myserver.com>"
-    - name: recipients
-      value: "<him@hisserver.com> <her@herserver.com>"
+  params:
+  - name: server
+    value: server-secret
+  - name: subject
+    value: Hi, again!
+  - name: body
+    value: "Tekton email"
+  - name: sender
+    value: "<me@myserver.com>"
+  - name: recipients
+    value: "<him@hisserver.com> <her@herserver.com>"
   taskRef:
     name: sendmail
 ```
-

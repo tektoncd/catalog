@@ -1,25 +1,24 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: sendmail
 spec:
-  inputs:
-    params:
-    - name: server
-      type: string
-      description: secret name for SMTP server information (url, port, password)
-    - name: subject
-      type: string
-      description: plain text email subject
-    - name: body
-      type: string
-      description: plain text email body
-    - name: sender
-      type: string
-      description: sender email address
-    - name: recipients
-      type: string
-      description: recipient email addresses (space delimited list)
+  params:
+  - name: server
+    type: string
+    description: secret name for SMTP server information (url, port, password)
+  - name: subject
+    type: string
+    description: plain text email subject
+  - name: body
+    type: string
+    description: plain text email body
+  - name: sender
+    type: string
+    description: sender email address
+  - name: recipients
+    type: string
+    description: recipient email addresses (space delimited list)
   steps:
   - name: send
     image: python:3.8-alpine
@@ -28,17 +27,17 @@ spec:
       import smtplib, ssl, os
       port = os.getenv('PORT')
       smtp_server = os.getenv('SERVER')
-      sender_email = "$(inputs.params.sender)"
-      receiver_emails = "$(inputs.params.recipients)"
+      sender_email = "$(params.sender)"
+      receiver_emails = "$(params.recipients)"
       user = os.getenv('USER')
       password = os.getenv('PASSWORD')
       tls = os.getenv('TLS')
       message = f"""\
-      Subject: $(inputs.params.subject)
+      Subject: $(params.subject)
       To: {receiver_emails}
       From: {sender_email}
 
-      $(inputs.params.body)"""
+      $(params.body)"""
       print(message)
       if tls == 'True':
           context = ssl.create_default_context()
@@ -54,25 +53,25 @@ spec:
     - name: USER
       valueFrom:
         secretKeyRef:
-          name: $(inputs.params.server)
+          name: $(params.server)
           key: user
     - name: PASSWORD
       valueFrom:
         secretKeyRef:
-          name: $(inputs.params.server)
+          name: $(params.server)
           key: password
     - name: TLS
       valueFrom:
         secretKeyRef:
-          name: $(inputs.params.server)
+          name: $(params.server)
           key: tls
     - name: SERVER
       valueFrom:
         secretKeyRef:
-          name: $(inputs.params.server)
+          name: $(params.server)
           key: url
     - name: PORT
       valueFrom:
         secretKeyRef:
-          name: $(inputs.params.server)
+          name: $(params.server)
           key: port
