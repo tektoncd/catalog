@@ -75,23 +75,22 @@ the root of the repository.
 ### Docker Registry
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: example-run
 spec:
   taskRef:
     name: makisu
-  inputs:
-    resources:
+  resource:
+    inputs:
     - name: source
       resourceSpec:
         type: git
         params:
         - name: url
           value: https://github.com/my-user/my-repo
-  outputs:
-    resources:
+    outputs:
     - name: image
       resourceSpec:
         type: image
@@ -105,28 +104,27 @@ spec:
 The `PUSH_REGISTRY` **must** match the name of the registry specified in the registry.yaml
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: example-run-gcr
 spec:
   taskRef:
     name: makisu
-  inputs:
-    params:
-    - name: PUSH_REGISTRY # must match the registry in the secret
-      value: eu.gcr.io
-    - name: REGISTRY_SECRET
-      value: gcr-registry-config
-    resources:
+  params:
+  - name: PUSH_REGISTRY # must match the registry in the secret
+    value: eu.gcr.io
+  - name: REGISTRY_SECRET
+    value: gcr-registry-config
+  resources:
+    inputs:
     - name: source
       resourceSpec:
         type: git
         params:
         - name: url
           value: https://github.com/my-user/my-repo
-  outputs:
-    resources:
+    outputs:
     - name: image
       resourceSpec:
         type: image
