@@ -57,23 +57,22 @@ This TaskRun runs the Task to fetch a Git repo, and build and push a container
 image using Kaniko
 
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: example-run
 spec:
   taskRef:
     name: kaniko
-  inputs:
-    resources:
+  resources:
+    inputs:
     - name: source
       resourceSpec:
         type: git
         params:
         - name: url
           value: https://github.com/my-user/my-repo
-  outputs:
-    resources:
+    outputs:
     - name: image
       resourceSpec:
         type: image
