@@ -8,9 +8,7 @@ This task performs operations on Google Cloud Platform resources using `gcloud`.
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/gcloud/gcloud.yaml
 ```
 
-## Inputs
-
-### Parameters
+## Parameters
 
 * **gcloud-image**: `gcloud` CLI container image to run this task.
 
