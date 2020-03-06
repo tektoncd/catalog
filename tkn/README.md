@@ -9,9 +9,7 @@ This task performs operations on Tekton resources using
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/tkn/tkn.yaml
 ```
 
-## Inputs
-
-### Parameters
+## Parameters
 
 name      | description                                 | default
 --------- | ------------------------------------------- | -------

@@ -9,9 +9,7 @@ This Task performs operations on Knative resources (services, revisions, routes)
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/kn/kn.yaml
 ```
 
-## Inputs
-
-### Parameters
+## Parameters
 
 * **kn-image**: `kn` CLI container image to run this task.
 
@@ -23,7 +21,9 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/kn/kn
 
 * **ARGS**: The arguments to pass to `kn` CLI.  _default_: `["help"]`
 
-### Resources
+## Resources
+
+### Inputs
 
 * **image**: An `image`-type `PipelineResource` specifying the location of the
   container image to deploy for Knative Service.

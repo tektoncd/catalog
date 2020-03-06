@@ -8,9 +8,7 @@ This task syncs (deploys) an [Argo CD](https://argoproj.github.io/argo-cd/) appl
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/argocd/argocd.yaml
 ```
 
-## Inputs
-
-### Parameters
+## Parameters
 
 * **application-name:** Name of the application to sync
 

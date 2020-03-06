@@ -13,9 +13,7 @@ to assemble a container image, then pushes that image to a container registry.
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/buildah/buildah.yaml
 ```
 
-## Inputs
-
-### Parameters
+## Parameters
 
 * **BUILDER_IMAGE:**: The name of the image containing the Buildah tool. See
   note below.  (_default:_ quay.io/buildah/stable:v1.11.0)
@@ -26,14 +24,14 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/build
 * **TLSVERIFY**: Verify the TLS on the registry endpoint (for push/pull to a
   non-TLS registry) (_default:_ `true`)
 
-### Resources
+## Resources
+
+### Inputs
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
 
-## Outputs
-
-### Resources
+### Outputs
 
 * **image**: An `image`-type `PipelineResource` specify the image that should
   be built.

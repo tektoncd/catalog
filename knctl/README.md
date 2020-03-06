@@ -10,13 +10,13 @@ only the `deploy` subcommand as of today.
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/knctl/knctl-deploy.yaml
 ```
 
-## Inputs
-
-### Parameters
+## Parameters
 
 * **service:**: The name of the service to deploy
 
-### Resources
+## Resources
+
+### Inputs
 
 * **image**: A `image`-type `PipelineResource` specifying the location of the
   service image to deploy.

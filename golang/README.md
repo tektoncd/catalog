@@ -12,9 +12,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golan
 
 ## `golangci-lint`
 
-### Inputs
-
-#### Parameters
+### Parameters
 
 * **package**: base package under validation
 * **flags**: flags to use for `golangci-lint` command (_default:_--verbose)
@@ -23,16 +21,16 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golan
 * **GOARCH**: architecture target (_default:_ amd64)
 * **GO111MODULE**: value of module support (_default:_ auto)
 
-#### Resources
+### Resources
+
+#### Inputs
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
 
-### `golang-build`
+## `golang-build`
 
-### Inputs
-
-#### Parameters
+### Parameters
 
 * **package**: base package under test
 * **packages**: packages to test (_default:_ ./...)
@@ -42,16 +40,16 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golan
 * **GOARCH**: architecture target (_default:_ amd64)
 * **GO111MODULE**: value of module support (_default:_ auto)
 
-#### Resources
+### Resources
+
+#### Inputs
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
 
-### `golang-test`
+## `golang-test`
 
-### Inputs
-
-#### Parameters
+### Parameters
 
 * **package**: base package to build in
 * **packages**: packages to test (_default:_ ./cmd/...)
@@ -61,7 +59,9 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golan
 * **GOARCH**: architecture target (_default:_ amd64)
 * **GO111MODULE**: value of module support (_default:_ auto)
 
-#### Resources
+### Resources
+
+#### Inputs
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
