@@ -62,16 +62,16 @@ $ tkn taskrun logs conftest-example -f
 container step-conftest has failed  : Error
 ```
 
-## Inputs
-
-### Parameters
+## Parameters
 
 * **files**: The files to test against the specified policies
 * **policy**: Where to find the policies (_default:_ `policy`)
 * **output**: Which output format to use (_default:_ `stdout`)
 * **args**: An array of additional arguments to pass to Conftest (_default `[]`_)
 
-### Resources
+## Resources
+
+### Inputs
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
@@ -107,16 +107,16 @@ spec:
     value: stable/mysql/policy
 ```
 
-## Inputs
-
-### Parameters
+## Parameters
 
 * **chart**: The chart to test against the specified policies (_default:_ `.`)
 * **policy**: Where to find the policies (_default:_ `policy`)
 * **output**: Which output format to use (_default:_ `stdout`)
 * **args**: An array of additional arguments to pass to Conftest (_default `[]`)
 
-### Resources
+## Resources
+
+### Inputs
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.

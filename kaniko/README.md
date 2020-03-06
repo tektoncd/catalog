@@ -18,9 +18,7 @@ makes it a perfect tool to be part of Tekton.
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/kaniko/kaniko.yaml
 ```
 
-## Inputs
-
-### Parameters
+## Parameters
 
 * **DOCKERFILE**: The path to the `Dockerfile` to execute (_default:_
   `./Dockerfile`)
@@ -28,14 +26,14 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/kanik
 * **CONTEXT**: The build context used by Kaniko (_default:_
   `./`)
 
-### Resources
+## Resources
+
+### Inputs
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
 
-## Outputs
-
-### Resources
+### Outputs
 
 * **image**: An `image`-type `PipelineResource` specifying the image that should
   be built.

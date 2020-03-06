@@ -8,14 +8,14 @@ This Task can be used to run a Maven build.
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/maven/maven.yaml
 ```
 
-## Inputs
-
-### Parameters
+## Parameters
 
 - **GOALS**: Maven `goals` to be executed
 - **MAVEN_MIRROR_URL**: Maven mirror url (to be inserted into ~/.m2/settings.xml)
 
-### Resources
+## Resources
+
+### Inputs
 
 * **source**: `git`-type `PipelineResource` specifying the location of the source to build.
 

@@ -20,9 +20,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/build
 
 > **NOTE:** This task is currently only compatible with Tekton **v0.6.0** and above, and CNB Platform API 0.2 (lifecycle v0.6.0 and above). For previous Platform API versions, [see below](#previous-platform-api-versions).
 
-## Inputs
-
-### Parameters
+## Parameters
 
 * **`BUILDER_IMAGE`**: The image on which builds will run (must include v3 lifecycle and compatible buildpacks; _required_)
 
@@ -38,14 +36,14 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/build
 
 * **`SOURCE_SUBPATH`**: A subpath within the `source` input where the source to build is located (_default:_ `""`)
 
-### Resources
+## Resources
+
+### Inputs
 
 * **`source`**: A `git`-type `PipelineResource` specifying the location of the
   source to build. See `SOURCE_SUBPATH` above if source is located within a subpath of this input.
 
-## Outputs
-
-### Resources
+### Outputs
 
 * **`image`**: An `image`-type `PipelineResource` specifying the image that should
   be built.

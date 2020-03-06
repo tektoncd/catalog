@@ -25,9 +25,7 @@ as well as
 
 * **output**: A workspace for this Task to fetch the git repository in to.
 
-### Inputs
-
-#### Parameters
+### Parameters
 
 * **url**: git url to clone (_required_)
 * **revision**: git revision to checkout (branch, tag, sha, ref…) (_default:_ master)

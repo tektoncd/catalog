@@ -14,9 +14,7 @@ source code.
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/s2i/s2i.yaml
 ```
 
-## Inputs
-
-### Parameters
+## Parameters
 
 * **BUILDER_IMAGE**: The location of the s2i builder image.
 * **PATH_CONTEXT**: Source path from where s2i command need to be run
@@ -24,15 +22,14 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/s2i/s
 * **TLSVERIFY**: Verify the TLS on the registry endpoint (for push/pull to a
   non-TLS registry) (_default:_ `true`)
 
+## Resources
 
-### Resources
+### Inputs
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
 
 ## Outputs
-
-### Resources
 
 * **image**: An `image`-type `PipelineResource` specify the image that should
   be built.

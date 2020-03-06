@@ -36,12 +36,10 @@ stringData:
 
 Example kubectl command
 ```
-kubectl apply -f server-secret.yaml
+kubectl apply -f server-secret.yam
 ```
 
-## Inputs
-
-### Parameters
+## Parameters
 
 * **server**: The name of the secret that has the SMTP server information
 

@@ -10,9 +10,7 @@ Install `tower-cli` task:
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/ansible-tower-cli/ansible-tower-cli-task.yaml
 ```
 
-## Inputs `tower-cli-task`
-
-### Parameters
+## Parameters
 
 * **ARGS:** args to execute which are appended to `tower-cli` e.g. `user-list` (_default_: `--help`)
 * **SSLVERIFY:** args to disable Tower SSL verification (_default_: `false`)

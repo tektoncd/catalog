@@ -10,21 +10,19 @@ Jib works with [Maven](https://github.com/GoogleContainerTools/jib/tree/master/j
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/jib-maven/jib-maven.yaml
 ```
 
-## Inputs
-
-### Parameters
+## Parameters
 
 - **DIRECTORY**: The directory in the source repository where source should be found. (*default: .*)
 - **CACHE**: The name of the volume for caching Maven artifacts and base image layers (*default: empty-dir-volume*)
 
-### Resources
+## Resources
+
+### Inputs
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
 
-## Outputs
-
-### Resources
+### Outputs
 
 * **image**: The Docker image name to apply to the newly built image.
 
