@@ -42,9 +42,7 @@ kubectl --namespace default create secret generic docker-registry-config --from-
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/makisu/makisu.yaml
 ```
 
-## Inputs
-
-### Parameters
+## Parameters
 
 * **CONTEXTPATH**: The path to the build context (_default:_
   `/workspace`)
@@ -53,14 +51,14 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/makis
 * **REGISTRY_SECRET**: Secret containing information about the used regsitry (_default:_
   `docker-registry-config`)
 
-### Resources
+## Resources
+
+### Inputs
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
 
-## Outputs
-
-### Resources
+### Outputs
 
 * **image**: An `image`-type `PipelineResource` specify the image that should be built.
 

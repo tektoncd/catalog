@@ -37,15 +37,15 @@ spec:
 
 By default the task will recursively scan the provided repository for YAML files and validate them against the Kubernetes schemas. You can change the default behavious, targetting particular directories, files or Kubernetes versions, using the parameters.
 
-## Inputs
-
-### Parameters
+## Parameters
 
 * **files**: The files or directories to test to validate against the schemas
 * **output**: Which output format to use (_default:_ `stdout`)
 * **args**: An arrag of additional arguments to pass to Kubeval (_defaultt `[]`)
 
-### Resources
+## Resources
+
+### Inputs
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.

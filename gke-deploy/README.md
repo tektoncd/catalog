@@ -8,13 +8,7 @@ This Task deploys an application to a Google Kubernetes Engine cluster using [`g
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/gke-deploy/gke-deploy.yaml
 ```
 
-## Inputs
-
-### Resources
-
-* **source-repo**: The Git source repository that contains your application's Kubernetes configs.
-
-### Parameters
+## Parameters
 
 * **ARGS**: The arguments to pass to `gke-deploy` CLI.
 
@@ -22,6 +16,12 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/gke-d
 
   See [here](https://github.com/GoogleCloudPlatform/cloud-builders/tree/master/gke-deploy#usage)
   for the arguments to `gke-deploy`.
+
+## Resources
+
+### Inputs
+
+* **source-repo**: The Git source repository that contains your application's Kubernetes configs.
 
 ## Usage
 
@@ -95,13 +95,13 @@ This Pipeline builds, pushes, and deploys your application to a Google Kubernete
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/gke-deploy/build-push-gke-deploy.yaml
 ```
 
-## Inputs
+## Resources
 
-### Resources
+### Inputs
 
 * **source-repo**: The Git repository that contains your application's Dockerfile and Kubernetes configs.
 
-### Parameters
+## Parameters
 
 * **pathToContext**: The path to the build context relative to your source repo's root. This is used by Kaniko.
 

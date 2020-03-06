@@ -31,9 +31,7 @@ Example kubectl command
 kubectl apply -f webhook-secret.yaml
 ```
 
-## Inputs
-
-### Parameters
+## Parameters
 
 * **webhook-secret**: The name of the secret that has the webhook URL.  The key for the URL is url
 

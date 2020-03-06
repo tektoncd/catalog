@@ -18,23 +18,21 @@ Install `openshift-client-kubecfg` task:
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-client/openshift-client-kubecfg-task.yaml
 ```
 
-## Inputs `openshift-client`
-
-### Parameters
+## Parameters `openshift-client`
 
 * **ARGS:** args to execute which are appended to `oc` e.g. `start-build myapp` (_default_: `help`)
 
 * **SCRIPT:** script of oc commands to execute  e.g. `oc get pod $1 -0 yaml` This will take the first value of ARGS as pod name (_default_: `oc $@`)
 
-## Inputs `openshift-client-kubecfg`
-
-### Parameters
+## Parameters `openshift-client-kubecfg`
 
 * **ARGS:** args to execute which are appended to `oc` e.g. `start-build myapp` (_default_: `help`)
 
 * **SCRIPT:** script of oc commands to execute  e.g. `oc get pod $1 -o yaml` This will take the first value of ARGS as pod name (_default_: `oc $@`)
 
-### Resources
+## Resources
+
+### Inputs
 
 * **cluster**: a `cluster`-type `PipelineResource` specifying the target OpenShift cluster to execute the commands against it
 

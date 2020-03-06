@@ -28,9 +28,7 @@ informations about the CI statuses or a direct link to the full log.
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/github/set_status.yaml
 ```
 
-### Inputs
-
-#### Parameters
+### Parameters
 
 * **REPO_FULL_NAME:**: The GitHub repository full name, _e.g:_ `tektoncd/catalog`
 * **GITHUB_HOST_URL:**: The GitHub host domain _default:_ `api.github.com`
@@ -86,9 +84,7 @@ issue.
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/github/add_comment.yaml
 ```
 
-### Inputs
-
-#### Parameters
+### Parameters
 
 * **GITHUB_HOST_URL:**: The GitHub host domain (_default:_ `api.github.com`)
 * **REQUEST_URL:**: The GitHub pull request or issue url, _e.g:_
@@ -137,9 +133,7 @@ issue.
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/github/close_issue.yaml
 ```
 
-### Inputs
-
-#### Parameters
+### Parameters
 
 * **GITHUB_HOST_URL:**: The GitHub host domain (_default:_ `api.github.com`)
 * **REQUEST_URL:**: The GitHub pull request or issue url, (_e.g:_
