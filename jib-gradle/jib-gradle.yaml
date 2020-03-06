@@ -61,6 +61,8 @@ spec:
     - name: $(inputs.params.CACHE)
       mountPath: /tekton/home/.cache
       subPath: jib-cache
+    securityContext:
+      runAsUser: 0
 
   volumes:
   - name: empty-dir-volume
