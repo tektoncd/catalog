@@ -72,8 +72,14 @@ function show_failure() {
     local testname=$1 tns=$2
 
     echo "FAILED: ${testname} task has failed to comeback properly" ;
-    echo "--- TR Dump"
-    kubectl get -n ${tns} tr -o yaml
+    echo "--- Task Dump"
+    kubectl get -n ${tns} task -o yaml
+    echo "--- Pipeline Dump"
+    kubectl get -n ${tns} pipeline -o yaml
+    echo "--- PipelineRun Dump"
+    kubectl get -n ${tns} pipelinerun -o yaml
+    echo "--- TaskRun Dump"
+    kubectl get -n ${tns} taskrun -o yaml
     echo "--- Container Logs"
     kubectl get pod -o name -n ${tns}|xargs kubectl logs --all-containers -n ${tns}
     exit 1
