@@ -3,11 +3,8 @@ kind: Task
 metadata:
   name: kubeval
 spec:
-  resources:
-    inputs:
-    - name: source
-      type: git
-      targetPath: source
+  workspaces:
+  - name: source
   params:
   - name: files
     default: "."
@@ -19,7 +16,7 @@ spec:
 
   steps:
   - name: kubeval
-    workingDir: /workspace/source
+    workingDir: $(workspaces.source.path)
     image: garethr/kubeval:latest
     command:
       - kubeval

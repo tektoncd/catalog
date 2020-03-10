@@ -23,16 +23,10 @@ metadata:
 spec:
   taskRef:
     name: kubeval
-  resources:
-    inputs:
-    - name: source
-      resourceSpec:
-        type: git
-        params:
-        - name: revision
-          value: master
-        - name: url
-          value: https://github.com/instrumenta/conftest.git
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
 ```
 
 By default the task will recursively scan the provided repository for YAML files and validate them against the Kubernetes schemas. You can change the default behavious, targetting particular directories, files or Kubernetes versions, using the parameters.
@@ -43,9 +37,7 @@ By default the task will recursively scan the provided repository for YAML files
 * **output**: Which output format to use (_default:_ `stdout`)
 * **args**: An arrag of additional arguments to pass to Kubeval (_defaultt `[]`)
 
-## Resources
-
-### Inputs
+## Workspaces
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
