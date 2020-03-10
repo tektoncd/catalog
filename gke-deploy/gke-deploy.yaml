@@ -3,10 +3,8 @@ kind: Task
 metadata:
   name: gke-deploy
 spec:
-  resources:
-    inputs:
-    - name: source-repo
-      type: git
+  workspaces:
+  - name: source
   params:
   - name: ARGS
     type: array
@@ -16,4 +14,5 @@ spec:
   - name: gke-deploy
     image: gcr.io/cloud-builders/gke-deploy
     command: ["/gke-deploy"]
+    workingDir: $(workspaces.source.path)
     args: ["$(params.ARGS)"]
