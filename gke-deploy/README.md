@@ -17,11 +17,9 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/gke-d
   See [here](https://github.com/GoogleCloudPlatform/cloud-builders/tree/master/gke-deploy#usage)
   for the arguments to `gke-deploy`.
 
-## Resources
+## Workspaces
 
-### Inputs
-
-* **source-repo**: The Git source repository that contains your application's Kubernetes configs.
+* **source**: The Git source repository that contains your application's Kubernetes configs.
 
 ## Usage
 
@@ -56,16 +54,10 @@ spec:
   serviceAccountName: workload-identity-sa  # <-- a SA configured with Workload Identity
   taskRef:
     name: gke-deploy
-  resources:
-    inputs:
-    - name: source-repo
-      resourceSpec:
-        type: git
-        params:
-        - name: url
-          value: [GIT_REPO_URL]
-        - name: revision
-          value: [GIT_REPO_REVISION]
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
   params:
   - name: ARGS
     value:
@@ -95,11 +87,9 @@ This Pipeline builds, pushes, and deploys your application to a Google Kubernete
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/gke-deploy/build-push-gke-deploy.yaml
 ```
 
-## Resources
+## Workspaces
 
-### Inputs
-
-* **source-repo**: The Git repository that contains your application's Dockerfile and Kubernetes configs.
+* **source**: The Git repository that contains your application's Dockerfile and Kubernetes configs.
 
 ## Parameters
 
@@ -167,15 +157,10 @@ spec:
   pipelineRef:
     name: build-push-gke-deploy
   serviceAccountName: workload-identity-sa  # <-- a SA configured with Workload Identity
-  resources:
-  - name: source-repo
-    resourceSpec:
-      type: git
-      params:
-      - name: url
-        value: [GIT_REPO_URL]
-      - name: revision
-        value: [GIT_REPO_REVISION]
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
   params:
   - name: pathToContext
     value: [PATH_TO_CONTEXT]

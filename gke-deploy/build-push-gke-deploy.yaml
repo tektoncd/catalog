@@ -3,10 +3,6 @@ kind: Task
 metadata:
   name: build-and-push
 spec:
-  resources:
-    inputs:
-    - name: source-repo
-      type: git
   params:
   - name: pathToContext
     description: The path to the build context relative to your source repo's root. This is used by Kaniko.
@@ -19,6 +15,8 @@ spec:
   - name: imageTag
     description: Tag to apply to the built image.
     default: latest
+  workspaces:
+  - name: source
   steps:
   - name: build-and-push
     image: gcr.io/kaniko-project/executor
@@ -27,17 +25,13 @@ spec:
     args:
     - --dockerfile=$(params.pathToDockerFile)
     - --destination=$(params.imageUrl):$(params.imageTag)
-    - --context=$(resources.resources.source-repo.path)/$(params.pathToContext)
+    - --context=$(workspaces.source.path)/$(params.pathToContext)
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: deploy-using-gke-deploy
 spec:
-  resources:
-    inputs:
-    - name: source-repo
-      type: git
   params:
   - name: pathToKubernetesConfigs
     description: The path to the Kubernetes configs to deploy, relative to your source repo's root.
@@ -53,14 +47,17 @@ spec:
   - name: clusterProject
     description: Project of target GKE cluster to deploy to.
     default: ""
+  workspaces:
+  - name: source
   steps:
   - name: deploy-using-gke-deploy
     image: gcr.io/cloud-builders/gke-deploy
+    workingDir: $(workspaces.source.path)
     command: ["/gke-deploy"]
     args:
     - "run"
     - "--image=$(params.imageUrl):$(params.imageTag)"
-    - "--filename=$(resources.inputs.source-repo.path)/$(params.pathToKubernetesConfigs)"
+    - "--filename=$(workspaces.source.path)/$(params.pathToKubernetesConfigs)"
     - "--cluster=$(params.clusterName)"
     - "--location=$(params.clusterLocation)"
     - "--project=$(params.clusterProject)"
@@ -71,9 +68,8 @@ kind: Pipeline
 metadata:
   name: build-push-gke-deploy
 spec:
-  resources:
-  - name: source-repo
-    type: git
+  workspaces:
+  - name: source
   params:
   - name: pathToContext
     type: string
@@ -114,10 +110,9 @@ spec:
       value: "$(params.imageUrl)"
     - name: imageTag
       value: "$(params.imageTag)"
-    resources:
-      inputs:
-      - name: source-repo
-        resource: source-repo
+    workspaces:
+    - name: source
+      workspace: source
   - name: deploy-using-gke-deploy
     taskRef:
       name: deploy-using-gke-deploy
@@ -136,7 +131,6 @@ spec:
       value: "$(params.clusterLocation)"
     - name: clusterProject
       value: "$(params.clusterProject)"
-    resources:
-      inputs:
-      - name: source-repo
-        resource: source-repo
+    workspaces:
+    - name: source
+      workspace: source
