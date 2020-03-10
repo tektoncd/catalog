@@ -17,10 +17,9 @@ spec:
   - name: TLSVERIFY
     description: Verify the TLS on the registry endpoint (for push/pull to a non-TLS registry)
     default: "true"
+  workspaces:
+  - name: source
   resources:
-    inputs:
-    - name: source
-      type: git
     outputs:
     - name: image
       type: image
@@ -28,7 +27,7 @@ spec:
   steps:
   - name: build
     image: $(params.BUILDER_IMAGE)
-    workingDir: /workspace/source
+    workingDir: $(workspaces.source.path)
     command: ['buildah', 'bud', '--tls-verify=$(params.TLSVERIFY)', '--layers', '-f', '$(params.DOCKERFILE)', '-t', '$(resources.outputs.image.url)', '$(params.CONTEXT)']
     volumeMounts:
     - name: varlibcontainers
@@ -38,7 +37,7 @@ spec:
 
   - name: push
     image: $(params.BUILDER_IMAGE)
-    workingDir: /workspace/source
+    workingDir: $(workspaces.source.path)
     command: ['buildah', 'push', '--tls-verify=$(params.TLSVERIFY)', '$(resources.outputs.image.url)', 'docker://$(resources.outputs.image.url)']
     volumeMounts:
     - name: varlibcontainers
