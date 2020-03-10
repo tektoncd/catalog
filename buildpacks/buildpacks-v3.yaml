@@ -5,31 +5,31 @@ metadata:
   name: buildpacks-v3
 spec:
   params:
-    - name: BUILDER_IMAGE
-      description: The image on which builds will run (must include v3 lifecycle and compatible buildpacks).
-    - name: USE_CRED_HELPERS
-      description: Use Docker credential helpers for Google's GCR, Amazon's ECR, or Microsoft's ACR.
-      default: "false"
-    - name: CACHE
-      description: The name of the persistent app cache volume
-      default: empty-dir
-    - name: USER_ID
-      description: The user ID of the builder image user
-      default: "1000"
-    - name: GROUP_ID
-      description: The group ID of the builder image user
-      default: "1000"
-    - name: SOURCE_SUBPATH
-      description: A subpath within the `source` input where the source to build is located.
-      default: ""
+  - name: BUILDER_IMAGE
+    description: The image on which builds will run (must include v3 lifecycle and compatible buildpacks).
+  - name: USE_CRED_HELPERS
+    description: Use Docker credential helpers for Google's GCR, Amazon's ECR, or Microsoft's ACR.
+    default: "false"
+  - name: CACHE
+    description: The name of the persistent app cache volume
+    default: empty-dir
+  - name: USER_ID
+    description: The user ID of the builder image user
+    default: "1000"
+  - name: GROUP_ID
+    description: The group ID of the builder image user
+    default: "1000"
+  - name: SOURCE_SUBPATH
+    description: A subpath within the `source` input where the source to build is located.
+    default: ""
 
   resources:
-    inputs:
-      - name: source
-        type: git
     outputs:
-      - name: image
-        type: image
+    - name: image
+      type: image
+
+  workspaces:
+  - name: source
 
   stepTemplate:
     env:
@@ -47,7 +47,7 @@ spec:
           chown -R "$(params.USER_ID):$(params.GROUP_ID)" "/tekton/home" &&
           chown -R "$(params.USER_ID):$(params.GROUP_ID)" "/layers" &&
           chown -R "$(params.USER_ID):$(params.GROUP_ID)" "/cache" &&
-          chown -R "$(params.USER_ID):$(params.GROUP_ID)" "/workspace/source"
+          chown -R "$(params.USER_ID):$(params.GROUP_ID)" "$(workspaces.source.path)"
       volumeMounts:
         - name: layers-dir
           mountPath: /layers
@@ -61,7 +61,7 @@ spec:
       imagePullPolicy: Always
       command: ["/cnb/lifecycle/detector"]
       args:
-        - "-app=/workspace/source/$(params.SOURCE_SUBPATH)"
+        - "-app=$(workspaces.source.path)/$(params.SOURCE_SUBPATH)"
         - "-group=/layers/group.toml"
         - "-plan=/layers/plan.toml"
       volumeMounts:
@@ -103,7 +103,7 @@ spec:
       imagePullPolicy: Always
       command: ["/cnb/lifecycle/builder"]
       args:
-        - "-app=/workspace/source/$(params.SOURCE_SUBPATH)"
+        - "-app=$(workspaces.source.path)/$(params.SOURCE_SUBPATH)"
         - "-layers=/layers"
         - "-group=/layers/group.toml"
         - "-plan=/layers/plan.toml"
@@ -116,7 +116,7 @@ spec:
       imagePullPolicy: Always
       command: ["/cnb/lifecycle/exporter"]
       args:
-        - "-app=/workspace/source/$(params.SOURCE_SUBPATH)"
+        - "-app=$(workspaces.source.path)/$(params.SOURCE_SUBPATH)"
         - "-layers=/layers"
         - "-helpers=$(params.USE_CRED_HELPERS)"
         - "-group=/layers/group.toml"
