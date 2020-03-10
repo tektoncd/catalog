@@ -42,24 +42,20 @@ With the `Task` installed, you can define a `TaskRun` that runs that `Task`,
 being sure to provide values for required input parameters and resources:
 
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: example-run
 spec:
   taskRef:
     name: golang-build
-  inputs:
-    params:
-    - name: package
-      value: github.com/tektoncd/pipeline
-    resources:
-    - name: source
-      resourceSpec:
-        type: git
-        params:
-        - name: url
-          value: https://github.com/tektoncd/pipeline
+  params:
+  - name: package
+    value: github.com/tektoncd/pipeline
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
 ```
 
 Next, create the `TaskRun` you defined:
@@ -73,7 +69,7 @@ You can check the status of the `TaskRun` using `kubectl`:
 
 ```
 $ kubectl get taskrun example-run -oyaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: example-run
