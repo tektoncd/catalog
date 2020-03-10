@@ -22,14 +22,14 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/s2i/s
 * **TLSVERIFY**: Verify the TLS on the registry endpoint (for push/pull to a
   non-TLS registry) (_default:_ `true`)
 
-## Resources
-
-### Inputs
+# Workspaces
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
 
-## Outputs
+## Resources
+
+### Outputs
 
 * **image**: An `image`-type `PipelineResource` specify the image that should
   be built.
@@ -76,14 +76,11 @@ spec:
   params:
   - name: BUILDER_IMAGE
     value: docker.io/centos/nodejs-8-centos7
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
   resources:
-    inputs:
-    - name: source
-      resourceSpec:
-        type: git
-        params:
-        - name: url
-          value: https://github.com/sclorg/nodejs-ex
     outputs:
     - name: image
       resourceSpec:
