@@ -24,12 +24,12 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/build
 * **TLSVERIFY**: Verify the TLS on the registry endpoint (for push/pull to a
   non-TLS registry) (_default:_ `true`)
 
-## Resources
-
-### Inputs
+## Workspaces
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
+
+## Resources
 
 ### Outputs
 
@@ -49,14 +49,11 @@ metadata:
 spec:
   taskRef:
     name: buildah
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
   resources:
-    inputs:
-    - name: source
-      resourceSpec:
-        type: git
-        params:
-        - name: url
-          value: https://github.com/my-user/my-repo
     outputs:
     - name: image
       resourceSpec:
