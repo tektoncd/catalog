@@ -1,12 +1,42 @@
+---
 apiVersion: tekton.dev/v1beta1
-kind: TaskRun
+kind: Pipeline
 metadata:
-  name: maven-run
+  name: maven-test-pipeline
 spec:
-  resources:
-    inputs:
+  workspaces:
+  - name: shared-workspace
+  tasks:
+  - name: fetch-repository
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: shared-workspace
+    params:
+    - name: url
+      value: https://github.com/spring-projects/spring-petclinic
+    - name: subdirectory
+      value: ""
+    - name: deleteExisting
+      value: "true"
+  - name: maven
+    taskRef:
+      name: maven
+    runAfter:
+    - fetch-repository
+    workspaces:
     - name: source
-      resourceRef:
-        name: maven-resource-petclinic
-  taskRef:
-    name: maven
+      workspace: shared-workspace
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: maven-test-pipeline-run
+spec:
+  pipelineRef:
+    name: maven-test-pipeline
+  workspaces:
+  - name: shared-workspace
+    persistentvolumeclaim:
+      claimName: maven-source-pvc

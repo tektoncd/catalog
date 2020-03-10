@@ -13,11 +13,8 @@ spec:
     description: The Maven bucketrepo- mirror
     type: string
     default: ""
-  resources:
-    inputs:
-    - name: source
-      targetPath: /
-      type: git
+  workspaces:
+  - name: source
   steps:
     - name: mvn-settings
       image: registry.access.redhat.com/ubi8/ubi-minimal:latest
@@ -52,6 +49,7 @@ spec:
           mountPath: /.m2
     - name: mvn-goals
       image: gcr.io/cloud-builders/mvn
+      workingDir: $(workspaces.source.path)
       command:
         - /usr/bin/mvn
       args:
