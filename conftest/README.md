@@ -30,16 +30,10 @@ metadata:
 spec:
   taskRef:
     name: conftest
-  resources:
-    inputs:
-    - name: source
-      resourceSpec:
-        type: git
-        params:
-        - name: revision
-          value: master
-        - name: url
-          value: https://github.com/instrumenta/conftest.git
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
   params:
   - name: files
     value: examples/kubernetes/deployment.yaml
@@ -69,9 +63,7 @@ container step-conftest has failed  : Error
 * **output**: Which output format to use (_default:_ `stdout`)
 * **args**: An array of additional arguments to pass to Conftest (_default `[]`_)
 
-## Resources
-
-### Inputs
+## Workspaces
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
@@ -90,16 +82,10 @@ metadata:
 spec:
   taskRef:
     name: helm-conftest
-  resources:
-    inputs:
-    - name: source
-      resourceSpec:
-        type: git
-        params:
-        - name: revision
-          value: master
-        - name: url
-          value: https://github.com/helm/charts.git
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
   params:
   - name: chart
     value: stable/mysql
@@ -114,9 +100,7 @@ spec:
 * **output**: Which output format to use (_default:_ `stdout`)
 * **args**: An array of additional arguments to pass to Conftest (_default `[]`)
 
-## Resources
-
-### Inputs
+## Workspaces
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.

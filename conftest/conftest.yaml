@@ -3,11 +3,8 @@ kind: Task
 metadata:
   name: conftest
 spec:
-  resources:
-    inputs:
-    - name: source
-      type: git
-      targetPath: source
+  workspaces:
+  - name: source
   params:
   - name: files
     type: string
@@ -21,7 +18,7 @@ spec:
 
   steps:
   - name: conftest
-    workingDir: /workspace/source
+    workingDir: $(workspaces.source.path)
     image: instrumenta/conftest:latest
     command:
       - conftest
