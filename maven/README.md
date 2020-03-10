@@ -13,29 +13,13 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/maven
 - **GOALS**: Maven `goals` to be executed
 - **MAVEN_MIRROR_URL**: Maven mirror url (to be inserted into ~/.m2/settings.xml)
 
-## Resources
-
-### Inputs
+## Workspaces
 
 * **source**: `git`-type `PipelineResource` specifying the location of the source to build.
 
 ## Usage
 
-This TaskRun runs the Task to fetch a Git repo, and runs a Maven build
-
-```
-apiVersion: tekton.dev/v1alpha1
-kind: PipelineResource
-metadata:
-  name: maven-resource-petclinic
-spec:
-  type: git
-  params:
-    - name: revision
-      value: master
-    - name: url
-      value: https://github.com/spring-projects/spring-petclinic
-```
+This TaskRun runs runs a Maven build
 
 ### With Defaults
 
@@ -45,11 +29,10 @@ kind: TaskRun
 metadata:
   name: maven-run
 spec:
-  resources:
-    inputs:
-    - name: source
-      resourceRef:
-        name: maven-resource-petclinic
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
   taskRef:
     name: maven
 ```
@@ -63,11 +46,10 @@ kind: TaskRun
 metadata:
   name: maven-run
 spec:
-  resources:
-    inputs:
-    - name: source
-      resourceRef:
-        name: maven-resource-petclinic
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
   params:
   - name: MAVEN_MIRROR_URL
     value: "http://localhost:8080/bucketrepo/"
@@ -102,11 +84,10 @@ spec:
     description: The Maven bucketrepo- mirror
     type: string
     default: ""
-  resources:
-    inputs:
-    - name: source
-      targetPath: /
-      type: git
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
   steps:
     - name: mvn-settings
       image: registry.access.redhat.com/ubi8/ubi-minimal:latest
@@ -144,6 +125,7 @@ spec:
           subPath: settings.xml
     - name: mvn-goals
       image: gcr.io/cloud-builders/mvn
+      workingDir: $(workspaces.source.path)
       command:
         - /usr/bin/mvn
       args:
