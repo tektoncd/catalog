@@ -22,11 +22,11 @@ task.tekton.dev/buildkit-daemonless created
 * **DOCKERFILE**: The path to the `Dockerfile` to execute (_default:_  `./Dockerfile`)
 * **BUILDKIT_IMAGE**: BuildKit image (_default:_`moby/buildkit:vX.Y.Z@sha256:...`)
 
-## Resources
-
-### Inputs
+## Workspaces
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the source to build.
+
+## Resources
 
 ### Outputs
 
