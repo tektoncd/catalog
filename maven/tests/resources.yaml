@@ -9,3 +9,14 @@ spec:
       value: master
     - name: url
       value: https://github.com/spring-projects/spring-petclinic
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: maven-source-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
