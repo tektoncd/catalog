@@ -38,19 +38,19 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/build
 
 ## Resources
 
-### Inputs
-
-* **`source`**: A `git`-type `PipelineResource` specifying the location of the
-  source to build. See `SOURCE_SUBPATH` above if source is located within a subpath of this input.
-
 ### Outputs
 
 * **`image`**: An `image`-type `PipelineResource` specifying the image that should
   be built.
 
+## Workspaces
+
+The `source` workspace holds the source that will be used by buildpack
+to build and publish the container image.
+
 ## Usage
 
-This `TaskRun` will use the `buildpacks-v3` task to fetch source code from a Git repo, build the source code, then publish a container image.
+This `TaskRun` will use the `buildpacks-v3` task to build the source code, then publish a container image.
 
 ```
 apiVersion: tekton.dev/v1beta1
@@ -75,20 +75,18 @@ spec:
 #  - name: CACHE
 #    value: my-cache
   resources:
-    inputs:
-    - name: source
-      resourceSpec:
-        type: git
-        params:
-        - name: url
-          value: <your git repo, e.g. "https://github.com/buildpacks/samples">
     outputs:
     - name: image
       resourceSpec:
         type: image
         params:
         - name: url
-          value: <your output image tag, e.g. "gcr.io/app-repo/app-image:app-tag">
+          value: <your output image tag,
+          e.g. "gcr.io/app-repo/app-image:app-tag">
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
 ```
 
 ### Example builders
