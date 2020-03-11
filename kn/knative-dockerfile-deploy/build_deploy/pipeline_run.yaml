@@ -7,13 +7,12 @@ spec:
   pipelineRef:
     name: buildah-build-kn-create
   resources:
-    - name: source
-      resourceRef:
-        name: buildah-build-kn-create-source
     - name: image
       resourceRef:
         name: buildah-build-kn-create-image
   params:
+    - name: GIT_URL
+      value: "https://github.com/navidshaikh/helloworld-go"
     - name: ARGS
       value:
         - "service"
