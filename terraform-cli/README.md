@@ -18,11 +18,10 @@ This task currently works only on kubernetes 1.6+ support for a task that works 
 * **ARGS:** args to execute which are appended to `terraform` e.g. `init` (_default_: `--help`)
 * **terraform-secret:** the name of the secret containing the authentication information for the chosen provider (_default_: `terraform-creds`)
 
-## Resources
-
-## Inputs
+## Workspaces
 
 * **source:** A `git`-type `PipelineResource` specifying the location of the terraform HCL or JSON files
+
 
 ## Terraform-Secret
 
@@ -74,13 +73,15 @@ kind: Pipeline
 metadata:
   name: terraform-cli-example
 spec:
-  resources:
-  - name: terraform-file
-    type: git
+  workspaces:
+  - name: source
   tasks:
   - name: terraform
     taskRef:
       name: terraform-cli
+    workspaces:
+    - name: source
+      workspace: source
     params:
      - name: terraform-secret
        value: "terraform-secret"
@@ -88,8 +89,4 @@ spec:
        value:
          - apply
          - "-auto-approve"
-    resources:
-      inputs:
-        - name: source
-          resource: terraform-file
 ```

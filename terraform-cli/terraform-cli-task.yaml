@@ -4,10 +4,8 @@ kind: Task
 metadata:
   name: terraform-cli
 spec:
-  resources:
-    inputs:
-    - name: source
-      type: git
+  workspaces:
+  - name: source
   params:
   - name: ARGS
     description: The terraform cli commands to tun
@@ -21,7 +19,7 @@ spec:
   steps:
     - name: init
       image: quay.io/rcmendes/terraform-cli:latest
-      workingDir: /workspace/source
+      workingDir: $(workspaces.source.path)
       command: ["/usr/local/bin/terraform"]
       args:
         - "init"
