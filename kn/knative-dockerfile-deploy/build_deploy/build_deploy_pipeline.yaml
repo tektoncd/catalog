@@ -3,9 +3,9 @@ kind: Pipeline
 metadata:
   name: buildah-build-kn-create
 spec:
-  resources:
+  workspaces:
   - name: source
-    type: git
+  resources:
   - name: image
     type: image
   params:
@@ -14,14 +14,32 @@ spec:
     description: Arguments to pass to kn CLI
     default:
       - "help"
+  - name: GIT_URL
+    type: string
+    description: Git url to clone
   tasks:
+  - name: fetch-repository
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: source
+    params:
+    - name: url
+      value: $(params.GIT_URL)
+    - name: subdirectory
+      value: ""
+    - name: deleteExisting
+      value: "true"
   - name: buildah-build
     taskRef:
       name: buildah
+    runAfter:
+      - fetch-repository
+    workspaces:
+    - name: source
+      workspace: source
     resources:
-      inputs:
-        - name: source
-          resource: source
       outputs:
         - name: image
           resource: image
