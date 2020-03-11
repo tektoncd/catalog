@@ -61,11 +61,11 @@ task.tekton.dev/buildkit created
 * **BUILDKIT_CLIENT_CERTS**: The name of Secret that contains `ca.pem`, `cert.pem`, `key.pem`
   for mTLS connection to BuildKit daemon (_default:_`buildkit-client-certs`)
 
-## Resources
-
-### Inputs
+## Workspaces
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the source to build.
+
+## Resources
 
 ### Outputs
 
