@@ -21,11 +21,9 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golan
 * **GOARCH**: architecture target (_default:_ amd64)
 * **GO111MODULE**: value of module support (_default:_ auto)
 
-### Resources
+### Workspaces
 
-#### Inputs
-
-* **source**: A `git`-type `PipelineResource` specifying the location of the
+* **source**: A `git`-type `PipelineResource** specifying the location of the
   source to build.
 
 ## `golang-build`
@@ -40,9 +38,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golan
 * **GOARCH**: architecture target (_default:_ amd64)
 * **GO111MODULE**: value of module support (_default:_ auto)
 
-### Resources
-
-#### Inputs
+### Workspaces
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
@@ -59,9 +55,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golan
 * **GOARCH**: architecture target (_default:_ amd64)
 * **GO111MODULE**: value of module support (_default:_ auto)
 
-### Resources
-
-#### Inputs
+### Workspaces
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
@@ -82,14 +76,10 @@ metadata:
 spec:
   taskRef:
     name: golangci-lint
-  resources:
-    inputs:
-    - name: source
-      resourceSpec:
-        type: git
-        params:
-        - name: url
-          value: https://github.com/tektoncd/pipeline
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
   params:
   - name: package
     value: github.com/tektoncd/pipeline
@@ -110,14 +100,10 @@ metadata:
 spec:
   taskRef:
     name: golang-test
-  resources:
-    inputs:
-    - name: source
-      resourceSpec:
-        type: git
-        params:
-        - name: url
-          value: https://github.com/tektoncd/pipeline
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
   params:
   - name: package
     value: github.com/tektoncd/pipeline
@@ -139,14 +125,10 @@ metadata:
 spec:
   taskRef:
     name: golang-build
-  resources:
-    inputs:
-    - name: source
-      resourceSpec:
-        type: git
-        params:
-        - name: url
-          value: https://github.com/tektoncd/pipeline
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
   params:
   - name: package
     value: github.com/tektoncd/pipeline
