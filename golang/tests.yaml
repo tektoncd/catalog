@@ -24,11 +24,9 @@ spec:
   - name: GO111MODULE
     description: "value of module support"
     default: auto
-  resources:
-    inputs:
-    - name: source
-      type: git
-      targetPath: src/$(params.package)
+  workspaces:
+  - name: source
+    mountPath: /workspace/src/$(params.package)
   steps:
   - name: unit-test
     image: golang:$(params.version)
