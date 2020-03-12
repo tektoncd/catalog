@@ -1,0 +1,68 @@
+---
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: imagestream-with-buildah
+  annotations:
+    alpha.image.policy.openshift.io/resolve-names: '*'
+spec:
+  workspaces:
+    - name: imageregistry
+  inputs:
+    params:
+    - name: INTERMEDIATE_OUTPUT_IMAGE
+      description: The output image from the build that is pushed to the OpenShift internal image registry's location for the ImageStream.
+      default: nodejs-tekton-example/output:latest
+    - name: IMAGESTREAM_NAME
+      description: The name of the ImageStream in the TaskRun's namespace that this example works with.
+      default: test-imagestream-push
+    - name: DOCKERFILE
+      description: Path to the Dockerfile to build.
+      default: ./Dockerfile
+    - name: CONTEXT
+      description: Path to the directory to use as context.
+      default: .
+    - name: TLSVERIFY
+      description: Verify the TLS on the registry endpoint.
+      default: "true"
+
+    resources:
+    - name: source
+      type: git
+
+  steps:
+  - name: image-registry-args
+    image: quay.io/gabemontero/obu
+    script: |
+      #!/usr/bin/env bash
+      set -xe
+      mkdir -p $(workspaces.imageregistry.path)/openshift-image-registry-certs
+      obu registry --ca-data > $(workspaces.imageregistry.path)/openshift-image-registry-certs/ca.crt
+
+  - name: build
+    image: buildah:latest
+    workingDir: /workspace/source
+    command: ['buildah', 'bud', '--tls-verify=$(inputs.params.TLSVERIFY)', '--layers', '-f', '$(inputs.params.DOCKERFILE)', '-t', '$(inputs.params.INTERMEDIATE_OUTPUT_IMAGE)', '$(inputs.params.CONTEXT)']
+    volumeMounts:
+    - name: varlibcontainers
+      mountPath: /var/lib/containers
+    securityContext:
+      privileged: true
+
+  - name: push
+    image: buildah:latest
+    workingDir: /workspace/source
+    script: |
+      #!/usr/bin/env bash
+      set -xe
+      export NAMESPACE=`cat /var/run/secrets/kubernetes.io/serviceaccount/namespace`
+      buildah push --cert-dir=$(workspaces.imageregistry.path)/openshift-image-registry-certs --tls-verify=$(inputs.params.TLSVERIFY) $(inputs.params.INTERMEDIATE_OUTPUT_IMAGE) docker://image-registry.openshift-image-registry.svc:5000/$NAMESPACE/$(inputs.params.IMAGESTREAM_NAME)
+    volumeMounts:
+    - name: varlibcontainers
+      mountPath: /var/lib/containers
+    securityContext:
+      privileged: true
+
+  volumes:
+  - name: varlibcontainers
+    emptyDir: {}

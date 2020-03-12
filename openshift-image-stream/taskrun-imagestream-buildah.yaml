@@ -1,0 +1,20 @@
+apiVersion: tekton.dev/v1alpha1
+kind: TaskRun
+metadata:
+  name: imagestream-with-buildah
+spec:
+  workspaces:
+    - name: imageregistry
+      emptyDir: {}
+      subPath: metadata
+  serviceAccountName: builder
+  taskRef:
+    name: imagestream-with-buildah
+  inputs:
+    resources:
+      - name: source
+        resourceSpec:
+          type: git
+          params:
+            - name: url
+              value: https://github.com/gabemontero/nodejs-tekton-example

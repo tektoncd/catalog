@@ -1,0 +1,12 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: openshift-image-registry-tekton
+  namespace: openshift-image-registry
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - "get"
