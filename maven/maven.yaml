@@ -5,48 +5,82 @@ metadata:
 spec:
   inputs:
     params:
-    - name: GOALS
-      description: The Maven goals to run
-      type: array
-      default:
-      - "package"
-    - name: MAVEN_MIRROR_URL
-      description: The Maven bucketrepo- mirror
-      type: string
-      default: ""
+      - name: GOALS
+        description: The Maven goals to run
+        type: array
+        default:
+          - "package"
+      - name: MAVEN_MIRROR_URL
+        description: The Maven bucketrepo- mirror
+        type: string
+        default: ""
+      - name: PROXY_USER
+        description: The username for the proxy server
+        type: string
+        default: "testuser"
+      - name: PROXY_PASSWORD
+        description: The password for the proxy server
+        type: string
+        default: "testpassword"
+      - name: PROXY_PORT
+        description: Port number for the proxy server
+        type: string
+        default: "80"
+      - name: PROXY_HOST
+        description: Proxy server Host
+        type: string
+        default: ""
+      - name: NON_PROXY_HOST
+        description: Non proxy server host
+        type: string
+        default: ""
+      - name: PROXY_PROTOCOL
+        description: Protocol for the proxy ie http or https
+        type: string
+        default: "http"
     resources:
-    - name: source
-      targetPath: /
-      type: git
+      - name: source
+        targetPath: /
+        type: git
   steps:
     - name: mvn-settings
       image: registry.access.redhat.com/ubi8/ubi-minimal:latest
       workingDir: /.m2
-      command:
-        - '/bin/bash'
-        - '-c'
-      args:
-        - |-
-          [[ -f /.m2/settings.xml ]] && \
-          echo 'using existing /.m2/settings.xml' && \
-          cat /.m2/settings.xml && exit 0
+      script: |
+        #!/usr/bin/env bash
 
-          [[ -n '$(inputs.params.MAVEN_MIRROR_URL)' ]] && \
-          cat > /.m2/settings.xml <<EOF
-          <settings>
-            <mirrors>
-              <mirror>
-                <id>mirror.default</id>
-                <name>mirror.default</name>
-                <url>$(inputs.params.MAVEN_MIRROR_URL)</url>
-                <mirrorOf>*</mirrorOf>
-              </mirror>
-            </mirrors>
-          </settings>
-          EOF
+        [[ -f /.m2/settings.xml ]] && \
+        echo 'using existing /.m2/settings.xml' && \
+        cat /.m2/settings.xml && exit 0
 
-          [[ -f /.m2/settings.xml ]] && cat /.m2/settings.xml
-          [[ -f /.m2/settings.xml ]] || echo skipping settings
+        [[ -n '$(inputs.params.MAVEN_MIRROR_URL)' ]] && \
+        cat > /.m2/settings.xml <<EOF
+        <settings>
+          <mirrors>
+            <mirror>
+              <id>mirror.default</id>
+              <name>mirror.default</name>
+              <url>$(inputs.params.MAVEN_MIRROR_URL)</url>
+              <mirrorOf>*</mirrorOf>
+            </mirror>
+          </mirrors>
+          <proxies>
+            <proxy>
+              <id>proxy.default</id>
+              <active>true</active>
+              <protocol>$(inputs.params.PROXY_PROTOCOL)</protocol>
+              <username>$(inputs.params.PROXY_USER)</username>
+              <password>$(inputs.params.PROXY_PASSWORD)</password>
+              <host>$(inputs.params.PROXY_HOST)</host>
+              <port>$(inputs.params.PROXY_PORT)</port>
+              <nonProxyHosts>$(inputs.params.NON_PROXY_HOST)</nonProxyHosts>
+            </proxy>
+          </proxies>
+        </settings>
+        EOF
+
+        [[ -f /.m2/settings.xml ]] && cat /.m2/settings.xml
+        [[ -f /.m2/settings.xml ]] || echo skipping settings
       volumeMounts:
         - name: m2-repository
           mountPath: /.m2
