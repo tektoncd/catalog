@@ -24,6 +24,8 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/build
   `.`)
 * **TLSVERIFY**: Verify the TLS on the registry endpoint (for push/pull to a
   non-TLS registry) (_default:_ `true`)
+* **FORMAT**: The format of the built container, oci or docker (_default:_
+ `oci`)
 
 ## Workspaces
 
