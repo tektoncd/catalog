@@ -60,7 +60,6 @@ spec:
 
       if [[ "$(params.deleteExisting)" == "true" ]] ; then
         cleandir
-        ls -lah "$CHECKOUT_DIR"
       fi
 
       /ko-app/git-init \
