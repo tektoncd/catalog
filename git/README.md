@@ -5,6 +5,8 @@ in your Pipeline.
 
 ## `git-clone`
 
+**Please Note: this Task is only compatible with Tekton Pipelines versions 0.11-rc1 and greater!**
+
 This `Task` has two required inputs:
 
 1. The URL of a git repo to clone provided with the `url` param.
