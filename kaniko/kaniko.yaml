@@ -15,7 +15,7 @@ spec:
       default: ""
     - name: BUILDER_IMAGE
       description: The image on which builds will run
-      default: gcr.io/kaniko-project/executor:v0.13.0
+      default: gcr.io/kaniko-project/executor:latest
     resources:
     - name: source
       type: git
