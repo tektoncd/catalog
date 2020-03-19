@@ -37,6 +37,9 @@ as well as
 * **sslVerify**: defines if http.sslVerify should be set to true or false in the global git config (_default_: true)
 * **subdirectory**: subdirectory inside the "output" workspace to clone the git repo into (_default:_ "")
 * **deleteExisting**: clean out the contents of the repo's destination directory if it already exists before cloning the repo there (_default_: false)
+* **httpProxy**: git HTTP proxy server for non-SSL requests
+* **httpsProxy**: git HTTPS proxy server for SSL requests
+* **noProxy**: git no proxy - opt out of proxying HTTP/HTTPS requests
 
 ### Results
 
