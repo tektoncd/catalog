@@ -23,7 +23,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golan
 
 ### Workspaces
 
-* **source**: A `git`-type `PipelineResource** specifying the location of the
+* **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
 
 ## `golang-build`
@@ -33,7 +33,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golan
 * **package**: base package under test
 * **packages**: packages to test (_default:_ ./...)
 * **version**: golang version to use for tests (_default:_ latest)
-* **flags**: flags to use for `go test` command (_default:_ -v)
+* **flags**: flags to use for `go build` command (_default:_ -v)
 * **GOOS**: operating system target (_default:_ linux)
 * **GOARCH**: architecture target (_default:_ amd64)
 * **GO111MODULE**: value of module support (_default:_ auto)

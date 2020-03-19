@@ -30,7 +30,7 @@ spec:
   steps:
   - name: build
     image: golang:$(params.version)
-    workingDir: /workspace/src/$(params.package)
+    workingDir: $(workspaces.source.path)
     script: |
       go build $(params.flags) $(params.packages)
     env:

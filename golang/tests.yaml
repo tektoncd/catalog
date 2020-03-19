@@ -30,7 +30,7 @@ spec:
   steps:
   - name: unit-test
     image: golang:$(params.version)
-    workingDir: /workspace/src/$(params.package)
+    workingDir: $(workspaces.source.path)
     script: |
       go test $(params.flags) $(params.packages)
     env:
