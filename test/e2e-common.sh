@@ -75,7 +75,7 @@ function show_failure() {
     echo "--- TR Dump"
     kubectl get -n ${tns} tr -o yaml
     echo "--- Container Logs"
-    kubectl get pod -o name -n ${tns}|xargs kubectl logs --all-containers -n ${tns}
+    kubectl get pod -o name -n ${tns}|sed 's,.*/,,'|xargs kubectl logs --all-containers -n ${tns}
     exit 1
 
 }
