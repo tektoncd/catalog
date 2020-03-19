@@ -25,9 +25,7 @@ as well as
 
 * **output**: A workspace for this Task to fetch the git repository in to.
 
-### Inputs
-
-#### Parameters
+### Parameters
 
 * **url**: git url to clone (_required_)
 * **revision**: git revision to checkout (branch, tag, sha, ref…) (_default:_ master)
@@ -36,6 +34,9 @@ as well as
 * **sslVerify**: defines if http.sslVerify should be set to true or false in the global git config (_default_: true)
 * **subdirectory**: subdirectory inside the "output" workspace to clone the git repo into (_default:_ src)
 * **deleteExisting**: clean out the contents of the repo's destination directory if it already exists before cloning the repo there (_default_: false)
+* **httpProxy**: git HTTP proxy server for non-SSL requests
+* **httpsProxy**: git HTTPS proxy server for SSL requests
+* **noProxy**: git no proxy - opt out of proxying HTTP/HTTPS requests
 
 ### Results
 
@@ -59,7 +60,7 @@ named `commit` in the PipelineRun's Status with the commit SHA that was
 fetched by the `git-clone` Task.
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: cat-readme
@@ -67,17 +68,16 @@ spec:
   workspaces:
   - name: source
     mountPath: /source
-  inputs:
-    params:
-    - name: subdirectory
-      description: Subdirectory inside "source" workspace that contains the README.md.
-      default: "."
+  params:
+  - name: subdirectory
+    description: Subdirectory inside "source" workspace that contains the README.md.
+    default: "."
   steps:
   - name: cat-readme
     image: ubuntu
-    script: cat "$(workspaces.source.path)/$(inputs.params.subdirectory)/README.md"
+    script: cat "$(workspaces.source.path)/$(params.subdirectory)/README.md"
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: cat-pipeline-readme
@@ -124,7 +124,7 @@ spec:
     requests:
       storage: 500Mi
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
   name: cat-pipeline-readme-run

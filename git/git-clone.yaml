@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: git-clone
@@ -6,35 +6,46 @@ spec:
   workspaces:
   - name: output
     description: The git repo will be cloned onto the volume backing this workspace
-  inputs:
-    params:
-    - name: url
-      description: git url to clone
-      type: string
-    - name: revision
-      description: git revision to checkout (branch, tag, sha, ref…)
-      type: string
-      default: master
-    - name: submodules
-      description: defines if the resource should initialize and fetch the submodules
-      type: string
-      default: "true"
-    - name: depth
-      description: performs a shallow clone where only the most recent commit(s) will be fetched
-      type: string
-      default: "1"
-    - name: sslVerify
-      description: defines if http.sslVerify should be set to true or false in the global git config
-      type: string
-      default: "true"
-    - name: subdirectory
-      description: subdirectory inside the "output" workspace to clone the git repo into
-      type: string
-      default: "src"
-    - name: deleteExisting
-      description: clean out the contents of the repo's destination directory (if it already exists) before trying to clone the repo there
-      type: string
-      default: "false"
+  params:
+  - name: url
+    description: git url to clone
+    type: string
+  - name: revision
+    description: git revision to checkout (branch, tag, sha, ref…)
+    type: string
+    default: master
+  - name: submodules
+    description: defines if the resource should initialize and fetch the submodules
+    type: string
+    default: "true"
+  - name: depth
+    description: performs a shallow clone where only the most recent commit(s) will be fetched
+    type: string
+    default: "1"
+  - name: sslVerify
+    description: defines if http.sslVerify should be set to true or false in the global git config
+    type: string
+    default: "true"
+  - name: subdirectory
+    description: subdirectory inside the "output" workspace to clone the git repo into
+    type: string
+    default: "src"
+  - name: deleteExisting
+    description: clean out the contents of the repo's destination directory (if it already exists) before trying to clone the repo there
+    type: string
+    default: "false"
+  - name: httpProxy
+    description: git HTTP proxy server for non-SSL requests
+    type: string
+    default: ""
+  - name: httpsProxy
+    description: git HTTPS proxy server for SSL requests
+    type: string
+    default: ""
+  - name: noProxy
+    description: git no proxy - opt out of proxying HTTP/HTTPS requests
+    type: string
+    default: ""
   results:
   - name: commit
     description: The precise commit SHA that was fetched by this Task
@@ -42,7 +53,7 @@ spec:
   - name: clone
     image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:latest
     script: |
-      CHECKOUT_DIR="$(workspaces.output.path)/$(inputs.params.subdirectory)"
+      CHECKOUT_DIR="$(workspaces.output.path)/$(params.subdirectory)"
 
       cleandir() {
         # Delete any existing contents of the repo directory if it exists.
@@ -59,18 +70,22 @@ spec:
         fi
       }
 
-      if [[ "$(inputs.params.deleteExisting)" == "true" ]] ; then
+      if [[ "$(params.deleteExisting)" == "true" ]] ; then
         cleandir
         ls -lah "$CHECKOUT_DIR"
       fi
 
+      test -z "$(params.httpProxy)" ||  export HTTP_PROXY=$(params.httpProxy)
+      test -z "$(params.httpsProxy)" ||  export HTTPS_PROXY=$(params.httpsProxy)
+      test -z "$(params.noProxy)" ||  export NO_PROXY=$(params.noProxy)
+
       /ko-app/git-init \
-        -url "$(inputs.params.url)" \
-        -revision "$(inputs.params.revision)" \
+        -url "$(params.url)" \
+        -revision "$(params.revision)" \
         -path "$CHECKOUT_DIR" \
-        -sslVerify "$(inputs.params.sslVerify)" \
-        -submodules "$(inputs.params.submodules)" \
-        -depth "$(inputs.params.depth)"
+        -sslVerify "$(params.sslVerify)" \
+        -submodules "$(params.submodules)" \
+        -depth "$(params.depth)"
       cd "$CHECKOUT_DIR"
       RESULT_SHA="$(git rev-parse HEAD | tr -d '\n')"
       EXIT_CODE="$?"
