@@ -11,7 +11,7 @@ spec:
     default: --verbose
   - name: version
     description: golangci-lint version to use
-    default: "v1.17.1"
+    default: "v1.21.0"
   - name: GOOS
     description: "running operating system target"
     default: linux
@@ -27,7 +27,7 @@ spec:
   steps:
   - name: lint
     image: golangci/golangci-lint:$(params.version)
-    workingDir: /workspace/src/$(params.package)
+    workingDir: $(workspaces.source.path)
     script: |
       golangci-lint run $(params.flags)
     env:
