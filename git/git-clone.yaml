@@ -35,6 +35,18 @@ spec:
       description: clean out the contents of the repo's destination directory (if it already exists) before trying to clone the repo there
       type: string
       default: "false"
+    - name: httpProxy
+      description: git HTTP proxy server for non-SSL requests
+      type: string
+      default: ""
+    - name: httpsProxy
+      description: git HTTPS proxy server for SSL requests
+      type: string
+      default: ""
+    - name: noProxy
+      description: git no proxy - opt out of proxying HTTP/HTTPS requests
+      type: string
+      default: ""
   results:
   - name: commit
     description: The precise commit SHA that was fetched by this Task
@@ -62,6 +74,10 @@ spec:
       if [[ "$(inputs.params.deleteExisting)" == "true" ]] ; then
         cleandir
       fi
+
+      test -z "$(inputs.params.httpProxy)" || export HTTP_PROXY=$(inputs.params.httpProxy)
+      test -z "$(inputs.params.httpsProxy)" || export HTTPS_PROXY=$(inputs.params.httpsProxy)
+      test -z "$(inputs.params.noProxy)" || export NO_PROXY=$(inputs.params.noProxy)
 
       /ko-app/git-init \
         -url "$(inputs.params.url)" \
