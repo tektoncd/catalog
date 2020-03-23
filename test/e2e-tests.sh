@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set -x
+
 # FIXME(vdemeester) Remove once 0.11 is released
 export RELEASE_YAML=https://github.com/tektoncd/pipeline/releases/download/v0.11.0-rc2/release.yaml
 
