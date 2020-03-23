@@ -14,6 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# FIXME(vdemeester) Remove once 0.11 is released
+export RELEASE_YAML=https://github.com/tektoncd/pipeline/releases/download/v0.11.0-rc2/release.yaml
+
 source $(dirname $0)/../vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
 source $(dirname $0)/e2e-common.sh
 
