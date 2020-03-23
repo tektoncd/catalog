@@ -79,6 +79,7 @@ function show_failure() {
     exit 1
 
 }
+
 function test_task_creation() {
     for runtest in ${@};do
         local testname=${runtest%%/*}
@@ -91,7 +92,7 @@ function test_task_creation() {
         done
         [[ -n ${skipit} ]] && continue
 
-        kubectl create namespace ${tns}
+        kubectl get namespace ${tns} 2>/dev/null >/dev/null || kubectl create namespace ${tns}
 
         # Install the task itself first
         for yaml in ${testname}/*.yaml;do
@@ -116,9 +117,17 @@ function test_task_creation() {
             status=$(kubectl get -n ${tns} tr --output=jsonpath='{.items[*].status.conditions[*].status}')
             reason=$(kubectl get -n ${tns} tr --output=jsonpath='{.items[*].status.conditions[*].reason}')
             [[ ${status} == *ERROR || ${reason} == *Failed || ${reason} == CouldntGetTask ]] && show_failure ${testname} ${tns}
-            [[ ${status} == True ]] && {
+
+            local good=true
+            # If one task of all the task is not True then exit
+            for st in ${status};do
+                [[ ${st} != True ]] && {
+                    good=false
+                    break
+                }
+            done
+            [[ ${good} == true ]] && {
                 echo -n "SUCCESS: ${testname} taskrun has successfully executed: " ;
-                kubectl get pod -o name -n ${tns}|xargs kubectl logs --all-containers -n ${tns}|tail -1
                 break
             }
             sleep 10
