@@ -6,9 +6,6 @@ metadata:
 spec:
   workspaces:
   - name: shared-workspace
-  resources:
-  - name: build-image
-    type: image
   tasks:
   - name: fetch-repository
     taskRef:
@@ -32,12 +29,10 @@ spec:
     - name: source
       workspace: shared-workspace
     params:
+    - name: IMAGE
+      value: localhost:5000/nocode
     - name: TLSVERIFY
       value: "false"
-    resources:
-      outputs:
-      - name: image
-        resource: build-image
 ---
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
@@ -50,7 +45,3 @@ spec:
   - name: shared-workspace
     persistentvolumeclaim:
       claimName: buildah-source-pvc
-  resources:
-  - name: build-image
-    resourceRef:
-      name: image

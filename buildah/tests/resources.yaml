@@ -1,14 +1,4 @@
 ---
-apiVersion: tekton.dev/v1alpha1
-kind: PipelineResource
-metadata:
-  name: image
-spec:
-  type: image
-  params:
-    - name: url
-      value: localhost:5000/nocode
----
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:

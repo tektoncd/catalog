@@ -5,6 +5,8 @@ metadata:
   name: buildah
 spec:
   params:
+  - name: IMAGE
+    description: Reference of the image buildah will produce.
   - name: BUILDER_IMAGE
     description: The location of the buildah builder image.
     default: quay.io/buildah/stable:v1.11.0
@@ -19,16 +21,12 @@ spec:
     default: "true"
   workspaces:
   - name: source
-  resources:
-    outputs:
-    - name: image
-      type: image
 
   steps:
   - name: build
     image: $(params.BUILDER_IMAGE)
     workingDir: $(workspaces.source.path)
-    command: ['buildah', 'bud', '--tls-verify=$(params.TLSVERIFY)', '--layers', '-f', '$(params.DOCKERFILE)', '-t', '$(resources.outputs.image.url)', '$(params.CONTEXT)']
+    command: ['buildah', 'bud', '--tls-verify=$(params.TLSVERIFY)', '--layers', '-f', '$(params.DOCKERFILE)', '-t', '$(params.IMAGE)', '$(params.CONTEXT)']
     volumeMounts:
     - name: varlibcontainers
       mountPath: /var/lib/containers
@@ -38,7 +36,7 @@ spec:
   - name: push
     image: $(params.BUILDER_IMAGE)
     workingDir: $(workspaces.source.path)
-    command: ['buildah', 'push', '--tls-verify=$(params.TLSVERIFY)', '$(resources.outputs.image.url)', 'docker://$(resources.outputs.image.url)']
+    command: ['buildah', 'push', '--tls-verify=$(params.TLSVERIFY)', '$(params.IMAGE)', 'docker://$(params.IMAGE)']
     volumeMounts:
     - name: varlibcontainers
       mountPath: /var/lib/containers
