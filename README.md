@@ -13,6 +13,9 @@ Each `Task` is provided in a separate directory along with a README.md and a
 Kubernetes manifest, so you can choose which `Task`s to install on your
 cluster. A directory can hold more than one task (e.g. [`golang`](golang)).
 
+_See [our project roadmap](roadmap.md)._
+
+
 ## `Task` Kinds
 
 There are two kinds of `Task`s:
@@ -105,3 +108,5 @@ This project is still under active development, so you might run into
 [issues](https://github.com/tektoncd/catalog/issues). If you do,
 please don't be shy about letting us know, or better yet, contribute a
 fix or feature. Its folder structure is not yet set in stone either.
+
+_See [our project roadmap](roadmap.md)._
