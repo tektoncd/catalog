@@ -6,9 +6,9 @@ metadata:
 spec:
   workspaces:
   - name: shared-workspace
-  resources:
-  - name: build-image
-    type: image
+  params:
+  - name: image
+    description: reference of the image to build
   tasks:
   - name: fetch-repository
     taskRef:
@@ -32,12 +32,10 @@ spec:
     - name: source
       workspace: shared-workspace
     params:
+    - name: IMAGE
+      value: $(params.image)
     - name: EXTRA_ARGS
       value: "--skip-tls-verify"
-    resources:
-      outputs:
-      - name: image
-        resource: build-image
 ---
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
@@ -46,11 +44,10 @@ metadata:
 spec:
   pipelineRef:
     name: kaniko-test-pipeline
+  params:
+  - name: image
+    value: localhost:5000/kaniko-nocode
   workspaces:
   - name: shared-workspace
     persistentvolumeclaim:
       claimName: kaniko-source-pvc
-  resources:
-  - name: build-image
-    resourceRef:
-      name: image

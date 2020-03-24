@@ -20,6 +20,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/kanik
 
 ## Parameters
 
+* **IMAGE**: The name (reference) of the image to build.
 * **DOCKERFILE**: The path to the `Dockerfile` to execute (_default:_
   `./Dockerfile`)
 
@@ -31,12 +32,9 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/kanik
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
 
-## Resources
+## Results
 
-### Outputs
-
-* **image**: An `image`-type `PipelineResource` specifying the image that should
-  be built.
+* **digest**: The digest of the image just built.
 
 ## ServiceAccount
 
