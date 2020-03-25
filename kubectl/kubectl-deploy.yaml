@@ -1,0 +1,19 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: kubectl-deploy-pod
+  namespace: default
+spec:
+  inputs:
+    params:
+    - name: manifest
+      description: Content of the resource to deploy
+    - name: image
+      default: gcr.io/cloud-builders/kubectl # it is huge
+      description: Kubectl wrapper image
+  steps:
+  - name: kubeconfig
+    image: $(inputs.params.image)
+    script: |
+      echo "$(inputs.params.manifest)" > /tmp/resource.yaml
+      kubectl create -f /tmp/resource.yaml
