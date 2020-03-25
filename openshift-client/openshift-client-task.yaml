@@ -1,3 +1,4 @@
+---
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
@@ -13,6 +14,11 @@ spec:
     type: array
     default:
     - "help"
+  resources:
+    inputs:
+      - name: source
+        type: git
+        optional: true
   steps:
     - name: oc
       image: quay.io/openshift/origin-cli:latest
