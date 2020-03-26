@@ -80,19 +80,24 @@ roleRef:
 kubectl create -f https://raw.githubusercontent.com/tektoncd/catalog/master/kn/knative-dockerfile-deploy/kn_deployer.yaml
 ```
 
-4 - Install buildah task from tektoncd/atalog
+4 - Install buildah task from tektoncd/catalog
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/buildah/buildah.yaml
 ```
 
-5 - Install the kn task from the tektoncd/atalog
+5 - Install the kn task from the tektoncd/catalog
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/kn/kn.yaml
 ```
 
+5 - Install the git-clone task from the tektoncd/catalog
+```bash
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/git/git-clone.yaml
+```
+
 ## Pipelines:
 
-Let's create some Pipelines using `buildah` and `kn` tasks:
+Let's create some Pipelines using `git-clone`, `buildah` and `kn` tasks:
 1. Create an image from git source and deploy to the Knative Service [pipeline](./build_deploy/README.md)
 2. Deploy a new Revision to the Knative Service [pipeline](./service_update/README.md)
 3. Perform traffic operations on the Knative Service [pipeline](./service_traffic/README.md)

@@ -1,12 +1,13 @@
 # Build and Deploy Pipeline
 
 Let's create a container image from a git source having a Dockerfile and deploy it to a Knative Service.
-This Pipeline builds and push the git source using `buildah` and deploys the container as Knative Service using `kn`.
+This Pipeline clones source code using `git-clone` builds and push the git source using `buildah` and deploys the container as Knative Service using `kn`.
 
 ## Pipeline:
 
 The following Pipeline definition refers:
- - `buildah` and `kn` tasks (we've installed these tasks in One time Setup section)
+- `git-clone` to clone the source code
+- `buildah` and `kn` tasks (we've installed these tasks in One time Setup section)
 - Pipeline resources for git and resulting container image repository
 - Save the following YAML in a file e.g.: `build_deploy_pipeline.yaml` and create the Pipeline using
   `kubectl create -f build_deploy_pipeline.yaml`
@@ -102,6 +103,17 @@ spec:
   params:
     - name: url
       value: "quay.io/navidshaikh/helloworld-go"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: clone-source-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
 ```
 
 ## PipelineRun:
@@ -128,6 +140,10 @@ spec:
     - name: image
       resourceRef:
         name: buildah-build-kn-create-image
+  workspaces:
+    - name: source
+      persistentvolumeclaim:
+        claimName: clone-source-pvc
   params:
     - name: GIT_URL
       value: "https://github.com/navidshaikh/helloworld-go"
