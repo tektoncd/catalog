@@ -8,3 +8,14 @@ spec:
   params:
     - name: url
       value: "quay.io/navidshaikh/helloworld-go"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: clone-source-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
