@@ -8,12 +8,5 @@ spec:
       - name: source
         resourceRef:
           name: maven-resource-petclinic
-    params:
-      - name: MAVEN_MIRROR_URL
-        value: "http://downloads.planetmirror.com/pub/maven2"
-      - name: PROXY_HOST
-        value: "proxy.somewhere.com"
-      - name: PROXY_PORT
-        value: "8080"
   taskRef:
     name: maven
