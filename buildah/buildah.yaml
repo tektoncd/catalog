@@ -18,6 +18,9 @@ spec:
     - name: TLSVERIFY
       description: Verify the TLS on the registry endpoint (for push/pull to a non-TLS registry)
       default: "true"
+    - name: FORMAT
+      description: The format of the built container, oci or docker
+      default: "oci"
 
     resources:
     - name: source
@@ -32,7 +35,7 @@ spec:
   - name: build
     image: $(inputs.params.BUILDER_IMAGE)
     workingDir: /workspace/source
-    command: ['buildah', 'bud', '--tls-verify=$(inputs.params.TLSVERIFY)', '--layers', '-f', '$(inputs.params.DOCKERFILE)', '-t', '$(outputs.resources.image.url)', '$(inputs.params.CONTEXT)']
+    command: ['buildah', 'bud', '--format=$(inputs.params.FORMAT)', '--tls-verify=$(inputs.params.TLSVERIFY)', '--layers', '-f', '$(inputs.params.DOCKERFILE)', '-t', '$(outputs.resources.image.url)', '$(inputs.params.CONTEXT)']
     volumeMounts:
     - name: varlibcontainers
       mountPath: /var/lib/containers

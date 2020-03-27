@@ -96,7 +96,7 @@ spec:
 
         [[ -f /.m2/settings.xml ]] && cat /.m2/settings.xml
         [[ -f /.m2/settings.xml ]] || echo skipping settings
-
+        
       volumeMounts:
         - name: m2-repository
           mountPath: /.m2
