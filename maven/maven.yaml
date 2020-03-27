@@ -3,10 +3,12 @@ kind: Task
 metadata:
   name: maven
 spec:
+  workspaces:
+    - name: maven-settings
   inputs:
     params:
       - name: GOALS
-        description: The Maven goals to run
+        description: maven goals to run
         type: array
         default:
           - "package"
@@ -17,20 +19,20 @@ spec:
       - name: PROXY_USER
         description: The username for the proxy server
         type: string
-        default: "testuser"
+        default: ""
       - name: PROXY_PASSWORD
         description: The password for the proxy server
         type: string
-        default: "testpassword"
+        default: ""
       - name: PROXY_PORT
         description: Port number for the proxy server
         type: string
-        default: "80"
+        default: ""
       - name: PROXY_HOST
         description: Proxy server Host
         type: string
         default: ""
-      - name: NON_PROXY_HOST
+      - name: PROXY_NON_PROXY_HOSTS
         description: Non proxy server host
         type: string
         default: ""
@@ -40,59 +42,69 @@ spec:
         default: "http"
     resources:
       - name: source
-        targetPath: /
         type: git
+        targetPath: /
   steps:
     - name: mvn-settings
       image: registry.access.redhat.com/ubi8/ubi-minimal:latest
-      workingDir: /.m2
       script: |
         #!/usr/bin/env bash
 
-        [[ -f /.m2/settings.xml ]] && \
-        echo 'using existing /.m2/settings.xml' && \
-        cat /.m2/settings.xml && exit 0
+        [[ -f $(workspaces.maven-settings.path)/settings.xml ]] && \
+        echo 'using existing $(workspaces.maven-settings.path)/settings.xml' && \
+        cat $(workspaces.maven-settings.path)/settings.xml && exit 0
 
-        [[ -n '$(inputs.params.MAVEN_MIRROR_URL)' ]] && \
-        cat > /.m2/settings.xml <<EOF
+        cat > $(workspaces.maven-settings.path)/settings.xml <<EOF
         <settings>
           <mirrors>
-            <mirror>
-              <id>mirror.default</id>
-              <name>mirror.default</name>
-              <url>$(inputs.params.MAVEN_MIRROR_URL)</url>
-              <mirrorOf>*</mirrorOf>
-            </mirror>
+            <!-- The mirrors added here are generated from environment variables. Don't change. -->
+            <!-- ### mirrors from ENV ### -->
           </mirrors>
           <proxies>
-            <proxy>
-              <id>proxy.default</id>
-              <active>true</active>
-              <protocol>$(inputs.params.PROXY_PROTOCOL)</protocol>
-              <username>$(inputs.params.PROXY_USER)</username>
-              <password>$(inputs.params.PROXY_PASSWORD)</password>
-              <host>$(inputs.params.PROXY_HOST)</host>
-              <port>$(inputs.params.PROXY_PORT)</port>
-              <nonProxyHosts>$(inputs.params.NON_PROXY_HOST)</nonProxyHosts>
-            </proxy>
+            <!-- The proxies added here are generated from environment variables. Don't change. -->
+            <!-- ### HTTP proxy from ENV ### -->
           </proxies>
         </settings>
         EOF
 
-        [[ -f /.m2/settings.xml ]] && cat /.m2/settings.xml
-        [[ -f /.m2/settings.xml ]] || echo skipping settings
-      volumeMounts:
-        - name: m2-repository
-          mountPath: /.m2
+        xml=""
+        if [ -n "$(inputs.params.PROXY_HOST)" -a -n "$(inputs.params.PROXY_PORT)" ]; then
+          xml="<proxy>\
+            <id>genproxy</id>\
+            <active>true</active>\
+            <protocol>$(inputs.params.PROXY_PROTOCOL)</protocol>\
+            <host>$(inputs.params.PROXY_HOST)</host>\
+            <port>$(inputs.params.PROXY_PORT)</port>"
+          if [ -n "$(inputs.params.PROXY_USER)" -a -n "$(inputs.params.PROXY_PASSWORD)" ]; then
+            xml="$xml\
+                <username>$(inputs.params.PROXY_USER)</username>\
+                <password>$(inputs.params.PROXY_PASSWORD)</password>"
+          fi
+          if [ -n "$(inputs.params.PROXY_NON_PROXY_HOSTS)" ]; then
+            xml="$xml\
+                <nonProxyHosts>$(inputs.params.PROXY_NON_PROXY_HOSTS)</nonProxyHosts>"
+          fi
+          xml="$xml\
+              </proxy>"
+          sed -i "s|<!-- ### HTTP proxy from ENV ### -->|$xml|" $(workspaces.maven-settings.path)/settings.xml
+        fi
+
+        if [ -n "$(inputs.params.MAVEN_MIRROR_URL)" ]; then
+          xml="    <mirror>\
+            <id>mirror.default</id>\
+            <url>$(inputs.params.MAVEN_MIRROR_URL)</url>\
+            <mirrorOf>central</mirrorOf>\
+          </mirror>"
+          sed -i "s|<!-- ### mirrors from ENV ### -->|$xml|" $(workspaces.maven-settings.path)/settings.xml
+        fi
+
+        [[ -f $(workspaces.maven-settings.path)/settings.xml ]] && cat $(workspaces.maven-settings.path)/settings.xml
+        [[ -f $(workspaces.maven-settings.path)/settings.xml ]] || echo skipping settings
+
     - name: mvn-goals
       image: gcr.io/cloud-builders/mvn
-      command:
-        - /usr/bin/mvn
+      command: ["/usr/bin/mvn"]
       args:
+        - -s
+        - $(workspaces.maven-settings.path)/settings.xml
         - "$(inputs.params.GOALS)"
-      volumeMounts:
-        - name: m2-repository
-          mountPath: /.m2
-  volumes:
-    - name: m2-repository
-      emptyDir: {}
