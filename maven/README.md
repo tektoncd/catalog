@@ -155,7 +155,7 @@ spec:
       workingDir: /.m2
       script: |
         #!/usr/bin/env bash
-
+        
         [[ -f /.m2/settings.xml ]] && \
         echo 'using existing /.m2/settings.xml' && \
         cat /.m2/settings.xml && exit 0
