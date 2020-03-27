@@ -17,7 +17,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/maven
 - **PROXY_USER**: Username to login to the proxy server (to be inserted into ~/.m2/settings.xml)
 - **PROXY_PASSWORD**: Password to login to the proxy server (to be inserted into ~/.m2/settings.xml)
 - **PROXY_HOST**: Hostname of the proxy server (to be inserted into ~/.m2/settings.xml)
-- **NON_PROXY_HOST**: Non proxy hosts to be reached directly bypassing the proxy (to be inserted into ~/.m2/settings.xml)
+- **HTTP_PROXY_NONPROXYHOSTS**: Non proxy hosts to be reached directly bypassing the proxy (to be inserted into ~/.m2/settings.xml)
 - **PROXY_PORT**: Port number on which the proxy port listens (to be inserted into ~/.m2/settings.xml)
 - **PROXY_PROTOCOL**: http or https protocol whichever is applicable (to be inserted into ~/.m2/settings.xml)
 
@@ -85,7 +85,7 @@ spec:
       value: "yourusername"
     - name: PROXY_PASSWORD
       value: "yourpassword"
-    - name: NON_PROXY_HOST
+    - name: HTTP_PROXY_NONPROXYHOSTS
       value: "www.google.com|*.example.com"
     - name: PROXY_PROTOCOL
       value: "https"
@@ -100,7 +100,7 @@ Following steps demostrate the use of a ConfigMap to mount a custom `settings.xm
 
 1. create configmap
 ```
-oc create configmap `maven-settings-cm` --from-flie settings.xml
+oc create configmap `maven-settings-cm` --from-file settings.xml
 ```
 
 1. modify Maven Task (mount config map to `maven-settings` step in Task definition. also add `maven-settings-cm` to volumes).
@@ -124,20 +124,20 @@ spec:
     - name: PROXY_USER
       description: The username for the proxy server
       type: string
-      default: "testuser"
+      default: ""
     - name: PROXY_PASSWORD
       description: The password for the proxy server
       type: string
-      default: "testpassword"
+      default: ""
     - name: PROXY_PORT
       description: Port number for the proxy server
       type: string
-      default: "80"
+      default: ""
     - name: PROXY_HOST
       description: Proxy server Host
       type: string
       default: ""
-    - name: NON_PROXY_HOST
+    - name: HTTP_PROXY_NONPROXYHOSTS
       description: Non proxy server host
       type: string
       default: ""
@@ -155,51 +155,73 @@ spec:
       workingDir: /.m2
       script: |
         #!/usr/bin/env bash
-        
+
         [[ -f /.m2/settings.xml ]] && \
-        echo 'using already existing /.m2/settings.xml' && \
+        echo 'using existing /.m2/settings.xml' && \
         cat /.m2/settings.xml && exit 0
 
-        [[ -n '$(inputs.params.MAVEN_MIRROR_URL)' ]] && \
         cat > /.m2/settings.xml <<EOF
         <settings>
           <mirrors>
-            <mirror>
-              <id>mirror.default</id>
-              <name>mirror.default</name>
-              <url>$(inputs.params.MAVEN_MIRROR_URL)</url>
-              <mirrorOf>*</mirrorOf>
-            </mirror>
+            <!-- ### configured mirrors ### -->
           </mirrors>
           <proxies>
-            <proxy>
-              <id>proxy.default</id>
-              <active>true</active>
-              <protocol>$(inputs.params.PROXY_PROTOCOL)</protocol>
-              <username>$(inputs.params.PROXY_USER)</username>
-              <password>$(inputs.params.PROXY_PASSWORD)</password>
-              <host>$(inputs.params.PROXY_HOST)</host>
-              <port>$(inputs.params.PROXY_PORT)</port>
-              <nonProxyHosts>$(inputs.params.NON_PROXY_HOST)</nonProxyHosts>
-            </proxy>
+            <!-- ### configured http proxy ### -->
           </proxies>
         </settings>
         EOF
 
+        if [ -n "$(inputs.params.PROXY_HOST)" -a -n "$(inputs.params.PROXY_PORT)" ]; then
+          xml="<proxy>\
+            <id>genproxy</id>\
+            <active>true</active>\
+            <protocol>$(inputs.params.PROXY_PROTOCOL)</protocol>\
+            <host>$(inputs.params.PROXY_HOST)</host>\
+            <port>$(inputs.params.PROXY_PORT)</port>"
+          if [ -n "$(inputs.params.PROXY_USER)" -a -n "$(inputs.params.PROXY_PASSWORD)" ]; then
+            xml="$xml\
+                <username>$(inputs.params.PROXY_USER)</username>\
+                <password>$(inputs.params.PROXY_PASSWORD)</password>"
+          fi
+          if [ -n "$(inputs.params.HTTP_PROXY_NONPROXYHOSTS)" ]; then
+            xml="$xml\
+                <nonProxyHosts>$(inputs.params.HTTP_PROXY_NONPROXYHOSTS)</nonProxyHosts>"
+          fi
+          xml="$xml\
+              </proxy>"
+          sed -i "s|<!-- ### configured http proxy ### -->|$xml|" /.m2/settings.xml
+        fi
+
+        if [ -n "$(inputs.params.MAVEN_MIRROR_URL)" ]; then
+          xml="    <mirror>\
+            <id>mirror.default</id>\
+            <url>$(inputs.params.MAVEN_MIRROR_URL)</url>\
+            <mirrorOf>external:*</mirrorOf>\
+          </mirror>"
+          sed -i "s|<!-- ### configured mirrors ### -->|$xml|" /.m2/settings.xml
+        fi
+
         [[ -f /.m2/settings.xml ]] && cat /.m2/settings.xml
         [[ -f /.m2/settings.xml ]] || echo skipping settings
+
       volumeMounts:
         - name: m2-repository
           mountPath: /.m2
-        - name: maven-configmap
-          mountPath: /.m2/settings.xml
-          subPath: settings.xml
+
     - name: mvn-goals
       image: gcr.io/cloud-builders/mvn
-      command:
-        - /usr/bin/mvn
       args:
         - "$(inputs.params.GOALS)"
+      script: |
+        #!/bin/bash
+
+        if [[ -f "/.m2/settings.xml" ]]
+        then
+          mvn ${@} --settings /.m2/settings.xml
+        else
+          mvn ${@}
+        fi
+
       volumeMounts:
         - name: m2-repository
           mountPath: /.m2
