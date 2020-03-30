@@ -24,13 +24,15 @@ spec:
   - name: GO111MODULE
     description: "value of module support"
     default: auto
-  workspaces:
-  - name: source
-    mountPath: /workspace/src/$(params.package)
+  resources:
+    inputs:
+    - name: source
+      type: git
+      targetPath: src/$(params.package)
   steps:
   - name: build
     image: golang:$(params.version)
-    workingDir: $(workspaces.source.path)
+    workingDir: /workspace/src/$(params.package)
     script: |
       go build $(params.flags) $(params.packages)
     env:

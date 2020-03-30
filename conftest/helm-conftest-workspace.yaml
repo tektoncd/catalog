@@ -3,11 +3,8 @@ kind: Task
 metadata:
   name: helm-conftest
 spec:
-  resources:
-    inputs:
-    - name: source
-      type: git
-      targetPath: source
+  workspaces:
+  - name: source
   params:
   - name: chart
     default: "."
@@ -21,7 +18,7 @@ spec:
 
   steps:
   - name: helm-conftest
-    workingDir: /workspace/source
+    workingDir: $(workspaces.source.path)
     image: instrumenta/helm-conftest:latest
     command:
       - helm

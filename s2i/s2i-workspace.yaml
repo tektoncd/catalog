@@ -16,14 +16,14 @@ spec:
     description: Log level when running the S2I binary
     default: '0'
   resources:
-    inputs:
-    - name: source
-      type: git
     outputs:
     - name: image
       type: image
+  workspaces:
+  - name: source
   steps:
-  - command:
+  - name: generate
+    command:
     - /usr/local/bin/s2i
     - --loglevel=$(params.LOGLEVEL)
     - build
@@ -32,12 +32,12 @@ spec:
     - --as-dockerfile
     - /gen-source/Dockerfile.gen
     image: quay.io/openshift-pipeline/s2i:nightly
-    name: generate
     volumeMounts:
     - mountPath: /gen-source
       name: gen-source
-    workingDir: /workspace/source
-  - command:
+    workingDir: $(workspaces.source.path)
+  - name: build
+    command:
     - buildah
     - bud
     - --tls-verify=$(params.TLSVERIFY)
@@ -48,7 +48,6 @@ spec:
     - $(resources.outputs.image.url)
     - .
     image: quay.io/buildah/stable
-    name: build
     securityContext:
       privileged: true
     volumeMounts:
@@ -57,14 +56,14 @@ spec:
     - mountPath: /gen-source
       name: gen-source
     workingDir: /gen-source
-  - command:
+  - name: push
+    command:
     - buildah
     - push
     - --tls-verify=$(params.TLSVERIFY)
     - $(resources.outputs.image.url)
     - docker://$(resources.outputs.image.url)
     image: quay.io/buildah/stable
-    name: push
     securityContext:
       privileged: true
     volumeMounts:

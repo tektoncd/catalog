@@ -1,16 +1,13 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: helm-conftest
+  name: conftest
 spec:
-  resources:
-    inputs:
-    - name: source
-      type: git
-      targetPath: source
+  workspaces:
+  - name: source
   params:
-  - name: chart
-    default: "."
+  - name: files
+    type: string
   - name: policy
     default: "policy"
   - name: output
@@ -20,13 +17,13 @@ spec:
     default: []
 
   steps:
-  - name: helm-conftest
-    workingDir: /workspace/source
-    image: instrumenta/helm-conftest:latest
+  - name: conftest
+    workingDir: $(workspaces.source.path)
+    image: instrumenta/conftest:latest
     command:
-      - helm
       - conftest
-      - $(params.chart)
+      - test
+      - $(params.files)
       - -p
       - $(params.policy)
       - -o

@@ -13,19 +13,16 @@ spec:
   - name: REGISTRY_SECRET
     description: Secret containing information about the used regsitry.
     default: docker-registry-config
-
+  workspaces:
+  - name: source
   resources:
-    inputs:
-    - name: source
-      type: git
     outputs:
     - name: image
       type: image
-
   steps:
   - name: build-and-push
     image: gcr.io/makisu-project/makisu:v0.1.10
-    workingDir: /workspace/source
+    workingDir: $(workspaces.source.path)
     command:
     - /makisu-internal/makisu
     - build

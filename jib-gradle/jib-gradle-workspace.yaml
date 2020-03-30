@@ -13,10 +13,9 @@ spec:
   - name: INSECUREREGISTRY
     description: Whether to allow insecure registry
     default: "false"
+  workspaces:
+  - name: source
   resources:
-    inputs:
-    - name: source
-      type: git
     outputs:
     - name: image
       type: image
@@ -46,7 +45,7 @@ spec:
         -Dgradle.user.home=/tekton/home/.gradle \
         -Djib.allowInsecureRegistries=$(params.INSECUREREGISTRY) \
         -Djib.to.image=$(resources.outputs.image.url)
-    workingDir: /workspace/source/$(params.DIRECTORY)
+    workingDir: $(workspaces.source.path)/$(params.DIRECTORY)
     volumeMounts:
     - name: $(params.CACHE)
       mountPath: /tekton/home/.gradle/caches
