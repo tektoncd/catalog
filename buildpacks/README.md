@@ -18,30 +18,27 @@ The Cloud Native Buildpacks website describes v3 buildpacks as:
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/buildpacks/buildpacks-v3.yaml
 ```
 
-> **NOTE:** This task is currently only compatible with Tekton **v0.6.0** and above, and CNB Platform API 0.2 (lifecycle v0.6.0 and above). For previous Platform API versions, [see below](#previous-platform-api-versions).
+> **NOTE:** This task is currently only compatible with Tekton **v0.6.0** and above, and CNB Platform API 0.3 (lifecycle v0.7.0 and above). For previous Platform API versions, [see below](#previous-platform-api-versions).
 
 ## Inputs
 
 ### Parameters
 
-* **`BUILDER_IMAGE`**: The image on which builds will run (must include v3 lifecycle and compatible buildpacks; _required_)
+* **`BUILDER_IMAGE`**: The image on which builds will run. (must include v3 lifecycle and compatible buildpacks; _required_)
 
-* **`USE_CRED_HELPERS`**: Use Docker credential helpers. Set to `"true"` or
-  `"false"` as string a value. (_default:_ `"false"`)
+* **`CACHE`**: The name of the persistent app cache volume. (_default:_ an empty directory -- effectively no cache)
 
-* **`CACHE`**: The name of the persistent app cache volume (_default:_ an empty
-  directory -- effectively no cache)
+* **`USER_ID`**: The user ID of the builder image user, as a string value. (_default:_ `"1000"`)
 
-* **`USER_ID`**: The user ID of the builder image user, as a string value (_default:_ `"1000"`)
+* **`GROUP_ID`**: The group ID of the builder image user, as a string value. (_default:_ `"1000"`)
 
-* **`GROUP_ID`**: The group ID of the builder image user, as a string value (_default:_ `"1000"`)
+* **`PROCESS_TYPE`**: The default process type to set on the image. (_default:_ `"web"`)
 
-* **`SOURCE_SUBPATH`**: A subpath within the `source` input where the source to build is located (_default:_ `""`)
+* **`SOURCE_SUBPATH`**: A subpath within the `source` input where the source to build is located. (_default:_ `""`)
 
 ### Resources
 
-* **`source`**: A `git`-type `PipelineResource` specifying the location of the
-  source to build. See `SOURCE_SUBPATH` above if source is located within a subpath of this input.
+* **`source`**: A `git`-type `PipelineResource` specifying the location of the source to build. See `SOURCE_SUBPATH` above if source is located within a subpath of this input.
 
 ## Outputs
 
@@ -107,10 +104,18 @@ Heroku:
 
 Use one of the following commands to install a previous version of this task. Be sure to also supply a compatible builder image (`BUILDER_IMAGE` input) when running the task (i.e. one that has a lifecycle implementing the expected platform API).
 
+### CNB Platform API 0.2
+
+Commit: [8c34055](https://github.com/tektoncd/catalog/tree/8c34055ea728413fb72af061e7bcbf1859a9fbd6/buildpacks#inputs)
+
+```
+kubectl -f https://raw.githubusercontent.com/tektoncd/catalog/8c34055ea728413fb72af061e7bcbf1859a9fbd6/buildpacks/buildpacks-v3.yaml
+```
+
 ### CNB Platform API 0.1
 
 Commit: [5c2ab7d6](https://github.com/tektoncd/catalog/tree/5c2ab7d6c3b2507d43b49577d7f1bee9c49ed8ab/buildpacks#inputs)
 
 ```
-kubectl -f https://github.com/tektoncd/catalog/blob/5c2ab7d6c3b2507d43b49577d7f1bee9c49ed8ab/buildpacks/buildpacks-v3.yaml
+kubectl -f https://raw.githubusercontent.com/tektoncd/catalog/5c2ab7d6c3b2507d43b49577d7f1bee9c49ed8ab/buildpacks/buildpacks-v3.yaml
 ```

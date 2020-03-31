@@ -8,18 +8,18 @@ spec:
     params:
       - name: BUILDER_IMAGE
         description: The image on which builds will run (must include v3 lifecycle and compatible buildpacks).
-      - name: USE_CRED_HELPERS
-        description: Use Docker credential helpers for Google's GCR, Amazon's ECR, or Microsoft's ACR.
-        default: "false"
       - name: CACHE
-        description: The name of the persistent app cache volume
+        description: The name of the persistent app cache volume.
         default: empty-dir
       - name: USER_ID
-        description: The user ID of the builder image user
+        description: The user ID of the builder image user.
         default: "1000"
       - name: GROUP_ID
-        description: The group ID of the builder image user
+        description: The group ID of the builder image user.
         default: "1000"
+      - name: PROCESS_TYPE
+        description: The default process type to set on the image.
+        default: "web"
       - name: SOURCE_SUBPATH
         description: A subpath within the `source` input where the source to build is located.
         default: ""
@@ -36,7 +36,7 @@ spec:
   stepTemplate:
     env:
       - name: CNB_PLATFORM_API
-        value: "0.2"
+        value: "0.3"
 
   steps:
     - name: prepare
@@ -76,7 +76,6 @@ spec:
       command: ["/cnb/lifecycle/analyzer"]
       args:
         - "-layers=/layers"
-        - "-helpers=$(inputs.params.USE_CRED_HELPERS)"
         - "-group=/layers/group.toml"
         - "-cache-dir=/cache"
         - "$(outputs.resources.image.url)"
@@ -120,9 +119,9 @@ spec:
       args:
         - "-app=/workspace/source/$(inputs.params.SOURCE_SUBPATH)"
         - "-layers=/layers"
-        - "-helpers=$(inputs.params.USE_CRED_HELPERS)"
         - "-group=/layers/group.toml"
         - "-cache-dir=/cache"
+        - "-process-type=$(inputs.params.PROCESS_TYPE)"
         - "$(outputs.resources.image.url)"
       volumeMounts:
         - name: layers-dir
