@@ -1,4 +1,9 @@
-# Tekton Catalog
+# Tekton Catalog (v1alpha1)
+
+**This contains tektoncd/pipeline resources for the `v1alpha1`
+API. This branch is kept around for the time tektoncd/pipeline will
+continue supporting `v1alpha1` APIs. It is meant to be a *fix-only*
+branch, any new Task should be added to the `v1beta1` branch**
 
 This repository contains a catalog of `Task` resources (and someday
 `Pipeline`s and `Resource`s), which are designed to be reusable in many
