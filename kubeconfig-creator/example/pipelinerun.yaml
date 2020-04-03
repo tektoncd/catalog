@@ -1,0 +1,11 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: kubeconfig-test-pipeline-run
+spec:
+  pipelineRef:
+    name: kubeconfig-test-pipeline
+  workspaces:
+    - name: shared-workspace
+      persistentvolumeclaim:
+        claimName: kubeconfig-pvc
