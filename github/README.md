@@ -44,7 +44,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/githu
 * **STATE:** The state of the status. Can be one of the following `error`,
   `failure`, `pending`, or `success`.
 
-## Usage
+### Usage
 
 This TaskRun sets a commit on GitHub to `pending` getting tested by the CI.
 
@@ -91,7 +91,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/githu
   `https://github.com/tektoncd/catalog/issues/46`
 * **COMMENT:**: The actual comment to add _e.g:_ `don't forget to eat your vegetables before commiting.`.
 
-## Usage
+### Usage
 
 This TaskRun add a comment to an issue.
 
@@ -139,7 +139,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/githu
 * **REQUEST_URL:**: The GitHub pull request or issue url, (_e.g:_
   `https://github.com/tektoncd/catalog/issues/46`)
 
-## Usage
+### Usage
 
 This TaskRun close an issue on a task.
 
@@ -158,4 +158,56 @@ spec:
   params:
     - name: REQUEST_URL
       value: https://github.com/chmouel/scratchpad/pull/46
+```
+
+## Create a GitHub deployment
+
+The `github-create-deployment` task lets you create a GitHub deployment.
+
+See GitHub's deployment API on [creating a deployment](https://developer.github.com/v3/repos/deployments/#create-a-deployment) for more information.
+
+### Install the Task
+
+```
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/github/create_deployment.yaml
+```
+
+### Parameters
+
+* **GITHUB_HOST_URL:**: The GitHub host domain. (_default:_ `api.github.com`)
+* **REPO_FULL_NAME:**: The GitHub repository full name. (_e.g:_ `tektoncd/catalog`)
+* **REF**: The ref to deploy. This can be a branch, tag, or SHA. (_e.g:_ `master`)
+* **TASK**: Specifies a task to execute. (_default:_, `deploy`)
+* **AUTO_MERGE**: Attempts to automatically merge the default branch into the
+        requested ref, if it's behind the default branch. (_default:_ `true`)
+* **REQUIRED_CONTEXTS**: The status contexts to verify against commit status checks. To
+        verify all unique contexts before creating a deployment, pass
+        in `*`. To bypass checking entirely, pass an empty string. (_default:_ `*`)
+* **PAYLOAD**: JSON payload with extra information about the deployment. (_default:_ `""`)
+* **ENVIRONMENT**: Name for the target deployment environment (_e.g:_ `production`).
+* **DESCRIPTION**: Short description of the deployment. (_default:_ `""`).
+
+### Usage
+
+This TaskRun creates a GitHub deployment for the given repository.
+
+```yaml
+---
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  labels:
+    tekton.dev/task: github-create-deployment
+  name: github-create-tektoncd-catalog-deployment
+spec:
+  taskRef:
+    kind: Task
+    name: github-create-deployment
+  params:
+    - name: REPO_FULL_NAME
+      value: tektoncd/catalog
+    - name: REF
+      value: master
+    - name: ENVIRONMENT
+      value: staging
 ```

@@ -1,0 +1,109 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: github-create-deployment
+  description: |
+    This Task will create a GitHub deployment for a repository.
+spec:
+  params:
+    - name: GITHUB_HOST_URL
+      description: |
+        The GitHub host, adjust this if you run a GitHub enterprise.
+      default: "api.github.com"
+    - name: REPO_FULL_NAME
+      description: |
+        The GitHub repository full name, i.e: tektoncd/catalog.
+    - name: REF
+      description: |
+        The ref to deploy. This can be a branch, tag, or SHA.
+    - name: TASK
+      description: |
+        Specifies a task to execute (e.g., deploy or deploy:migrations).
+      default: "deploy"
+    - name: AUTO_MERGE
+      description: |
+        Attempts to automatically merge the default branch into the
+        requested ref, if it's behind the default branch.
+      default: "true"
+    - name: REQUIRED_CONTEXTS
+      description: |
+        The status contexts to verify against commit status checks. To
+        verify all unique contexts before creating a deployment, pass
+        in "*". To bypass checking entirely, pass an empty string.
+      default: "*"
+    - name: PAYLOAD
+      description: |
+        JSON payload with extra information about the deployment.
+      default: ""
+    - name: ENVIRONMENT
+      description: |
+        Name for the target deployment environment (e.g., production, staging, qa).
+    - name: DESCRIPTION
+      description: |
+        Short description of the deployment.
+      default: ""
+  steps:
+    - name: create-deployment
+      env:
+        - name: GITHUBTOKEN
+          valueFrom:
+            secretKeyRef:
+              name: github
+              key: token
+
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      script: |
+        #!/usr/libexec/platform-python
+        import json
+        import os
+        import http.client
+
+        deployment_url = "/repos/$(params.REPO_FULL_NAME)/deployments"
+
+        if "$(params.REQUIRED_CONTEXTS)" == "*":
+            required_contexts = None
+        elif "$(params.REQUIRED_CONTEXTS)" == "":
+            required_contexts = []
+        else:
+            required_contexts = "$(params.REQUIRED_CONTEXTS)".split(",")
+
+        data = {
+            "ref": "$(params.REF)",
+            "task": "$(params.TASK)",
+            "auto_merge": json.loads("$(params.AUTO_MERGE)"),
+            "required_contexts": required_contexts,
+            "payload": "$(params.PAYLOAD)",
+            "environment": "$(params.ENVIRONMENT)",
+            "description": "$(params.DESCRIPTION)" if "$(params.DESCRIPTION)" else None,
+        }
+        data = { k: v for k, v in data.items() if v is not None }
+        print("Sending this data to GitHub: ")
+        print(data)
+
+        conn = http.client.HTTPSConnection("$(params.GITHUB_HOST_URL)")
+        r = conn.request(
+            "POST",
+            deployment_url,
+            body=json.dumps(data),
+            headers={
+                "User-Agent": "TektonCD, the peaceful cat",
+                "Authorization": "Bearer " + os.environ["GITHUBTOKEN"],
+            })
+        resp = conn.getresponse()
+
+        # merged branch response when creating deployments returns a 202 status
+        # see https://developer.github.com/v3/repos/deployments/#merged-branch-response
+        if resp.status != 201:
+            print("Error: %d" % (resp.status))
+            print(resp.read())
+            exit(1)
+        else:
+            body = json.loads(resp.read().decode())
+            print("GitHub deployment created for "
+                  "$(params.REPO_FULL_NAME): "
+                  "id={} branch={} sha={} environment={}".format(
+                      body["id"],
+                      body["ref"],
+                      body["sha"],
+                      body["environment"]))
