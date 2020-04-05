@@ -67,7 +67,7 @@ Following steps demostrate the use of a ConfigMap to mount a custom `settings.xm
 oc create configmap `maven-settings-cm` --from-flie settings.xml
 ```
 
-1. modify Maven Task (mount config map to `maven-settings` step in Task definition. also add `maven-settings-cm` to volumes).
+2. modify Maven Task (mount config map to `maven-settings` step in Task definition. also add `maven-settings-cm` to volumes).
 ```
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -140,4 +140,4 @@ spec:
       configMap:
         name: maven-settings-cm
 ```
-1. create TaskRun
+3. create TaskRun
