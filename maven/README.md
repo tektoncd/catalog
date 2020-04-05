@@ -19,7 +19,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/maven
 
 ## Usage
 
-This TaskRun runs runs a Maven build
+This TaskRun runs a Maven build
 
 ### With Defaults
 
