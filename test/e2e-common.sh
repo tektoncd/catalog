@@ -97,6 +97,9 @@ function test_task_creation() {
         for ignore in ${TEST_TASKRUN_IGNORES};do
             [[ ${ignore} == ${testname} ]] && skipit=True
         done
+
+        ls ${testname}/*.yaml 2>/dev/null >/dev/null || skipit=True
+
         [[ -n ${skipit} ]] && continue
 
         kubectl create namespace ${tns}
