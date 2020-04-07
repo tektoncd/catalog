@@ -21,7 +21,7 @@ on a Workspace.
 
 ### Parameters
 
-* **name**: The name of the file or directory that will be written to the output workspace. (_required_)
+* **path**: The path to the file or directory that will be written to the output workspace. (_required_)
 * **location**: The address, including "gs://", of the bucket you'd like to copy from. (_required_)
 * **typeDir**: Set this to "true" if the object you are copying is a directory. (_default_: "false")
 * **serviceAccountPath**: The path to the service account credential file in your credentials workspace. (_default_: "service\_account.json")
@@ -38,7 +38,7 @@ A `Task` that uploads files or directories from a Workspace to a GCS bucket.
 
 ### Parameters
 
-* **name**: The path to files or directories relative to the source workspace that you'd like to upload. (_required_)
+* **path**: The path to files or directories relative to the source workspace that you'd like to upload. (_required_)
 * **location**: The address (including "gs://") where you'd like to upload files to. (_required_)
 * **serviceAccountPath**: The path to the service account credential file in your credentials workspace. (_default_: "service\_account.json")
 
@@ -118,7 +118,7 @@ spec:
     - name: output
       workspace: shared-workspace
     params:
-    - name: name
+    - name: path
       value: foo
     - name: location
       value: gs://this-is-not-a-real-bucket
