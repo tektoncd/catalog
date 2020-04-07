@@ -17,7 +17,6 @@ spec:
     default: "false"
   workspaces:
   - name: pr
-  - name: auth-token
   steps:
   - name: pullrequest-init
     image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/pullrequest-init:v0.11.0-rc2@sha256:1fd24693b3c5fe86d90f55f07c14698018a8e6ab76223f717897871719936915
