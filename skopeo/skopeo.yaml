@@ -1,0 +1,47 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: skopeo-copy
+spec:
+  workspaces:
+    - name: images-url
+  params:
+    - name: srcImageURL
+      description: URL of the image to be copied to the destination registry
+      type: string
+      default: ""
+    - name: destImageURL
+      description: URL of the image where the image from source should be copied to
+      type: string
+      default: ""
+  steps:
+    - name: skopeo-copy
+      image: quay.io/vinamra2807/skopeo:latest
+      script: |
+        # Function to copy multiple images.
+        #
+        copyimages() {
+          filename='$(workspaces.images-url.path)/url.txt'
+          while IFS= read line || [ -n "$line" ]
+          do 
+            cmd=""
+            for url in $line
+            do
+              # echo $url 
+              cmd="$cmd \
+                  $url"
+            done
+            skopeo copy $cmd
+            echo $cmd
+          done < "$filename"
+        }
+        #
+        # If single image is to be copied then, it can be passed through
+        # params in the taskrun.
+        if [ "$(params.srcImageURL)" != "" ] && [ "$(params.destImageURL)" != "" ] ; then
+          skopeo copy "$(params.srcImageURL)" "$(params.destImageURL)"
+        else
+          # If file is provided as a configmap in the workspace then multiple images can be copied.
+          #
+          copyimages
+        fi
