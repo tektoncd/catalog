@@ -9,8 +9,8 @@ spec:
   - name: output
     description: The workspace where files will be copied to from GCS.
   params:
-  - name: name
-    description: The name of the file or directory that will be written to the output workspace.
+  - name: path
+    description: The path to the file or directory that will be written to the output workspace.
     type: string
   - name: location
     description: The address (including "gs://") of the bucket you'd like to copy from.
@@ -31,7 +31,7 @@ spec:
       set -xe
 
       CRED_PATH="$(workspaces.credentials.path)/$(params.serviceAccountPath)"
-      DESTINATION="$(workspaces.output.path)/$(params.name)"
+      DESTINATION="$(workspaces.output.path)/$(params.path)"
 
       if [[ -f "$CRED_PATH" ]]; then
         GOOGLE_APPLICATION_CREDENTIALS="$CRED_PATH"
