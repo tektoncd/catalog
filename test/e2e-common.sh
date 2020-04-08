@@ -123,6 +123,18 @@ function test_task_creation() {
 
             status=$(kubectl get -n ${tns} pipelinerun --output=jsonpath='{.items[*].status.conditions[*].status}')
             reason=$(kubectl get -n ${tns} pipelinerun --output=jsonpath='{.items[*].status.conditions[*].reason}')
+
+            if [[ -z ${status} && -z ${reason} ]];then
+                status=$(kubectl get -n ${tns} taskrun --output=jsonpath='{.items[*].status.conditions[*].status}')
+                reason=$(kubectl get -n ${tns} taskrun --output=jsonpath='{.items[*].status.conditions[*].reason}')
+            fi
+
+            if [[ -z ${status} || -z ${reason} ]];then
+                echo -n "FAILS: Could not find a created taskrun or pipelinerun in ${tns}"
+                show_failure ${testname} ${tns}
+                exit
+            fi
+
             [[ ${status} == *ERROR || ${reason} == *Failed || ${reason} == CouldntGetTask || ${reason} == CouldntGetPipeline ]] && show_failure ${testname} ${tns}
             [[ ${status} == True ]] && {
                 echo -n "SUCCESS: ${testname} pipelinerun has successfully executed: " ;
