@@ -17,7 +17,7 @@ spec:
     command: ["/bin/bash"]
     args:
     - -c
-    - mkdir -p /builder/home/.kube; kubectl config view > /builder/home/.kube/config
+    - mkdir -p /tekton/home/.kube; kubectl config view > /tekton/home/.kube/config
   - name: rollout
     image: quay.io/openshift-pipeline/knctl
     command: ["/usr/bin/knctl"]
