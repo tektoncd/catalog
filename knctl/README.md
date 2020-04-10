@@ -38,7 +38,7 @@ spec:
     value: my-service
   resources:
     inputs:
-    - name: images
+    - name: image
       resourceSpec:
         type: image
         params:
