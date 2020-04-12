@@ -1,0 +1,47 @@
+{
+	"info": {
+		"_postman_id": "f6d6a28b-7b37-4cec-b30f-d5ca7b635a28",
+		"name": "newman-test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "finch_station",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{scheme}}://{{host}}/finch_station.json",
+					"protocol": "{{scheme}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"finch_station.json"
+					]
+				},
+				"description": "Return transit times for Finch Station in Toronto"
+			},
+			"response": []
+		},
+		{
+			"name": "bathurst-station",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{scheme}}://{{host}}/bathurst_station.json",
+					"protocol": "{{scheme}}",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"bathurst_station.json"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

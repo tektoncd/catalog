@@ -1,0 +1,15 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: test-newman
+spec:
+   tasks:
+    - name: test-api
+      taskRef:
+        name: newman
+        kind: Task
+      params:
+        - name: COLLECTION
+          value: https://raw.githubusercontent.com/gnunn-gitops/product-catalog-server/master/tests/product-catalog-server-tests.json
+        - name: ENVIRONMENT
+          value: newman-dev-env.json

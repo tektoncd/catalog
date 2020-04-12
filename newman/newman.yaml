@@ -1,0 +1,31 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: newman
+spec:
+  inputs:
+    params:
+    - name: COLLECTION
+      description: The collection to run, typically a remote URL pointing to the collection
+      type: string
+    - name: ENVIRONMENT
+      description: The environment file to use from the newman-env configmap
+      default: "newman-env.json"
+  steps:
+    - name: collections-test
+      image: docker.io/postman/newman:latest
+      command:
+        - newman
+      args:
+        - run
+        - $(inputs.params.COLLECTIONS)
+        - -e
+        - /config/$(inputs.params.ENVIRONMENT)
+        - --bail
+      volumeMounts:
+        - name: newman-env
+          mountPath: /config
+  volumes:
+    - name: newman-env
+      configMap:
+        name: newman-env
