@@ -18,7 +18,7 @@ spec:
         - newman
       args:
         - run
-        - $(inputs.params.COLLECTIONS)
+        - $(inputs.params.COLLECTION)
         - -e
         - /config/$(inputs.params.ENVIRONMENT)
         - --bail

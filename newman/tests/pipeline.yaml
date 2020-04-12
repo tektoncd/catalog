@@ -10,6 +10,6 @@ spec:
         kind: Task
       params:
         - name: COLLECTION
-          value: https://raw.githubusercontent.com/gnunn-gitops/product-catalog-server/master/tests/product-catalog-server-tests.json
+          value: https://raw.githubusercontent.com/gnunn1/catalog/master/newman/tests/newman-test-collection.json
         - name: ENVIRONMENT
-          value: newman-dev-env.json
+          value: newman-env.json
