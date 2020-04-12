@@ -39,7 +39,7 @@ data:
           "value": "my-dev.ca",
           "enabled": true
         }
-      ]
+      ],
       "_postman_variable_scope": "environment"
     }
   newman-test-env.json: |-
@@ -57,7 +57,7 @@ data:
           "value": "my-test.ca",
           "enabled": true
         }
-      ]
+      ],
       "_postman_variable_scope": "environment"
     }
 ```
@@ -65,11 +65,10 @@ data:
 Since it is very unlikely that developers would use Newman without an environment, the configmap is required to use this task.
 
 ## Inputs
-
 ### Parameters
 
 - **COLLECTION**: The Postman collection that is to be executed by Newman. This will typically be a remote URL to the collection.
-- **ENVIRONMENT**: The name of the environment file to use based on the supplied ```newman-env``` configmap. In the example about, this could be ```newman-dev-env.json```
+- **ENVIRONMENT**: The name of the environment file to use based on the supplied ```newman-env``` configmap. In the example about, this could be ```newman-dev-env.json```.
 
 ## Usage
 

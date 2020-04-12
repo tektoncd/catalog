@@ -18,6 +18,6 @@ data:
           "value": "myttc.ca",
           "enabled": true
         }
-      ]
+      ],
       "_postman_variable_scope": "environment"
     }
