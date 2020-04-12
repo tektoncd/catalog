@@ -5,12 +5,14 @@ metadata:
 spec:
   inputs:
     params:
-    - name: COLLECTION
-      description: The collection to run, typically a remote URL pointing to the collection
-      type: string
-    - name: ENVIRONMENT
-      description: The environment file to use from the newman-env configmap
-      default: "newman-env.json"
+      - name: COLLECTION
+        description: >
+          The collection to run, typically a remote URL pointing to
+          the collection
+        type: string
+      - name: ENVIRONMENT
+        description: The environment file to use from the newman-env configmap
+        default: "newman-env.json"
   steps:
     - name: collections-test
       image: docker.io/postman/newman:latest
