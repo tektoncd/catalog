@@ -1,0 +1,13 @@
+apiVersion: tekton.dev/v1alpha1
+kind: TaskRun
+metadata:
+  name: newman-run
+spec:
+  taskRef:
+    name: newman
+  inputs:
+    params:
+    - name: COLLECTION
+      value: https://raw.githubusercontent.com/gnunn1/catalog/master/newman/tests/newman-test-collection.json
+    - name: ENVIRONMENT
+      value: newman-env.json

@@ -18,8 +18,6 @@ data:
           "value": "myttc.ca",
           "enabled": true
         }
-      ],
-      "_postman_variable_scope": "environment",
-      "_postman_exported_at": "2020-04-12T22:07:58.033Z",
-      "_postman_exported_using": "Postman/7.22.1"
+      ]
+      "_postman_variable_scope": "environment"
     }
