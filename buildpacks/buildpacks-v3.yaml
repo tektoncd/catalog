@@ -55,8 +55,6 @@ spec:
           mountPath: /layers
         - name: $(inputs.params.CACHE)
           mountPath: /cache
-      securityContext:
-        privileged: true
 
     - name: detect
       image: $(inputs.params.BUILDER_IMAGE)
