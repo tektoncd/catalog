@@ -1,0 +1,19 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: replace-tokens
+spec:
+  workspaces:
+    - name: source
+    - name: token
+  params:
+    - name: inputFilePath
+      type: string
+      description: The file path whose value needs to be replaced
+  steps:
+    - name: replace-tokens
+      image: quay.io/vinamra2807/replace-tokens:latest
+      workingDir: $(workspaces.source.path)
+      args:
+        - --inputfile=$(params.inputFilePath)
+        - --tokensfile=$(workspaces.token.path)/tokens.json
