@@ -66,9 +66,9 @@ spec:
         -url "$(params.url)" \
         -revision "$(params.revision)" \
         -path "$CHECKOUT_DIR" \
-        -sslVerify "$(params.sslVerify)" \
-        -submodules "$(params.submodules)" \
-        -depth "$(params.depth)"
+        -sslVerify="$(params.sslVerify)" \
+        -submodules="$(params.submodules)" \
+        -depth="$(params.depth)"
       cd "$CHECKOUT_DIR"
       RESULT_SHA="$(git rev-parse HEAD | tr -d '\n')"
       EXIT_CODE="$?"
