@@ -121,28 +121,40 @@ function test_task_creation() {
         while true;do
             [[ ${cnt} == ${maxloop} ]] && show_failure ${testname} ${tns}
 
-            status=$(kubectl get -n ${tns} pipelinerun --output=jsonpath='{.items[*].status.conditions[*].status}')
+            all_status=$(kubectl get -n ${tns} pipelinerun --output=jsonpath='{.items[*].status.conditions[*].status}')
             reason=$(kubectl get -n ${tns} pipelinerun --output=jsonpath='{.items[*].status.conditions[*].reason}')
 
-            if [[ -z ${status} && -z ${reason} ]];then
-                status=$(kubectl get -n ${tns} taskrun --output=jsonpath='{.items[*].status.conditions[*].status}')
+            if [[ -z ${all_status} && -z ${reason} ]];then
+                all_status=$(kubectl get -n ${tns} taskrun --output=jsonpath='{.items[*].status.conditions[*].status}')
                 reason=$(kubectl get -n ${tns} taskrun --output=jsonpath='{.items[*].status.conditions[*].reason}')
             fi
 
-            if [[ -z ${status} || -z ${reason} ]];then
+            if [[ -z ${all_status} || -z ${reason} ]];then
                 echo -n "FAILS: Could not find a created taskrun or pipelinerun in ${tns}"
                 show_failure ${testname} ${tns}
                 exit
             fi
 
-            [[ ${status} == *ERROR || ${reason} == *Failed || ${reason} == CouldntGetTask || ${reason} == CouldntGetPipeline ]] && show_failure ${testname} ${tns}
-            [[ ${status} == True ]] && {
+            breakit=
+            for status in ${all_status};do
+
+                [[ ${status} == *ERROR || ${reason} == *Fail* || ${reason} == Couldnt* ]] && show_failure ${testname} ${tns}
+
+                if [[ ${status} == True ]];then
+                    breakit=True
+                else
+                    breakit=
+                fi
+            done
+
+            if [[ ${breakit} == True ]];then
                 echo -n "SUCCESS: ${testname} pipelinerun has successfully executed: " ;
                 for pod in $(kubectl get pod -o name -n ${tns}); do
                     kubectl logs --all-containers -n ${tns} ${pod}
                 done
                 break
-            }
+            fi
+
             sleep 10
             cnt=$((cnt+1))
         done
