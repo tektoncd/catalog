@@ -43,7 +43,7 @@ spec:
       runAsUser: 0
   - name: write-digest
     workingDir: $(workspaces.source.path)
-    image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/imagedigestexporter:v0.11.0-rc2
+    image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/imagedigestexporter:v0.11.1
     # output of imagedigestexport [{"name":"image","digest":"sha256:eed29..660"}]
     command: ["/ko-app/imagedigestexporter"]
     args:
