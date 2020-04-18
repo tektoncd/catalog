@@ -1,0 +1,27 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: send-to-telegram
+spec:
+  params:
+  - name: bot-token-secret
+    type: string
+    description: Token of the bot through 
+  - name: chat-id
+    type: string
+    description: ID of the chat to send the message towards
+  - name: message
+    type: string
+    description: The message to notify about
+  steps:
+  - name: post
+    image: curlimages/curl:7.68.0
+    script: |
+      #!/bin/sh
+      curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": $(params.chat-id), "text": "$(params.message)" }' https://api.telegram.org/bot${BOT_TOKEN}/sendMessage
+    env:
+    - name: BOT_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: $(params.token-secret)
+          key: token
