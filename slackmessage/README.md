@@ -1,11 +1,11 @@
 # Post a message to slack
 
 These tasks post a simple message to a slack channel.  There are multiple ways to send
-a message to slack.  Each task here uses different method.
+a message to slack. Each task here uses different method.
 
 # send-to-webhook-slack
 
-This task uses Incomming Webhooks of the slack to send the message.
+This task uses Incoming Webhooks of slack to send the message.
 Follow instructions [here](https://api.slack.com/messaging/webhooks) to generate a webhook URL.
 
 ## Install the Task and create a secret

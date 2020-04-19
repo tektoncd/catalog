@@ -6,7 +6,7 @@ spec:
   params:
   - name: token-secret
     type: string
-    description: seret name of the slack app access token (key is token)
+    description: secret name of the slack app access token (key is token)
   - name: channel
     type: string
     description: channel id or channel name
