@@ -6,7 +6,7 @@ spec:
   params:
   - name: webhook-secret
     type: string
-    description: seret name of the slcak app webhook URL (key is url)
+    description: secret name of the slack app webhook URL (key is url)
   - name: message
     type: string
     description: plain text message
