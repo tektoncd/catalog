@@ -1,0 +1,14 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: kythe-go
+spec:
+  workspaces:
+    - name: output
+      emptyDir: {}
+  taskRef:
+    name: kythe-go
+  params:
+    - name: package
+      value: github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1
