@@ -1,0 +1,19 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: kythe-go
+spec:
+  workspaces:
+    - name: output
+      description: Output directory for kzip output files.
+  params:
+    - name: package
+      type: string
+      description: Go package to analyze.
+  steps:
+    - name: analyze-packages
+      image: gcr.io/kythe-public/golang-extractor:stable
+      env:
+        - name: OUTPUT
+          value: $(workspaces.output.path)
+      args: ["$(params.package)"]
