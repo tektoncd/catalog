@@ -18,10 +18,16 @@ spec:
     image: curlimages/curl:7.68.0
     script: |
       #!/bin/sh
-      curl -X POST -H 'Content-Type: application/json' -d '{"chat_id": $(params.chat-id), "text": "$(params.message)" }' https://api.telegram.org/bot${BOT_TOKEN}/sendMessage
+      MESSAGE=`echo $MESSAGE | sed -e 's/\"/\\\\"/g'`
+      JSON="{\"chat_id\": ${CHAT_ID}, \"text\": \"${MESSAGE}\" }"
+      curl -X POST -H 'Content-Type: application/json' -d "${JSON}" https://api.telegram.org/bot${BOT_TOKEN}/sendMessage
     env:
     - name: BOT_TOKEN
       valueFrom:
         secretKeyRef:
           name: $(params.token-secret)
           key: token
+    - name: CHAT_ID
+      value: $(params.chat-id)
+    - name: MESSAGE
+      value: $(params.message)
