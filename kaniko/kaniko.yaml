@@ -20,7 +20,7 @@ spec:
   workspaces:
   - name: source
   results:
-  - name: IMAGE_DIGEST
+  - name: IMAGE-DIGEST
     description: Digest of the image just built.
 
   steps:
@@ -45,6 +45,7 @@ spec:
     workingDir: $(workspaces.source.path)
     image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/imagedigestexporter:v0.11.1
     # output of imagedigestexport [{"name":"image","digest":"sha256:eed29..660"}]
+    # output of imagedigestexport [{"key":"digest","value":"sha256:eed29..660","resourceRef":{"name":"myrepo/myimage"}}]
     command: ["/ko-app/imagedigestexporter"]
     args:
     - -images=[{"name":"$(params.IMAGE)","type":"image","url":"$(params.IMAGE)","digest":"","OutputImageDir":"$(workspaces.source.path)/image-digest"}]
@@ -53,4 +54,4 @@ spec:
     workingDir: $(workspaces.source.path)
     image: stedolan/jq
     script: |
-      cat image-digested | jq '.[0].digest' | tee /tekton/results/IMAGE_DIGEST
+      cat image-digested | jq -j '.[0].value' | tee /tekton/results/IMAGE-DIGEST
