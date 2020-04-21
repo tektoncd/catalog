@@ -36,6 +36,24 @@ spec:
       value: $(params.image)
     - name: EXTRA_ARGS
       value: "--skip-tls-verify"
+  - name: verify-digest
+    runAfter:
+    - kaniko
+    params:
+    - name: digest
+      value: $(tasks.kaniko.results.IMAGE-DIGEST)
+    taskSpec:
+      params:
+      - name: digest
+      steps:
+      - name: bash
+        image: ubuntu
+        script: |
+          echo $(params.digest)
+          case .$(params.digest) in
+            ".sha"*) exit 0 ;;
+            *)       echo "Digest value is not correct" && exit 1 ;;
+          esac
 ---
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
