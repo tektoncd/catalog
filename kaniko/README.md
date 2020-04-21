@@ -34,7 +34,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/kanik
 
 ## Results
 
-* **digest**: The digest of the image just built.
+* **IMAGE-DIGEST**: The digest of the image just built.
 
 ## ServiceAccount
 
