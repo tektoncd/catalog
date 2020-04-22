@@ -1,0 +1,24 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  generateName: aws-run-
+spec:
+  taskRef:
+    name: aws-cli
+  params:
+    - name: SCRIPT
+      value: |
+        aws $1 mb s3://$2
+        aws s3api put-object --bucket $2 --key test/
+        aws $1 cp $(workspaces.source.path)/demo.zip s3://$2/test/demo.zip
+    - name: ARGS
+      value:
+        - s3
+        - diagrawa-test
+  workspaces:
+    - name: secrets
+      secret:
+        secretName: aws-credentials
+    - name: source
+      configmap:
+        name: upload-file
