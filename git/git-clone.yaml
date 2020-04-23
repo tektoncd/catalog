@@ -29,7 +29,7 @@ spec:
   - name: subdirectory
     description: subdirectory inside the "output" workspace to clone the git repo into
     type: string
-    default: "src"
+    default: ""
   - name: deleteExisting
     description: clean out the contents of the repo's destination directory (if it already exists) before trying to clone the repo there
     type: string
