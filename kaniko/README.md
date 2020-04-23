@@ -64,12 +64,4 @@ spec:
   - name: source
     persistentVolumeClaim:
       claimName: my-source
-  resources:
-    outputs:
-    - name: image
-      resourceSpec:
-        type: image
-        params:
-        - name: url
-          value: gcr.io/my-repo/my-image
 ```
