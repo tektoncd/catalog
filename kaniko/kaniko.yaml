@@ -38,7 +38,7 @@ spec:
     - --dockerfile=$(params.DOCKERFILE)
     - --context=$(workspaces.source.path)/$(params.CONTEXT)  # The user does not need to care the workspace and the source.
     - --destination=$(params.IMAGE)
-    - --oci-layout-path=$(workspaces.source.path)/image-digest
+    - --oci-layout-path=$(workspaces.source.path)/$(params.CONTEXT)/image-digest
     securityContext:
       runAsUser: 0
   - name: write-digest
@@ -47,10 +47,10 @@ spec:
     # output of imagedigestexport [{"key":"digest","value":"sha256:eed29..660","resourceRef":{"name":"myrepo/myimage"}}]
     command: ["/ko-app/imagedigestexporter"]
     args:
-    - -images=[{"name":"$(params.IMAGE)","type":"image","url":"$(params.IMAGE)","digest":"","OutputImageDir":"$(workspaces.source.path)/image-digest"}]
-    - -terminationMessagePath=image-digested
+    - -images=[{"name":"$(params.IMAGE)","type":"image","url":"$(params.IMAGE)","digest":"","OutputImageDir":"$(workspaces.source.path)/$(params.CONTEXT)/image-digest"}]
+    - -terminationMessagePath=$(params.CONTEXT)/image-digested
   - name: digest-to-results
     workingDir: $(workspaces.source.path)
     image: stedolan/jq
     script: |
-      cat image-digested | jq -j '.[0].value' | tee /tekton/results/IMAGE-DIGEST
+      cat $(params.CONTEXT)/image-digested | jq '.[0].value' -rj | tee /tekton/results/IMAGE-DIGEST
