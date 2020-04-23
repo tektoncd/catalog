@@ -34,7 +34,7 @@ as well as
 * **submodules**: defines if the resource should initialize and fetch the submodules (_default_: true)
 * **depth**: performs a shallow clone where only the most recent commit(s) will be fetched (_default_: 1)
 * **sslVerify**: defines if http.sslVerify should be set to true or false in the global git config (_default_: true)
-* **subdirectory**: subdirectory inside the "output" workspace to clone the git repo into (_default:_ src)
+* **subdirectory**: subdirectory inside the "output" workspace to clone the git repo into (_default:_ "")
 * **deleteExisting**: clean out the contents of the repo's destination directory if it already exists before cloning the repo there (_default_: false)
 
 ### Results
