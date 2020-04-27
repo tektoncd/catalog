@@ -1,0 +1,113 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: openshift-install
+spec:
+  workspaces:
+    - name: install-dir
+      mountPath: /tekton/home/
+    - name: secrets
+  params:
+    - name: PLATFORM
+      type: string
+      description: Platform name where the openshift cluster needs to be deployed such as AWS, GCP etc
+      default: ""
+    - name: PROJECT_ID
+      type: string
+      default: ""
+      description: Project Id required in case of gcp
+    - name: CLUSTER_NAME
+      type: string
+      description: Cluster name
+    - name: BASE_DOMAIN
+      type: string
+      description: Base domain of your cluster install
+    - name: REPLICAS
+      description: How many replicas for the master and worker node
+      type: string
+    - name: REGION
+      type: string
+      description: Cloud Region where to install
+  steps:
+    - name: openshift-install-config
+      image: registry.access.redhat.com/ubi8/ubi-minimal:latest
+      workingDir: $(workspaces.install-dir.path)
+      script: |
+        #!/usr/bin/env bash
+
+        credsPath=""
+        projectId=""
+        if [[ "$(params.PLATFORM)" == "gcp" ]]; then
+          credsPath+=".gcp"
+          mkdir .gcp
+          projectId+="ProjectID: $(params.PROJECT_ID)"
+        else
+          credsPath+=".aws"
+          mkdir .aws
+        fi
+
+        cp $(workspaces.secrets.path)/* $credsPath
+
+        [[ -f install-config.yaml ]] && \
+        echo 'using existing install-config.yaml' && \
+        cat install-config.yaml && exit 0
+
+        cat << EOF > install-config.yaml
+        apiVersion: v1
+        baseDomain: $(params.BASE_DOMAIN)
+        compute:
+        - hyperthreading: Enabled
+          name: worker
+          platform: {}
+          replicas: $(params.REPLICAS)
+        controlPlane:
+          hyperthreading: Enabled
+          name: master
+          platform: {}
+          replicas: $(params.REPLICAS)
+        metadata:
+          creationTimestamp: null
+          name: $(params.CLUSTER_NAME)
+        networking:
+          clusterNetwork:
+          - cidr: 10.128.0.0/14
+            hostPrefix: 23
+          machineCIDR: 10.0.0.0/16
+          networkType: OpenShiftSDN
+          serviceNetwork:
+          - 172.30.0.0/16
+        platform:
+          $(params.PLATFORM):
+            region: $(params.REGION)
+            $projectId
+        pullSecret: '$PULL_SECRET'
+        sshKey: '$PUBLIC_SSH_KEY'
+        EOF
+
+        [[ -f install-config.yaml ]] && cat install-config.yaml
+      
+      env:
+        - name: PULL_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: openshift-install
+              key: pull-secret
+        - name: PUBLIC_SSH_KEY
+          valueFrom:
+            secretKeyRef:
+              name: openshift-install
+              key: public-ssh-key
+    
+    - name: openshift-cluster-create
+      workingDir: $(workspaces.install-dir.path)
+      image: quay.io/openshift/origin-upi-installer:4.4
+      script: |
+        #!/usr/bin/env bash
+
+        /bin/openshift-install create cluster --log-level=debug
+
+        # We save the last two lines of the installs log which contains easily
+        # readable information about how to to connect the cluster.
+        tail -2 .openshift_install.log > auth/webaccess
+      securityContext:
+        runAsUser: 0
