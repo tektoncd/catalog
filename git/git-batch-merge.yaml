@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: git-clone
+  name: git-batch-merge
 spec:
   workspaces:
     - name: output
@@ -11,12 +11,28 @@ spec:
       description: git url to clone
       type: string
     - name: revision
-      description: git revision to checkout (branch, tag, sha, ref…)
+      description: base git revision to checkout (branch, tag, sha, ref…)
       type: string
       default: master
     - name: refspec
-      description: (optional) git refspec to fetch before checking out revision
-      default: ""
+      description: base git refspec to fetch before checking out revision
+      type: string
+      default: "refs/heads/master:refs/heads/master"
+    - name: batchedRefs
+      description: git refs to fetch and batch on top of revision using the given mode (must be a valid refname, no commit SHA's)
+      type: string
+    - name: gitUserName
+      description: git user name to use for creating the batched commit (First Last)
+      type: string
+      default: GitBatch Task
+    - name: gitUserEmail
+      description: git user email to use for creating the batched commit (First.Last@domain.com)
+      type: string
+      default: GitBatch.Task@tekton.dev
+    - name: mode
+      description: git operation to perform while batching (choose from merge, cherry-pick)
+      type: string
+      default: merge
     - name: submodules
       description: defines if the resource should initialize and fetch the submodules
       type: string
@@ -32,14 +48,16 @@ spec:
     - name: subdirectory
       description: subdirectory inside the "output" workspace to clone the git repo into
       type: string
-      default: ""
+      default: "src"
     - name: deleteExisting
       description: clean out the contents of the repo's destination directory (if it already exists) before trying to clone the repo there
       type: string
       default: "false"
   results:
     - name: commit
-      description: The precise commit SHA that was fetched by this Task
+      description: The final commit SHA that was obtained after batching all provided refs onto revision
+    - name: tree
+      description: The git tree SHA that was obtained after batching all provided refs onto revision.
   steps:
     - name: clone
       image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.12.0
@@ -65,20 +83,40 @@ spec:
           cleandir
         fi
 
+        p="$(params.batchedRefs)"
+        refs="$(params.refspec)"
+        for ref in $p; do
+          refs="$refs $ref:refs/batch/$ref"
+        done
+
         /ko-app/git-init \
           -url "$(params.url)" \
           -revision "$(params.revision)" \
-          -refspec "$(params.refspec)" \
+          -refspec "$refs" \
           -path "$CHECKOUT_DIR" \
           -sslVerify="$(params.sslVerify)" \
           -submodules="$(params.submodules)" \
           -depth "$(params.depth)"
-        cd "$CHECKOUT_DIR"
-        RESULT_SHA="$(git rev-parse HEAD | tr -d '\n')"
-        EXIT_CODE="$?"
-        if [ "$EXIT_CODE" != 0 ]
-        then
-          exit $EXIT_CODE
+
+        git -C $CHECKOUT_DIR config user.name "$(params.gitUserName)"
+        git -C $CHECKOUT_DIR config user.email "$(params.gitUserEmail)"
+
+        mode="$(params.mode)"
+        if [[ $mode == "merge" ]]; then
+          for ref in $p; do
+             git -C $CHECKOUT_DIR merge --quiet --allow-unrelated-histories refs/batch/$ref
+          done
+        elif [[ $mode == "cherry-pick" ]]; then
+          for ref in $p; do
+             git -C $CHECKOUT_DIR cherry-pick --allow-empty --keep-redundant-commits refs/batch/$ref
+          done
+        else
+            echo "unsupported mode $mode"
+            exit 1
         fi
+
+        RESULT_SHA="$(git -C $CHECKOUT_DIR rev-parse HEAD)"
+        TREE_SHA="$(git -C $CHECKOUT_DIR rev-parse HEAD^{tree})"
         # Make sure we don't add a trailing newline to the result!
-        echo -n "$RESULT_SHA" > $(results.commit.path)
+        echo -n "$(echo $RESULT_SHA | tr -d '\n')" > $(results.commit.path)
+        echo -n "$(echo $TREE_SHA | tr -d '\n')" > $(results.tree.path)
