@@ -6,6 +6,20 @@ spec:
   taskRef:
     name: kubectl-deploy-pod
   params:
+  - name: action
+    value: create
+  - name: success-condition
+    value: status.phase == Running
+  - name: failure-condition
+    value: status.phase in (Failed, Error)
+  - name: output
+    value: |
+      - name: job-name
+        valueFrom: '{.metadata.name}'
+      - name: job-namespace
+        valueFrom: '{.metadata.namespace}' 
+  - name: set-ownerreference
+    value: "true"
   - name: manifest
     value: |
       apiVersion: v1
@@ -18,4 +32,4 @@ spec:
         containers:
         - name: myapp-container
           image: docker
-          command: ['sh', '-c', 'echo Hello Kubernetes! && sleep 3600']
+          command: ['sh', '-c', 'echo Hello Kubernetes! && sleep 30']
