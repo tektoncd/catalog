@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: kubectl-delete-pod
+spec:
+  taskRef:
+    name: kubectl-deploy-pod
+  params:
+  - name: action
+    value: delete
+  - name: manifest
+    value: |
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: myapp-podx
+        labels:
+          app: myapp

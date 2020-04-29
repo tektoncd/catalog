@@ -5,14 +5,60 @@ metadata:
   namespace: default
 spec:
   params:
+  - name: action
+    description: Action on the resource
+  - name: merge-strategy
+    default: strategic
+    description: Merge strategy when using action  patch
   - name: manifest
     description: Content of the resource to deploy
+  - name: success-condition
+    default: ""
+    description: A label selector express to decide if the action on resource is success.
+  - name: failure-condition
+    default: ""
+    description: A label selector express to decide if the action on resource is failure.
+  - name: output
+    default: ""
+    description: An express to retrieval data from resource.
+  - name: set-ownerreference
+    default: "false"
+    description: Enable set owner reference for created resource.
   - name: image
-    default: gcr.io/cloud-builders/kubectl # it is huge
+    default: index.docker.io/aipipeline/kubeclient:v0.0.2 # it is huge
     description: Kubectl wrapper image
   steps:
   - name: kubeconfig
     image: $(params.image)
+    args:
+      - --action=$(params.action)
+      - --merge-strategy=$(params.merge-strategy)
+      - --manifest=$(params.manifest)
+      - --success-condition=$(params.success-condition)
+      - --failure-condition=$(params.failure-condition)
+      - --output=$(params.output)
+      - --set-ownerreference=$(params.set-ownerreference)
+    env:
+      - name: POD_NAME
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.name
+      - name: POD_NAMESPACE
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.namespace
+      - name: POD_UID
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.uid
+  - name: echo
+    image: busybox
     script: |
-      echo "$(params.manifest)" > /tmp/resource.yaml
-      kubectl create -f /tmp/resource.yaml
+      #!/bin/sh
+      if [ -e /tekton/results/job-name ]
+      then
+          cat /tekton/results/job-name
+      else
+          echo "no output file found"
+      fi
+
