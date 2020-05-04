@@ -9,7 +9,7 @@ spec:
     description: Reference of the image buildah will produce.
   - name: BUILDER_IMAGE
     description: The location of the buildah builder image.
-    default: quay.io/buildah/stable:v1.11.0
+    default: quay.io/buildah/stable:v1.14.8
   - name: DOCKERFILE
     description: Path to the Dockerfile to build.
     default: ./Dockerfile
