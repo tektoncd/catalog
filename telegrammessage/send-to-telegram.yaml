@@ -15,12 +15,13 @@ spec:
     description: The message to notify about
   steps:
   - name: post
-    image: curlimages/curl:7.68.0
+    image: gcr.io/tekton-releases/dogfooding/catalog-web-requests:latest
     script: |
-      #!/bin/sh
-      MESSAGE=`echo $MESSAGE | sed -e 's/\"/\\\\"/g'`
-      JSON="{\"chat_id\": ${CHAT_ID}, \"text\": \"${MESSAGE}\" }"
-      curl -X POST -H 'Content-Type: application/json' -d "${JSON}" https://api.telegram.org/bot${BOT_TOKEN}/sendMessage
+        #!/bin/sh
+        jq -n --arg chat_id "${CHAT_ID}" --arg text "${MESSAGE}" \
+          '{chat_id: $chat_id, text: $text}' \
+          | /usr/bin/curl -H "Content-Type: application/json" -X POST -k -d@- \
+          https://api.telegram.org/bot${BOT_TOKEN}/sendMessage
     env:
     - name: BOT_TOKEN
       valueFrom:

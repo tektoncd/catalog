@@ -12,13 +12,17 @@ spec:
     description: plain text message
   steps:
   - name: post
-    image: curlimages/curl:7.68.0
+    image: gcr.io/tekton-releases/dogfooding/catalog-web-requests:latest
     script: |
       #!/bin/sh
-      /usr/bin/curl -X POST -H 'Content-type: application/json' --data '{"text":"$(params.message)"}' $URL
+      jq -n --arg text "${MESSAGE}" \
+          '{text: $text}' \
+          | /usr/bin/curl -H "Content-Type: application/json" -X POST -k -d@- $URL
     env:
     - name: URL
       valueFrom:
         secretKeyRef:
           name: $(params.webhook-secret)
           key: url
+    - name: MESSAGE
+      value: $(params.message)

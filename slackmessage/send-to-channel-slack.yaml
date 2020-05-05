@@ -15,13 +15,21 @@ spec:
     description: plain text message
   steps:
   - name: post
-    image: curlimages/curl:7.68.0
+    image: gcr.io/tekton-releases/dogfooding/catalog-web-requests:latest
     script: |
       #!/bin/sh
-      /usr/bin/curl -X POST -H 'Content-type: application/json' -H 'Authorization: Bearer '$TOKEN --data '{"channel":"$(params.channel)", "text":"$(params.message)"}' https://slack.com/api/chat.postMessage
+      jq -n --arg text "${MESSAGE}" --arg channel "${CHANNEL}" \
+          '{text: $text, channel: $channel}' \
+          | /usr/bin/curl -H "Content-Type: application/json" \
+          -H 'Authorization: Bearer '$TOKEN \
+          -X POST -k -d@- https://slack.com/api/chat.postMessage
     env:
     - name: TOKEN
       valueFrom:
         secretKeyRef:
           name: $(params.token-secret)
           key: token
+    - name: MESSAGE
+      value: $(params.message)
+    - name: CHANNEL
+      value: $(params.channel)
