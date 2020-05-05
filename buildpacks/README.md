@@ -18,13 +18,17 @@ The Cloud Native Buildpacks website describes v3 buildpacks as:
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/buildpacks/buildpacks-v3.yaml
 ```
 
-> **NOTE:** This task is currently only compatible with Tekton **v0.6.0** and above, and CNB Platform API 0.3 (lifecycle v0.7.0 and above). For previous Platform API versions, [see below](#previous-platform-api-versions).
+> **NOTE:** This task is currently only compatible with Tekton **v0.11.0** and above, and CNB Platform API 0.3 (lifecycle v0.7.0 and above). For previous Platform API versions, [see below](#previous-platform-api-versions).
 
 ## Parameters
 
 * **`BUILDER_IMAGE`**: The image on which builds will run. (must include v3 lifecycle and compatible buildpacks; _required_)
 
-* **`CACHE`**: The name of the persistent app cache volume. (_default:_ an empty directory -- effectively no cache)
+* **`CACHE`**: The name of the persistent app cache volume. (_default:_ an empty
+  directory -- effectively no cache)
+
+* **`PLATFORM_DIR`**: The name of the platform directory. (_default:_ an empty
+  directory)
 
 * **`USER_ID`**: The user ID of the builder image user, as a string value. (_default:_ `"1000"`)
 
@@ -55,12 +59,16 @@ metadata:
 spec:
   taskRef:
     name: buildpacks-v3
+  podTemplate:
+    volumes:
 # Uncomment the lines below to use an existing cache
-#  podTemplate:
-#    volumes:
 #    - name: my-cache
 #      persistentVolumeClaim:
-#        claimName: task-pv-claim
+#        claimName: my-cache-pvc
+# Uncomment the lines below to provide a platform directory
+#    - name: my-platform-dir
+#      persistentVolumeClaim:
+#        claimName: my-platform-dir-pvc
   params:
   - name: SOURCE_SUBPATH
     value: <optional subpath within your source repo, e.g. "apps/java-maven">
@@ -69,6 +77,9 @@ spec:
 # Uncomment the lines below to use an existing cache
 #  - name: CACHE
 #    value: my-cache
+# Uncomment the lines below to provide a platform directory
+#  - name: PLATFORM_DIR
+#    value: my-platform-dir
   resources:
     outputs:
     - name: image
@@ -76,12 +87,11 @@ spec:
         type: image
         params:
         - name: url
-          value: <your output image tag,
-          e.g. "gcr.io/app-repo/app-image:app-tag">
+          value: <your output image tag, e.g. "gcr.io/app-repo/app-image:app-tag">
   workspaces:
   - name: source
     persistentVolumeClaim:
-      claimName: my-source
+      claimName: my-source-pvc
 ```
 
 ### Example builders
