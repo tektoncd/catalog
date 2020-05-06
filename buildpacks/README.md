@@ -27,8 +27,9 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/buil
 * **`CACHE`**: The name of the persistent app cache volume. (_default:_ an empty
   directory -- effectively no cache)
 
-* **`PLATFORM_DIR`**: The name of the platform directory. (_default:_ an empty
-  directory)
+* **`PLATFORM_DIR`**: A directory containing platform provided configuration, such as environment variables.
+  Files of the format `/platform/env/MY_VAR` with content `my-value` will be translated by the lifecycle into
+  environment variables provided to buildpacks. For more information, see the [buildpacks spec](https://github.com/buildpacks/spec/blob/master/buildpack.md#provided-by-the-platform). (_default:_ an empty directory)
 
 * **`USER_ID`**: The user ID of the builder image user, as a string value. (_default:_ `"1000"`)
 
