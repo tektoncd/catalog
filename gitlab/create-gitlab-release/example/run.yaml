@@ -1,0 +1,26 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: create-gitlab-release-run
+spec:
+  taskRef:
+    name: create-gitlab-release
+  params:
+    - name: TAG_NAME
+      value: "v1.0.0"
+    - name: NAME
+      value: first release
+    - name: DESCRIPTION
+      value: This is first release
+    - name: PROJECT_ID
+      value: "18587362"
+    - name: RELEASE_REF
+      value: master
+    - name: UPLOAD_ASSET_NAME
+      value: test.yaml
+    - name: UPLOAD_ASSET_URL
+      value: https://google.com
+    - name: GITLAB_TOKEN_SECRET
+      value: gitlab-token
+    - name: GITLAB_TOKEN_SECRET_KEY
+      value: GITLAB_TOKEN
