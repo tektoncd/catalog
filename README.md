@@ -1,8 +1,12 @@
 # Tekton Catalog
 
 **If you want `v1alpha1` resources, you need to go to the
-[`master`](https://github.com/tektoncd/catalog/tree/master) branch (or
-[`v1alpha1`](https://github.com/tektoncd/catalog/tree/v1alpha1) branch)**
+[`v1alpha1`](https://github.com/tektoncd/catalog/tree/v1alpha1)
+branch. The
+[`master`](https://github.com/tektoncd/catalog/tree/master) branch
+will be synced with
+[`v1beta1`](https://github.com/tektoncd/catalog/tree/v1beta1) on 2020,
+15th June.**
 
 This repository contains a catalog of `Task` resources (and someday
 `Pipeline`s and `Resource`s), which are designed to be reusable in many
