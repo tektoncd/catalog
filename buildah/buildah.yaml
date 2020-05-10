@@ -25,6 +25,10 @@ spec:
   workspaces:
   - name: source
 
+  results:
+  - name: IMAGE_DIGEST
+    description: Digest of the image just built.
+
   steps:
   - name: build
     image: $(params.BUILDER_IMAGE)
@@ -39,12 +43,16 @@ spec:
   - name: push
     image: $(params.BUILDER_IMAGE)
     workingDir: $(workspaces.source.path)
-    command: ['buildah', 'push', '--tls-verify=$(params.TLSVERIFY)', '$(params.IMAGE)', 'docker://$(params.IMAGE)']
+    command: ['buildah', 'push', '--tls-verify=$(params.TLSVERIFY)', '--digestfile', '$(workspaces.source.path)/image-digest', '$(params.IMAGE)', 'docker://$(params.IMAGE)']
     volumeMounts:
     - name: varlibcontainers
       mountPath: /var/lib/containers
     securityContext:
       privileged: true
+
+  - name: digest-to-results
+    image: $(params.BUILDER_IMAGE)
+    script: cat $(workspaces.source.path)/image-digest | tee /tekton/results/IMAGE_DIGEST
 
   volumes:
   - name: varlibcontainers
