@@ -1,0 +1,28 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: git-clone-ssh
+spec:
+  workspaces:
+    - name: output
+      description: The git repo will be cloned onto the volume backing this workspace
+  params:
+    - name: url
+      type: string
+      description: git url to clone
+  steps:
+    - name: git-clone
+      image: bitnami/git:2.26.2
+      command: ['git', '-c', 'core.sshCommand=ssh -i /etc/ssh/id_rsa', 'clone', '$(params.url)', '$(workspaces.output.path)']
+      volumeMounts:
+        - mountPath: /etc/ssh
+          name: ssh-auth
+  volumes:
+    - name: ssh-auth
+      projected:
+        defaultMode: 0400
+        sources:
+          - secret:
+              name: github-known-hosts
+          - secret:
+              name: github-private-key
