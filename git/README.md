@@ -49,96 +49,11 @@ as well as
 
 ### `git-clone`
 
-This pipeline uses the git-clone Task to check out the
-[`tektoncd/pipeline`](https://github.com/tektoncd/pipeline) repository
-and then display that repo's README.md.
+The following pipelines demonstrate usage of the git-clone Task:
 
-A workspace called "shared-workspace" is passed first to the `git-clone`
-Task for the code to be checked out on and then to the `cat-readme` Task
-to print the README.md file from.
-
-After the Pipeline has run you'll be able to see a
-[Task Result](https://github.com/tektoncd/pipeline/blob/master/docs/taskruns.md#results)
-named `commit` in the PipelineRun's Status with the commit SHA that was
-fetched by the `git-clone` Task.
-
-```yaml
-apiVersion: tekton.dev/v1beta1
-kind: Task
-metadata:
-  name: cat-readme
-spec:
-  workspaces:
-  - name: source
-    mountPath: /source
-  params:
-  - name: subdirectory
-    description: Subdirectory inside "source" workspace that contains the README.md.
-    default: "."
-  steps:
-  - name: cat-readme
-    image: ubuntu
-    script: cat "$(workspaces.source.path)/$(params.subdirectory)/README.md"
----
-apiVersion: tekton.dev/v1beta1
-kind: Pipeline
-metadata:
-  name: cat-pipeline-readme
-spec:
-  workspaces:
-  - name: shared-workspace
-    # description: The git repo will be cloned into this workspace and the readme will be read from it.
-  tasks:
-  - name: fetch-repository
-    taskRef:
-      name: git-clone
-    workspaces:
-    - name: output
-      workspace: shared-workspace
-    params:
-    - name: url
-      value: https://github.com/tektoncd/pipeline.git
-    - name: subdirectory
-      value: pipeline-checkout
-  - name: print-readme
-    taskRef:
-      name: cat-readme
-    runAfter:
-    - fetch-repository # required to ensure clone occurs before reading
-    workspaces:
-    - name: source
-      workspace: shared-workspace
-    params:
-    - name: subdirectory
-      value: pipeline-checkout
-```
-
-This pipeline can be used as the following `PipelineRun` does.
-
-```yaml
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: workspace-pvc
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 500Mi
----
-apiVersion: tekton.dev/v1beta1
-kind: PipelineRun
-metadata:
-  name: cat-pipeline-readme-run
-spec:
-  pipelineRef:
-    name: cat-pipeline-readme
-  workspaces:
-  - name: shared-workspace
-    persistentVolumeClaim:
-      claimName: workspace-pvc
-```
+- [Cloning a branch](./examples/git-clone-checking-out-a-branch.yaml)
+- [Checking out a specific git commit](./examples/git-clone-checking-out-a-commit.yaml)
+- [Checking out a git tag and using the "commit" Task Result](./examples/using-git-clone-task-result.yaml)
 
 ## `git-batch-merge`
 
