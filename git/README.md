@@ -13,9 +13,9 @@ This `Task` has two required inputs:
 2. A Workspace called `output`.
 
 The `git-clone` `Task` will clone a repo from the provided `url` into the
-`output` Workspace. By default the repo will be cloned into a subdirectory
-called "src" in your Workspace. You can clone into an alternative subdirectory
-by setting this `Task`'s `subdirectory` param.
+`output` Workspace. By default the repo will be cloned into the root of
+your Workspace. You can clone into a subdirectory by setting this `Task`'s
+`subdirectory` param.
 
 This `Task` does the job of the legacy `GitResource` `PipelineResource` and
 is intended as its replacement. This is part of our plan to [offer replacement
