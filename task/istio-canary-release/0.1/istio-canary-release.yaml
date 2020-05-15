@@ -1,0 +1,72 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: istio-canary-release
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: canary deployment, istio
+    tekton.dev/displayName: "istio canary release"
+spec:
+  description: >-
+    This task can be used to perform deployment of an application
+    using canary release strategy.
+
+    Using this task we can route the traffic to the deployments
+    with the help of virtual service by specifying the weights to
+    individual deployment.
+
+  workspaces:
+    - name: istio-manifest-dir
+      description: >-
+        The workspace consisting of Istio manifests such as Gateway,
+        DestinationRule and VirtualService in case applying for the
+        first time.
+  params:
+    - name: VS_NAME
+      description: The virtual service name to be patched
+      type: string
+      default: ""
+    - name: V1_WEIGHT
+      description: The traffic percentage to be sent to version v1
+      type: string
+      default: ""
+    - name: V2_WEIGHT
+      description: The traffic percentage to be sent to version v2
+      type: string
+      default: ""
+  steps:
+    - name: canary-deploy
+      image: quay.io/openshift/origin-cli:latest
+      workingDir: $(workspaces.istio-manifest-dir.path)
+      script: |
+        #!/usr/bin/env bash
+
+        cat <<EOF >/tmp/patch.yaml
+        apiVersion: networking.istio.io/v1alpha3
+        kind: VirtualService
+        metadata:
+          name: $(params.VS_NAME)
+        spec:
+          hosts:
+            - "*"
+          gateways:
+            - app-gateway
+          http:
+            - route:
+                - destination:
+                    host: myapp
+                    subset: v1
+                  weight: $(params.V1_WEIGHT)
+                - destination:
+                    host: myapp
+                    subset: v2
+                  weight: $(params.V2_WEIGHT)
+        EOF
+
+        if [ -n "$(params.V1_WEIGHT)" -a -n "$(params.V2_WEIGHT)" ]; then
+          kubectl replace -f /tmp/patch.yaml
+        else
+          kubectl apply -f ./
+        fi
