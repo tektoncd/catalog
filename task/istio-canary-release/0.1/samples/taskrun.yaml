@@ -1,0 +1,17 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata: istio-run
+spec:
+  taskRef:
+    name: istio-canary-release
+  params:
+    - name: VS_NAME
+      value: myapp
+    - name: V1_WEIGHT
+      value: "50"
+    - name: V2_WEIGHT
+      value: "50"
+  workspaces:
+    - name: istio-manifest-dir
+      configMap:
+        name: istio
