@@ -10,6 +10,9 @@ spec:
   - name: BUILDER_IMAGE
     description: The location of the buildah builder image.
     default: quay.io/buildah/stable:v1.14.8
+  - name: STORAGE_DRIVER
+    description: Set buildah storage driver
+    default: overlay
   - name: DOCKERFILE
     description: Path to the Dockerfile to build.
     default: ./Dockerfile
@@ -33,7 +36,7 @@ spec:
   - name: build
     image: $(params.BUILDER_IMAGE)
     workingDir: $(workspaces.source.path)
-    command: ['buildah', 'bud', '--format=$(params.FORMAT)', '--tls-verify=$(params.TLSVERIFY)', '--no-cache', '-f', '$(params.DOCKERFILE)', '-t', '$(params.IMAGE)', '$(params.CONTEXT)']
+    command: ['buildah', '--storage-driver=$(params.STORAGE_DRIVER)', 'bud', '--format=$(params.FORMAT)', '--tls-verify=$(params.TLSVERIFY)', '--no-cache', '-f', '$(params.DOCKERFILE)', '-t', '$(params.IMAGE)', '$(params.CONTEXT)']
     volumeMounts:
     - name: varlibcontainers
       mountPath: /var/lib/containers
@@ -43,7 +46,7 @@ spec:
   - name: push
     image: $(params.BUILDER_IMAGE)
     workingDir: $(workspaces.source.path)
-    command: ['buildah', 'push', '--tls-verify=$(params.TLSVERIFY)', '--digestfile', '$(workspaces.source.path)/image-digest', '$(params.IMAGE)', 'docker://$(params.IMAGE)']
+    command: ['buildah', '--storage-driver=$(params.STORAGE_DRIVER)', 'push', '--tls-verify=$(params.TLSVERIFY)', '--digestfile', '$(workspaces.source.path)/image-digest', '$(params.IMAGE)', 'docker://$(params.IMAGE)']
     volumeMounts:
     - name: varlibcontainers
       mountPath: /var/lib/containers
