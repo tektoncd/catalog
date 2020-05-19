@@ -30,6 +30,18 @@ spec:
   - name: BUILDER_IMAGE
     description: The image on which builds will run
     default: gcr.io/kaniko-project/executor:latest
+  - name: HTTP_PROXY
+    description: git HTTP proxy server for non-SSL requests
+    type: string
+    default: ""
+  - name: HTTPS_PROXY
+    description: git HTTPS proxy server for SSL requests
+    type: string
+    default: ""
+  - name: NO_PROXY
+    description: git no proxy - opt out of proxying HTTP/HTTPS requests
+    type: string
+    default: ""
   workspaces:
   - name: source
   results:
@@ -45,6 +57,12 @@ spec:
     env:
     - name: DOCKER_CONFIG
       value: /tekton/home/.docker
+    - name: HTTP_PROXY
+      value: $(params.HTTP_PROXY)
+    - name: HTTPS_PROXY
+      value: $(params.HTTPS_PROXY)
+    - name: NO_PROXY
+      value: $(params.NO_PROXY)
     command:
     - /kaniko/executor
     - $(params.EXTRA_ARGS)

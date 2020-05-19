@@ -23,9 +23,11 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 * **IMAGE**: The name (reference) of the image to build.
 * **DOCKERFILE**: The path to the `Dockerfile` to execute (_default:_
   `./Dockerfile`)
-
 * **CONTEXT**: The build context used by Kaniko (_default:_
   `./`)
+* **HTTP_PROXY**: HTTP proxy server for non-SSL requests
+* **HTTPS_PROXY**: HTTPS proxy server for SSL requests
+* **NO_PROXY**: no proxy - opt out of proxying HTTP/HTTPS requests
 
 ## Workspaces
 
