@@ -3,7 +3,7 @@ kind: Task
 metadata:
   name: gitlab-add-label
   description: |
-    This Task will add a label to an issue in Gitlab.
+    This Task will add labels to an issue or merge request (pull request) in Gitlab.
 spec:
   params:
   - name: GITLAB_HOST_URL
@@ -20,7 +20,7 @@ spec:
 
   - name: REQUEST_URL
     description: |
-      The Gitlab issue URL where we want to add a label.
+      The Gitlab issue or merge request URL where we want to add a label.
     type: string
 
   - name: LABELS
@@ -56,11 +56,13 @@ spec:
         split_url = urllib.parse.urlparse(
             "$(params.REQUEST_URL)").path.split("/")
 
-        # This will convert https://gitlab.com/foo/bar/pull/202 to
-        # api url path /projects/foo/bar/issues/202
+        # Creating the API URL
 
+        # This will convert https://gitlab.com/foo/bar/issues/202 to
+        # api url path /projects/foo/bar/issues/202
+        
         api_url = "$(params.API_PATH_PREFIX)" + "/projects/" + "%2F".join(split_url[1:3]) + \
-                  "/issues/" + split_url[-1]
+                  "/" + split_url[4] + "/" + split_url[-1]
 
 
         # Get array of Labels

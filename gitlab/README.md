@@ -26,22 +26,22 @@ stringData:
   token: $(personal_access_token)
 ```
 
-## Add labels to an issue in Gitlab
+## Add labels to the GitLab issue or Merge Request
 
-[This task](../gitlab/issue-add-labels.yaml) can be used to add labels to the gitlab issue.
+[This task](../gitlab/add-labels.yaml) can be used to add labels to the gitlab `issue` or `merge request` (pull request).
 
 
 ### Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/gitlab/issue-add-labels.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/gitlab/add-labels.yaml
 ```
 
 ### Parameters
 
 - **GITLAB_HOST_URL**: The Gitlab host(_default:_`gitlab.com`).
 - **API_PATH_PREFIX**: The API path prefix (_default.:_`api/v4`).
-- **REQUEST_URL**: The Gitlab issue URL where we want to add labels (_e.g._`https://gitlab.com/foo/bar/issues/10`).
+- **REQUEST_URL**: The Gitlab issue or merge request URL where we want to add labels (_e.g._`https://gitlab.com/foo/bar/issues/10`).
 - **LABELS**: The actual labels to add.
 - **GITLAB_TOKEN_SECRET**: The name of the `secret` holding the gitlab-token (_default:_`gitlab`).
 - **GITLAB_TOKEN_SECRET_KEY**: The name of the `secret key` holding the gitlab-token (_default:_`token`).
@@ -55,9 +55,9 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/gitl
 ### Usage
 
 
-This task expects a secret named `gitlab` to exists, with a Gitlab token in `token` with enough privileges to add label to an issue.
+This task expects a secret named `gitlab` to exist, with a Gitlab token in `token` with enough privileges to add label to an issue.
 
-To add labels to an issue, put all the required params, add required secrets and labels will be created.
+To add labels to an issue or merge request, put all the required params, add required secrets and labels will be created.
 
 
 `Taskrun` can be created as follows:
@@ -72,7 +72,7 @@ spec:
     name: gitlab-add-label
   params:
     - name: REQUEST_URL
-      value: https://gitlab.com/Divyanshu42/aws-cli/-/issues/1
+      value: https://gitlab.com/Divyanshu42/aws-cli/-/issues/1  # or https://gitlab.com/Divyanshu42/aws-cli/-/merge_requests/1
     - name: LABELS
       value: 
         - bug
