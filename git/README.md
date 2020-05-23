@@ -177,6 +177,17 @@ There are 4 additional parameters in addition to the ones mentioned above for th
 
 ### Usage
 
+## `git-clone-ssh`
+
+This task does `git clone` using SSH with the authentication described in [Git SSH Auth](./git-ssh-auth.md).
+
+This `Task` has two input parameters:
+
+1. `url` (**required**) is the url to the git repository
+2. `path` (optional) is the path on the workspace volume, `code` is default directory.
+
+See [example `Pipeline`](./git-ssh-auth.md#example-pipeline)
+
 [git-ref]: https://git-scm.com/book/en/v2/Git-Internals-Git-References
 [git-merge]: https://git-scm.com/docs/git-merge
 [git-cherry-pick]: https://git-scm.com/docs/git-cherry-pick
