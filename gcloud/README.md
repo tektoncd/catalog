@@ -5,7 +5,7 @@ This task performs operations on Google Cloud Platform resources using `gcloud`.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/gcloud/gcloud.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/gcloud/gcloud.yaml
 ```
 
 ## Parameters

@@ -14,7 +14,7 @@ The following task is used to create the cluster.
 ### **Install the Task**
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-provision/openshift-cluster-create.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/openshift-provision/openshift-cluster-create.yaml
 ```
 
 ### **Parameters**
@@ -54,7 +54,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/opens
 ### **Install the Task**
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-provision/openshift-cluster-destroy.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/openshift-provision/openshift-cluster-destroy.yaml
 ```
 
 ### **Workspaces**

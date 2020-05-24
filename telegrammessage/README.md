@@ -10,7 +10,7 @@ Create a bot as decribed over [here](https://core.telegram.org/bots).
 ## Install the Task and create a secret
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/telegrammessage/send-to-telegram.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/telegrammessage/send-to-telegram.yaml
 ```
 
 Create a secret that has bot token.
