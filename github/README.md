@@ -25,7 +25,7 @@ informations about the CI statuses or a direct link to the full log.
 ### Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/github/set_status.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/github/set_status.yaml
 ```
 
 ### Parameters
@@ -82,7 +82,7 @@ issue.
 ### Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/github/add_comment.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/github/add_comment.yaml
 ```
 
 ### Parameters
@@ -132,7 +132,7 @@ issue.
 ### Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/github/close_issue.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/github/close_issue.yaml
 ```
 
 ### Parameters
