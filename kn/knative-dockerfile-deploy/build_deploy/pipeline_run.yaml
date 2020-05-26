@@ -6,10 +6,6 @@ spec:
   serviceAccountName: kn-deployer-account
   pipelineRef:
     name: buildah-build-kn-create
-  resources:
-    - name: image
-      resourceRef:
-        name: buildah-build-kn-create-image
   workspaces:
     - name: source
       persistentvolumeclaim:
@@ -17,12 +13,5 @@ spec:
   params:
     - name: GIT_URL
       value: "https://github.com/navidshaikh/helloworld-go"
-    - name: ARGS
-      value:
-        - "service"
-        - "create"
-        - "hello"
-        - "--revision-name=hello-v1"
-        - "--image=$(inputs.resources.image.url)"
-        - "--env=TARGET=Tekton"
-        - "--service-account=kn-deployer-account"
+    - name: IMAGE
+      value: "quay.io/navidshaikh/helloworld-go"
