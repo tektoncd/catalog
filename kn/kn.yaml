@@ -12,14 +12,8 @@ spec:
     description: kn CLI arguments to run
     default:
     - "help"
-  resources:
-    inputs:
-    - name: image
-      type: image
   steps:
   - name: kn
     image: "$(params.kn-image)"
     command: ["/ko-app/kn"]
     args: ["$(params.ARGS)"]
-    # reference the container image resource in your taskrun/pipelinerun
-    # parameters array as "--image=$(resources.inputs.image.url)"

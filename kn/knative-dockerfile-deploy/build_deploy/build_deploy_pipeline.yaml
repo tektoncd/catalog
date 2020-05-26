@@ -5,9 +5,6 @@ metadata:
 spec:
   workspaces:
   - name: source
-  resources:
-  - name: image
-    type: image
   params:
   - name: ARGS
     type: array
@@ -17,6 +14,9 @@ spec:
   - name: GIT_URL
     type: string
     description: Git url to clone
+  - name: IMAGE
+    type: string
+    description: The application image built by Buildah and used by kn task.
   tasks:
   - name: fetch-repository
     taskRef:
@@ -31,7 +31,7 @@ spec:
       value: ""
     - name: deleteExisting
       value: "true"
-  - name: buildah-build
+  - name: build-helloworld
     taskRef:
       name: buildah
     runAfter:
@@ -39,24 +39,23 @@ spec:
     workspaces:
     - name: source
       workspace: source
-    resources:
-      outputs:
-        - name: image
-          resource: image
+    params:
+    - name: IMAGE
+      value: "$(params.IMAGE)"
   - name: kn-service-create
     taskRef:
       name: kn
     runAfter:
-      - buildah-build
-    resources:
-      inputs:
-      - name: image
-        resource: image
-        from:
-          - buildah-build
+      - build-helloworld
     params:
     - name: kn-image
       value: "gcr.io/knative-nightly/knative.dev/client/cmd/kn"
     - name: ARGS
       value:
-        - "$(params.ARGS)"
+      - "service"
+      - "create"
+      - "hello"
+      - "--revision-name=hello-v1"
+      - "--image=$(params.IMAGE)"
+      - "--env=TARGET=Tekton"
+      - "--service-account=kn-deployer-account"

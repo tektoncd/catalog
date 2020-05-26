@@ -12,17 +12,22 @@ spec:
     description: Arguments to pass to kn CLI
     default:
       - "help"
+  - name: IMAGE
+    type: string
+    description: The application image built by Buildah and used by kn task.
   tasks:
   - name: kn-service-update
     taskRef:
       name: kn
-    resources:
-      inputs:
-      - name: image
-        resource: image
     params:
     - name: kn-image
       value: "gcr.io/knative-nightly/knative.dev/client/cmd/kn"
     - name: ARGS
       value:
-        - "$(params.ARGS)"
+        - "service"
+        - "update"
+        - "hello"
+        - "--revision-name=hello-v2"
+        - "--image=$(params.IMAGE)"
+        - "--env=TARGET=v2"
+        - "--service-account=kn-deployer-account"
