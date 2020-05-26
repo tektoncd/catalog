@@ -1,0 +1,52 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: helm-upgrade-test-pipeline
+spec:
+  workspaces:
+    - name: shared-workspace
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: https://github.com/fhopfensperger/tekton-helm-sample.git
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+
+    - name: helm-upgrade
+      taskRef:
+        name: helm-upgrade
+      runAfter:
+        - fetch-repository
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: CHARTS_DIR
+          value: helm-sample-chart
+        - name: RELEASE_VERSION
+          value: v1.0.0
+        - name: RELEASE_NAME
+          value: helm-sample
+        - name: OVERWRITE_VALUES
+          value: "autoscaling.enabled=true,autoscaling.maxReplicas=3"
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: helm-upgrade-test-pipeline-run
+spec:
+  pipelineRef:
+    name: helm-upgrade-test-pipeline
+  workspaces:
+    - name: shared-workspace
+      persistentvolumeclaim:
+        claimName: helm-source-pvc
