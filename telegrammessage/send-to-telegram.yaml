@@ -25,7 +25,7 @@ spec:
     - name: BOT_TOKEN
       valueFrom:
         secretKeyRef:
-          name: $(params.token-secret)
+          name: $(params.bot-token-secret)
           key: token
     - name: CHAT_ID
       value: $(params.chat-id)
