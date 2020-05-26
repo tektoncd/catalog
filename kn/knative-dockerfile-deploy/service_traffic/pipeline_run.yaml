@@ -6,10 +6,6 @@ spec:
   serviceAccountName: kn-deployer-account
   pipelineRef:
     name: kn-service-traffic-splitting
-  resources:
-    - name: image
-      resourceRef:
-        name: kn-service-update-image
   params:
     - name: ARGS
       value:
