@@ -13,7 +13,7 @@ spec:
       default:
         - "package"
     - name: MAVEN_MIRROR_URL
-      description: The Maven bucketrepo- mirror
+      description: The Maven repository mirror url 
       type: string
       default: ""
     - name: PROXY_USER
