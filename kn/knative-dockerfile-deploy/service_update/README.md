@@ -41,7 +41,6 @@ kubectl create -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kn/
 - Create the PipelineRun to trigger the Pipeline and input the kn CLI parameters to 
 deploy a new Revision to `hello` Service. Note that in the below example, we're referencing a 
 different image, other than the one we created earlier using buildah.
-                                                                                                                            other than the one we created earlier using buildah.
 
 - Save the following YAML in a file e.g.: `pipeline_run.yaml` and create using `kubectl create -f pipeline_run.yaml`
 
