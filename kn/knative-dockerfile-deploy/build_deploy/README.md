@@ -46,7 +46,7 @@ spec:
       value: ""
     - name: deleteExisting
       value: "true"
-  - name: build-helloworld
+  - name: buildah-build
     taskRef:
       name: buildah
     runAfter:
@@ -61,7 +61,7 @@ spec:
     taskRef:
       name: kn
     runAfter:
-      - build-helloworld
+      - buildah-build
     params:
     - name: kn-image
       value: "gcr.io/knative-nightly/knative.dev/client/cmd/kn"
