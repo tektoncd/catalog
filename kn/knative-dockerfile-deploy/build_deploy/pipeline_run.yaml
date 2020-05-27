@@ -15,3 +15,12 @@ spec:
       value: "https://github.com/navidshaikh/helloworld-go"
     - name: IMAGE
       value: "quay.io/navidshaikh/helloworld-go"
+    - name: ARGS
+      value:
+        - "service"
+        - "create"
+        - "hello"
+        - "--revision-name=hello-v1"
+        - "--image=quay.io/navidshaikh/helloworld-go"
+        - "--env=TARGET=Tekton"
+        - "--service-account=kn-deployer-account"
