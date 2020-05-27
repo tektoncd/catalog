@@ -67,13 +67,7 @@ spec:
       value: "gcr.io/knative-nightly/knative.dev/client/cmd/kn"
     - name: ARGS
       value:
-      - "service"
-      - "create"
-      - "hello"
-      - "--revision-name=hello-v1"
-      - "--image=$(params.IMAGE)"
-      - "--env=TARGET=Tekton"
-      - "--service-account=kn-deployer-account"
+        - "$(params.ARGS)"
 ```
 
  - You can also create this Pipeline using the YAML file present in this repo using
@@ -135,7 +129,15 @@ spec:
       value: "https://github.com/navidshaikh/helloworld-go"
     - name: IMAGE
       value: "quay.io/navidshaikh/helloworld-go"
-
+    - name: ARGS
+      value:
+        - "service"
+        - "create"
+        - "hello"
+        - "--revision-name=hello-v1"
+        - "--image=quay.io/navidshaikh/helloworld-go"
+        - "--env=TARGET=Tekton"
+        - "--service-account=kn-deployer-account"
 ```
 
  - You can also create this PipelineRun using the YAML file present in this repo using
