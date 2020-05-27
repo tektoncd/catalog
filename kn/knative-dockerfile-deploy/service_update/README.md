@@ -13,18 +13,12 @@ kind: Pipeline
 metadata:
   name: kn-service-update
 spec:
-  resources:
-  - name: image
-    type: image
   params:
   - name: ARGS
     type: array
     description: Arguments to pass to kn CLI
     default:
       - "help"
-  - name: IMAGE
-    type: string
-    description: The application image built by Buildah and used by kn task.
   tasks:
   - name: kn-service-update
     taskRef:
@@ -34,13 +28,7 @@ spec:
       value: "gcr.io/knative-nightly/knative.dev/client/cmd/kn"
     - name: ARGS
       value:
-        - "service"
-        - "update"
-        - "hello"
-        - "--revision-name=hello-v2"
-        - "--image=$(params.IMAGE)"
-        - "--env=TARGET=v2"
-        - "--service-account=kn-deployer-account"
+        - "$(params.ARGS)"
 ```
 
  - You can also create this Pipeline using the YAML file present in this repo using 
@@ -67,8 +55,15 @@ spec:
   pipelineRef:
     name: kn-service-update
   params:
-    - name: IMAGE
-      value: "gcr.io/knative-samples/helloworld-go"
+    - name: ARGS
+      value:
+        - "service"
+        - "update"
+        - "hello"
+        - "--revision-name=hello-v2"
+        - "--image=gcr.io/knative-samples/helloworld-go"
+        - "--env=TARGET=v2"
+        - "--service-account=kn-deployer-account"
 ```
 
 - You can also create this PipelineRun using the YAML file present in this repo using
