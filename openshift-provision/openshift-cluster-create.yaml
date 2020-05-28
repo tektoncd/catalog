@@ -28,6 +28,10 @@ spec:
     - name: REGION
       type: string
       description: Cloud Region where to install
+    - name: OPENSHIFT_INSTALLER_IMAGE
+      type: string
+      description: OpenShift installer base image for UPI installation
+      default: quay.io/openshift/origin-upi-installer:4.4 
   steps:
     - name: openshift-install-config
       image: registry.access.redhat.com/ubi8/ubi-minimal:latest
@@ -100,7 +104,7 @@ spec:
     
     - name: openshift-cluster-create
       workingDir: $(workspaces.install-dir.path)
-      image: quay.io/openshift/origin-upi-installer:4.4
+      image: $(params.OPENSHIFT_INSTALLER_IMAGE)
       script: |
         #!/usr/bin/env bash
 
