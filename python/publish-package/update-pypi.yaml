@@ -1,0 +1,40 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: upload-pypi
+spec:
+  params:
+  - name: TWINE_REPOSITORY_URL
+    description: The repository (package index) to upload the package to.
+    default: "https://upload.pypi.org/legacy/"
+    type: string
+
+  workspaces:
+  - name: source
+
+  steps:
+  - name: build-package
+    image: quay.io/thoth-station/twine:latest
+    workingDir: $(workspaces.source.path)
+    script: |
+      python setup.py sdist bdist_wheel
+
+  - name: upload-package
+    image: quay.io/thoth-station/twine:latest
+    workingDir: $(workspaces.source.path)
+    env:
+    - name: TWINE_REPOSITORY_URL
+      value: $(params.TWINE_REPOSITORY_URL)
+    - name: TWINE_USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: pypi-secret
+          key: username
+    - name: TWINE_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: pypi-secret
+          key: password
+    script: |
+      twine upload dist/*
