@@ -1,0 +1,17 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: ibmcloud
+spec:
+  params:
+  - name: ibmcloud-image
+    description: IBM Cloud CLI container image to run this task
+    default: ibmcom/ibm-cloud-developer-tools-amd64:latest
+  - name: ARGS
+    type: array
+    description: IBM Cloud CLI arguments to run
+  steps:
+  - name: ibmcloud
+    image: "$(params.ibmcloud-image)"
+    command: ["ibmcloud"]
+    args: ["$(params.ARGS)"]
