@@ -44,7 +44,7 @@ kind: PipelineRun
 metadata:
   name: helm-upgrade-test-pipeline-run
 spec:
-  serviceAccountName: helm-sa
+  serviceAccountName: helm-pipeline-run-sa
   pipelineRef:
     name: helm-upgrade-test-pipeline
   workspaces:
