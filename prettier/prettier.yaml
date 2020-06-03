@@ -1,0 +1,26 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: prettier
+spec:
+  description: Run the prettier code formatter against provided source code. See https://prettier.io for more information.
+  workspaces:
+  - name: source
+    mountPath: /source
+  params:
+  - name: args
+    type: array
+    description: Prettier arguments used to run Prettier.
+    default:
+      - "--check"
+      - "."
+  - name: prettierImage
+    type: string
+    description: Prettier image used to run Prettier.
+    default: elnebuloso/prettier:latest
+  steps:
+  - name: check
+    image: $(params.prettierImage)
+    workingDir: "$(workspaces.source.path)"
+    command: [prettier]
+    args: ["$(params.args[*])"]
