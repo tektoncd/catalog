@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: check-make
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: linter
+    tekton.dev/displayName: "Makefile linter"
+spec:
+  description: >-
+    This task can be used to perform lint check on Makefiles
+  workspaces:
+    - name: shared-workspace
+      description: A workspace that contains the fetched git repository.
+  params:
+    - name: args
+      type: array
+      description: extra args needs to append
+      default: ["--help"]
+  steps:
+    - name: lint-makefile
+      image: cytopia/checkmake
+      workingDir: $(workspaces.shared-workspace.path)
+      command:
+        - checkmake
+      args:
+        - $(params.args)
