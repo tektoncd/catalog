@@ -1,0 +1,22 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: curl
+spec:
+  params:
+   - name: url
+     description: URL to curl'ed
+     type: string
+   - name: options
+     description: options of url
+     type: array
+     default: []
+   - name: curl-image
+     description: option of curl image
+     type: string
+     default: "curlimages/curl"
+  steps:
+    - name: curl
+      image: "$(params.curl-image)"
+      command: [curl]
+      args: ["$(params.options[*])", "$(params.url)"]
