@@ -244,3 +244,33 @@ spec:
   - name: bucketName
     value: gs://my-fancy-new-test-bucket-12345
 ```
+
+### `gcs-generic`
+
+This TaskRun uses the gcs-generic Task to list all the objects in the directory from a service account.
+
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: release-right-meow
+---
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: gcs-generic-taskrun
+spec:
+  taskRef:
+    name: gcs-generic
+  workspaces:
+  - name: credentials
+    secret: 
+      secretName: release-secret
+  params:
+  - name: command
+    value: ls
+  - name: subcommand
+    value: 
+     - "-l"
+     - "gs://"
+```
