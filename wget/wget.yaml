@@ -27,4 +27,4 @@ spec:
     - name: wget
       image: mwendler/wget
       command: [wget]
-      args: ["$(params.options[*])", "$(params.url)", "$(params.diroptions[*])", "$(workspaces.wget-workpsace.path)/$(params.filename)"]
+      args: ["$(params.options[*])", "$(params.url)", "$(params.diroptions[*])", "$(workspaces.wget-workspace.path)/$(params.filename)"]
