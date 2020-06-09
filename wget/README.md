@@ -1,7 +1,7 @@
 
 # `wget`
 
-This task performs wget operation to download file from internet to workspace .
+This task uses wget to download files from the internet to a workspace  .
 
 ## Install the Task
 
@@ -10,8 +10,6 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/wget
 ```
 
 ## Parameters
-
-* **mwendler/wget**: `wget` CLI container image to run this task.
 
 * **options**: The arguments to pass to `wget` CLI.  _default_: `[""]`
 * **diroptions**: The directory path we want to save file to.  _default_: `[""]`
@@ -46,6 +44,6 @@ spec:
       emptyDir: {}
 ```
 
-Run it with `kubectl create -f wget-run.yaml`
+Run it with `kubectl apply -f wget-run.yaml`
 
 When this runs, it will print logs indicating connecting to the website indicated in url, http request sent and saving a `index.html` to the workspace directory
