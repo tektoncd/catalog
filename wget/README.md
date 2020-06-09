@@ -40,7 +40,7 @@ spec:
   taskRef:
     name: wget
   workspaces:
-    - name: myworkspace
+    - name: wget-workspace
       emptyDir: {}
 ```
 
