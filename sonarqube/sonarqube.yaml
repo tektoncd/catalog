@@ -62,3 +62,5 @@ spec:
       workingDir: $(workspaces.source-dir.path)
       command:
         - sonar-scanner
+      securityContext:
+        runAsUser: 0
