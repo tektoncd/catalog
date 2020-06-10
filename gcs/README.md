@@ -72,7 +72,24 @@ A `Task` that deletes a GCS bucket.
 ### Parameters
 
 * **bucketName**: The name of the bucket (including "gs://") to create. (_required_)
-* **serviceAccountPath**: The path to the service account credential file in your credentials workspace. (_default_: "service\_account.json")
+* **serviceAccountPath**: The path to the service account credential file in your credentials workspace. (_default_: "service_account.json")
+
+
+## `gcs-generic`
+
+A `Task` that allows users customize and extend the gsutil command line based on their needs.
+
+### Workspaces
+
+* **credentials**: A workspace that contains a service account key as a JSON file.
+    This workspace should be populated from a Secret in your TaskRuns and PipelineRuns.
+
+### Parameters
+
+* **command**: The command line that you would like to enter to the workspace. (_required_)
+* **options**: The extended command line that you would like to enter. (_required_)
+* **serviceAccountPath**: The path to the service account credential file in your credentials workspace. (_default_: "service_account.json")
+* **image**: The google cloud image that will be used in steps. (_default_: "google/cloud-sdk")
 
 ## Usage
 
@@ -247,7 +264,7 @@ spec:
 
 ### `gcs-generic`
 
-This TaskRun uses the gcs-generic Task to list all the objects in the directory from a service account.
+This TaskRun uses the gcs-generic Task to list all the objects in the directory.
 
 ```yaml
 apiVersion: v1
@@ -265,12 +282,12 @@ spec:
   workspaces:
   - name: credentials
     secret: 
-      secretName: release-secret
+      secretName: my-gcs-credentials
   params:
   - name: command
     value: ls
-  - name: subcommand
+  - name: options
     value: 
      - "-l"
-     - "gs://"
+     - "gs://tekton-releases"
 ```

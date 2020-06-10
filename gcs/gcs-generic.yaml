@@ -10,17 +10,21 @@ spec:
   - name: command
     description: The command line that you would like to enter.
     type: string 
-  - name: subcommand
-    description: The subcommand line that you would like to enter.
-    type: array 
+  - name: options
+    description: The extended command line that you would like to enter.
+    type: array
   - name: serviceAccountPath
     description: |
       The path inside the credentials workspace to the GOOGLE_APPLICATION_CREDENTIALS key file.
     type: string
     default: service_account.json
+  - name: image
+    description: google cloud image that will be used in steps.
+    type: string
+    default: google/cloud-sdk
   steps:
-  - name: run-gsutil
-    image: google/cloud-sdk
+  - name: credential-setup
+    image: "$(params.image)"
     script: |
       #!/usr/bin/env bash
       set -xe
@@ -32,11 +36,11 @@ spec:
       fi
 
       if [[ "${GOOGLE_APPLICATION_CREDENTIALS}" != "" ]]; then
-        echo GOOGLE_APPLICATION_CREDENTIALS is set, activating Service Account...
+        echo "GOOGLE_APPLICATION_CREDENTIALS is set, activating Service Account..."
         gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
       fi  
-  - name: generic
-    image: google/cloud-sdk
+  - name: run-gsutil
+    image: "$(params.image)"
     command: [gsutil]
-    args: ["$(params.command)", "$(params.subcommand[*])"]
+    args: ["$(params.command)", "$(params.options[*])"]
 
