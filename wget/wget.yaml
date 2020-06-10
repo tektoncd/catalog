@@ -25,6 +25,6 @@ spec:
      description: The folder where we write the wget'ed file to  
   steps:
     - name: wget
-      image: mwendler/wget
+      image: alpine
       command: [wget]
       args: ["$(params.options[*])", "$(params.url)", "$(params.diroptions[*])", "$(workspaces.wget-workspace.path)/$(params.filename)"]
