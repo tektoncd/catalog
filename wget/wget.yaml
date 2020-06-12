@@ -20,11 +20,15 @@ spec:
      description: The filename we want to change our file to
      type: string
      default: ""
+   - name: wget-option
+     description: The wget docker image to be used
+     type: string
+     default: "mwendler/wget"
   workspaces:
    - name: wget-workspace
      description: The folder where we write the wget'ed file to  
   steps:
     - name: wget
-      image: alpine:3
+      image: "$(params.wget-option)"
       command: [wget]
       args: ["$(params.options[*])", "$(params.url)", "$(params.diroptions[*])", "$(workspaces.wget-workspace.path)/$(params.filename)"]

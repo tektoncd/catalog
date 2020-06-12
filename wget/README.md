@@ -15,6 +15,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/wget
 * **diroptions**: The directory path we want to save file to.  _default_: `[""]`
 * **url**: The url we want to download file from.  _default_: `""`
 * **filename**: The filename we want to change our file to.  _default_: `""`
+* ****: The wget docker image to be used. Defaults to `mwendler/wget`
 ## Usage
 
 ### Running the Task
