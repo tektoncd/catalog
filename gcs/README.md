@@ -267,11 +267,6 @@ spec:
 This TaskRun uses the gcs-generic Task to list all the objects in the directory.
 
 ```yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: release-right-meow
----
 apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
