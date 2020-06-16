@@ -23,7 +23,7 @@ spec:
    - name: wget-option
      description: The wget docker image to be used
      type: string
-     default: "mwendler/wget"
+     default: "buildpack-deps:stable-curl"
   workspaces:
    - name: wget-workspace
      description: The folder where we write the wget'ed file to  
