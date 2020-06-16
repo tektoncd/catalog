@@ -1,0 +1,26 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: update-deployment-image-taskrun
+spec:
+  taskRef:
+    name: kubernetes-actions
+  workspaces:
+    - name: kubeconfig-dir
+      emptyDir: {}
+    - name: manifest-dir
+      emptyDir: {}
+  params:
+    - name: script
+      value: |
+        kubectl patch deployment $1 --patch='{"spec":{"template":{"spec":{
+          "containers":[{
+            "name": $1,
+            "image":$2
+          }]
+        }}}}'
+    - name: args
+      value:
+        - my-client-v1
+        - quay.io/openshift/origin-cli
