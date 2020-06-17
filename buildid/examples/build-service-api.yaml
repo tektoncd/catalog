@@ -1,0 +1,15 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: build-service-api
+spec:
+  params:
+    - name: build-id
+      description: ID of the current build
+      type: string                          
+  steps:
+    - name: display-buildid
+      image: bash:latest
+      script: |
+        #!/usr/bin/env bash
+        echo "Provided Build ID: $(inputs.params.build-id)"

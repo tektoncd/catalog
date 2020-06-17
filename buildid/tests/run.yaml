@@ -1,0 +1,10 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: generate-build-id-run
+spec:
+  params:
+    - name: base-version
+      value: "1.0.0"
+  taskRef:
+    name: generate-build-id
