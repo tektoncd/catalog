@@ -1,0 +1,22 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: pipeline-demo-generated-build-id
+spec:
+  params:
+    - name: service-version
+      type: string
+      default: "3.1.1"
+  tasks:
+    - name: get-build-id
+      taskRef:
+        name: generate-build-id
+      params:  
+        - name: base-version
+          value: $(params.service-version)       
+    - name: build-api
+      taskRef:
+        name: build-service-api
+      params:
+        - name: build-id
+          value: "$(tasks.get-build-id.results.build-id)"
