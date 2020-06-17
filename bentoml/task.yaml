@@ -1,0 +1,27 @@
+---
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: bentoml
+spec:
+  inputs:
+    params:
+    - name: ARGS
+      type: array
+      description: BentoML CLI arguments to run
+    params:
+    - name: YATAISERVICE
+      type: string
+      description: BentoML CLI arguments to run
+  steps:
+  - name: bento
+    image: iancoffey/bentoml-python3:latest
+    command: ["bentoml"]
+    args: ["$(inputs.params.ARGS)"]
+    env:
+      - name: "BENTOML__YATAI_SERVICE__URL"
+        value: YATAISERVICE
+  workspaces:
+  - name: bentoml
+    description: The folder where bentoml will write state to
+    mountPath: /workspace/bentoml
