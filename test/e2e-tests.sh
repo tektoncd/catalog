@@ -16,7 +16,7 @@
 
 set -x
 
-export RELEASE_YAML=https://github.com/tektoncd/pipeline/releases/download/v0.12.1/release.yaml
+export RELEASE_YAML=https://github.com/tektoncd/pipeline/releases/download/v0.13.2/release.yaml
 
 source $(dirname $0)/../vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
 source $(dirname $0)/e2e-common.sh
