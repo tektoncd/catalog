@@ -8,10 +8,10 @@ spec:
   - name: ARGS
     type: array
     description: BentoML CLI arguments to run
-  params:
   - name: YATAISERVICE
     type: string
     description: BentoML CLI arguments to run
+    default: ""
   steps:
   - name: bento
     image: iancoffey/bentoml-python3:latest

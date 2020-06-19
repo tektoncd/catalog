@@ -5,8 +5,8 @@ metadata:
   name: bentoml-list-run
 spec:
   params:
-    - name: ARGS
-      value: ["list"]
+  - name: ARGS
+    value: ["list"]
   taskRef:
     name: bentoml
   workspaces:
