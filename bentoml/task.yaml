@@ -1,18 +1,17 @@
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: bentoml
 spec:
-  inputs:
-    params:
-    - name: ARGS
-      type: array
-      description: BentoML CLI arguments to run
-    params:
-    - name: YATAISERVICE
-      type: string
-      description: BentoML CLI arguments to run
+  params:
+  - name: ARGS
+    type: array
+    description: BentoML CLI arguments to run
+  params:
+  - name: YATAISERVICE
+    type: string
+    description: BentoML CLI arguments to run
   steps:
   - name: bento
     image: iancoffey/bentoml-python3:latest
