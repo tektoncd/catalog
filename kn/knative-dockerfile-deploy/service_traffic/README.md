@@ -6,13 +6,13 @@ configure the Service to route 50-50% traffic to each Revision.
 
 ## Pipeline:
 
-- The following Pipline is focused only on performing traffic operations
+- The following Pipeline is focused only on performing traffic operations
   on Service. It does not define/require any Pipeline resources.
 - Save the following YAML in a file say e.g.: `kn_service_traffic_pipeline.yaml` and create using
  `kubectl create -f kn_service_traffic_pipeline.yaml`.
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: kn-service-traffic-splitting
@@ -37,7 +37,7 @@ spec:
 
  - You can also create this Pipeline using the YAML file present in this repo using
 ```
-kubectl create -f https://raw.githubusercontent.com/tektoncd/catalog/master/kn/knative-dockerfile-deploy/service_traffic/kn_service_traffic_pipeline.yaml
+kubectl create -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kn/knative-dockerfile-deploy/service_traffic/kn_service_traffic_splitting_pipeline.yaml
 ```
 
 ## PipelineRun:
@@ -69,7 +69,7 @@ spec:
 ```
 - You can also create this PipelineRun using the YAML file present in this repo using
 ```
-kubectl create -f https://raw.githubusercontent.com/tektoncd/catalog/master/kn/knative-dockerfile-deploy/service_traffic/pipeline_run.yaml
+kubectl create -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kn/knative-dockerfile-deploy/service_traffic/pipeline_run.yaml
 ```
 
 - Let's monitor the logs of the Pipeline run using `tkn`

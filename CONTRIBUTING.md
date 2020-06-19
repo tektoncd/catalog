@@ -91,7 +91,7 @@ the task and then every yaml files that you have in that `tests/` directory.
 
 Usually in these other yaml files you would have a yaml file for the
 test resources (`PipelineResource`) and a yaml files to run the tasks
-(`TaskRun`).
+(`TaskRun or PipelineRun`).
 
 Sometime you may need to be able to launch some scripts before applying the
 tested task or the other yaml files. Some may pre-setup something on the

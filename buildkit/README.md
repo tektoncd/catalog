@@ -53,9 +53,7 @@ $ kubectl apply -f task.yaml
 task.tekton.dev/buildkit created
 ```
 
-## Inputs
-
-### Parameters
+## Parameters
 
 * **DOCKERFILE**: The path to the `Dockerfile` to execute (_default:_  `./Dockerfile`)
 * **BUILDKIT_CLIENT_IMAGE**: BuildKit client image (_default:_`moby/buildkit:vX.Y.Z@sha256:...`)
@@ -63,14 +61,13 @@ task.tekton.dev/buildkit created
 * **BUILDKIT_CLIENT_CERTS**: The name of Secret that contains `ca.pem`, `cert.pem`, `key.pem`
   for mTLS connection to BuildKit daemon (_default:_`buildkit-client-certs`)
 
-### Resources
+## Workspaces
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the source to build.
 
-## Outputs
+## Resources
 
-### Resources
+### Outputs
 
 * **image**: An `image`-type `PipelineResource` specifying the image that should be built.
   Currently, generating [`resourceResult`](https://github.com/tektoncd/pipeline/blob/master/docs/resources.md#image-resource) is not supported. ([`buildkit#993`](https://github.com/moby/buildkit/issues/993))
-

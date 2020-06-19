@@ -5,16 +5,10 @@ This Task deploys an application to a Google Kubernetes Engine cluster using [`g
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/gke-deploy/gke-deploy.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/gke-deploy/gke-deploy.yaml
 ```
 
-## Inputs
-
-### Resources
-
-* **source-repo**: The Git source repository that contains your application's Kubernetes configs.
-
-### Parameters
+## Parameters
 
 * **ARGS**: The arguments to pass to `gke-deploy` CLI.
 
@@ -22,6 +16,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/gke-d
 
   See [here](https://github.com/GoogleCloudPlatform/cloud-builders/tree/master/gke-deploy#usage)
   for the arguments to `gke-deploy`.
+
+## Workspaces
+
+* **source**: The Git source repository that contains your application's Kubernetes configs.
 
 ## Usage
 
@@ -48,7 +46,7 @@ You can invoke `gke-deploy` to deploy manifests in a Git repository by
 providing a TaskRun:
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: gke-deploy-repo
@@ -56,24 +54,18 @@ spec:
   serviceAccountName: workload-identity-sa  # <-- a SA configured with Workload Identity
   taskRef:
     name: gke-deploy
-  inputs:
-    resources:
-    - name: source-repo
-      resourceSpec:
-        type: git
-        params:
-        - name: url
-          value: [GIT_REPO_URL]
-        - name: revision
-          value: [GIT_REPO_REVISION]
-    params:
-    - name: ARGS
-      value:
-      - run
-      - --filename="$(inputs.resources.source-repo.path)/[PATH_TO_KUBERNETES_CONFIGS]"
-      - --cluster=[CLUSTER_NAME]
-      - --location=[CLUSTER_LOCATION]
-      - --project=[CLUSTER_PROJECT]
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
+  params:
+  - name: ARGS
+    value:
+    - run
+    - --filename="$(inputs.resources.source-repo.path)/[PATH_TO_KUBERNETES_CONFIGS]"
+    - --cluster=[CLUSTER_NAME]
+    - --location=[CLUSTER_LOCATION]
+    - --project=[CLUSTER_PROJECT]
 ```
 
 See
@@ -92,16 +84,14 @@ This Pipeline builds, pushes, and deploys your application to a Google Kubernete
 ## Install the Pipeline
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/gke-deploy/build-push-gke-deploy.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/gke-deploy/build-push-gke-deploy.yaml
 ```
 
-## Inputs
+## Workspaces
 
-### Resources
+* **source**: The Git repository that contains your application's Dockerfile and Kubernetes configs.
 
-* **source-repo**: The Git repository that contains your application's Dockerfile and Kubernetes configs.
-
-### Parameters
+## Parameters
 
 * **pathToContext**: The path to the build context relative to your source repo's root. This is used by Kaniko.
 
@@ -159,7 +149,7 @@ gcloud iam service-accounts [DEPLOY_CLUSTER_PROJECT] add-iam-policy-binding \
 You can invoke `build-push-gke-deploy` to build, push, and deploy your application in a Git repository to a GKE cluster by providing a PipelineRun:
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
   name: build-push-gke-deploy-run
@@ -167,15 +157,10 @@ spec:
   pipelineRef:
     name: build-push-gke-deploy
   serviceAccountName: workload-identity-sa  # <-- a SA configured with Workload Identity
-  resources:
-  - name: source-repo
-    resourceSpec:
-      type: git
-      params:
-      - name: url
-        value: [GIT_REPO_URL]
-      - name: revision
-        value: [GIT_REPO_REVISION]
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
   params:
   - name: pathToContext
     value: [PATH_TO_CONTEXT]

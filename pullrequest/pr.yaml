@@ -1,0 +1,40 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: pull-request
+spec:
+  params:
+  - name: mode
+    description: If "download", the state of the pull request at `url` will be fetched. If "upload" then the pull request at `url` will be updated.
+  - name: url
+    description: The URL of the Pull Reuqest, e.g. `https://github.com/bobcatfish/catservice/pull/16`
+  - name: provider
+    description: The type of SCM system, currently `github` or `gitlab`
+  - name: secret-key-ref
+    description: The name of an opaque secret containing a key called "token" with a base64 encoded SCM token
+  - name: insecure-skip-tls-verify
+    description: If "true", certificate validation will be disabled
+    default: "false"
+  workspaces:
+  - name: pr
+  steps:
+  - name: pullrequest-init
+    image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/pullrequest-init:v0.11.0-rc2@sha256:1fd24693b3c5fe86d90f55f07c14698018a8e6ab76223f717897871719936915
+    command: ["/ko-app/pullrequest-init"]
+    env:
+    - name: AUTH_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: $(params.secret-key-ref)
+          key: token
+    args:
+    - "-url"
+    - "$(params.url)"
+    - "-path"
+    - "$(workspaces.pr.path)"
+    - "-mode"
+    - "$(params.mode)"
+    - "-provider"
+    - "$(params.provider)"
+    - "-insecure-skip-tls-verify"
+    - "$(params.insecure-skip-tls-verify)"

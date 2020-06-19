@@ -1,21 +1,36 @@
 ---
-apiVersion: tekton.dev/v1alpha1
-kind: TaskRun
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
 metadata:
-  name: buildpacks-run
+  name: buildpacks-test-pipeline
 spec:
-  taskRef:
-    name: buildpacks-v3
-  podTemplate:
-    volumes:
-    - name: buildpacks-cache
-      persistentVolumeClaim:
-        claimName: buildpacks-cache-pvc
-  inputs:
-    resources:
+  workspaces:
+  - name: shared-workspace
+  resources:
+  - name: build-image
+    type: image
+  tasks:
+  - name: fetch-repository
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: shared-workspace
+    params:
+    - name: url
+      value: https://github.com/buildpacks/samples
+    - name: subdirectory
+      value: ""
+    - name: deleteExisting
+      value: "true"
+  - name: buildpacks-v3
+    taskRef:
+      name: buildpacks-v3
+    runAfter:
+    - fetch-repository
+    workspaces:
     - name: source
-      resourceRef:
-        name: buildpacks-samples
+      workspace: shared-workspace
     params:
     - name: SOURCE_SUBPATH
       value: apps/java-maven
@@ -23,8 +38,28 @@ spec:
       value: cnbs/sample-builder:alpine-p0.3
     - name: CACHE
       value: buildpacks-cache
-  outputs:
     resources:
-    - name: image
-      resourceRef:
-        name: buildpacks-app-image
+      outputs:
+      - name: image
+        resource: build-image
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: buildpacks-test-pipeline-run
+spec:
+  pipelineRef:
+    name: buildpacks-test-pipeline
+  workspaces:
+  - name: shared-workspace
+    persistentvolumeclaim:
+      claimName: buildpacks-source-pvc
+  resources:
+  - name: build-image
+    resourceRef:
+      name: buildpacks-app-image
+  podTemplate:
+    volumes:
+    - name: buildpacks-cache
+      persistentVolumeClaim:
+        claimName: buildpacks-cache-pvc

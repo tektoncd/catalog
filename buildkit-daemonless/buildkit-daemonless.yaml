@@ -1,37 +1,35 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: buildkit-daemonless
 spec:
-  inputs:
-    params:
-    - name: DOCKERFILE
-      description: The name of the Dockerfile
-      default: "Dockerfile"
-    - name: BUILDKIT_IMAGE
-      description: The name of the BuildKit image
-      # The image needs to be rootful because Tekton creates /builder/home/.docker/config.json owned by root:root with 0600
-      # https://github.com/tektoncd/pipeline/issues/852
-      default: "moby/buildkit:v0.6.2"
-    resources:
-    - name: source
-      type: git
-  outputs:
-    resources:
+  params:
+  - name: DOCKERFILE
+    description: The name of the Dockerfile
+    default: "Dockerfile"
+  - name: BUILDKIT_IMAGE
+    description: The name of the BuildKit image
+    # The image needs to be rootful because Tekton creates /builder/home/.docker/config.json owned by root:root with 0600
+    # https://github.com/tektoncd/pipeline/issues/852
+    default: "moby/buildkit:v0.6.2"
+  workspaces:
+  - name: source
+  resources:
+    outputs:
     - name: image
       type: image
   steps:
   - name: build-and-push
-    image: $(inputs.params.BUILDKIT_IMAGE)
-    workingDir: /workspace/source
+    image: $(params.BUILDKIT_IMAGE)
+    workingDir: $(workspaces.source.path)
     securityContext:
       privileged: true
     command: ["buildctl-daemonless.sh", "--debug",
               "build",
               "--progress=plain",
               "--frontend=dockerfile.v0",
-              "--opt", "filename=$(inputs.params.DOCKERFILE)",
+              "--opt", "filename=$(params.DOCKERFILE)",
               "--local", "context=.", "--local", "dockerfile=.",
-              "--output", "type=image,name=$(outputs.resources.image.url),push=true",
+              "--output", "type=image,name=$(resources.outputs.image.url),push=true",
               "--export-cache", "type=inline",
-              "--import-cache", "type=registry,ref=$(outputs.resources.image.url)"]
+              "--import-cache", "type=registry,ref=$(resources.outputs.image.url)"]

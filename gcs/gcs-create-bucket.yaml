@@ -1,0 +1,70 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: gcs-create-bucket
+spec:
+  workspaces:
+  - name: credentials
+    description: A secret with a service account key to use as GOOGLE_APPLICATION_CREDENTIALS.
+  params:
+  - name: bucketName
+    description: |
+      The name (including "gs://") of the bucket to create.
+    type: string
+  - name: project
+    description: |
+      The project with which your bucket will be associated.
+    type: string
+  - name: storageClass
+    description: |
+      The storage class for the new bucket. STANDARD, NEARLINE, COLDLINE, or ARCHIVE.
+    type: string
+    default: STANDARD
+  - name: region
+    description: |
+      The region, dual-region, or multi-region for the new bucket.
+    type: string
+    default: ""
+  - name: uniformAccess
+    description: |
+      Set this to "true" if the bucket should be created with bucket-level permissions instead of Access Control Lists.
+    type: string
+    default: "false"
+  - name: serviceAccountPath
+    description: |
+      The path inside the credentials workspace to the GOOGLE_APPLICATION_CREDENTIALS key file.
+    type: string
+    default: service_account.json
+  steps:
+  - name: create-bucket
+    image: google/cloud-sdk
+    script: |
+      #!/usr/bin/env bash
+      set -xe
+
+      CRED_PATH="$(workspaces.credentials.path)/$(params.serviceAccountPath)"
+
+      if [[ -f "$CRED_PATH" ]]; then
+        GOOGLE_APPLICATION_CREDENTIALS="$CRED_PATH"
+      fi
+
+      if [[ "${GOOGLE_APPLICATION_CREDENTIALS}" != "" ]]; then
+        echo GOOGLE_APPLICATION_CREDENTIALS is set, activating Service Account...
+        gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
+      fi
+
+      MB_PARAMS=()
+
+      if [[ "$(params.storageClass)" != "" ]] ; then
+        MB_PARAMS+=(-c "$(params.storageClass)")
+      fi
+
+      if [[ "$(params.region)" != "" ]] ; then
+        MB_PARAMS+=(-l "$(params.region)")
+      fi
+
+      if [[ "$(params.uniformAccess)" == "true" ]] ; then
+        MB_PARAMS+=(-b on)
+      fi
+
+      gsutil mb -p "$(params.project)" "${MB_PARAMS[@]}" "$(params.bucketName)"

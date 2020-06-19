@@ -25,7 +25,7 @@ spec:
 ---
 
 # Task Run to build NodeJS image with the action source
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
     name: openwhisk-nodejs-zip
@@ -35,27 +35,24 @@ spec:
         name: openwhisk
     trigger:
         type: manual
-    inputs:
-        resources:
+    resources:
+        inputs:
             - name: runtime-git
               resourceRef:
                 name: openwhisk-nodejs-runtime-git
-        params:
-            - name: DOCKERFILE
-              value: "./runtime-git/core/nodejs10Action/knative/Dockerfile"
-            - name: OW_ACTION_NAME
-              value: "nodejs-helloworld"
-            - name: OW_ACTION_CODE
-              value: ""
-            - name: OW_ACTION_BINARY
-              value: "true"
-            - name: OW_PROJECT_URL
-              value: "https://github.com/tektoncd/catalog/blob/openwhisk/openwhisk/runtimes/javascript/examples/04-zip/action.zip?raw=true"
-    outputs:
-        resources:
+        outputs:
             - name: runtime-image
               resourceRef:
                 name: openwhisk-nodejs-zip-image
+    params:
+        - name: DOCKERFILE
+          value: "./runtime-git/core/nodejs10Action/knative/Dockerfile"
+        - name: OW_ACTION_NAME
+          value: "nodejs-helloworld"
+        - name: OW_ACTION_CODE
+          value: ""
+        - name: OW_ACTION_BINARY
+          value: "true"
+        - name: OW_PROJECT_URL
+          value: "https://github.com/tektoncd/catalog/blob/openwhisk/openwhisk/runtimes/javascript/examples/04-zip/action.zip?raw=true"
 ---
-
-

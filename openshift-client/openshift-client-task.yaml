@@ -1,27 +1,27 @@
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: openshift-client
 spec:
-  inputs:
-    resources:
+  params:
+  - name: SCRIPT
+    description: The OpenShift CLI arguments to run
+    type: string
+    default: "oc $@"
+  - name: ARGS
+    description: The OpenShift CLI arguments to run
+    type: array
+    default:
+    - "help"
+  resources:
+    inputs:
       - name: source
         type: git
         optional: true
-    params:
-      - name: SCRIPT
-        description: The OpenShift CLI arguments to run
-        type: string
-        default: "oc $@"
-      - name: ARGS
-        description: The OpenShift CLI arguments to run
-        type: array
-        default:
-          - "help"
   steps:
     - name: oc
       image: quay.io/openshift/origin-cli:latest
-      script: "$(inputs.params.SCRIPT)"
+      script: "$(params.SCRIPT)"
       args:
-        - "$(inputs.params.ARGS)"
+        - "$(params.ARGS)"

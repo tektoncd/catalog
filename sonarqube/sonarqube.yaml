@@ -1,0 +1,64 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: sonarqube-scanner
+spec:
+  workspaces:
+    - name: source-dir
+    - name: sonar-settings
+  params:
+    - name: SONAR_HOST_URL
+      description: Host URL where the sonarqube server is running
+      default: ""
+    - name: SONAR_PROJECT_KEY
+      description: Project's unique key
+      default: ""
+  steps:
+    - name: sonar-properties-create
+      image: registry.access.redhat.com/ubi8/ubi-minimal:latest
+      workingDir: $(workspaces.source-dir.path)
+      script: |
+        #!/usr/bin/env bash
+
+        replaceValues() {
+          filename=$1
+          thekey=$2
+          newvalue=$3
+
+          if ! grep -R "^[#]*\s*${thekey}=.*" $filename >/dev/null; then
+            echo "APPENDING because '${thekey}' not found"
+            echo "" >>$filename
+            echo "$thekey=$newvalue" >>$filename
+          else
+            echo "SETTING because '${thekey}' found already"
+            sed -ir "s|^[#]*\s*${thekey}=.*|$thekey=$newvalue|" $filename
+          fi
+        }
+
+        if [[ -f $(workspaces.sonar-settings.path)/sonar-project.properties ]]; then
+          echo "using user provided sonar-project.properties file"
+          cp -R $(workspaces.sonar-settings.path)/sonar-project.properties $(workspaces.source-dir.path)/sonar-project.properties
+        fi
+
+        if [[ -f $(workspaces.source-dir.path)/sonar-project.properties ]]; then
+          if [[ -n "$(params.SONAR_HOST_URL)" ]]; then
+            replaceValues $(workspaces.source-dir.path)/sonar-project.properties sonar.host.url $(params.SONAR_HOST_URL)
+          fi
+          if [[ -n "$(params.SONAR_PROJECT_KEY)" ]]; then
+            replaceValues $(workspaces.source-dir.path)/sonar-project.properties sonar.projectKey $(params.SONAR_PROJECT_KEY)
+          fi
+        else
+          touch sonar-project.properties
+          echo "sonar.projectKey=$(params.SONAR_PROJECT_KEY)" >> sonar-project.properties
+          echo "sonar.host.url=$(params.SONAR_HOST_URL)" >> sonar-project.properties
+          echo "sonar.sources=." >> sonar-project.properties
+        fi
+
+        echo "---------------------------"
+        cat $(workspaces.source-dir.path)/sonar-project.properties
+
+    - name: sonar-scan
+      image: sonarsource/sonar-scanner-cli
+      workingDir: $(workspaces.source-dir.path)
+      command:
+        - sonar-scanner

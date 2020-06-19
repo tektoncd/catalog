@@ -1,56 +1,53 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: s2i
 spec:
-  inputs:
-    params:
-    - description: The location of the s2i builder image.
-      name: BUILDER_IMAGE
-    - default: .
-      description: The location of the path to run s2i from.
-      name: PATH_CONTEXT
-    - default: 'true'
-      description: Verify the TLS on the registry endpoint (for push/pull to a non-TLS
-        registry)
-      name: TLSVERIFY
-    - name: LOGLEVEL
-      description: Log level when running the S2I binary
-      default: '0'
-    resources:
-    - name: source
-      type: git
-  outputs:
-    resources:
+  params:
+  - name: BUILDER_IMAGE
+    description: The location of the s2i builder image.
+  - name: PATH_CONTEXT
+    description: The location of the path to run s2i from.
+    default: .
+  - name: TLSVERIFY
+    description: Verify the TLS on the registry endpoint (for push/pull to a non-TLS registry)
+    default: 'true'
+  - name: LOGLEVEL
+    description: Log level when running the S2I binary
+    default: '0'
+  resources:
+    outputs:
     - name: image
       type: image
+  workspaces:
+  - name: source
   steps:
-  - command:
+  - name: generate
+    command:
     - /usr/local/bin/s2i
-    - --loglevel=$(inputs.params.LOGLEVEL)
+    - --loglevel=$(params.LOGLEVEL)
     - build
-    - $(inputs.params.PATH_CONTEXT)
-    - $(inputs.params.BUILDER_IMAGE)
+    - $(params.PATH_CONTEXT)
+    - $(params.BUILDER_IMAGE)
     - --as-dockerfile
     - /gen-source/Dockerfile.gen
     image: quay.io/openshift-pipeline/s2i:nightly
-    name: generate
     volumeMounts:
     - mountPath: /gen-source
       name: gen-source
-    workingDir: /workspace/source
-  - command:
+    workingDir: $(workspaces.source.path)
+  - name: build
+    command:
     - buildah
     - bud
-    - --tls-verify=$(inputs.params.TLSVERIFY)
+    - --tls-verify=$(params.TLSVERIFY)
     - --layers
     - -f
     - /gen-source/Dockerfile.gen
     - -t
-    - $(outputs.resources.image.url)
+    - $(resources.outputs.image.url)
     - .
     image: quay.io/buildah/stable
-    name: build
     securityContext:
       privileged: true
     volumeMounts:
@@ -59,14 +56,14 @@ spec:
     - mountPath: /gen-source
       name: gen-source
     workingDir: /gen-source
-  - command:
+  - name: push
+    command:
     - buildah
     - push
-    - --tls-verify=$(inputs.params.TLSVERIFY)
-    - $(outputs.resources.image.url)
-    - docker://$(outputs.resources.image.url)
+    - --tls-verify=$(params.TLSVERIFY)
+    - $(resources.outputs.image.url)
+    - docker://$(resources.outputs.image.url)
     image: quay.io/buildah/stable
-    name: push
     securityContext:
       privileged: true
     volumeMounts:

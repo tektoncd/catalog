@@ -1,11 +1,11 @@
-apiVersion: tekton.dev/v1alpha1
-kind: PipelineResource
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
-  name: maven-resource-petclinic
+  name: maven-source-pvc
 spec:
-  type: git
-  params:
-    - name: revision
-      value: master
-    - name: url
-      value: https://github.com/spring-projects/spring-petclinic
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi

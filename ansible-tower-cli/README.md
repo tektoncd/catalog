@@ -7,12 +7,10 @@
 
 Install `tower-cli` task:
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/ansible-tower-cli/ansible-tower-cli-task.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/ansible-tower-cli/ansible-tower-cli-task.yaml
 ```
 
-## Inputs `tower-cli-task`
-
-### Parameters
+## Parameters
 
 * **ARGS:** args to execute which are appended to `tower-cli` e.g. `user-list` (_default_: `--help`)
 * **SSLVERIFY:** args to disable Tower SSL verification (_default_: `false`)
@@ -60,14 +58,14 @@ oc policy add-role-to-user edit -z default -n <namespace>
 This is a pipeline example passing the required credentials, and a list of arguments to the ARGS array variable.
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: tower-cli-example
 spec:
   tasks:
   - name: tower
-    taskRef: 
+    taskRef:
       name: ansible-tower-cli
     params:
      - name: SSLVERIFY

@@ -39,12 +39,10 @@ kubectl --namespace default create secret generic docker-registry-config --from-
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/makisu/makisu.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/makisu/makisu.yaml
 ```
 
-## Inputs
-
-### Parameters
+## Parameters
 
 * **CONTEXTPATH**: The path to the build context (_default:_
   `/workspace`)
@@ -53,14 +51,14 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/makis
 * **REGISTRY_SECRET**: Secret containing information about the used regsitry (_default:_
   `docker-registry-config`)
 
-### Resources
+## Workspaces
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
 
-## Outputs
+## Resources
 
-### Resources
+### Outputs
 
 * **image**: An `image`-type `PipelineResource` specify the image that should be built.
 
@@ -75,23 +73,19 @@ the root of the repository.
 ### Docker Registry
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: example-run
 spec:
   taskRef:
     name: makisu
-  inputs:
-    resources:
-    - name: source
-      resourceSpec:
-        type: git
-        params:
-        - name: url
-          value: https://github.com/my-user/my-repo
-  outputs:
-    resources:
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
+  resource:
+    outputs:
     - name: image
       resourceSpec:
         type: image
@@ -105,28 +99,24 @@ spec:
 The `PUSH_REGISTRY` **must** match the name of the registry specified in the registry.yaml
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: example-run-gcr
 spec:
   taskRef:
     name: makisu
-  inputs:
-    params:
-    - name: PUSH_REGISTRY # must match the registry in the secret
-      value: eu.gcr.io
-    - name: REGISTRY_SECRET
-      value: gcr-registry-config
-    resources:
-    - name: source
-      resourceSpec:
-        type: git
-        params:
-        - name: url
-          value: https://github.com/my-user/my-repo
-  outputs:
-    resources:
+  params:
+  - name: PUSH_REGISTRY # must match the registry in the secret
+    value: eu.gcr.io
+  - name: REGISTRY_SECRET
+    value: gcr-registry-config
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
+  resources:
+    outputs:
     - name: image
       resourceSpec:
         type: image

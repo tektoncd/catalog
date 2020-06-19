@@ -5,12 +5,10 @@ This task performs operations on Google Cloud Platform resources using `gcloud`.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/gcloud/gcloud.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/gcloud/gcloud.yaml
 ```
 
-## Inputs
-
-### Parameters
+## Parameters
 
 * **gcloud-image**: `gcloud` CLI container image to run this task.
 
@@ -72,7 +70,7 @@ correctly:
 Create a file, `check-auth.yaml`:
 
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   generateName: auth-check-
@@ -80,10 +78,9 @@ spec:
   serviceAccountName: workload-identity-sa  # <-- a SA configured with Workload Identity
   taskRef:
     name: gcloud
-  inputs:
-    params:
-    - name: ARGS
-      value: ['auth', 'list']
+  params:
+  - name: ARGS
+    value: ['auth', 'list']
 ```
 
 Run it with `kubectl create -f check-auth.yaml`
@@ -96,7 +93,7 @@ authorize its actions.
 Create a file, `deploy-cloudrun.yaml`:
 
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   generateName: run-deploy
@@ -104,16 +101,15 @@ spec:
   serviceAccountName: workload-identity-sa  # <-- a SA configured with Workload Identity
   taskRef:
     name: gcloud
-  inputs:
-    params:
-    - name: ARGS
-      value:
-      - run
-      - deploy
-      - my-service
-      - --image=gcr.io/my-project/my-image
-      - --platform=PLATFORM
-      - --region=REGION
+  params:
+  - name: ARGS
+    value:
+    - run
+    - deploy
+    - my-service
+    - --image=gcr.io/my-project/my-image
+    - --platform=PLATFORM
+    - --region=REGION
 ```
 
 Run it with `kubectl create -f deploy-cloudrun.yaml`
@@ -127,7 +123,7 @@ specified region.
 Create a file, `create-instance.yaml`:
 
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   generateName: run-deploy
@@ -135,15 +131,14 @@ spec:
   serviceAccountName: workload-identity-sa  # <-- a SA configured with Workload Identity
   taskRef:
     name: gcloud
-  inputs:
-    params:
-    - name: ARGS
-      value:
-      - compute
-      - instances
-      - create
-      - my-instance
-      - --zone=ZONE
+  params:
+  - name: ARGS
+    value:
+    - compute
+    - instances
+    - create
+    - my-instance
+    - --zone=ZONE
 ```
 
 Run it with `kubect create -f create-instance.yaml`

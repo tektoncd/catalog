@@ -1,9 +1,12 @@
-# Tekton Catalog (v1alpha1)
+# Tekton Catalog
 
-**This contains tektoncd/pipeline resources for the `v1alpha1`
-API. This branch is kept around for the time tektoncd/pipeline will
-continue supporting `v1alpha1` APIs. It is meant to be a *fix-only*
-branch, any new Task should be added to the `v1beta1` branch**
+**If you want `v1alpha1` resources, you need to go to the
+[`v1alpha1`](https://github.com/tektoncd/catalog/tree/v1alpha1)
+branch. The
+[`master`](https://github.com/tektoncd/catalog/tree/master) branch
+will be synced with
+[`v1beta1`](https://github.com/tektoncd/catalog/tree/v1beta1) on 2020,
+15th June.**
 
 This repository contains a catalog of `Task` resources (and someday
 `Pipeline`s and `Resource`s), which are designed to be reusable in many
@@ -50,24 +53,20 @@ With the `Task` installed, you can define a `TaskRun` that runs that `Task`,
 being sure to provide values for required input parameters and resources:
 
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: example-run
 spec:
   taskRef:
     name: golang-build
-  inputs:
-    params:
-    - name: package
-      value: github.com/tektoncd/pipeline
-    resources:
-    - name: source
-      resourceSpec:
-        type: git
-        params:
-        - name: url
-          value: https://github.com/tektoncd/pipeline
+  params:
+  - name: package
+    value: github.com/tektoncd/pipeline
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
 ```
 
 Next, create the `TaskRun` you defined:
@@ -81,7 +80,7 @@ You can check the status of the `TaskRun` using `kubectl`:
 
 ```
 $ kubectl get taskrun example-run -oyaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: example-run

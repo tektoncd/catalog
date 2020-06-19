@@ -1,19 +1,18 @@
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: tkn
 spec:
-  inputs:
-    params:
-      - name: tkn-image
-        description: tkn CLI container image to run this task
-        default: gcr.io/tekton-releases/dogfooding/tkn
-      - name: ARGS
-        type: array
-        description: tkn CLI arguments to run
+  params:
+  - name: tkn-image
+    description: tkn CLI container image to run this task
+    default: gcr.io/tekton-releases/dogfooding/tkn
+  - name: ARGS
+    type: array
+    description: tkn CLI arguments to run
   steps:
     - name: tkn
-      image: "$(inputs.params.tkn-image)"
+      image: "$(params.tkn-image)"
       command: ["/usr/local/bin/tkn"]
-      args: ["$(inputs.params.ARGS)"]
+      args: ["$(params.ARGS)"]

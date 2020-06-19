@@ -8,13 +8,13 @@ your Tekton pipelines. Conftest is a tool for testing configuration files using 
 In order to use Conftest with Tekton you need to first install the task.
 
 ```console
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/conftest/conftest.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/conftest/conftest.yaml
 ```
 
 Conftest also has a Helm plugin, which redners the Helm chart before applying the policy. For that task use:
 
 ```console
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/conftest/helm-conftest.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/conftest/helm-conftest.yaml
 ```
 
 
@@ -23,28 +23,22 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/conft
 Once installed, the task can be used as follows:
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: conftest-example
 spec:
   taskRef:
     name: conftest
-  inputs:
-    resources:
-    - name: source
-      resourceSpec:
-        type: git
-        params:
-        - name: revision
-          value: master
-        - name: url
-          value: https://github.com/instrumenta/conftest.git
-    params:
-    - name: files
-      value: examples/kubernetes/deployment.yaml
-    - name: policy
-      value: examples/kubernetes/policy
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
+  params:
+  - name: files
+    value: examples/kubernetes/deployment.yaml
+  - name: policy
+    value: examples/kubernetes/policy
 ```
 
 Note that the above respository contains both a configuration file we want to test (`examples/kubernetes/deployment.yaml`) and a directory (`examples/kubernetes/policy`) containing OPA policy files. When using the task you would provide the details of the repository you want to test.
@@ -62,16 +56,14 @@ $ tkn taskrun logs conftest-example -f
 container step-conftest has failed  : Error
 ```
 
-## Inputs
-
-### Parameters
+## Parameters
 
 * **files**: The files to test against the specified policies
 * **policy**: Where to find the policies (_default:_ `policy`)
 * **output**: Which output format to use (_default:_ `stdout`)
 * **args**: An array of additional arguments to pass to Conftest (_default `[]`_)
 
-### Resources
+## Workspaces
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
@@ -83,43 +75,32 @@ container step-conftest has failed  : Error
 Once installed, the Helm task can be used as follows:
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: helm-conftest-example
 spec:
   taskRef:
     name: helm-conftest
-  inputs:
-    resources:
-    - name: source
-      resourceSpec:
-        type: git
-        params:
-        - name: revision
-          value: master
-        - name: url
-          value: https://github.com/helm/charts.git
-    params:
-    - name: chart
-      value: stable/mysql
-    - name: policy
-      value: stable/mysql/policy
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
+  params:
+  - name: chart
+    value: stable/mysql
+  - name: policy
+    value: stable/mysql/policy
 ```
 
-## Inputs
-
-### Parameters
+## Parameters
 
 * **chart**: The chart to test against the specified policies (_default:_ `.`)
 * **policy**: Where to find the policies (_default:_ `policy`)
 * **output**: Which output format to use (_default:_ `stdout`)
 * **args**: An array of additional arguments to pass to Conftest (_default `[]`)
 
-### Resources
+## Workspaces
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
-
-
-

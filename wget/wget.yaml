@@ -1,0 +1,34 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: wget
+spec:
+  params:
+   - name: url
+     description: The url we want to download file from
+     type: string
+     default: ""
+   - name: diroptions
+     description: The directory path we want to save file to
+     type: array
+     default: []
+   - name: options
+     description: The arguments to pass to wget
+     type: array
+     default: []
+   - name: filename
+     description: The filename we want to change our file to
+     type: string
+     default: ""
+   - name: wget-option
+     description: The wget docker image to be used
+     type: string
+     default: "buildpack-deps:stable-curl"
+  workspaces:
+   - name: wget-workspace
+     description: The folder where we write the wget'ed file to  
+  steps:
+    - name: wget
+      image: "$(params.wget-option)"
+      command: [wget]
+      args: ["$(params.options[*])", "$(params.url)", "$(params.diroptions[*])", "$(workspaces.wget-workspace.path)/$(params.filename)"]

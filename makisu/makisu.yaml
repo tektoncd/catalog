@@ -1,42 +1,37 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: makisu
 spec:
-  inputs:
-    params:
-    - name: CONTEXTPATH
-      description: Path to the build context.
-      default: /workspace
-    - name: PUSH_REGISTRY
-      description: Registry to push image to.
-      default: index.docker.io
-    - name: REGISTRY_SECRET
-      description: Secret containing information about the used regsitry.
-      default: docker-registry-config
-
-    resources:
-    - name: source
-      type: git
-
-  outputs:
-    resources:
+  params:
+  - name: CONTEXTPATH
+    description: Path to the build context.
+    default: /workspace
+  - name: PUSH_REGISTRY
+    description: Registry to push image to.
+    default: index.docker.io
+  - name: REGISTRY_SECRET
+    description: Secret containing information about the used regsitry.
+    default: docker-registry-config
+  workspaces:
+  - name: source
+  resources:
+    outputs:
     - name: image
       type: image
-
   steps:
   - name: build-and-push
     image: gcr.io/makisu-project/makisu:v0.1.10
-    workingDir: /workspace/source
+    workingDir: $(workspaces.source.path)
     command:
     - /makisu-internal/makisu
     - build
-    - --push=$(inputs.params.PUSH_REGISTRY)
+    - --push=$(params.PUSH_REGISTRY)
     - --registry-config=/registry-config
     - --modifyfs=true
-    - --tag=$(outputs.resources.image.url)
+    - --tag=$(resources.outputs.image.url)
     - --registry-config=/registry-config/registry.yaml
-    - $(inputs.params.CONTEXTPATH)
+    - $(params.CONTEXTPATH)
     env:
     - name: DOCKER_CONFIG
       value: /builder/home/.docker
@@ -46,4 +41,4 @@ spec:
   volumes:
   - name: registry-config
     secret:
-      secretName: $(inputs.params.REGISTRY_SECRET)
+      secretName: $(params.REGISTRY_SECRET)

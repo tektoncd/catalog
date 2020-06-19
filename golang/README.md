@@ -5,16 +5,14 @@ These Tasks are Golang task to build, test and validate Go projects.
 ## Install the tasks
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golang/lint.yaml
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golang/build.yaml
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golang/tests.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/lint.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/build.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/tests.yaml
 ```
 
 ## `golangci-lint`
 
-### Inputs
-
-#### Parameters
+### Parameters
 
 * **package**: base package under validation
 * **flags**: flags to use for `golangci-lint` command (_default:_--verbose)
@@ -23,35 +21,31 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golan
 * **GOARCH**: architecture target (_default:_ amd64)
 * **GO111MODULE**: value of module support (_default:_ auto)
 
-#### Resources
+### Workspaces
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
 
-### `golang-build`
+## `golang-build`
 
-### Inputs
-
-#### Parameters
+### Parameters
 
 * **package**: base package under test
 * **packages**: packages to test (_default:_ ./...)
 * **version**: golang version to use for tests (_default:_ latest)
-* **flags**: flags to use for `go test` command (_default:_ -v)
+* **flags**: flags to use for `go build` command (_default:_ -v)
 * **GOOS**: operating system target (_default:_ linux)
 * **GOARCH**: architecture target (_default:_ amd64)
 * **GO111MODULE**: value of module support (_default:_ auto)
 
-#### Resources
+### Workspaces
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
 
-### `golang-test`
+## `golang-test`
 
-### Inputs
-
-#### Parameters
+### Parameters
 
 * **package**: base package to build in
 * **packages**: packages to test (_default:_ ./cmd/...)
@@ -61,7 +55,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/golan
 * **GOARCH**: architecture target (_default:_ amd64)
 * **GO111MODULE**: value of module support (_default:_ auto)
 
-#### Resources
+### Workspaces
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
@@ -75,26 +69,22 @@ This TaskRun runs the Task to validate
 `golangci-lint`.
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: lint-my-code
 spec:
   taskRef:
     name: golangci-lint
-  inputs:
-    resources:
-    - name: source
-      resourceSpec:
-        type: git
-        params:
-        - name: url
-          value: https://github.com/tektoncd/pipeline
-    params:
-    - name: package
-      value: github.com/tektoncd/pipeline
-    - name: flags
-      value: --verbose
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
+  params:
+  - name: package
+    value: github.com/tektoncd/pipeline
+  - name: flags
+    value: --verbose
 ```
 
 ### `golang-test`
@@ -103,26 +93,22 @@ This TaskRun runs the Task to run unit-tests on
 [`tektoncd/pipeline`](https://github.com/tektoncd/pipeline).
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: test-my-code
 spec:
   taskRef:
     name: golang-test
-  inputs:
-    resources:
-    - name: source
-      resourceSpec:
-        type: git
-        params:
-        - name: url
-          value: https://github.com/tektoncd/pipeline
-    params:
-    - name: package
-      value: github.com/tektoncd/pipeline
-    - name: packages
-      value: ./pkg/...
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
+  params:
+  - name: package
+    value: github.com/tektoncd/pipeline
+  - name: packages
+    value: ./pkg/...
 ```
 
 ### `golang-build`
@@ -132,22 +118,18 @@ This TaskRun runs the Task to compile commands from
 `golangci-lint`.
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: build-my-code
 spec:
   taskRef:
     name: golang-build
-  inputs:
-    resources:
-    - name: source
-      resourceSpec:
-        type: git
-        params:
-        - name: url
-          value: https://github.com/tektoncd/pipeline
-    params:
-    - name: package
-      value: github.com/tektoncd/pipeline
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
+  params:
+  - name: package
+    value: github.com/tektoncd/pipeline
 ```

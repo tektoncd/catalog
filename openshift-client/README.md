@@ -10,31 +10,29 @@ There are two tasks provided for the OpenShift CLI which differ only in their ta
 
 Install `openshift-client` task:
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-client/openshift-client-task.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/openshift-client/openshift-client-task.yaml
 ```
 
 Install `openshift-client-kubecfg` task:
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-client/openshift-client-kubecfg-task.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/openshift-client/openshift-client-kubecfg-task.yaml
 ```
 
-## Inputs `openshift-client`
-
-### Parameters
+## Parameters `openshift-client`
 
 * **ARGS:** args to execute which are appended to `oc` e.g. `start-build myapp` (_default_: `help`)
 
 * **SCRIPT:** script of oc commands to execute  e.g. `oc get pod $1 -0 yaml` This will take the first value of ARGS as pod name (_default_: `oc $@`)
 
-## Inputs `openshift-client-kubecfg`
-
-### Parameters
+## Parameters `openshift-client-kubecfg`
 
 * **ARGS:** args to execute which are appended to `oc` e.g. `start-build myapp` (_default_: `help`)
 
 * **SCRIPT:** script of oc commands to execute  e.g. `oc get pod $1 -o yaml` This will take the first value of ARGS as pod name (_default_: `oc $@`)
 
-### Resources
+## Resources
+
+### Inputs
 
 * **cluster**: a `cluster`-type `PipelineResource` specifying the target OpenShift cluster to execute the commands against it
 
@@ -52,41 +50,40 @@ oc policy add-role-to-user edit -z default -n <namespace>
 This `TaskRun` runs an `oc rollout` command to deploy the latest image version for `myapp` on OpenShift.
 
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: deploy-myapp
 spec:
   taskRef:
     name: openshift-client
-  inputs:
-    params:
-    - name: ARGS
-      value:
-        - "rollout"
-        - "latest"
-        - "myapp"
+  params:
+  - name: ARGS
+    value:
+      - "rollout"
+      - "latest"
+      - "myapp"
 ```
 
 The following `TaskRun` runs the commands against a different cluster than the one the `TaskRun` is running on. The cluster credentials are provided via a `PipelineResource` called `stage-cluster`.
 
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: deploy-myapp-stage
 spec:
   taskRef:
     name: openshift-client-kubecfg
-  inputs:
-    resources:
+  resources:
+    inputs:
     - name: cluster
       resourceRef:
         name: stage-cluster
-    params:
-    - name: ARGS
-      value:
-        - "rollout"
-        - "latest"
-        - "myapp"
+  params:
+  - name: ARGS
+    value:
+      - "rollout"
+      - "latest"
+      - "myapp"
 ```
