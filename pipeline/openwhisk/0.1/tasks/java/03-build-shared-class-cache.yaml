@@ -1,0 +1,25 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: build-shared-class-cache
+spec:
+  workspaces:
+    - name: openwhisk-workspace
+  params:
+    - name: OW_APP_JAVA_VERSION
+      default: "adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u222-b10_openj9-0.15.1"
+      description: "Any specific OpenJDK version needed to compile/run application source on"
+    - name: OW_BUILD_CONFIG_PATH
+      description: "The path to the build configuration script (build.gradle) in Runtime Repo"
+      default: "core/java8/proxy/"
+  steps:
+    - name: build-shared-class-cache
+      image: $(params.OW_APP_JAVA_VERSION)
+      script: |
+        #!/usr/bin/env bash
+        set -xe
+        cd $(workspaces.openwhisk-workspace.path)/runtime/$(params.OW_BUILD_CONFIG_PATH)
+        ./gradlew oneJar
+        if [ $? = 0 ]; then
+          mv build/libs/proxy-all.jar build/libs/javaAction-all.jar
+        fi

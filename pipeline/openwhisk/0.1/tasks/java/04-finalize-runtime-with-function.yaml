@@ -1,0 +1,70 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: finalize-runtime-with-function
+spec:
+  workspaces:
+    - name: openwhisk-workspace
+  params:
+    - name: DOCKERFILE
+      description: "The path to the dockerfile to build from Runtime Repo"
+      default: "Dockerfile"
+    - name: OW_RUNTIME_CONTEXT
+      description: "The path to the dockerfile to build from Runtime Repo"
+      default: "dir:///workspaces/openwhisk-workspace/runtime/"
+    - name: OW_AUTO_INIT
+      description: "Base64 encoded Jar file contents"
+      default: ""
+    - name: OW_AUTO_INIT_MAIN
+      description: "name of the function in the __OW_AUTO_INIT to call as the action handler"
+      default: "main"
+    - name: JAR_NAME
+      default: "OWAutoInit"
+      description: "Jar name of the application source"
+    - name: MAVEN_BUILD_OUTPUT_PATH
+      default: "./"
+      description: "Maven build path where the jar file is created"
+  resources:
+    outputs:
+      - name: app-image
+        type: image
+  steps:
+    - name: copy-jar-under-runtime-context
+      image: ubuntu
+      script: |
+        #!/usr/bin/env bash
+        set -xe
+        JAR_FILE_WITH_PATH=`realpath $(workspaces.openwhisk-workspace.path)/application/$(params.MAVEN_BUILD_OUTPUT_PATH)/$(params.JAR_NAME).jar`
+        CONTEXT=`echo "$(params.OW_RUNTIME_CONTEXT)" | sed 's/^dir:\/\///'`
+        JAR_FILE_PATH=$CONTEXT/$(workspaces.openwhisk-workspace.path)/application/$(params.MAVEN_BUILD_OUTPUT_PATH)
+        mkdir -p $JAR_FILE_PATH
+        cp $JAR_FILE_WITH_PATH $JAR_FILE_PATH
+    - name: add-ow-env-to-dockerfile
+      image: ubuntu
+      script: |
+        #!/usr/bin/env bash
+        set -xe
+        JAR_FILE_WITH_PATH=`realpath $(workspaces.openwhisk-workspace.path)/application/$(params.MAVEN_BUILD_OUTPUT_PATH)/$(params.JAR_NAME).jar`
+        JAR_FILE=$(params.JAR_NAME).jar
+        DOCKERFILE_PATH=`echo "$(params.OW_RUNTIME_CONTEXT)" | sed 's/^dir:\/\///'`
+        sed -i -e '/^CMD.*/i ADD "'"$JAR_FILE_WITH_PATH"'" "'"/javaAction/$JAR_FILE"'"\nENV OW_AUTO_INIT "'"/javaAction/$JAR_FILE"'"\nENV OW_AUTO_INIT_MAIN "$(params.OW_AUTO_INIT_MAIN)"' $DOCKERFILE_PATH/$(params.DOCKERFILE)
+        cat $DOCKERFILE_PATH/$(params.DOCKERFILE)
+    - name: update-dockerfile-for-tekton
+      image: ubuntu
+      script: |
+        #!/usr/bin/env bash
+        set -xe
+        DOCKERFILE_PATH=`echo "$(params.OW_RUNTIME_CONTEXT)" | sed 's/^dir:\/\///'`
+        sed -i -e 's/&& rm -rf .classpath .gitignore .gradle .project .settings Dockerfile build \\//g' $DOCKERFILE_PATH/$(params.DOCKERFILE)
+        sed -i -e 's/&& \.\/gradlew oneJar \\//g' $DOCKERFILE_PATH/$(params.DOCKERFILE)
+        sed -i -e 's/&& rm -rf \/javaAction\/src \\//g' $DOCKERFILE_PATH/$(params.DOCKERFILE)
+        sed -i -e 's/&& \.\/gradlew copyDependencies \\//g' $DOCKERFILE_PATH/$(params.DOCKERFILE)
+        cat $DOCKERFILE_PATH/$(params.DOCKERFILE)
+    - name: build-app-image-with-function
+      image: "gcr.io/kaniko-project/executor:debug-v0.16.0"
+      command:
+        - /kaniko/executor
+      args:
+        - --context=$(params.OW_RUNTIME_CONTEXT)
+        - --dockerfile=$(params.DOCKERFILE)
+        - --destination=$(resources.outputs.app-image.url)

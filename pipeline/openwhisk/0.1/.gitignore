@@ -1,0 +1,22 @@
+##############################################
+# Artifacts from Knative/Istio installation
+##############################################
+/istio*
+istio-minimal-operator.yaml
+
+##############################################
+# Artifacts created by running examples
+##############################################
+docker-secret.yaml
+
+# Gradle
+.gradle
+build/
+bin/
+
+##############################################
+# Artifacts from examples
+##############################################
+pipelinerun/javascript/pipelinerun-javascript.yaml
+pipelinerun/java/pipelinerun-java.yaml
+pipelinerun/python/pipelinerun-python.yaml

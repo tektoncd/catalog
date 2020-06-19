@@ -1,0 +1,47 @@
+# Task to Install Third Party Node Packages
+#
+# Inputs:
+#   * app-git: GitHub repo with an Application Source
+#   * OW_APP_NODE_VERSION: any specific Node Version you want to pull, default is "node"
+#   * OW_APP_PATH: path to application directory within the GitHub repo, default is ""
+#
+#
+# Application source is cloned under /workspace/<resource-name> by default if targetPath is not specified.
+#
+# This task installs third party packages under /workspace/<resource-name>/<app_path>/
+#
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: task-install-npm-packages
+spec:
+  workspaces:
+    - name: openwhisk-workspace
+  params:
+    - name: OW_APP_NODE_VERSION
+      default: "node"
+      description: "Any specific Node version needed to compile/run application source on"
+    - name: OW_APP_PATH
+      default: ""
+      description: "Relative or Absolute path to the application source"
+  steps:
+    - name: install-node-packages
+      image: $(params.OW_APP_NODE_VERSION)
+      script: |
+        #!/usr/bin/env bash
+        set -xe
+        echo $(params.OW_APP_PATH)
+        if [ -z "$(params.OW_APP_PATH)" ]; then
+          OW_APP_PATH=$(workspaces.openwhisk-workspace.path)/application/
+        else
+          OW_APP_PATH=$(workspaces.openwhisk-workspace.path)/application/$(params.OW_APP_PATH)
+        fi
+        echo $OW_APP_PATH
+        cd $OW_APP_PATH
+        echo "Starting to install Node Packages under $OW_APP_PATH"
+        npm install --production --loglevel=error
+        if [ $? = 0 ]; then
+          echo "Successfully finished installing Node Packages under $OW_APP_PATH"
+        else
+          echo "Failed to install Node Packages under $OW_APP_PATH"
+        fi
