@@ -1,0 +1,78 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Condition
+metadata:
+  name: is-nodejs-runtime
+spec:
+  params:
+    - name: OW_APP_PATH
+      type: string
+  resources:
+    - name: app-git
+      type: git
+  check:
+    image: ubuntu
+    command:
+      - bash
+    args:
+      - -c
+      - |
+        echo "INFO: Identifying the language of the application source based on the file extension at:"
+        echo $(params.OW_APP_PATH)
+        echo "INFO: ls $(params.OW_APP_PATH):"
+        ls $(params.OW_APP_PATH)
+        echo "INFO: Find files with extension .js, sort displays js if one or more files found: "
+        find $(resources.app-git.path)/$(params.OW_APP_PATH) -type f | sed -e 's/.*\.//' | sed -e 's/.*\///' | sort -u | grep ^js$
+---
+
+
+apiVersion: tekton.dev/v1alpha1
+kind: Condition
+metadata:
+  name: is-java-runtime
+spec:
+  params:
+    - name: OW_APP_PATH
+      type: string
+  resources:
+    - name: app-git
+      type: git
+  check:
+    image: ubuntu
+    command:
+      - bash
+    args:
+      - -c
+      - |
+        echo "INFO: Identifying the language of the application source based on the file extension at:"
+        echo $(params.OW_APP_PATH)
+        echo "INFO: ls $(params.OW_APP_PATH):"
+        ls $(params.OW_APP_PATH)
+        echo "INFO: Find files with extension .java, sort displays java if one or more files found: "
+        find $(resources.app-git.path)/$(params.OW_APP_PATH) -type f | sed -e 's/.*\.//' | sed -e 's/.*\///' | sort -u | grep ^java$
+---
+
+
+apiVersion: tekton.dev/v1alpha1
+kind: Condition
+metadata:
+  name: is-python-runtime
+spec:
+  params:
+    - name: OW_APP_PATH
+      type: string
+  resources:
+    - name: app-git
+      type: git
+  check:
+    image: ubuntu
+    command:
+      - bash
+    args:
+      - -c
+      - |
+        echo "INFO: Identifying the language of the application source based on the file extension at:"
+        echo $(params.OW_APP_PATH)
+        echo "INFO: ls $(params.OW_APP_PATH):"
+        ls $(params.OW_APP_PATH)
+        echo "INFO: Find files with extension .py, sort displays py if one or more files found: "
+        find $(resources.app-git.path)/$(params.OW_APP_PATH) -type f | sed -e 's/.*\.//' | sed -e 's/.*\///' | sort -u | grep ^py$

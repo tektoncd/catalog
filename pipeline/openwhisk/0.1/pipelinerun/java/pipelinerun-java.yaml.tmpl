@@ -1,0 +1,42 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: build-java-app-image
+spec:
+  serviceAccountName: openwhisk-app-builder
+  pipelineRef:
+    name: build-openwhisk-app
+  workspaces:
+    - name: openwhisk-workspace
+      persistentVolumeClaim:
+        claimName: openwhisk-workspace
+  params:
+    - name: OW_BUILD_CONFIG_PATH
+      value: "knative-build/runtimes/java/core/java8/proxy/"
+    - name: OW_ACTION_NAME
+      value: "openwhisk-java-app"
+    - name: OW_RUNTIME_CONTEXT
+      value: "dir:///workspace/openwhisk-workspace/runtime/knative-build/runtimes/java/core/java8/"
+    - name: OW_AUTO_INIT_MAIN
+      value: "Hello"
+  resources:
+    - name: app-git
+      resourceSpec:
+        type: git
+        params:
+          - name: url
+            value: https://github.com/pwplusnick/java-openwhisk-example-app.git
+    - name: runtime-git
+      resourceSpec:
+        type: git
+        params:
+          - name: url
+            value: https://github.com/apache/openwhisk-devtools.git
+          - name: revision
+            value: refs/pull/297/head
+    - name: app-image
+      resourceSpec:
+        type: image
+        params:
+           - name: url
+             value: docker.io/${DOCKER_USERNAME}/openwhisk-java-app:latest

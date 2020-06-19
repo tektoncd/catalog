@@ -1,0 +1,91 @@
+# Task to pull OpenWhisk Runtime and update the runtime Dockerfile with an application source
+#
+# Inputs:
+#   * DOCKERFILE
+#   * OW_RUNTIME_DEBUG
+#   * OW_RUNTIME_PLATFORM
+#   * OW_ACTION_NAME
+#   * OW_ACTION_MAIN
+#   * OW_ACTION_BINARY
+#   * OW_HTTP_METHODS
+#   * OW_ACTION_RAW
+# Outputs:
+#   * app-image: An image with OpenWhisk Runtime and application source which is ready to be served on Knative
+#
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: openwhisk-node
+spec:
+  workspaces:
+    - name: openwhisk-workspace
+  params:
+    - name: DOCKERFILE
+      description: "The path to the dockerfile to build from Runtime Repo"
+    - name: OW_RUNTIME_DEBUG
+      description: "flag to indicate debug mode should be on/off"
+      default: "false"
+    - name: OW_RUNTIME_PLATFORM
+      description: "flag to indicate the platform, one of [openwhisk, knative, ... ]"
+      default: "knative"
+    - name: OW_ACTION_NAME
+      description: "name of the action"
+      default: ""
+    - name: OW_ACTION_CODE
+      description: "JavaScript source code to be evaluated"
+      default: ""
+    - name: OW_ACTION_MAIN
+      description: "name of the function in the __OW_ACTION_CODE to call as the action handler"
+      default: "main"
+    - name: OW_ACTION_BINARY
+      description: "flag to indicate zip function, for zip actions, __OW_ACTION_CODE must be base64 encoded string"
+      default: "true"
+    - name: OW_HTTP_METHODS
+      description: "list of HTTP methods, any combination of [GET, POST, PUT, and DELETE], default is [POST]"
+      default: "[POST]"
+    - name: OW_ACTION_RAW
+      description: "flag to indicate raw HTTP handling, interpret and process an incoming HTTP body directly"
+      default: "false"
+    - name: OW_APP_PATH
+      description: "Relative or Absolute path of the application source in the GitHub repo"
+      default: ""
+    - name: OW_ACTION_ARCHIVE_NAME
+      default: "action.zip"
+  resources:
+    outputs:
+      - name: app-image
+        type: image
+  steps:
+    - name: add-ow-env-to-dockerfile
+      image: ubuntu
+      script: |
+        #!/usr/bin/env bash
+        set -xe
+        echo $(workspaces.openwhisk-workspace.path)/application/$(params.OW_APP_PATH)
+        cd $(workspaces.openwhisk-workspace.path)/application/$(params.OW_APP_PATH)
+        pwd
+        ARCHIVE=$(params.OW_ACTION_ARCHIVE_NAME)
+        echo $ARCHIVE
+        base64 $ARCHIVE | tr -d '[:space:]'
+        OW_ACTION_CODE=`base64 $ARCHIVE | tr -d '[:space:]'`
+        echo $OW_ACTION_CODE
+        cd $(workspaces.openwhisk-workspace.path)/runtime/
+        cat <<EOF >> $(params.DOCKERFILE)
+          ENV __OW_RUNTIME_DEBUG "$(params.OW_RUNTIME_DEBUG)"
+          ENV __OW_RUNTIME_PLATFORM "$(params.OW_RUNTIME_PLATFORM)"
+          ENV __OW_ACTION_NAME "$(params.OW_ACTION_NAME)"
+          ENV __OW_ACTION_CODE "$OW_ACTION_CODE"
+          ENV __OW_ACTION_MAIN "$(params.OW_ACTION_MAIN)"
+          ENV __OW_ACTION_BINARY "$(params.OW_ACTION_BINARY)"
+          ENV __OW_HTTP_METHODS "$(params.OW_HTTP_METHODS)"
+          ENV __OW_ACTION_RAW "$(params.OW_ACTION_RAW)"
+        EOF
+        echo "Done updating Dockerfile"
+    - name: build-openwhisk-app-image
+      image: "gcr.io/kaniko-project/executor:latest"
+      command:
+        - /kaniko/executor
+      args:
+        - --dockerfile=$(workspaces.openwhisk-workspace.path)/runtime/$(params.DOCKERFILE)
+        - --destination=$(outputs.resources.app-image.url)
+        - --context=dir://$(workspaces.openwhisk-workspace.path)/runtime/

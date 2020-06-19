@@ -1,0 +1,33 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: create-jar-with-maven
+spec:
+  workspaces:
+    - name: openwhisk-workspace
+  params:
+    - name: JAR_NAME
+      default: "OWAutoInit"
+      description: "Jar name of the application source"
+    - name: MAVEN_BUILD_OUTPUT_PATH
+      default: "./"
+      description: "Maven build path where the jar file is created"
+  steps:
+    - name: maven-clean
+      image: maven:latest
+      command:
+        - mvn
+      args:
+        - -f
+        - $(workspaces.openwhisk-workspace.path)/application/
+        - clean
+    - name: maven-package
+      image: maven
+      command:
+        - mvn
+      args:
+        - -f
+        - $(workspaces.openwhisk-workspace.path)/application/
+        - package
+        - -DMAVEN_BUILD_OUTPUT_PATH=$(params.MAVEN_BUILD_OUTPUT_PATH)
+        - -DJAR_NAME=$(params.JAR_NAME)

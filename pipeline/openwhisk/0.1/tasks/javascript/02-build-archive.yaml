@@ -1,0 +1,42 @@
+# Task to build archive with an application source
+#
+# Inputs:
+#   * app-git: GitHub Repo with application source
+#   * OW_APP_NODE_VERSION: any specific Node version, e.g. "node:10.16", or "node:10.16-stretch", etc default is "node"
+#       Any supported Node tags are allowed from https://hub.docker.com/_/node/
+#   * OW_APP_PATH: path to the application source within GitHub repo
+#   * OW_ACTION_ARCHIVE_NAME: default is action.zip
+#
+# This task creates archive with everything from the application path
+#
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: task-build-archive
+spec:
+  workspaces:
+    - name: openwhisk-workspace
+  params:
+    - name: OW_APP_NODE_VERSION
+      default: "node"
+    - name: OW_APP_PATH
+      default: ""
+    - name: OW_ACTION_ARCHIVE_NAME
+      default: "action.zip"
+  steps:
+    - name: build-action-archive
+      image: $(params.OW_APP_NODE_VERSION)
+      script: |
+        #!/usr/bin/env bash
+        set -xe
+        echo $(params.OW_APP_PATH)
+        apt-get update && apt-get install zip
+        OW_APP_PATH=$(workspaces.openwhisk-workspace.path)/application/$(params.OW_APP_PATH)
+        cd $OW_APP_PATH
+        echo "Starting to create an archive under $OW_APP_PATH"
+        zip $(params.OW_ACTION_ARCHIVE_NAME) -r *
+        if [ $? = 0 ]; then
+          echo "Successfully built and created $(params.OW_ACTION_ARCHIVE_NAME) under $OW_APP_PATH"
+        else
+          echo "Failed to build and archive action source into $(params.OW_ACTION_ARCHIVE_NAME) under $OW_APP_PATH"
+        fi
