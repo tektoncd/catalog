@@ -5,12 +5,10 @@ This task syncs (deploys) an [Argo CD](https://argoproj.github.io/argo-cd/) appl
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/argocd/argocd.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/argocd/argocd.yaml
 ```
 
-## Inputs
-
-### Parameters
+## Parameters
 
 * **application-name:** Name of the application to sync
 
@@ -42,7 +40,7 @@ data:
   ARGOCD_PASSWORD: <password>
   ARGOCD_AUTH_TOKEN: <token>
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: argocd-pipeline

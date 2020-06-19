@@ -11,12 +11,10 @@ source code.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/s2i/s2i.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/s2i/s2i.yaml
 ```
 
-## Inputs
-
-### Parameters
+## Parameters
 
 * **BUILDER_IMAGE**: The location of the s2i builder image.
 * **PATH_CONTEXT**: Source path from where s2i command need to be run
@@ -24,15 +22,14 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/s2i/s
 * **TLSVERIFY**: Verify the TLS on the registry endpoint (for push/pull to a
   non-TLS registry) (_default:_ `true`)
 
-
-### Resources
+# Workspaces
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
 
-## Outputs
+## Resources
 
-### Resources
+### Outputs
 
 * **image**: An `image`-type `PipelineResource` specify the image that should
   be built.
@@ -67,7 +64,7 @@ This TaskRun runs the Task to fetch a Git repo, and build and push a
 container image using s2i and a nodejs builder image.
 
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: s2i-nodejs-taskrun
@@ -76,26 +73,21 @@ spec:
   serviceAccountName: pipeline
   taskRef:
     name: s2i
-  inputs:
-    params:
-	- name: BUILDER_IMAGE
-	  value: docker.io/centos/nodejs-8-centos7
-    resources:
-    - name: source
-      resourceSpec:
-        type: git
-        params:
-        - name: url
-          value: https://github.com/sclorg/nodejs-ex
-  outputs:
-    resources:
+  params:
+  - name: BUILDER_IMAGE
+    value: docker.io/centos/nodejs-8-centos7
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
+  resources:
+    outputs:
     - name: image
       resourceSpec:
         type: image
         params:
         - name: url
           value: gcr.io/my-repo/nodejs-s2i-ex
-
 ```
 
 Here is a non-exhaustive list of well maintained s2i builder image

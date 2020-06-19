@@ -2,28 +2,26 @@
 
 ## Terraform CLI Task
 
-[Terraform](https://www.terraform.io/)  is an open-source infrastructure as codesoftware tool created by [HashiCorp](https://en.wikipedia.org/wiki/HashiCorp "HashiCorp"). It enables users to define and provision a datacenter infrastructure using a high-level configuration language known as Hashicorp Configuration Language (HCL), or optionally JSON 
+[Terraform](https://www.terraform.io/)  is an open-source infrastructure as codesoftware tool created by [HashiCorp](https://en.wikipedia.org/wiki/HashiCorp "HashiCorp"). It enables users to define and provision a datacenter infrastructure using a high-level configuration language known as Hashicorp Configuration Language (HCL), or optionally JSON
 
 ## Install the Task
 
- 
-
 Install `terraform-cli` task for kubernetes 1.6+:
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/terraform-cli/terraform-cli-task-kube1.6.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/terraform-cli/terraform-cli-task-kube1.6.yaml
 ```
 This task currently works only on kubernetes 1.6+ support for a task that works on older versions of kubernetes will be added soon.
 
-## Inputs `terraform-cli`
 
-### Parameters
+## Parameters
 
 * **ARGS:** args to execute which are appended to `terraform` e.g. `init` (_default_: `--help`)
 * **terraform-secret:** the name of the secret containing the authentication information for the chosen provider (_default_: `terraform-creds`)
 
-### Resources
+## Workspaces
 
-* **source:** A `git`-type `PipelineResource` specifying the location of the terraform HCL or JSON files  
+* **source:** A `git`-type `PipelineResource` specifying the location of the terraform HCL or JSON files
+
 
 ## Terraform-Secret
 
@@ -70,18 +68,20 @@ oc policy add-role-to-user edit -z default -n <namespace>
 This is a pipeline example passing the required credentials, and a list of arguments to the ARGS array variable.
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: terraform-cli-example
 spec:
-  resources:
-  - name: terraform-file
-    type: git
+  workspaces:
+  - name: source
   tasks:
   - name: terraform
-    taskRef: 
+    taskRef:
       name: terraform-cli
+    workspaces:
+    - name: source
+      workspace: source
     params:
      - name: terraform-secret
        value: "terraform-secret"
@@ -89,9 +89,4 @@ spec:
        value:
          - apply
          - "-auto-approve"
-    resources:
-      inputs:
-        - name: source
-          resource: terraform-file
 ```
-

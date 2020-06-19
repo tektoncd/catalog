@@ -1,0 +1,81 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: create-gitlab-release
+spec:
+  params:
+    - name: TAG_NAME
+      description: Name of the tag.
+      type: string
+    - name: NAME
+      description: Name of the release.
+      type: string
+    - name: DESCRIPTION
+      type: string
+      description: Short description of the release.
+      default: ""
+    - name: RELEASE_REF
+      type: string
+      description: Required in the case of Gitlab, It can be a commit SHA, another tag name, or a branch name.
+      default: master
+    - name: PROJECT_ID
+      type: string
+      description: Project id for gitlab project.
+    - name: UPLOAD_ASSET_NAME
+      type: string
+      description: Name of the asset to be uploaded.
+      default: ""
+    - name: UPLOAD_ASSET_URL
+      type: string
+      description: Uplaod URL for the hosted asset.
+      default: ""
+    - name: GITLAB_TOKEN_SECRET
+      type: string
+      description: Name of the secret holding the gitlab-token.
+      default: gitlab-token
+    - name: GITLAB_TOKEN_SECRET_KEY
+      type: string
+      description: Name of the secret key holding the gitlab-token.
+      default: GITLAB_TOKEN
+  steps:
+    - name: create-release
+      image: registry.access.redhat.com/ubi8/ubi-minimal:latest
+      script: |
+        #!/usr/bin/env bash
+        
+        # Creating asset json if file is to be uploaded with gitlab release
+        #
+        assetJson=""
+        # Checking whether asset is provided to upload with release or not.
+        #
+        if [ "$(params.UPLOAD_ASSET_NAME)" != "" ] || [ "$(params.UPLOAD_ASSET_URL)" != "" ]; then
+          assetJson=',"assets": {"links": [{"name": "$(params.UPLOAD_ASSET_NAME)","url": "$(params.UPLOAD_ASSET_URL)"}]}'
+        fi
+
+        # Creating the api post data
+        #
+        generate_api_post_data()
+        {
+        cat <<EOF
+        {
+          "name": "$(params.NAME)",
+          "tag_name": "$(params.TAG_NAME)",
+          "description": "$(params.DESCRIPTION)",
+          "ref": "$(params.RELEASE_REF)"
+          $assetJson
+        }
+        EOF
+        }
+
+        echo "Creating release $(params.TAG_NAME)"
+
+        curl --header 'Content-Type: application/json' --header "PRIVATE-TOKEN:$TOKEN" \
+            --data "$(generate_api_post_data)" \
+            --request POST https://gitlab.com/api/v4/projects/$(params.PROJECT_ID)/releases
+         
+      env:
+        - name: TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: $(params.GITLAB_TOKEN_SECRET)
+              key: $(params.GITLAB_TOKEN_SECRET_KEY)

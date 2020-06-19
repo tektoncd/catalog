@@ -1,24 +1,22 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: jib-maven
 spec:
-  inputs:
-    params:
-    - name: DIRECTORY
-      description: The directory containing the app, relative to the source repository root
-      default: .
-    - name: CACHE
-      description: The name of the volume for caching Maven artifacts and base image layers
-      default: empty-dir-volume
-    - name: INSECUREREGISTRY
-      description: Whether to allow insecure registry
-      default: "false"
-    resources:
-    - name: source
-      type: git
-  outputs:
-    resources:
+  params:
+  - name: DIRECTORY
+    description: The directory containing the app, relative to the source repository root
+    default: .
+  - name: CACHE
+    description: The name of the volume for caching Maven artifacts and base image layers
+    default: empty-dir-volume
+  - name: INSECUREREGISTRY
+    description: Whether to allow insecure registry
+    default: "false"
+  workspaces:
+  - name: source
+  resources:
+    outputs:
     - name: image
       type: image
   steps:
@@ -30,14 +28,14 @@ spec:
     - compile
     - com.google.cloud.tools:jib-maven-plugin:build
     - -Duser.home=/tekton/home
-    - -Djib.allowInsecureRegistries=$(inputs.params.INSECUREREGISTRY)
-    - -Djib.to.image=$(outputs.resources.image.url)
-    workingDir: /workspace/source/$(inputs.params.DIRECTORY)
+    - -Djib.allowInsecureRegistries=$(params.INSECUREREGISTRY)
+    - -Djib.to.image=$(resources.outputs.image.url)
+    workingDir: $(workspaces.source.path)/$(params.DIRECTORY)
     volumeMounts:
-    - name: $(inputs.params.CACHE)
+    - name: $(params.CACHE)
       mountPath: /tekton/home/.m2
       subPath: m2-cache
-    - name: $(inputs.params.CACHE)
+    - name: $(params.CACHE)
       mountPath: /tekton/home/.cache
       subPath: jib-cache
 

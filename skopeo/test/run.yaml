@@ -1,0 +1,15 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: skopeo-run
+spec:
+  params:
+    - name: srcImageURL
+      value: docker://quay.io/temp/kubeconfigwriter:v1
+    - name: destImageURL
+      value: localhost:5000/kube:latest
+  taskRef:
+    name: skopeo-copy
+  workspaces:
+  - name: images-url
+    emptyDir: {}

@@ -15,18 +15,21 @@ The Cloud Native Buildpacks website describes v3 buildpacks as:
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/buildpacks/buildpacks-v3.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/buildpacks/buildpacks-v3.yaml
 ```
 
-> **NOTE:** This task is currently only compatible with Tekton **v0.6.0** and above, and CNB Platform API 0.3 (lifecycle v0.7.0 and above). For previous Platform API versions, [see below](#previous-platform-api-versions).
+> **NOTE:** This task is currently only compatible with Tekton **v0.11.0** and above, and CNB Platform API 0.3 (lifecycle v0.7.0 and above). For previous Platform API versions, [see below](#previous-platform-api-versions).
 
-## Inputs
-
-### Parameters
+## Parameters
 
 * **`BUILDER_IMAGE`**: The image on which builds will run. (must include v3 lifecycle and compatible buildpacks; _required_)
 
-* **`CACHE`**: The name of the persistent app cache volume. (_default:_ an empty directory -- effectively no cache)
+* **`CACHE`**: The name of the persistent app cache volume. (_default:_ an empty
+  directory -- effectively no cache)
+
+* **`PLATFORM_DIR`**: A directory containing platform provided configuration, such as environment variables.
+  Files of the format `/platform/env/MY_VAR` with content `my-value` will be translated by the lifecycle into
+  environment variables provided to buildpacks. For more information, see the [buildpacks spec](https://github.com/buildpacks/spec/blob/master/buildpack.md#provided-by-the-platform). (_default:_ an empty directory)
 
 * **`USER_ID`**: The user ID of the builder image user, as a string value. (_default:_ `"1000"`)
 
@@ -36,59 +39,60 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/build
 
 * **`SOURCE_SUBPATH`**: A subpath within the `source` input where the source to build is located. (_default:_ `""`)
 
-### Resources
-
-* **`source`**: A `git`-type `PipelineResource` specifying the location of the source to build. See `SOURCE_SUBPATH` above if source is located within a subpath of this input.
-
-## Outputs
-
-### Resources
+### Outputs
 
 * **`image`**: An `image`-type `PipelineResource` specifying the image that should
   be built.
 
+## Workspaces
+
+The `source` workspace holds the source to build. See `SOURCE_SUBPATH` above if source is located within a subpath of this input.
+
 ## Usage
 
-This `TaskRun` will use the `buildpacks-v3` task to fetch source code from a Git repo, build the source code, then publish a container image.
+This `TaskRun` will use the `buildpacks-v3` task to build the source code, then publish a container image.
 
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: example-run
 spec:
   taskRef:
     name: buildpacks-v3
+  podTemplate:
+    volumes:
 # Uncomment the lines below to use an existing cache
-#  podTemplate:
-#    volumes:
 #    - name: my-cache
 #      persistentVolumeClaim:
-#        claimName: task-pv-claim
-  inputs:
-    resources:
-    - name: source
-      resourceSpec:
-        type: git
-        params:
-        - name: url
-          value: <your git repo, e.g. "https://github.com/buildpacks/samples">
-    params:
-    - name: SOURCE_SUBPATH
-      value: <optional subpath within your source repo, e.g. "apps/java-maven">
-    - name: BUILDER_IMAGE
-      value: <your builder image tag, see below for suggestions, e.g. "builder-repo/builder-image:builder-tag">
+#        claimName: my-cache-pvc
+# Uncomment the lines below to provide a platform directory
+#    - name: my-platform-dir
+#      persistentVolumeClaim:
+#        claimName: my-platform-dir-pvc
+  params:
+  - name: SOURCE_SUBPATH
+    value: <optional subpath within your source repo, e.g. "apps/java-maven">
+  - name: BUILDER_IMAGE
+    value: <your builder image tag, see below for suggestions, e.g. "builder-repo/builder-image:builder-tag">
 # Uncomment the lines below to use an existing cache
-#    - name: CACHE
-#      value: my-cache
-  outputs:
-    resources:
+#  - name: CACHE
+#    value: my-cache
+# Uncomment the lines below to provide a platform directory
+#  - name: PLATFORM_DIR
+#    value: my-platform-dir
+  resources:
+    outputs:
     - name: image
       resourceSpec:
         type: image
         params:
         - name: url
           value: <your output image tag, e.g. "gcr.io/app-repo/app-image:app-tag">
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source-pvc
 ```
 
 ### Example builders

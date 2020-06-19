@@ -72,10 +72,18 @@ function show_failure() {
     local testname=$1 tns=$2
 
     echo "FAILED: ${testname} task has failed to comeback properly" ;
-    echo "--- TR Dump"
-    kubectl get -n ${tns} tr -o yaml
+    echo "--- Task Dump"
+    kubectl get -n ${tns} task -o yaml
+    echo "--- Pipeline Dump"
+    kubectl get -n ${tns} pipeline -o yaml
+    echo "--- PipelineRun Dump"
+    kubectl get -n ${tns} pipelinerun -o yaml
+    echo "--- TaskRun Dump"
+    kubectl get -n ${tns} taskrun -o yaml
     echo "--- Container Logs"
-    kubectl get pod -o name -n ${tns}|xargs kubectl logs --all-containers -n ${tns}
+    for pod in $(kubectl get pod -o name -n ${tns}); do
+        kubectl logs --all-containers -n ${tns} ${pod}
+    done
     exit 1
 
 }
@@ -89,6 +97,9 @@ function test_task_creation() {
         for ignore in ${TEST_TASKRUN_IGNORES};do
             [[ ${ignore} == ${testname} ]] && skipit=True
         done
+
+        ls ${testname}/*.yaml 2>/dev/null >/dev/null || skipit=True
+
         [[ -n ${skipit} ]] && continue
 
         kubectl create namespace ${tns}
@@ -113,14 +124,38 @@ function test_task_creation() {
         while true;do
             [[ ${cnt} == ${maxloop} ]] && show_failure ${testname} ${tns}
 
-            status=$(kubectl get -n ${tns} tr --output=jsonpath='{.items[*].status.conditions[*].status}')
-            reason=$(kubectl get -n ${tns} tr --output=jsonpath='{.items[*].status.conditions[*].reason}')
-            [[ ${status} == *ERROR || ${reason} == *Failed || ${reason} == CouldntGetTask ]] && show_failure ${testname} ${tns}
-            [[ ${status} == True ]] && {
-                echo -n "SUCCESS: ${testname} taskrun has successfully executed: " ;
-                kubectl get pod -o name -n ${tns}|xargs kubectl logs --all-containers -n ${tns}|tail -1
+            all_status=$(kubectl get -n ${tns} pipelinerun --output=jsonpath='{.items[*].status.conditions[*].status}')
+            reason=$(kubectl get -n ${tns} pipelinerun --output=jsonpath='{.items[*].status.conditions[*].reason}')
+
+            if [[ -z ${all_status} && -z ${reason} ]];then
+                all_status=$(kubectl get -n ${tns} taskrun --output=jsonpath='{.items[*].status.conditions[*].status}')
+                reason=$(kubectl get -n ${tns} taskrun --output=jsonpath='{.items[*].status.conditions[*].reason}')
+            fi
+
+            if [[ -z ${all_status} || -z ${reason} ]];then
+                echo -n "Could not find a created taskrun or pipelinerun in ${tns}"
+            fi
+
+            breakit=
+            for status in ${all_status};do
+
+                [[ ${status} == *ERROR || ${reason} == *Fail* || ${reason} == Couldnt* ]] && show_failure ${testname} ${tns}
+
+                if [[ ${status} == True ]];then
+                    breakit=True
+                else
+                    breakit=
+                fi
+            done
+
+            if [[ ${breakit} == True ]];then
+                echo -n "SUCCESS: ${testname} pipelinerun has successfully executed: " ;
+                for pod in $(kubectl get pod -o name -n ${tns}); do
+                    kubectl logs --all-containers -n ${tns} ${pod}
+                done
                 break
-            }
+            fi
+
             sleep 10
             cnt=$((cnt+1))
         done

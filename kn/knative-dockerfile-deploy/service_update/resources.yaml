@@ -1,9 +1,0 @@
-apiVersion: tekton.dev/v1alpha1
-kind: PipelineResource
-metadata:
-  name: kn-service-update-image
-spec:
-  type: image
-  params:
-    - name: url
-      value: "gcr.io/knative-samples/helloworld-go"

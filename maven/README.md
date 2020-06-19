@@ -5,12 +5,10 @@ This Task can be used to run a Maven build.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/maven/maven.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/maven/maven.yaml
 ```
 
-## Inputs
-
-### Parameters
+## Parameters
 
 - **GOALS**: Maven `goals` to be executed
 - **MAVEN_MIRROR_URL**: Maven mirror url (to be inserted into ~/.m2/settings.xml)   
@@ -21,80 +19,121 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/maven
 - **PROXY_PORT**: Port number on which the proxy port listens (to be inserted into ~/.m2/settings.xml)
 - **PROXY_PROTOCOL**: http or https protocol whichever is applicable (to be inserted into ~/.m2/settings.xml)
 
-### Resources
+## Workspaces
 
-* **source**: `git`-type `PipelineResource` specifying the location of the source to build. 
+* **source**: `PersistentVolumeClaim`-type so that volume can be shared among `git-clone` and `maven` task
+
+```
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: maven-source-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+```
 
 ## Usage
 
-This TaskRun runs the Task to fetch a Git repo, and runs a Maven build
-
-```
-apiVersion: tekton.dev/v1alpha1
-kind: PipelineResource
-metadata:
-  name: maven-resource-petclinic
-spec:
-  type: git
-  params:
-    - name: revision
-      value: master
-    - name: url
-      value: https://github.com/spring-projects/spring-petclinic
-```
+This Pipeline and PipelineRun runs a Maven build
 
 ### With Defaults
 
 ```
-apiVersion: tekton.dev/v1alpha1
-kind: TaskRun
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
 metadata:
-  name: maven-run
+  name: maven-test-pipeline
 spec:
-  inputs:
-    resources:
-    - name: source
-      resourceRef:
-        name: maven-resource-petclinic
-  taskRef:
-    name: maven
+  workspaces:
+    - name: shared-workspace
+    - name: maven-settings
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: https://github.com/spring-projects/spring-petclinic
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+    - name: maven-run
+      taskRef:
+        name: maven
+      runAfter:
+        - fetch-repository
+      workspaces:
+        - name: maven-settings
+          workspace: maven-settings
+        - name: source
+          workspace: shared-workspace
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: maven-test-pipeline-run
+spec:
+  pipelineRef:
+    name: maven-test-pipeline
   workspaces:
     - name: maven-settings
       emptyDir: {}
+    - name: shared-workspace
+      persistentvolumeclaim:
+        claimName: maven-source-pvc
+
 ```
 ---
 
-### With Custom Params
+### With Custom Maven Params
 
 ```
-apiVersion: tekton.dev/v1alpha1
-kind: TaskRun
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
 metadata:
-  name: maven-run
+  name: maven-test-pipeline
 spec:
-  inputs:
-    resources:
-    - name: source
-      resourceRef:
-        name: maven-resource-petclinic
-    params:
-    - name: MAVEN_MIRROR_URL
-      value: "http://localhost:8080/bucketrepo/"
-    - name: PROXY_HOST
-      value: "proxy.somewhere.com"
-    - name: PROXY_PORT
-      value: "8080"
-    - name: PROXY_USER
-      value: "yourusername"
-    - name: PROXY_PASSWORD
-      value: "yourpassword"
-    - name: PROXY_NON_PROXY_HOSTS
-      value: "www.google.com|*.example.com"
-    - name: PROXY_PROTOCOL
-      value: "https"
-  taskRef:
-    name: maven
+  workspaces:
+    - name: shared-workspace
+    - name: maven-settings
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: https://github.com/spring-projects/spring-petclinic
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+    - name: maven-run
+      taskRef:
+        name: maven
+      params:
+        - name: MAVEN_MIRROR_URL
+          value: http://repo1.maven.org/maven2
+      runAfter:
+        - fetch-repository
+      workspaces:
+        - name: maven-settings
+          workspace: maven-settings
+        - name: source
+          workspace: shared-workspace
 ```
+`PipelineRun` same as above in case of default values
+
 ---
 ### With Custom /.m2/settings.yaml
 
@@ -129,20 +168,55 @@ oc create configmap custom-maven-settings --from-file=settings.xml
 
 2. create TaskRun
 ```
-apiVersion: tekton.dev/v1alpha1
-kind: TaskRun
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
 metadata:
-  name: maven-run
+  name: maven-test-pipeline
 spec:
-  inputs:
-    resources:
-      - name: source
-        resourceRef:
-          name: maven-resource-petclinic
-    taskRef:
-      name: maven
-    workspaces:
+  workspaces:
+    - name: shared-workspace
+    - name: maven-settings
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: https://github.com/spring-projects/spring-petclinic
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+    - name: maven-run
+      taskRef:
+        name: maven
+      params:
+        - name: MAVEN_MIRROR_URL
+          value: http://repo1.maven.org/maven2
+      runAfter:
+        - fetch-repository
+      workspaces:
+        - name: maven-settings
+          workspace: maven-settings
+        - name: source
+          workspace: shared-workspace
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: maven-test-pipeline-run
+spec:
+  pipelineRef:
+    name: maven-test-pipeline
+  workspaces:
     - name: maven-settings
       configMap:
         name: custom-maven-settings
+    - name: shared-workspace
+      persistentvolumeclaim:
+        claimName: maven-source-pvc
+
 ```

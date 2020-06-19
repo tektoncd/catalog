@@ -25,12 +25,10 @@ informations about the CI statuses or a direct link to the full log.
 ### Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/github/set_status.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/github/set_status.yaml
 ```
 
-### Inputs
-
-#### Parameters
+### Parameters
 
 * **REPO_FULL_NAME:**: The GitHub repository full name, _e.g:_ `tektoncd/catalog`
 * **GITHUB_HOST_URL:**: The GitHub host domain _default:_ `api.github.com`
@@ -53,7 +51,7 @@ This TaskRun sets a commit on GitHub to `pending` getting tested by the CI.
 
 ```yaml
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   labels:
@@ -63,18 +61,17 @@ spec:
   taskRef:
     kind: Task
     name: github-set-status
-  inputs:
-    params:
-      - name: REPO_FULL_NAME
-        value: tektoncd/catalog
-      - name: SHA
-        value: bd93869b489258cef567ccf85e7ef6bc0d6949ea
-      - name: DESCRIPTION
-        value: "Build has started"
-      - name: STATE
-        value: pending
-      - name: TARGET_URL
-        value: https://tekon/dashboard/taskrun/log
+  params:
+    - name: REPO_FULL_NAME
+      value: tektoncd/catalog
+     - name: SHA
+      value: bd93869b489258cef567ccf85e7ef6bc0d6949ea
+    - name: DESCRIPTION
+      value: "Build has started"
+    - name: STATE
+      value: pending
+    - name: TARGET_URL
+      value: https://tekon/dashboard/taskrun/log
 ```
 
 ## Add a comment to an issue or a pull request
@@ -85,12 +82,10 @@ issue.
 ### Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/github/add_comment.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/github/add_comment.yaml
 ```
 
-### Inputs
-
-#### Parameters
+### Parameters
 
 * **GITHUB_HOST_URL:**: The GitHub host domain (_default:_ `api.github.com`)
 * **API_PATH_PREFIX:**: The GitHub Enterprise has a prefix for the API path. _e.g:_ `/api/v3`
@@ -104,7 +99,7 @@ This TaskRun add a comment to an issue.
 
 ```yaml
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   labels:
@@ -114,20 +109,19 @@ spec:
   taskRef:
     kind: Task
     name: github-add-comment
-  inputs:
-    params:
-      - name: REQUEST_URL
-        value: https://github.com/chmouel/scratchpad/pull/46
-      - name: COMMENT
-        value: |
-            The cat went here and there
-            And the moon spun round like a top,
-            And the nearest kin of the moon,
-            The creeping cat, looked up.
-            Black Minnaloushe stared at the moon,
-            For, wander and wail as he would,
-            The pure cold light in the sky
-            Troubled his animal blood.
+  params:
+    - name: REQUEST_URL
+      value: https://github.com/chmouel/scratchpad/pull/46
+    - name: COMMENT
+      value: |
+          The cat went here and there
+          And the moon spun round like a top,
+          And the nearest kin of the moon,
+          The creeping cat, looked up.
+          Black Minnaloushe stared at the moon,
+          For, wander and wail as he would,
+          The pure cold light in the sky
+          Troubled his animal blood.
 ```
 
 ## Close an issue or a pull request
@@ -138,12 +132,10 @@ issue.
 ### Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/github/close_issue.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/github/close_issue.yaml
 ```
 
-### Inputs
-
-#### Parameters
+### Parameters
 
 * **GITHUB_HOST_URL:**: The GitHub host domain (_default:_ `api.github.com`)
 * **API_PATH_PREFIX:**: The GitHub Enterprise has a prefix for the API path. _e.g:_ `/api/v3`
@@ -156,7 +148,7 @@ This TaskRun close an issue on a task.
 
 ```yaml
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   labels:
@@ -166,8 +158,7 @@ spec:
   taskRef:
     kind: Task
     name: github-close-issue
-  inputs:
-    params:
-      - name: REQUEST_URL
-        value: https://github.com/chmouel/scratchpad/pull/46
+  params:
+    - name: REQUEST_URL
+      value: https://github.com/chmouel/scratchpad/pull/46
 ```

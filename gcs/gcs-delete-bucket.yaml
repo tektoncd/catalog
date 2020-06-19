@@ -1,0 +1,37 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: gcs-delete-bucket
+spec:
+  workspaces:
+  - name: credentials
+    description: A secret with a service account key to use as GOOGLE_APPLICATION_CREDENTIALS.
+  params:
+  - name: bucketName
+    description: |
+      The name (including "gs://") of the bucket to delete.
+    type: string
+  - name: serviceAccountPath
+    description: |
+      The path inside the credentials workspace to the GOOGLE_APPLICATION_CREDENTIALS key file.
+    type: string
+    default: service_account.json
+  steps:
+  - name: delete-bucket
+    image: google/cloud-sdk
+    script: |
+      #!/usr/bin/env bash
+      set -xe
+
+      CRED_PATH="$(workspaces.credentials.path)/$(params.serviceAccountPath)"
+
+      if [[ -f "$CRED_PATH" ]]; then
+        GOOGLE_APPLICATION_CREDENTIALS="$CRED_PATH"
+      fi
+
+      if [[ "${GOOGLE_APPLICATION_CREDENTIALS}" != "" ]]; then
+        echo GOOGLE_APPLICATION_CREDENTIALS is set, activating Service Account...
+        gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
+      fi
+
+      gsutil rm -r "$(params.bucketName)"

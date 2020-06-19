@@ -1,37 +1,38 @@
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: buildpacks-v3
 spec:
-  inputs:
-    params:
-      - name: BUILDER_IMAGE
-        description: The image on which builds will run (must include v3 lifecycle and compatible buildpacks).
-      - name: CACHE
-        description: The name of the persistent app cache volume.
-        default: empty-dir
-      - name: USER_ID
-        description: The user ID of the builder image user.
-        default: "1000"
-      - name: GROUP_ID
-        description: The group ID of the builder image user.
-        default: "1000"
-      - name: PROCESS_TYPE
-        description: The default process type to set on the image.
-        default: "web"
-      - name: SOURCE_SUBPATH
-        description: A subpath within the `source` input where the source to build is located.
-        default: ""
+  params:
+    - name: BUILDER_IMAGE
+      description: The image on which builds will run (must include v3 lifecycle and compatible buildpacks).
+    - name: CACHE
+      description: The name of the persistent app cache volume.
+      default: empty-dir
+    - name: PLATFORM_DIR
+      description: The name of the platform directory.
+      default: empty-dir
+    - name: USER_ID
+      description: The user ID of the builder image user.
+      default: "1000"
+    - name: GROUP_ID
+      description: The group ID of the builder image user.
+      default: "1000"
+    - name: PROCESS_TYPE
+      description: The default process type to set on the image.
+      default: "web"
+    - name: SOURCE_SUBPATH
+      description: A subpath within the `source` input where the source to build is located.
+      default: ""
 
-    resources:
-      - name: source
-        type: git
-
-  outputs:
-    resources:
+  resources:
+    outputs:
       - name: image
         type: image
+
+  workspaces:
+    - name: source
 
   stepTemplate:
     env:
@@ -46,47 +47,49 @@ spec:
       args:
         - "-c"
         - >
-          chown -R "$(inputs.params.USER_ID):$(inputs.params.GROUP_ID)" "/tekton/home" &&
-          chown -R "$(inputs.params.USER_ID):$(inputs.params.GROUP_ID)" "/layers" &&
-          chown -R "$(inputs.params.USER_ID):$(inputs.params.GROUP_ID)" "/cache" &&
-          chown -R "$(inputs.params.USER_ID):$(inputs.params.GROUP_ID)" "/workspace/source"
+          chown -R "$(params.USER_ID):$(params.GROUP_ID)" "/tekton/home" &&
+          chown -R "$(params.USER_ID):$(params.GROUP_ID)" "/layers" &&
+          chown -R "$(params.USER_ID):$(params.GROUP_ID)" "/cache" &&
+          chown -R "$(params.USER_ID):$(params.GROUP_ID)" "$(workspaces.source.path)"
       volumeMounts:
         - name: layers-dir
           mountPath: /layers
-        - name: $(inputs.params.CACHE)
+        - name: $(params.CACHE)
           mountPath: /cache
       securityContext:
         privileged: true
 
     - name: detect
-      image: $(inputs.params.BUILDER_IMAGE)
+      image: $(params.BUILDER_IMAGE)
       imagePullPolicy: Always
       command: ["/cnb/lifecycle/detector"]
       args:
-        - "-app=/workspace/source/$(inputs.params.SOURCE_SUBPATH)"
+        - "-app=$(workspaces.source.path)/$(params.SOURCE_SUBPATH)"
         - "-group=/layers/group.toml"
         - "-plan=/layers/plan.toml"
       volumeMounts:
         - name: layers-dir
           mountPath: /layers
+        - name: $(params.PLATFORM_DIR)
+          mountPath: /platform
 
     - name: analyze
-      image: $(inputs.params.BUILDER_IMAGE)
+      image: $(params.BUILDER_IMAGE)
       imagePullPolicy: Always
       command: ["/cnb/lifecycle/analyzer"]
       args:
         - "-layers=/layers"
         - "-group=/layers/group.toml"
         - "-cache-dir=/cache"
-        - "$(outputs.resources.image.url)"
+        - "$(resources.outputs.image.url)"
       volumeMounts:
-        - name: $(inputs.params.CACHE)
+        - name: $(params.CACHE)
           mountPath: /cache
         - name: layers-dir
           mountPath: /layers
 
     - name: restore
-      image: $(inputs.params.BUILDER_IMAGE)
+      image: $(params.BUILDER_IMAGE)
       imagePullPolicy: Always
       command: ["/cnb/lifecycle/restorer"]
       args:
@@ -94,39 +97,41 @@ spec:
         - "-layers=/layers"
         - "-cache-dir=/cache"
       volumeMounts:
-        - name: $(inputs.params.CACHE)
+        - name: $(params.CACHE)
           mountPath: /cache
         - name: layers-dir
           mountPath: /layers
 
     - name: build
-      image: $(inputs.params.BUILDER_IMAGE)
+      image: $(params.BUILDER_IMAGE)
       imagePullPolicy: Always
       command: ["/cnb/lifecycle/builder"]
       args:
-        - "-app=/workspace/source/$(inputs.params.SOURCE_SUBPATH)"
+        - "-app=$(workspaces.source.path)/$(params.SOURCE_SUBPATH)"
         - "-layers=/layers"
         - "-group=/layers/group.toml"
         - "-plan=/layers/plan.toml"
       volumeMounts:
         - name: layers-dir
           mountPath: /layers
+        - name: $(params.PLATFORM_DIR)
+          mountPath: /platform
 
     - name: export
-      image: $(inputs.params.BUILDER_IMAGE)
+      image: $(params.BUILDER_IMAGE)
       imagePullPolicy: Always
       command: ["/cnb/lifecycle/exporter"]
       args:
-        - "-app=/workspace/source/$(inputs.params.SOURCE_SUBPATH)"
+        - "-app=$(workspaces.source.path)/$(params.SOURCE_SUBPATH)"
         - "-layers=/layers"
         - "-group=/layers/group.toml"
         - "-cache-dir=/cache"
-        - "-process-type=$(inputs.params.PROCESS_TYPE)"
-        - "$(outputs.resources.image.url)"
+        - "-process-type=$(params.PROCESS_TYPE)"
+        - "$(resources.outputs.image.url)"
       volumeMounts:
         - name: layers-dir
           mountPath: /layers
-        - name: $(inputs.params.CACHE)
+        - name: $(params.CACHE)
           mountPath: /cache
 
   volumes:

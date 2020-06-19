@@ -1,11 +1,8 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: kn-service-traffic-splitting
 spec:
-  resources:
-  - name: image
-    type: image
   params:
   - name: ARGS
     type: array
@@ -16,10 +13,6 @@ spec:
   - name: kn-service-traffic-splitting
     taskRef:
       name: kn
-    resources:
-      inputs:
-      - name: image
-        resource: image
     params:
     - name: kn-image
       value: "gcr.io/knative-nightly/knative.dev/client/cmd/kn"

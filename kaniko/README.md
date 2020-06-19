@@ -15,30 +15,26 @@ makes it a perfect tool to be part of Tekton.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/kaniko/kaniko.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kaniko/kaniko.yaml
 ```
 
-## Inputs
+## Parameters
 
-### Parameters
-
+* **IMAGE**: The name (reference) of the image to build.
 * **DOCKERFILE**: The path to the `Dockerfile` to execute (_default:_
   `./Dockerfile`)
 
 * **CONTEXT**: The build context used by Kaniko (_default:_
   `./`)
 
-### Resources
+## Workspaces
 
 * **source**: A `git`-type `PipelineResource` specifying the location of the
   source to build.
 
-## Outputs
+## Results
 
-### Resources
-
-* **image**: An `image`-type `PipelineResource` specifying the image that should
-  be built.
+* **IMAGE-DIGEST**: The digest of the image just built.
 
 ## ServiceAccount
 
@@ -57,27 +53,15 @@ This TaskRun runs the Task to fetch a Git repo, and build and push a container
 image using Kaniko
 
 ```
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: example-run
 spec:
   taskRef:
     name: kaniko
-  inputs:
-    resources:
-    - name: source
-      resourceSpec:
-        type: git
-        params:
-        - name: url
-          value: https://github.com/my-user/my-repo
-  outputs:
-    resources:
-    - name: image
-      resourceSpec:
-        type: image
-        params:
-        - name: url
-          value: gcr.io/my-repo/my-image
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
 ```

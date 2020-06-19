@@ -1,21 +1,47 @@
 ---
-apiVersion: tekton.dev/v1alpha1
-kind: TaskRun
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
 metadata:
-  name: buildah-run
+  name: buildah-test-pipeline
 spec:
-  taskRef:
-    name: buildah
-  outputs:
-    resources:
-      - name: image
-        resourceRef:
-          name: image
-  inputs:
-    resources:
-      - name: source
-        resourceRef:
-          name: nocode
+  workspaces:
+  - name: shared-workspace
+  tasks:
+  - name: fetch-repository
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: shared-workspace
     params:
-      - name: TLSVERIFY
-        value: "false"
+    - name: url
+      value: https://github.com/kelseyhightower/nocode
+    - name: subdirectory
+      value: ""
+    - name: deleteExisting
+      value: "true"
+  - name: buildah
+    taskRef:
+      name: buildah
+    runAfter:
+    - fetch-repository
+    workspaces:
+    - name: source
+      workspace: shared-workspace
+    params:
+    - name: IMAGE
+      value: localhost:5000/nocode
+    - name: TLSVERIFY
+      value: "false"
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: buildah-test-pipeline-run
+spec:
+  pipelineRef:
+    name: buildah-test-pipeline
+  workspaces:
+  - name: shared-workspace
+    persistentvolumeclaim:
+      claimName: buildah-source-pvc
