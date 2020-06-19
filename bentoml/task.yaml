@@ -20,7 +20,7 @@ spec:
     args: ["$(inputs.params.ARGS)"]
     env:
       - name: "BENTOML__YATAI_SERVICE__URL"
-        value: YATAISERVICE
+        value: "$(inputs.params.YATAISERVICE)"
   workspaces:
   - name: bentoml
     description: The folder where bentoml will write state to
