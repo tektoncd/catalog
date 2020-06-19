@@ -1,0 +1,14 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: bentoml-list-run
+spec:
+  params:
+    - name: ARGS
+      value: ["list"]
+  taskRef:
+    name: bentoml
+  workspaces:
+  - name: bentoml
+    emptyDir: {}
