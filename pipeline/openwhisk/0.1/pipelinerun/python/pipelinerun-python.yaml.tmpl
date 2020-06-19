@@ -1,0 +1,38 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: build-python-app-image
+spec:
+  serviceAccountName: openwhisk-app-builder
+  pipelineRef:
+    name: build-openwhisk-app
+  workspaces:
+    - name: openwhisk-workspace
+      persistentVolumeClaim:
+        claimName: openwhisk-workspace
+  params:
+    - name: OW_APP_PATH
+      value: "packages/helloMorse/"
+    - name: DOCKERFILE
+      value: "core/python3Action/Dockerfile"
+    - name: OW_ACTION_NAME
+      value: "openwhisk-morse-hello-app"
+  resources:
+    - name: app-git
+      resourceSpec:
+        type: git
+        params:
+          - name: url
+            value: https://github.com/apache/openwhisk-test.git
+    - name: runtime-git
+      resourceSpec:
+        type: git
+        params:
+          - name: url
+            value: https://github.com/apache/openwhisk-runtime-python.git
+    - name: app-image
+      resourceSpec:
+        type: image
+        params:
+          - name: url
+            value: docker.io/${DOCKER_USERNAME}/openwhisk-morse-hello-app
