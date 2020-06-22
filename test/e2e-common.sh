@@ -136,16 +136,14 @@ function test_task_creation() {
                 echo -n "Could not find a created taskrun or pipelinerun in ${tns}"
             fi
 
-            breakit=
+            breakit=True
             for status in ${all_status};do
 
                 [[ ${status} == *ERROR || ${reason} == *Fail* || ${reason} == Couldnt* ]] && show_failure ${testname} ${tns}
 
-                if [[ ${status} == True ]];then
-                    breakit=True
-                else
+                if [[ ${status} != True ]];then
                     breakit=
-                fi
+                fi  
             done
 
             if [[ ${breakit} == True ]];then
