@@ -72,14 +72,22 @@ function install_pipeline_crd() {
 function test_yaml_can_install() {
     # Validate that all the Task CRDs in this repo are valid by creating them in a NS.
     readonly ns="task-ns"
+    all_tasks="$*"
     kubectl create ns "${ns}" || true
-    for runtest in $(find ${REPO_ROOT_DIR}/task -maxdepth 3 -name '*.yaml'); do
+    local runtest
+    for runtest in ${all_tasks}; do
+        # remove task/ from beginning
+        local runtestdir=${runtest#*/}
+        # remove /0.1/tests from end
+        local testname=${runtestdir%%/*}
+        runtest=${runtest//tests}
+        runtest="${runtest}${testname}.yaml"
         skipit=
         for ignore in ${TEST_YAML_IGNORES};do
-            [[ ${ignore} == $(basename $(echo ${runtest%.yaml})) ]] && skipit=True
+            [[ ${ignore} == "${testname}" ]] && skipit=True
         done
         [[ -n ${skipit} ]] && break
-        echo "Checking ${runtest}"
+        echo "Checking ${testname}"
         kubectl -n ${ns} apply -f <(sed "s/namespace:.*/namespace: task-ns/" "${runtest}")
     done
 }
@@ -104,6 +112,7 @@ function show_failure() {
 
 }
 function test_task_creation() {
+    local runtest
     for runtest in "${@}";do
         # remove task/ from beginning
         local runtestdir=${runtest#*/}

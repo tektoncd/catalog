@@ -89,6 +89,11 @@ The way the functional tests works is that if you have a directory called
 `tests/` inside the task, it would start creating a random `Namespace`, apply
 the task and then every yaml files that you have in that `tests/` directory.
 
+Note that the test runner for the integration tests will only test the tasks
+that has been added or modified in the submitted PR and will not run any other
+tests that hasn't been changed unless the environment variable
+`TEST_RUN_ALL_TESTS` has been set.
+
 Usually in these other yaml files you would have a yaml file for the
 test resources (`PipelineResource`) and a yaml files to run the tasks
 (`TaskRun or PipelineRun`).
