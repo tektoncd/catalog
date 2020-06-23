@@ -82,7 +82,7 @@ function show_failure() {
     kubectl get -n ${tns} taskrun -o yaml
     echo "--- Container Logs"
     for pod in $(kubectl get pod -o name -n ${tns}); do
-        kubectl logs --all-containers -n ${tns} ${pod}
+        kubectl logs --all-containers -n ${tns} ${pod} || true
     done
     exit 1
 
@@ -143,14 +143,11 @@ function test_task_creation() {
 
                 if [[ ${status} != True ]];then
                     breakit=
-                fi  
+                fi
             done
 
             if [[ ${breakit} == True ]];then
-                echo -n "SUCCESS: ${testname} pipelinerun has successfully executed: " ;
-                for pod in $(kubectl get pod -o name -n ${tns}); do
-                    kubectl logs --all-containers -n ${tns} ${pod}
-                done
+                echo -n "SUCCESS: ${testname} pipelinerun has successfully executed" ;
                 break
             fi
 
