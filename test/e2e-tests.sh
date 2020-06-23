@@ -19,6 +19,7 @@ set -x
 export RELEASE_YAML=https://github.com/tektoncd/pipeline/releases/download/v0.17.1/release.yaml
 
 source $(dirname $0)/../vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
+source $(dirname $0)/../vendor/github.com/tektoncd/plumbing/scripts/presubmit-tests.sh
 source $(dirname $0)/e2e-common.sh
 
 TMPF=$(mktemp /tmp/.mm.XXXXXX)
@@ -29,7 +30,7 @@ trap clean EXIT
 [[ -z ${LOCAL_CI_RUN} ]] && {
 
     # Initialize cluster
-    initialize $@
+    initialize "$@"
 
     # Install the latest Tekton CRDs.
     install_pipeline_crd
@@ -48,10 +49,29 @@ TEST_YAML_IGNORES=${TEST_YAML_IGNORES:-""}
 # test for example "s2i"
 TEST_TASKRUN_IGNORES=${TEST_TASKRUN_IGNORES:-""}
 
+# Define this variable if you want to run all tests and not just the modified one.
+TEST_RUN_ALL_TESTS=${TEST_RUN_ALL_TESTS:-""}
+
 set -ex
 set -o pipefail
 
-test_yaml_can_install
-test_task_creation task/*/*/tests
+all_tests=$(echo task/*/*/tests)
+
+if [[ -z ${TEST_RUN_ALL_TESTS} ]];then
+    # Defining WORK_DIR so we can get list_changed_files function working
+    # properly.
+    WORK_DIR="$(mktemp -d)"
+    export WORK_DIR
+
+    all_tests=$({ grep '/tests/[^/]*yaml' "$(list_changed_files)" || true; } | sed 's/\(.*\)\/.*/\1/')
+    [[ -z ${all_tests} ]] && {
+        echo "No tests has been detected in this PR. exiting."
+        success
+    }
+fi
+
+test_yaml_can_install "${all_tests}"
+
+test_task_creation "${all_tests}"
 
 success
