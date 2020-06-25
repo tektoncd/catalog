@@ -1,6 +1,6 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Tekton Community Resources 
+  - name: Tekton Community Resources
     url: https://github.com/tektoncd/community/blob/master/contact.md
     about: Reach out here to see what we're up to
   - name: Tekton Slack Workspace

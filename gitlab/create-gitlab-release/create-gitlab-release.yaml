@@ -42,7 +42,7 @@ spec:
       image: registry.access.redhat.com/ubi8/ubi-minimal:latest
       script: |
         #!/usr/bin/env bash
-        
+
         # Creating asset json if file is to be uploaded with gitlab release
         #
         assetJson=""
@@ -72,7 +72,7 @@ spec:
         curl --header 'Content-Type: application/json' --header "PRIVATE-TOKEN:$TOKEN" \
             --data "$(generate_api_post_data)" \
             --request POST https://gitlab.com/api/v4/projects/$(params.PROJECT_ID)/releases
-         
+
       env:
         - name: TOKEN
           valueFrom:

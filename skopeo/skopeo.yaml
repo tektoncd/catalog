@@ -23,11 +23,11 @@ spec:
         copyimages() {
           filename='$(workspaces.images-url.path)/url.txt'
           while IFS= read line || [ -n "$line" ]
-          do 
+          do
             cmd=""
             for url in $line
             do
-              # echo $url 
+              # echo $url
               cmd="$cmd \
                   $url"
             done

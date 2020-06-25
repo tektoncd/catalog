@@ -46,5 +46,5 @@ spec:
       persistentvolumeclaim:
         claimName: replace-tokens-source-pvc
     - name: json-workspace
-      configmap: 
+      configmap:
         name: tokens-configmap

@@ -17,7 +17,7 @@ spec:
       - name: job-name
         valueFrom: '{.metadata.name}'
       - name: job-namespace
-        valueFrom: '{.metadata.namespace}' 
+        valueFrom: '{.metadata.namespace}'
   - name: set-ownerreference
     value: "true"
   - name: manifest

@@ -9,7 +9,7 @@ spec:
       value: "www.google.com"
     - name: options
       value:
-       - "-i"
+      - "-i"
   taskRef:
     name: curl
 ---

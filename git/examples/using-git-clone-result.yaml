@@ -68,7 +68,7 @@ spec:
     name: validate-tag-sha
   workspaces:
   - name: output
-    emptyDir: {} # We don't care about the repo contents in this example, just the "commit" result
+    emptyDir: {}  # We don't care about the repo contents in this example, just the "commit" result
   params:
   - name: repo-url
     value: https://github.com/tektoncd/pipeline.git

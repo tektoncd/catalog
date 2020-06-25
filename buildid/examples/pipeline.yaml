@@ -11,9 +11,9 @@ spec:
     - name: get-build-id
       taskRef:
         name: generate-build-id
-      params:  
+      params:
         - name: base-version
-          value: $(params.service-version)       
+          value: $(params.service-version)
     - name: build-api
       taskRef:
         name: build-service-api
