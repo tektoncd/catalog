@@ -1,0 +1,20 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: trigger-jenkins-job-run
+spec:
+  taskRef:
+    name: trigger-jenkins-job
+  params:
+    - name: JENKINS_HOST_URL
+      value: http://localhost:8080
+    - name: JOB_NAME
+      value: tekton
+    - name: JENKINS_SECRETS
+      value: jenkins-credentials
+    - name: JOB_PARAMS
+      value:
+        - id=123
+  workspaces:
+    - name: source
+      emptyDir: {}
