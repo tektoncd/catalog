@@ -1,6 +1,6 @@
 # BentoML
 
-This task allows operations on BentoML services.
+This task allows operations on [BentoML](https://github.com/bentoml/BentoML) services.
 
 ## Why BentoML Task?
 
