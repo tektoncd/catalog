@@ -6,7 +6,7 @@ metadata:
 spec:
   workspaces:
   - name: shared-workspace
-    # description: The git repo will be cloned into this workspace and the config-defaults.yaml will be read from it.
+  # description: The git repo will be cloned into this workspace and the config-defaults.yaml will be read from it.
   tasks:
   - name: fetch-repo
     taskRef:
@@ -27,10 +27,10 @@ spec:
     workspaces:
     - name: source
       workspace: shared-workspace
-    params: 
+    params:
     - name: args
-      value: 
-        - --write 
+      value:
+        - --write
         - "golang/build.yaml"
 ---
 apiVersion: tekton.dev/v1beta1

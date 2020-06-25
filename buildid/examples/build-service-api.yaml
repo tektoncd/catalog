@@ -6,7 +6,7 @@ spec:
   params:
     - name: build-id
       description: ID of the current build
-      type: string                          
+      type: string
   steps:
     - name: display-buildid
       image: bash:latest

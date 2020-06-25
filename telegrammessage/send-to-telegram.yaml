@@ -6,7 +6,7 @@ spec:
   params:
   - name: bot-token-secret
     type: string
-    description: Token of the bot through 
+    description: Token of the bot through
   - name: chat-id
     type: string
     description: ID of the chat to send the message towards

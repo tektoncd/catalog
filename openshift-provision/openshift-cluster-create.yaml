@@ -31,7 +31,7 @@ spec:
     - name: OPENSHIFT_INSTALLER_IMAGE
       type: string
       description: OpenShift installer base image for UPI installation
-      default: quay.io/openshift/origin-upi-installer:4.4 
+      default: quay.io/openshift/origin-upi-installer:4.4
   steps:
     - name: openshift-install-config
       image: registry.access.redhat.com/ubi8/ubi-minimal:latest
@@ -89,7 +89,7 @@ spec:
         EOF
 
         [[ -f install-config.yaml ]] && cat install-config.yaml
-      
+
       env:
         - name: PULL_SECRET
           valueFrom:
@@ -101,7 +101,7 @@ spec:
             secretKeyRef:
               name: openshift-install
               key: public-ssh-key
-    
+
     - name: openshift-cluster-create
       workingDir: $(workspaces.install-dir.path)
       image: $(params.OPENSHIFT_INSTALLER_IMAGE)

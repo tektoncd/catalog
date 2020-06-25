@@ -25,7 +25,7 @@ spec:
     default: "false"
     description: Enable set owner reference for created resource.
   - name: image
-    default: index.docker.io/aipipeline/kubeclient:v0.0.2 # it is huge
+    default: index.docker.io/aipipeline/kubeclient:v0.0.2  # it is huge
     description: Kubectl wrapper image
   steps:
   - name: kubeconfig
@@ -61,4 +61,3 @@ spec:
       else
           echo "no output file found"
       fi
-
