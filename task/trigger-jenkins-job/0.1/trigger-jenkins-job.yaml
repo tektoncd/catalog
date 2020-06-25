@@ -1,0 +1,110 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: trigger-jenkins-job
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: jenkins, build
+    tekton.dev/displayName: "trigger jenkins job"
+spec:
+  description: >-
+    The following task can be used to trigger a Jenkins job using
+    CURL request from a Tekton Task.
+  workspaces:
+    - name: source
+      description: >-
+        The workspace which can be used to mount files which can be
+        send via CURL request to Jenkins job.
+  params:
+    - name: JENKINS_HOST_URL
+      type: string
+      description: Server URL on which Jenkins is running
+    - name: JOB_NAME
+      type: string
+      description: Jenkins Job which needs to be triggered
+    - name: JENKINS_SECRETS
+      type: string
+      description: Jenkins secret containing credentials
+      default: jenkins-credentials
+    - name: JOB_PARAMS
+      type: array
+      description: Extra arguments to append as a part of CURL request
+      default: [""]
+  steps:
+    - name: trigger-pipeline
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      workingDir: $(workspaces.source.path)
+      args:
+        - $(params.JOB_PARAMS)
+      script: |
+        #!/usr/libexec/platform-python
+
+        import os
+        import json
+        import sys
+        import base64
+        import urllib
+        import urllib.request
+
+        args = sys.argv[1:]
+
+        queryType = "buildWithParameters"
+        finalArgs=""
+        data={}
+        filename=""
+
+        for params in args:
+          if '@' in params:
+            filename+=params.split("=")[1][1:]
+          elif len(params) != 0:
+            keyValue=params.split("=")
+            data[keyValue[0]]=keyValue[1]
+          else:
+            queryType = "build"
+
+        url = "$(params.JENKINS_HOST_URL)"+"/job/"+"$(params.JOB_NAME)"+"/"+queryType
+
+        # creating Basic Authorization header
+        username=os.getenv('USERNAME')
+        apitoken=os.getenv('API_TOKEN')
+        credentials = ('%s:%s' % (username,apitoken))
+        base64string = base64.b64encode(credentials.encode('ascii'))
+
+        # Adding required Headers
+        requiredHeaders={
+          "Jenkins-Crumb": os.getenv('JENKINS_CRUMB'),
+          "Authorization": "Basic "+base64string.decode('ascii')
+        }
+
+        data = urllib.parse.urlencode(data)
+        data = data.encode('utf-8') # data should be bytes
+        request = urllib.request.Request(url, data=data, headers=requiredHeaders)
+
+        # Adding headers in case file is to be uploaded
+        if len(filename)!=0:
+          requiredHeaders['Content-Type']="multipart/form-data"
+          requiredHeaders['Content-Length']=os.stat(filename).st_size
+          request = urllib.request.Request(url, open(filename, 'rb'), headers=requiredHeaders)
+
+        opener = urllib.request.build_opener()
+        with opener.open(request) as f:
+          f.read().decode('utf-8')
+
+      env:
+        - name: USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: $(params.JENKINS_SECRETS)
+              key: username
+        - name: API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: $(params.JENKINS_SECRETS)
+              key: apitoken
+        - name: JENKINS_CRUMB
+          valueFrom:
+            secretKeyRef:
+              name: $(params.JENKINS_SECRETS)
+              key: crumb
