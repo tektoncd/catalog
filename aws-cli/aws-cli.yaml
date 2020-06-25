@@ -21,4 +21,4 @@ spec:
       image: amazon/aws-cli:latest
       script: "$(params.SCRIPT)"
       args:
-        - "$(params.ARGS)"  
+        - "$(params.ARGS)"

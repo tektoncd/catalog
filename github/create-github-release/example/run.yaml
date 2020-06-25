@@ -60,7 +60,7 @@ spec:
           - ReadWriteOnce
           resources:
             requests:
-              storage: 500Mi 
+              storage: 500Mi
     - name: upload
       configmap:
         name: upload-asset

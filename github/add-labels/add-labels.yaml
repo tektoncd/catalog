@@ -49,7 +49,7 @@ spec:
 
         split_url = urllib.parse.urlparse(
             "$(params.REQUEST_URL)").path.split("/")
-        
+
         # This will convert https://github.com/foo/bar/pull/202 to
         # api url path /repos/foo/issues/202
 

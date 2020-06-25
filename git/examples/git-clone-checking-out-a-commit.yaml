@@ -39,7 +39,7 @@ spec:
     - name: revision
       value: $(params.commit)
   - name: compare-received-commit-to-expected
-    runAfter: ["fetch-repo"] # Wait until the clone is done before reading the readme.
+    runAfter: ["fetch-repo"]  # Wait until the clone is done before reading the readme.
     params:
     - name: expected-commit
       value: $(params.commit)
@@ -84,4 +84,4 @@ spec:
   - name: repo-url
     value: https://github.com/tektoncd/pipeline.git
   - name: commit
-    value: 301b41380e95382a18b391c2165fa3a6a3de93b0 # Tekton Pipeline's first ever commit!
+    value: 301b41380e95382a18b391c2165fa3a6a3de93b0  # Tekton Pipeline's first ever commit!
