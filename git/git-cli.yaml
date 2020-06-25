@@ -1,0 +1,60 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: git-cli
+spec:
+  workspaces:
+    - name: source
+      description: A workspace that contains the fetched git repository.
+    - name: input
+      description: A workspace that contains file that needs to be added to git.
+  params:
+    - name: BASE_IMAGE
+      description: |
+        The base image for the task.
+      type: string
+      default: alpine/git:latest
+
+    - name: GIT_USER_NAME
+      type: string
+      description: |
+        Git user name for performing git operation.
+      default: ""
+
+    - name: GIT_USER_EMAIL
+      type: string
+      description: |
+        Git user email for performing git operation.
+      default: ""
+
+    - name: GIT_SCRIPT
+      description: The git script to run.
+      type: string
+      default: |
+        git help
+
+  results:
+    - name: commit
+      description: The precise commit SHA after the git operation.
+
+  steps:
+    - name: git
+      image: $(params.BASE_IMAGE)
+      workingDir: $(workspaces.source.path)
+      script: |
+
+        # Setting up the config for the git.
+        git config --global user.email "$(params.GIT_USER_EMAIL)"
+        git config --global user.name "$(params.GIT_USER_NAME)"
+
+        $(params.GIT_SCRIPT)
+
+        RESULT_SHA="$(git rev-parse HEAD | tr -d '\n')"
+        EXIT_CODE="$?"
+        if [ "$EXIT_CODE" != 0 ]
+        then
+          exit $EXIT_CODE
+        fi
+        # Make sure we don't add a trailing newline to the result!
+        echo -n "$RESULT_SHA" > $(results.commit.path)
