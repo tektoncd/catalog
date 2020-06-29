@@ -29,7 +29,7 @@ workspace.
 To install the Task:
 
 ```bash
-kubectl apply -f pullrequest/pr.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/pull-request/0.1/pull-request.yaml
 ```
 
 ## Configuring the Tasks
