@@ -2,7 +2,23 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: pull-request
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: SCM
+    tekton.dev/displayName: "pull request"
 spec:
+  description: >-
+    This Task allows a user to interact with an SCM (source control management)
+    system through an abstracted interface
+
+    This Task works with both public SCM instances and self-hosted/enterprise GitHub/GitLab
+    instances. In download mode, this Task will look at the state of an existing pull
+    request and populate the pr workspace with the state of the pull request, including the
+    .MANIFEST file. In upload mode, this Task will look at the contents of the pr workspace
+    and compare it to the .MANIFEST file (if it exists).
+
   params:
   - name: mode
     description: If "download", the state of the pull request at `url` will be fetched. If "upload" then the pull request at `url` will be updated.
