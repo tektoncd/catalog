@@ -39,7 +39,7 @@ kubectl --namespace default create secret generic docker-registry-config --from-
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/makisu/makisu.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/makisu/0.1/makisu.yaml
 ```
 
 ## Parameters
