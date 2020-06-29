@@ -2,7 +2,19 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: argocd-task-sync-and-wait
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: deploy
+    tekton.dev/displayName: "argocd"
 spec:
+  description: >-
+    This task syncs (deploys) an Argo CD application and waits for it to be healthy.
+
+    To do so, it requires the address of the Argo CD server and some form of
+    authentication either a username/password or an authentication token.
+
   params:
     - name: application-name
       description: name of the application to sync
