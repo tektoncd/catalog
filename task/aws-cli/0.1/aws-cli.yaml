@@ -2,7 +2,16 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: aws-cli
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: cli
+    tekton.dev/displayName: "aws cli"
 spec:
+  description: >-
+    This task performs operations on Amazon Web Services resources using aws.
+
   workspaces:
     - name: source
     - name: secrets
