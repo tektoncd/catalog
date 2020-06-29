@@ -2,7 +2,18 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: replace-tokens
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: tokens
+    tekton.dev/displayName: "replace tokens"
 spec:
+  description: >-
+    This task can be used to replace tokens in a file.
+
+    The supported file types are YAML and JSON.
+
   workspaces:
     - name: source
     - name: token
