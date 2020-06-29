@@ -1,6 +1,6 @@
 # Replace Tokens
 
-This task can be used to replace tokens in a file. The supported file types are `YAML` and `JSON`. 
+This task can be used to replace tokens in a file. The supported file types are `YAML` and `JSON`.
 The following task can be explained by taking an example of a `JSON` file :-
 
 config.json
@@ -35,7 +35,7 @@ The above same can be done for the `YAML` file also.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/replace-tokens/replace-tokens.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/replace-tokens/0.1/replace-tokens.yaml
 ```
 
 ## Parameters
@@ -131,6 +131,6 @@ spec:
       persistentvolumeclaim:
         claimName: replace-tokens-source-pvc
     - name: json-workspace
-      configmap: 
+      configmap:
         name: tokens-configmap
 ```
