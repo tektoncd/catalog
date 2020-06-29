@@ -2,7 +2,22 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: sonarqube-scanner
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: security
+    tekton.dev/displayName: "sonarqube scanner"
 spec:
+  description: >-
+    The following task can be used to perform static analysis on the source code
+    provided the SonarQube server is hosted
+
+    SonarQube is the leading tool for continuously inspecting the Code Quality and Security
+    of your codebases, all while empowering development teams. Analyze over 25 popular
+    programming languages including C#, VB.Net, JavaScript, TypeScript and C++. It detects
+    bugs, vulnerabilities and code smells across project branches and pull requests.
+
   workspaces:
     - name: source-dir
     - name: sonar-settings
