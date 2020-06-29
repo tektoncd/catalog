@@ -2,7 +2,15 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: wget
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: download
 spec:
+  description: >-
+    This task uses wget to download files from the internet to a workspace.
+
   params:
   - name: url
     description: The url we want to download file from
