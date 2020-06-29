@@ -41,7 +41,7 @@ This task uses image from [this](https://github.com/tektoncd/plumbing/tree/maste
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/skopeo/skopeo.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/skopeo-copy/0.1/skopeo-copy.yaml
 ```
 
 ## Parameters
