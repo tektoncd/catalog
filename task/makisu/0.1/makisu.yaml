@@ -2,7 +2,20 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: makisu
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: image-build
 spec:
+  description: >-
+    This Task builds source into a container image using uber’s
+    makisu tool.
+
+    Makisu is a fast and flexible Docker image build tool designed for unprivileged
+    containerized environments such as Mesos or Kubernetes. makisu uses a registry
+    configuration which should be stored as a secret in Kubernetes.
+
   params:
   - name: CONTEXTPATH
     description: Path to the build context.
