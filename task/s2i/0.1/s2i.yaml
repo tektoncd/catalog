@@ -2,7 +2,21 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: s2i
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: image-build
 spec:
+  description: >-
+    Source-to-Image (S2I) is a toolkit and workflow for building reproducible
+    container images from source code
+
+    S2I produces images by injecting source code into a base S2I container image
+    and letting the container prepare that source code for execution. The base
+    S2I container images contains the language runtime and build tools needed for
+    building and running the source code.
+
   params:
   - name: BUILDER_IMAGE
     description: The location of the s2i builder image.
