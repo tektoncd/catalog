@@ -2,8 +2,20 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: prettier
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: editor
 spec:
-  description: Run the prettier code formatter against provided source code. See https://prettier.io for more information.
+  description: >-
+    This Task is for running Prettier code formatter against the provided
+    source code in the Workspace.
+
+    By default this Task will check the format of files in the root of your
+    Workspace.Run the prettier code formatter against provided source code.
+    See https://prettier.io for more information.
+
   workspaces:
   - name: source
     mountPath: /source
