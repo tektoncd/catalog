@@ -2,7 +2,17 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: send-to-telegram
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: messaging
 spec:
+  description: >-
+    These tasks post a simple message to a telegram chat.
+
+    This task uses the Bot API of telegram to send a message.
+
   params:
   - name: bot-token-secret
     type: string
