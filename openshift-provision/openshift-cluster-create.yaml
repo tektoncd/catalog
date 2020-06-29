@@ -2,7 +2,19 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: openshift-install
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: openshift
+    tekton.dev/displayName: "openshift install"
 spec:
+  description: >-
+    This task is used to create the cluster.
+
+    The following task helps you to provision the Openshift cluster using
+    the Installer Provided Infrastructure on the desired cloud platform.
+
   workspaces:
     - name: install-dir
       mountPath: /tekton/home/
