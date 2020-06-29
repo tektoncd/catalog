@@ -2,7 +2,22 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: skopeo-copy
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: cli
+    tekton.dev/displayName: "skopeo copy"
 spec:
+  description: >-
+    Skopeo is a command line tool for working with remote image registries.
+
+    Skopeo doesn’t require a daemon to be running while performing its operations.
+    In particular, the handy skopeo command called copy will ease the whole image
+    copy operation. The copy command will take care of copying the image from
+    internal.registry to production.registry. If your production registry requires
+    credentials to login in order to push the image, skopeo can handle that as well.
+
   workspaces:
     - name: images-url
   params:
