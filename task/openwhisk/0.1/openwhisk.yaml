@@ -3,7 +3,22 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: openwhisk
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: build-tool
 spec:
+  description: >-
+    This Tekton Task can be used to Build and Serve Knative compatible
+    applications (i.e., OpenWhisk Actions) on Kubernetes.
+
+    All OpenWhisk Runtime Tekton Task require a valid Kubernetes Service Account
+    with access to a Kubernetes Secret that contains your username and password
+    to image resgistry. This credential will be used as part of the Tekton build
+    process to “push” your Knative application image containing your OpenWhisk
+    Action to image resgistry of your choice.
+
   resources:
     inputs:
     - name: runtime-git
