@@ -2,7 +2,22 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: ansible-tower-cli
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: ansible, cli
+    tekton.dev/displayName: "ansible tower cli"
 spec:
+  description: >-
+    Ansible-tower-cli task simplifies starting jobs, workflow jobs,
+    manage users, projects etc.
+
+    Ansible Tower (formerly ‘AWX’) is a web-based solution that makes Ansible
+    even more easy to use for IT teams of all kinds, It provides the
+    tower-cli(Tower-CLI) command line tool that simplifies the tasks of
+    starting jobs, workflow jobs, manage users, projects etc.
+
   params:
     - name: SSLVERIFY
       description: Disable tower ssl verification
