@@ -5,7 +5,7 @@ This Task publishes Python packages to PyPI index using [Twine](https://pypi.org
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/python/publish-package/update-pypi.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/task/upload-pypi/0.1/upload-pypi.yaml
 ```
 
 ## Requirement
