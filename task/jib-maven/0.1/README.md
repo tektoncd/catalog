@@ -7,7 +7,7 @@ Jib works with [Maven](https://github.com/GoogleContainerTools/jib/tree/master/j
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/jib-maven/jib-maven.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/jib-maven/0.1/jib-maven.yaml
 ```
 
 ## Parameters
