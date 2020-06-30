@@ -2,7 +2,18 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: send-to-channel-slack
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: messaging
 spec:
+  description: >-
+    These tasks post a simple message to a slack channel.
+
+    This task uses chat.postMessage slack REST api to send the message.
+    There are multiple ways to send a message to slack.
+
   params:
   - name: token-secret
     type: string
