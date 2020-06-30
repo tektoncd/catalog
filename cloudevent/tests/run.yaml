@@ -1,0 +1,19 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: cloudevent-send
+spec:
+  params:
+  - name: sink
+    value: "http://eventdisplay.default.svc.cluster.local:8080"
+  - name: eventID
+    value: "ID-1234-5677"
+  - name: eventType
+    value: "test-event-type"
+  - name: source
+    value: "event-source-5000"
+  - name: data
+    value: "{\"data\": \"dude\"}"
+  taskRef:
+    name: cloudevent
