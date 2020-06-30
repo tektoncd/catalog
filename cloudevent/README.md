@@ -22,7 +22,7 @@ Task to send a single CloudEvent to a specified sink.
 
 ## Development
 
-The `ko` tool is required to update the task.yaml - see these installation instructions.
+The `ko` tool is required to update the task.yaml - see these [installation instructions](https://github.com/google/ko#installation).
 
 Once you have ko, you can build the binary and resolve the task yaml into installable yaml.
 
