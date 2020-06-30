@@ -2,7 +2,15 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: buildkit
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: image-build
 spec:
+  description: >-
+    This Task builds source into a container image using Moby BuildKit.
+
   params:
   - name: DOCKERFILE
     description: The name of the Dockerfile
