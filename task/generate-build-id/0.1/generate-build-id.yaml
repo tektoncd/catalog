@@ -2,7 +2,17 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: generate-build-id
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: build-tool
+    tekton.dev/displayName: "buildid"
 spec:
+  description: >-
+    Given a base version, this task generates a unique build id by appending
+    the base-version to the current timestamp.
+
   params:
     - name: base-version
       description: Base product version
