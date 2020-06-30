@@ -3,7 +3,23 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: buildpacks-v3
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: image-build
+    tekton.dev/displayName: "buildpacks"
 spec:
+  description: >-
+    This build template builds source into a container image using Cloud Native Buildpacks.
+
+    The Cloud Native Buildpacks website describes v3 buildpacks as pluggable, modular tools
+    that translate source code into container-ready artifacts such as OCI images. They replace
+    Dockerfiles in the app development lifecycle with a higher level of abstraction. Cloud
+    Native Buildpacks embrace modern container standards, such as the OCI image format. They take
+    advantage of the latest capabilities of these standards, such as remote image layer
+    rebasing on Docker API v2 registries.
+
   params:
     - name: BUILDER_IMAGE
       description: The image on which builds will run (must include v3 lifecycle and compatible buildpacks).
