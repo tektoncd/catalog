@@ -2,7 +2,21 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: openshift-client-python
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: cli
+    tekton.dev/displayName: "openshift client python"
 spec:
+  description: >-
+    This task can be used to interact with the openshift cluster via
+    oc commands in a python script.
+
+    OpenShift is a Kubernetes distribution from Red Hat which provides oc,
+    the OpenShift CLI that complements kubectl for simplifying deployment
+    and configuration applications on OpenShift.
+
   workspaces:
     - name: kubeconfig-mount
       mountPath: /tekton/home/.kube
