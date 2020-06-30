@@ -16,5 +16,8 @@ spec:
   steps:
   - name: kubectl
     image: $(params.image)
+    command: ['kubectl']
     args:
-      - $(params.action) -f $(params.path)
+    - '$(params.action)'
+    - '-f'
+    - '$(params.path)'
