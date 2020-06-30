@@ -2,7 +2,16 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: create-gitlab-release
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: gitlab
+    tekton.dev/displayName: "create gitlab release"
 spec:
+  description: >-
+    This `task` can be used to make a gitlab release.
+
   params:
     - name: TAG_NAME
       description: Name of the tag.
