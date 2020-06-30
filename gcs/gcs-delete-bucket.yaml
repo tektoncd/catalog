@@ -2,7 +2,15 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: gcs-delete-bucket
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: cloud, gcs
 spec:
+  description: >-
+    A Task that deletes a GCS bucket.
+
   workspaces:
   - name: credentials
     description: A secret with a service account key to use as GOOGLE_APPLICATION_CREDENTIALS.
