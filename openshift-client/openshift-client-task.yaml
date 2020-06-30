@@ -3,7 +3,21 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: openshift-client
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: cli
+    tekton.dev/displayName: "openshift client"
 spec:
+  description: >-
+    This task runs commands against the cluster where the task run is
+    being executed.
+
+    OpenShift is a Kubernetes distribution from Red Hat which provides oc,
+    the OpenShift CLI that complements kubectl for simplifying deployment
+    and configuration applications on OpenShift.
+
   params:
   - name: SCRIPT
     description: The OpenShift CLI arguments to run
