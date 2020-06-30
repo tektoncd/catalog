@@ -6,7 +6,7 @@ This Task performs operations on Knative resources (services, revisions, routes)
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/kn/kn.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/kn/0.1/kn.yaml
 ```
 
 ## Parameters

@@ -2,7 +2,16 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: kn
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: cli
 spec:
+  description: >-
+    This Task performs operations on Knative resources
+    (services, revisions, routes) using kn CLI
+
   params:
   - name: kn-image
     description: kn CLI container image to run this task
