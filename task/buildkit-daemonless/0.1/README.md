@@ -13,7 +13,7 @@ This `buildkit-daemonless` Task is similar to [`buildkit`](../buildkit) but does
 ## Install
 
 ```console
-$ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/buildkit-daemonless/buildkit-daemonless.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/buildkit-daemonless/0.1/buildkit-daemonless.yaml
 task.tekton.dev/buildkit-daemonless created
 ```
 
