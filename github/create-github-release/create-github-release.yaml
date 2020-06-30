@@ -2,7 +2,23 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: create-github-release
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: github
+    tekton.dev/displayName: "create github release"
 spec:
+  description: >-
+    This `task` can be used to make a github release.
+
+    It is typical to create a Github tag at the moment of release to introduce a
+    checkpoint in your source code history,but in most cases users will need compiled
+    objects or other assets output, not just the raw source code.Github Releases are a
+    way to track deliverables in your project. Consider them a snapshot in time of the
+    source, build output, artifacts, and other metadata associated with a released version
+    of your code.
+
   workspaces:
     - name: input
     - name: source
