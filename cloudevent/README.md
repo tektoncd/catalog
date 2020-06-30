@@ -10,11 +10,11 @@ Task to send a single CloudEvent to a specified sink.
 
 * **eventType**: The event type to send
 
-  _default_: "tekton.cloudevent.message"`
+  _default_: "tekton.cloudevent.message"
 
 * **source**: Source to be set in the Cloudevent metadata.
 
-  _default_: "cloudevent-catalog-task"`
+  _default_: "cloudevent-catalog-task"
 
 * **data**: Data payload to deliver
 
