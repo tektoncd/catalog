@@ -2,7 +2,16 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: golang-test
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: test
+    tekton.dev/displayName: "golang test"
 spec:
+  description: >-
+    This Task is Golang task to test Go projects.
+
   params:
   - name: package
     description: package (and its children) under test
