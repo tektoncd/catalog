@@ -3,10 +3,23 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: github-set-status
-  description: |
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: github
+    tekton.dev/displayName: "set github status"
+spec:
+  description: >-
     This task will set the CI as running and add a link to the openshift console
     viewer url.
-spec:
+
+    The `github-set-status` task allows external services to mark GtiHUB commits
+    with an `error`, `failure`, `pending`, or `success` state, which is then
+    reflected in pull requests involving those commits.Statuses include as well a
+    `description` and a `target_url`, to give the user informations about the CI
+    statuses or a direct link to the full log.
+
   params:
   - name: GITHUB_HOST_URL
     description: |
