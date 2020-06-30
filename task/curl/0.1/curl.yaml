@@ -2,7 +2,15 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: curl
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: search
 spec:
+  description: >-
+    This task performs curl operation to transfer data from internet.
+
   params:
   - name: url
     description: URL to curl'ed
