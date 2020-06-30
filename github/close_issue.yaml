@@ -3,9 +3,16 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: github-close-issue
-  description: |
-    This Task will close a pull request or an issue.
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: github
+    tekton.dev/displayName: "close github issue"
 spec:
+  description: >-
+    This Task will close a pull request or an issue.
+
   params:
   - name: GITHUB_HOST_URL
     description: |
