@@ -1,5 +1,5 @@
-# Note that you would typically use this with some input workspace or resource, 
-# for example in combination with a cloned GitHub repository storing your 
+# Note that you would typically use this with some input workspace or resource,
+# for example in combination with a cloned GitHub repository storing your
 # Kubernetes yaml that will be applied/deleted
 apiVersion: tekton.dev/v1beta1
 kind: TaskRun
