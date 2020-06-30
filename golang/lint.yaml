@@ -2,7 +2,16 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: golangci-lint
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: lint
+    tekton.dev/displayName: "golangci lint"
 spec:
+  description: >-
+    This Task is Golang task to validate Go proje
+
   params:
   - name: package
     description: base package (and its children) under validation
