@@ -2,7 +2,20 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: buildkit-daemonless
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: image-build
+    tekton.dev/displayName: "buildkit daemonless"
 spec:
+  description: >-
+    This Task builds source into a container image using Moby BuildKit.
+
+    This buildkit-daemonless Task is similar to buildkit but does not need
+    creating Secret, Deployment, and Service resources for setting up the
+    buildkitd daemon cluster.
+
   params:
   - name: DOCKERFILE
     description: The name of the Dockerfile
