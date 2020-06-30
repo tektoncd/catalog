@@ -2,7 +2,18 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: helm-conftest
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: test
+    tekton.dev/displayName: "helm conftest"
 spec:
+  description: >-
+    These tasks make it possible to use Conftest within your Tekton pipelines
+
+    Conftest is a tool for testing configuration files using Open Policy Agent.
+
   workspaces:
   - name: source
   params:
