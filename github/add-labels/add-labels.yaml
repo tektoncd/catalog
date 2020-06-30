@@ -2,9 +2,20 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: github-add-labels
-  description: |
-    This Task will add labels to a pull request or an issue.
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: github
+    tekton.dev/displayName: "add github label"
 spec:
+  description: >-
+    This Task will add a label to an issue in Gitlab.
+
+    A collection of tasks to help working with the GitLab API.
+    Most tasks would expect to have a secret set in the kubernetes
+    secret `gitlab`with a GitLab token in the key `token`.
+
   params:
   - name: GITHUB_HOST_URL
     description: |
