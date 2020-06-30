@@ -2,7 +2,18 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: jib-gradle
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: image-build
+    tekton.dev/displayName: "jib gradle"
 spec:
+  description: >-
+    This Task builds Java/Kotlin/Groovy/Scala source into a container image using Google’s Jib tool.
+
+    Jib works with Gradle and Maven projects, and this template is for Gradle projects.
+
   params:
   - name: DIRECTORY
     description: The directory containing the app, relative to the source repository root
