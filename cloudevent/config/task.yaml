@@ -1,0 +1,35 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: cloudevent
+spec:
+  params:
+  - name: sink
+    type: string
+    description: Sink to send Event to
+  - name: eventID
+    type: string
+    description: Event ID to use
+  - name: eventType
+    type: string
+    description: The Event Type to use
+    default: "tekton.cloudevent.message"
+  - name: source
+    type: string
+    description: Source of the CloudEvent
+    default: ""
+  - name: data
+    type: string
+    description: The payload of the Event
+    default: ""
+  steps:
+  - name: send
+    image: github.com/knative/eventing/cmd/sendevent
+    command: ["sendevent"]
+    args:
+      - "--event-id=$(inputs.params.eventID)"
+      - "--event-type=$(inputs.params.eventType)"
+      - "--source=$(inputs.params.source)"
+      - "--data=$(inputs.params.data)"
+      - "$(inputs.params.sink)"
