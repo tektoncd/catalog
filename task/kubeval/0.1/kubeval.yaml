@@ -2,7 +2,19 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: kubeval
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: test
 spec:
+  description: >-
+    This task makes it possible to use Kubeval within your Tekton pipelines.
+
+    Kubeval is a tool used for validating Kubernetes configuration files. By
+    default the task will recursively scan the provided repository for YAML
+    files and validate them against the Kubernetes schemas.
+
   workspaces:
   - name: source
   params:
