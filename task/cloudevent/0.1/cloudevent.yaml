@@ -3,7 +3,15 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: cloudevent
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: cloud
 spec:
+  description: >-
+    This Task send a single CloudEvent to a specified sink.
+
   params:
   - name: sink
     type: string
