@@ -2,7 +2,21 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: git-rebase
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: git
+    tekton.dev/displayName: "git rebase"
 spec:
+  description: >-
+    These Tasks are Git tasks to work with repositories used by other tasks
+    in your Pipeline.
+
+    This task will rebase the branch based on the user input. Before rebase,
+    if squashing of the commits is required, then it can be done by providing
+    the squash count i.e number of commits to squash.
+
   workspaces:
     - name: source
       description: A workspace that contains the fetched git repository.
