@@ -2,7 +2,17 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: gke-deploy
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: deploy
+    tekton.dev/displayName: "gke deploy"
 spec:
+  description: >-
+    This Task deploys an application to a Google Kubernetes Engine
+    cluster using gke-deploy
+
   workspaces:
   - name: source
   params:
