@@ -2,7 +2,24 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: git-batch-merge
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: git
+    tekton.dev/displayName: "git batch merge"
 spec:
+  description: >-
+    This task takes a set of refspecs, fetches them and performs git operations
+    (cherry-pick or merge) to apply them in order on the given base revision (default master).
+
+    The resulting commit SHA will not match across taskruns, but the git tree SHA should
+    match. This can be useful for batch testing changes, for example, when you want to
+    batch up your PRs into a single merge by taking the HEAD of the branch you want to merge
+    to, and adding all the PRs to it. This concept is used in tools such as Tide to
+    batch test PR’s, and Zuul CI Gating, to perform speculative execution of
+    PR’s/change requests individually
+
   workspaces:
     - name: output
       description: The git repo will be cloned onto the volume backing this workspace
