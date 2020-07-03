@@ -1,30 +1,17 @@
-## OpenShift Client Task
+## Openshift Client Kubecfg Task
 
 [OpenShift](http://www.openshift.com) is a Kubernetes distribution from Red Hat which provides `oc`, the [OpenShift CLI](https://docs.openshift.com/container-platform/4.1/cli_reference/getting-started-cli.html) that complements `kubectl` for simplifying deployment and configuration applications on OpenShift.
 
-There are two tasks provided for the OpenShift CLI which differ only in their target clusters:
-* `openshift-client`: runs commands against the cluster where the task run is being executed
-* `openshift-client-kubecfg`: runs commands against any cluster that is provided to it as an input
+Openshift-client-kubecfg runs commands against any cluster that is provided to it as an input
 
-## Install the Tasks
+## Install the Task
 
-Install `openshift-client` task:
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-client/openshift-client-task.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/openshift-client-kubecfg/0.1/openshift-client-kubecfg.yaml
 ```
 
-Install `openshift-client-kubecfg` task:
-```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-client/openshift-client-kubecfg-task.yaml
-```
 
-## Parameters `openshift-client`
-
-* **ARGS:** args to execute which are appended to `oc` e.g. `start-build myapp` (_default_: `help`)
-
-* **SCRIPT:** script of oc commands to execute  e.g. `oc get pod $1 -0 yaml` This will take the first value of ARGS as pod name (_default_: `oc $@`)
-
-## Parameters `openshift-client-kubecfg`
+## Parameters
 
 * **ARGS:** args to execute which are appended to `oc` e.g. `start-build myapp` (_default_: `help`)
 
@@ -46,24 +33,6 @@ oc policy add-role-to-user edit -z default -n <namespace>
 ```
 
 ## Usage
-
-This `TaskRun` runs an `oc rollout` command to deploy the latest image version for `myapp` on OpenShift.
-
-```
-apiVersion: tekton.dev/v1beta1
-kind: TaskRun
-metadata:
-  name: deploy-myapp
-spec:
-  taskRef:
-    name: openshift-client
-  params:
-  - name: ARGS
-    value:
-      - "rollout"
-      - "latest"
-      - "myapp"
-```
 
 The following `TaskRun` runs the commands against a different cluster than the one the `TaskRun` is running on. The cluster credentials are provided via a `PipelineResource` called `stage-cluster`.
 
