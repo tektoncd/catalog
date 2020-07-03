@@ -1,0 +1,124 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: gcs-triggertemplate
+spec:
+  params:
+    - name: pvc-name
+    - name: project-name
+    - name: secret-name
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: gcs-pr-$(uid)
+      spec:
+        workspaces:
+        - name: data
+          persistentVolumeClaim:
+            claimName: $(params.pvc-name)
+        - name: credentials
+          secret:
+            secretName: $(params.secret-name)
+        pipelineSpec:
+          workspaces:
+          - name: data
+          - name: credentials
+          tasks:
+          - name: gcs-create-bucket
+            taskRef:
+              name: gcs-create-bucket
+            workspaces:
+            - name: credentials
+              workspace: credentials
+            params:
+            - name: bucketName
+              value: gs://tekton-test-bucket-$(uid)
+            - name: project
+              value: $(params.project-name)
+          - name: create-data
+            runAfter: [gcs-create-bucket]
+            taskSpec:
+              workspaces:
+              - name: data
+              steps:
+              - name: write-data
+                image: ubuntu
+                script: |
+                  #!/usr/bin/env bash
+                  set -xe
+                  mkdir -p $(workspaces.data.path)/$(uid)/test_data/
+                  echo "Test data $(uid)" > $(workspaces.data.path)/$(uid)/test_data/test.txt
+            workspaces:
+            - name: data
+              workspace: data
+          - name: gcs-upload
+            taskRef:
+              name: gcs-upload
+            runAfter: [create-data]
+            workspaces:
+            - name: credentials
+              workspace: credentials
+            - name: source
+              workspace: data
+            params:
+            - name: path
+              value: $(uid)
+            - name: location
+              value: gs://tekton-test-bucket-$(uid)
+            - name: serviceAccountPath
+              value: service_account.json
+          - name: gcs-download
+            taskRef:
+              name: gcs-download
+            runAfter: [gcs-upload]
+            workspaces:
+            - name: credentials
+              workspace: credentials
+            - name: output
+              workspace: data
+            params:
+            - name: path
+              value: download-$(uid)
+            - name: location
+              value: gs://tekton-test-bucket-$(uid)
+            - name: typeDir
+              value: "true"
+            - name: serviceAccountPath
+              value: service_account.json
+          - name: verify-data
+            runAfter: [gcs-download]
+            workspaces:
+            - name: data
+              workspace: data
+            taskSpec:
+              workspaces:
+              - name: data
+              steps:
+              - image: ubuntu
+                script: |
+                  #!/usr/bin/env bash
+                  set -xe
+                  cat $(workspaces.data.path)/download-$(uid)/test_data/test.txt | grep "Test data $(uid)"
+          - name: delete-bucket
+            taskRef:
+              name: gcs-delete-bucket
+            runAfter: [gcs-download]
+            workspaces:
+            - name: credentials
+              workspace: credentials
+            params:
+            - name: bucketName
+              value: gs://tekton-test-bucket-$(uid)
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gcs-test-storage
+spec:
+  resources:
+    requests:
+      storage: 16Mi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
