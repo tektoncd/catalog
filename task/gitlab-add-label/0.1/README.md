@@ -34,7 +34,7 @@ stringData:
 ### Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/gitlab/add-labels.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/gitlab-add-label/0.1/gitlab-add-label.yaml
 ```
 
 ### Parameters
