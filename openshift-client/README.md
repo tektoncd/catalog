@@ -10,12 +10,12 @@ There are two tasks provided for the OpenShift CLI which differ only in their ta
 
 Install `openshift-client` task:
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/openshift-client/openshift-client-task.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-client/openshift-client-task.yaml
 ```
 
 Install `openshift-client-kubecfg` task:
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/openshift-client/openshift-client-kubecfg-task.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/openshift-client/openshift-client-kubecfg-task.yaml
 ```
 
 ## Parameters `openshift-client`

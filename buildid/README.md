@@ -5,7 +5,7 @@ Given a base version, this task generates a unique build id by appending the bas
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/buildid/task.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/buildid/task.yaml
 ```
 
 ## Parameters

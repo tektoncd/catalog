@@ -11,7 +11,7 @@ Follow instructions [here](https://api.slack.com/messaging/webhooks) to generate
 ## Install the Task and create a secret
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/slackmessage/send-to-webhook-slack.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/slackmessage/send-to-webhook-slack.yaml
 ```
 
 Create a secret that has the generated webhook URL
@@ -66,7 +66,7 @@ The app must join the channel before the message posted by this task run. (invit
 ## Install the Task and create a secret
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/slackmessage/send-to-channel-slack.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/slackmessage/send-to-channel-slack.yaml
 ```
 
 Create a secret that has the OAuth token of the bot app.

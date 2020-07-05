@@ -9,7 +9,7 @@ For creating your own `sonar-project.properties` please follow the guide [here](
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/sonarqube/sonarqube.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/sonarqube/sonarqube.yaml
 ```
 
 ## Pre-requisite

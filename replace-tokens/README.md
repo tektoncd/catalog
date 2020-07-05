@@ -35,7 +35,7 @@ The above same can be done for the `YAML` file also.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/replace-tokens/replace-tokens.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/replace-tokens/replace-tokens.yaml
 ```
 
 ## Parameters

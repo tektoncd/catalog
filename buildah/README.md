@@ -10,7 +10,7 @@ to assemble a container image, then pushes that image to a container registry.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/buildah/buildah.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/buildah/buildah.yaml
 ```
 
 ## Parameters

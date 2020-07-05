@@ -5,7 +5,7 @@ This task syncs (deploys) an [Argo CD](https://argoproj.github.io/argo-cd/) appl
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/argocd/argocd.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/argocd/argocd.yaml
 ```
 
 ## Parameters
