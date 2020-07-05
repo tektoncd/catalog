@@ -11,7 +11,7 @@ source code.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/s2i/s2i.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/s2i/s2i.yaml
 ```
 
 ## Parameters

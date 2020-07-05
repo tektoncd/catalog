@@ -6,7 +6,7 @@ This task uses wget to download files from the internet to a workspace  .
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/wget/wget.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/wget/wget.yaml
 ```
 
 ## Parameters

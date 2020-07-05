@@ -8,13 +8,13 @@ your Tekton pipelines. Conftest is a tool for testing configuration files using 
 In order to use Conftest with Tekton you need to first install the task.
 
 ```console
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/conftest/conftest.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/conftest/conftest.yaml
 ```
 
 Conftest also has a Helm plugin, which redners the Helm chart before applying the policy. For that task use:
 
 ```console
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/conftest/helm-conftest.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/conftest/helm-conftest.yaml
 ```
 
 

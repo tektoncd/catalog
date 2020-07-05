@@ -6,7 +6,7 @@ This task performs curl operation to transfer data from internet .
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/curl/curl.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/curl/curl.yaml
 ```
 
 ## Parameters

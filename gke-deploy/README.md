@@ -5,7 +5,7 @@ This Task deploys an application to a Google Kubernetes Engine cluster using [`g
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/gke-deploy/gke-deploy.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/gke-deploy/gke-deploy.yaml
 ```
 
 ## Parameters
@@ -84,7 +84,7 @@ This Pipeline builds, pushes, and deploys your application to a Google Kubernete
 ## Install the Pipeline
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/gke-deploy/build-push-gke-deploy.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/gke-deploy/build-push-gke-deploy.yaml
 ```
 
 ## Workspaces
