@@ -8,7 +8,7 @@ your Tekton pipelines. Kubeval is a tool used for validating Kubernetes configur
 In order to use Kubeval with Tekton you need to first install the task.
 
 ```console
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kubeval/kubeval.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/kubeval/kubeval.yaml
 ```
 
 ## Usage

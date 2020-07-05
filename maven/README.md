@@ -5,7 +5,7 @@ This Task can be used to run a Maven build.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/maven/maven.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/maven/maven.yaml
 ```
 
 ## Parameters
