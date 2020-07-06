@@ -33,7 +33,7 @@ spec:
           workspace: shared-workspace
       params:
         - name: SQUASH_COUNT
-          value : "2"
+          value: "2"
         - name: COMMIT_MSG
           value: "squashed commit"
         - name: GIT_USER_NAME
