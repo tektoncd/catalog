@@ -42,6 +42,7 @@ spec:
         --stacktrace --console=plain \
         --init-script=/tekton/home/init-script.gradle \
         -Duser.home=/tekton/home \
+        --gradle-user-home=/tekton/home/.gradle \
         -Dgradle.user.home=/tekton/home/.gradle \
         -Djib.allowInsecureRegistries=$(params.INSECUREREGISTRY) \
         -Djib.to.image=$(resources.outputs.image.url)
