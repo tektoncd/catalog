@@ -1,0 +1,44 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: ecr-login-pipeline
+spec:
+  workspaces:
+    - name: secrets
+  tasks:
+    - name: ecr-get-password
+      taskRef:
+        name: aws-ecr-login
+      workspaces:
+        - name: secrets
+          workspace: secrets
+    - name: push-image
+      taskRef:
+        name: push-image
+      runAfter:
+        - ecr-get-password
+      workspaces:
+        - name: secrets
+          workspace: secrets
+      params:
+        - name: PASSWORD
+          value: $(tasks.ecr-get-password.results.password)
+        - name: AWS_ACCOUNT_ID
+          value: "269733383066"
+        - name: REGION
+          value: "us-east-1"
+  results:
+    - name: password
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: ecr-login-pipeline-run
+spec:
+  pipelineRef:
+    name: ecr-login-pipeline
+  workspaces:
+    - name: secrets
+      secret:
+        secretName: aws-credentials
