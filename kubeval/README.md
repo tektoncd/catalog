@@ -39,5 +39,4 @@ By default the task will recursively scan the provided repository for YAML files
 
 ## Workspaces
 
-* **source**: A `git`-type `PipelineResource` specifying the location of the
-  source to build.
+* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) volume containing the source to build.
