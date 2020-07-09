@@ -1,26 +1,42 @@
 # Helm
 
-This Task installs / upgrades a helm chart into your Kubernetes / OpenShift Cluster using [Helm](https://github.com/helm/helm).
+These tasks will install / upgrade a helm chart into your Kubernetes / OpenShift Cluster using [Helm](https://github.com/helm/helm).
 
 ## Install the Task
 
+### helm install / upgrade from source code
+
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/helm/helm-upgrade.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/helm/helm-upgrade-from-source.yaml
 ```
 
-## Parameters
+#### Parameters
 
-- **CHARTS_DIR**: The directory in the source repository where the installable chart should be found.
-- **RELEASE_VERSION**: The version of the release (*default: v1.0.0*)
-- **RELEASE_NAME**: The name of the release (*default: helm-release*)
-- **RELEASE_NAMESPACE**: The namespace in which the release is to be installed (*default: ""*)
-- **OVERWRITE_VALUES**: The values to be overwritten (*default: ""*)
-- **HELM_VERSION**: The helm version which should be used (*default: latest*)
+- **charts_dir**: The directory in the source repository where the installable chart should be found.
+- **release_version**: The version of the release (*default: v1.0.0*)
+- **release_name**: The name of the release (*default: helm-release*)
+- **release_namespace**: The namespace in which the release is to be installed (*default: ""*)
+- **overwrite_values**: The values to be overwritten (*default: ""*)
+- **helm_version**: The helm version which should be used (*default: latest*)
 
-## Workspaces
+#### Workspaces
 
 * **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) volume containing the helm chart.
 
+### helm install / upgrade from repo
+
+```
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/helm/helm-upgrade-from-repo.yaml
+```
+
+#### Parameters
+
+- **chart_name**: The directory in the source repository where the installable chart should be found.
+- **release_version**: The version of the release (*default: v1.0.0*)
+- **release_name**: The name of the release (*default: helm-release*)
+- **release_namespace**: The namespace in which the release is to be installed (*default: ""*)
+- **overwrite_values**: The values to be overwritten (*default: ""*)
+- **helm_version**: The helm version which should be used (*default: latest*)
 
 ## Usage
 
@@ -32,26 +48,48 @@ An example `Pipeline` with a `PipelineRun` can be found in the subdirectory `tes
 
 This `TaskRun` runs the task to retrieve a Git repo and then installs/updates the helm chart that is in the Git repo.
 
-
 ```yaml
+# example upgrade from source
 apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
-  name: example-helm-upgrade
+  name: example-helm-upgrade-from-source
 spec:
   taskRef:
-    name: helm-upgrade
+    name: helm-upgrade-from-source
   params:
-  - name: CHARTS_DIR
+  - name: charts_dir
     value: helm-sample-chart
-  - name: RELEASE_VERSION
+  - name: releases_version
     value: v1.0.0
-  - name: RELEASE_NAME
-    value: helm-sample
-  - name: OVERWRITE_VALUES
+  - name: release_name
+    value: helm-source-sample
+  - name: overwrite_values
     value: "autoscaling.enabled=true,autoscaling.maxReplicas=3"
   workspaces:
   - name: source
     persistentVolumeClaim:
       claimName: my-source
+```
+
+```yaml
+# example upgrade from repo
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: example-helm-upgrade-from-repo
+spec:
+  taskRef:
+    name: helm-upgrade-from-repo
+  params:
+  - name: helm_repo
+    value: https://kubernetes-charts.storage.googleapis.com
+  - name: chart_name
+    value: stable/envoy
+  - name: release_version
+    value: v1.0.0
+  - name: release_name
+    value: helm-repo-sample
+  - name: overwrite_values
+    value: autoscaling.enabled=true,autoscaling.maxReplicas=3
 ```

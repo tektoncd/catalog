@@ -1,35 +1,35 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: helm-upgrade
+  name: helm-upgrade-from-source
 spec:
   params:
-    - name: CHARTS_DIR
+    - name: charts_dir
       description: The directory in source that contains the helm chart
-    - name: RELEASE_VERSION
+    - name: release_version
       description: The helm release version in semantic versioning format
       default: "v1.0.0"
-    - name: RELEASE_NAME
+    - name: release_name
       description: The helm release name
       default: "helm-release"
-    - name: RELEASE_NAMESPACE
+    - name: release_namespace
       description: The helm release namespace
       default: ""
-    - name: OVERWRITE_VALUES
+    - name: overwrite_values
       description: "Specify the values you want to overwrite, comma separated: autoscaling.enabled=true,replicas=1"
       default: ""
-    - name: HELM_VERSION
+    - name: helm_version
       description: "Specify a specific helm version"
       default: "latest"
   workspaces:
     - name: source
   steps:
     - name: upgrade
-      image: lachlanevenson/k8s-helm:$(inputs.params.HELM_VERSION)
+      image: lachlanevenson/k8s-helm:$(inputs.params.helm_version)
       workingDir: /workspace/source
       script: |
         echo current installed helm releases
-        helm list --namespace "$(inputs.params.RELEASE_NAMESPACE)"
+        helm list --namespace "$(inputs.params.release_namespace)"
 
         echo installing helm chart...
-        helm upgrade --install --wait --namespace "$(inputs.params.RELEASE_NAMESPACE)" --version $(inputs.params.RELEASE_VERSION) $(inputs.params.RELEASE_NAME) $(inputs.params.CHARTS_DIR) --debug --set "$(inputs.params.OVERWRITE_VALUES)"
+        helm upgrade --install --wait --namespace "$(inputs.params.release_namespace)" --version $(inputs.params.release_version) $(inputs.params.release_name) $(inputs.params.charts_dir) --debug --set "$(inputs.params.overwrite_values)"

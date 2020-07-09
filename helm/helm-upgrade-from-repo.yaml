@@ -1,0 +1,40 @@
+# This Task will do a helm upgrade based on the given helm repo and chart
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: helm-upgrade-from-repo
+spec:
+  params:
+    - name: helm_repo
+      description: "Specify a specific helm repo"
+    - name: chart_name
+      description: "Specify chart name that will be deployed"
+    - name: release_version
+      description: The helm release version in semantic versioning format
+      default: "v1.0.0"
+    - name: release_name
+      description: The helm release name
+      default: "helm-release"
+    - name: release_namespace
+      description: The helm release namespace
+      default: ""
+    - name: overwrite_values
+      description: "Specify the values you want to overwrite, comma separated: autoscaling.enabled=true,replicas=1"
+      default: ""
+    - name: helm_version
+      description: "Specify a specific helm version"
+      default: "latest"
+  steps:
+    - name: upgrade-from-repo
+      image: lachlanevenson/k8s-helm:$(inputs.params.helm_version)
+      script: |
+        echo current installed helm releases
+        helm list --namespace "$(inputs.params.release_namespace)"
+        echo parsing helms repo name...
+        REPO=`echo "$(inputs.params.chart_name)" | cut -d "/" -f 1`
+        echo adding helm repo...
+        helm repo add $REPO "$(inputs.params.helm_repo)"
+        echo adding updating repo...
+        helm repo update
+        echo installing helm chart...
+        helm upgrade --wait --install --namespace "$(inputs.params.release_namespace)" $(inputs.params.release_name) $(inputs.params.chart_name) --debug --set "$(inputs.params.overwrite_values)"
