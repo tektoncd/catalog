@@ -20,7 +20,7 @@ This task currently works only on kubernetes 1.6+ support for a task that works 
 
 ## Workspaces
 
-* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) volume containing the terraform HCL or JSON files.
+* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) containing the terraform HCL or JSON files.
 
 
 ## Terraform-Secret
