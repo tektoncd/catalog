@@ -19,7 +19,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/helm/
 
 ## Workspaces
 
-* **source**: A `git`-type `PipelineResource` specifying the location of the helm chart.
+* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) volume containing the helm chart.
 
 
 ## Usage
