@@ -1,20 +1,20 @@
 apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
-  name: example-helm-upgrade
+  name: example-helm-upgrade-from-source
 spec:
   taskRef:
-    name: helm-upgrade
+    name: helm-upgrade-from-source
   params:
-    - name: CHARTS_DIR
+    - name: charts_dir
       value: helm-sample-chart
-    - name: RELEASE_VERSION
+    - name: releases_version
       value: v1.0.0
-    - name: RELEASE_NAME
-      value: helm-sample
-    - name: OVERWRITE_VALUES
+    - name: release_name
+      value: helm-source-sample
+    - name: overwrite_values
       value: "autoscaling.enabled=true,autoscaling.maxReplicas=3"
   workspaces:
     - name: source
       persistentVolumeClaim:
-        claimName: helm-source-pvc
+        claimName: my-source
