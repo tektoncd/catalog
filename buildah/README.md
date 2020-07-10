@@ -26,6 +26,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/build
   non-TLS registry) (_default:_ `true`)
 * **FORMAT**: The format of the built container, oci or docker (_default:_
  `oci`)
+* **BUILD_EXTRA_ARGS**: Extra parameters passed for the build command when
+  building images. (_default:_ `""`)
+* **PUSH_EXTRA_ARGS**: Extra parameters passed for the push command when
+  pushing images. (_default:_ `""`)
 
 ## Workspaces
 

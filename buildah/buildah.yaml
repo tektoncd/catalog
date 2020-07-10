@@ -25,6 +25,13 @@ spec:
   - name: FORMAT
     description: The format of the built container, oci or docker
     default: "oci"
+  - name: BUILD_EXTRA_ARGS
+    description: Extra parameters passed for the build command when building images.
+    default: ""
+  - name: PUSH_EXTRA_ARGS
+    description: Extra parameters passed for the push command when pushing images.
+    type: string
+    default: ""
   workspaces:
   - name: source
 
@@ -36,7 +43,11 @@ spec:
   - name: build
     image: $(params.BUILDER_IMAGE)
     workingDir: $(workspaces.source.path)
-    command: ['buildah', '--storage-driver=$(params.STORAGE_DRIVER)', 'bud', '--format=$(params.FORMAT)', '--tls-verify=$(params.TLSVERIFY)', '--no-cache', '-f', '$(params.DOCKERFILE)', '-t', '$(params.IMAGE)', '$(params.CONTEXT)']
+    script: |
+      buildah --storage-driver=$(params.STORAGE_DRIVER) bud \
+        $(params.BUILD_EXTRA_ARGS) --format=$(params.FORMAT) \
+        --tls-verify=$(params.TLSVERIFY) --no-cache \
+        -f $(params.DOCKERFILE) -t $(params.IMAGE) $(params.CONTEXT)
     volumeMounts:
     - name: varlibcontainers
       mountPath: /var/lib/containers
@@ -46,7 +57,11 @@ spec:
   - name: push
     image: $(params.BUILDER_IMAGE)
     workingDir: $(workspaces.source.path)
-    command: ['buildah', '--storage-driver=$(params.STORAGE_DRIVER)', 'push', '--tls-verify=$(params.TLSVERIFY)', '--digestfile', '$(workspaces.source.path)/image-digest', '$(params.IMAGE)', 'docker://$(params.IMAGE)']
+    script: |
+      buildah --storage-driver=$(params.STORAGE_DRIVER) push \
+        $(params.PUSH_EXTRA_ARGS) --tls-verify=$(params.TLSVERIFY) \
+        --digestfile $(workspaces.source.path)/image-digest $(params.IMAGE) \
+        docker://$(params.IMAGE)
     volumeMounts:
     - name: varlibcontainers
       mountPath: /var/lib/containers
