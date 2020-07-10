@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: example-helm-upgrade-from-repo
+spec:
+  taskRef:
+    name: helm-upgrade-from-repo
+  params:
+  - name: helm_repo
+    value: https://kubernetes-charts.storage.googleapis.com
+  - name: chart_name
+    value: stable/envoy
+  - name: release_version
+    value: v1.0.0
+  - name: release_name
+    value: helm-repo-sample
+  - name: overwrite_values
+    value: autoscaling.enabled=true,autoscaling.maxReplicas=3
