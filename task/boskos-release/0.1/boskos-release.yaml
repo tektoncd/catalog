@@ -1,0 +1,41 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: boskos-release
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: "boskos,test"
+spec:
+  description: |
+    Release a project acquired using Boskos.
+
+    The boskos-release Task will release the specified resource from the boskos instance
+    at server-url. It also assumes the resource was obtained via boskos-acquire and so
+    terminates the heartbeat pod that was created by that Task to keep the resource obtained.
+    It will mark the resource as dirty so that the boskos Janitor will clean it (by deleting
+    any state created).
+  params:
+  - name: server-url
+    description: The URL of the running boskos server
+    default: "http://boskos.test-pods.svc.cluster.local"
+  - name: leased-resource
+    description: A string that identifies the leased resource to release.
+  - name: owner-name
+    description: A string that identifies the owner of the leased resource to request.
+  steps:
+  - name: boskosctl-release
+    image: gcr.io/k8s-staging-boskos/boskosctl@sha256:a7fc984732c5dd0b4e0fe0a92e2730fa4b6bddecd0f6f6c7c6b5501abe4ab105
+    args:
+    - "release"
+    - "--server-url=$(params.server-url)"
+    - "--owner-name=$(params.owner-name)"
+    - "--name=$(params.leased-resource)"
+    - "--target-state=dirty"
+  - name: stop-boskosctl-heartbeat
+    image: lachlanevenson/k8s-kubectl@sha256:3a5e22a406a109f4f26ec06b5f1f6a66ae0cd0e185bc28499eb7b7a3bbf1fe09
+    args:
+    - "delete"
+    - "pod"
+    - "boskos-heartbeat-$(params.leased-resource)"

@@ -1,0 +1,34 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: do-boskos-
+spec:
+  serviceAccountName: boskos-heartbeat
+  pipelineSpec:
+    params:
+    - name: owner-name
+      default: trying-out-boskos
+    tasks:
+      - name: boskos-acquire
+        taskRef:
+          name: boskos-acquire
+        params:
+          - name: owner-name
+            value: $(params.owner-name)
+      - name: wait
+        runAfter: [boskos-acquire]
+        taskSpec:
+          steps:
+          - image: alpine
+            script: |
+              sleep 1m
+      - name: boskos-release
+        runAfter: [wait]
+        taskRef:
+          name: boskos-release
+        params:
+          - name: leased-resource
+            # TODO(pipeline#2557): This is a good candidate for a finally clause
+            value: $(tasks.boskos-acquire.results.leased-resource)
+          - name: owner-name
+            value: $(params.owner-name)
