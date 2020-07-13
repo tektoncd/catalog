@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: buildpacks-v3
+  name: buildpacks
   labels:
     app.kubernetes.io/version: "0.1"
   annotations:
@@ -22,7 +22,7 @@ spec:
 
   params:
     - name: BUILDER_IMAGE
-      description: The image on which builds will run (must include v3 lifecycle and compatible buildpacks).
+      description: The image on which builds will run (must include lifecycle and compatible buildpacks).
     - name: CACHE
       description: The name of the persistent app cache volume.
       default: empty-dir

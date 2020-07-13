@@ -3,7 +3,7 @@
 This build template builds source into a container image using [Cloud Native
 Buildpacks](https://buildpacks.io).
 
-The Cloud Native Buildpacks website describes v3 buildpacks as:
+The Cloud Native Buildpacks website describes buildpacks as:
 
 > ... pluggable, modular tools that translate source code into container-ready
 > artifacts such as OCI images. They replace Dockerfiles in the app development
@@ -15,21 +15,19 @@ The Cloud Native Buildpacks website describes v3 buildpacks as:
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/buildpacks-v3/0.1/buildpacks-v3.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/buildpacks/0.1/buildpacks.yaml
 ```
 
 > **NOTE:** This task is currently only compatible with Tekton **v0.11.0** and above, and CNB Platform API 0.3 (lifecycle v0.7.0 and above). For previous Platform API versions, [see below](#previous-platform-api-versions).
 
 ## Parameters
 
-* **`BUILDER_IMAGE`**: The image on which builds will run. (must include v3 lifecycle and compatible buildpacks; _required_)
+* **`BUILDER_IMAGE`**: The image on which builds will run. (must include lifecycle and compatible buildpacks; _required_)
 
-* **`CACHE`**: The name of the persistent app cache volume. (_default:_ an empty
-  directory -- effectively no cache)
+* **`CACHE`**: The name of the persistent app cache volume. (_default:_ an empty directory -- effectively no cache)
 
 * **`PLATFORM_DIR`**: A directory containing platform provided configuration, such as environment variables.
-  Files of the format `/platform/env/MY_VAR` with content `my-value` will be translated by the lifecycle into
-  environment variables provided to buildpacks. For more information, see the [buildpacks spec](https://github.com/buildpacks/spec/blob/master/buildpack.md#provided-by-the-platform). (_default:_ an empty directory)
+  Files of the format `/platform/env/MY_VAR` with content `my-value` will be translated by the lifecycle into environment variables provided to buildpacks. For more information, see the [buildpacks spec](https://github.com/buildpacks/spec/blob/master/buildpack.md#provided-by-the-platform). (_default:_ an empty directory)
 
 * **`USER_ID`**: The user ID of the builder image user, as a string value. (_default:_ `"1000"`)
 
@@ -50,7 +48,7 @@ The `source` workspace holds the source to build. See `SOURCE_SUBPATH` above if 
 
 ## Usage
 
-This `TaskRun` will use the `buildpacks-v3` task to build the source code, then publish a container image.
+This `TaskRun` will use the `buildpacks` task to build the source code, then publish a container image.
 
 ```
 apiVersion: tekton.dev/v1beta1
@@ -59,7 +57,7 @@ metadata:
   name: example-run
 spec:
   taskRef:
-    name: buildpacks-v3
+    name: buildpacks
   podTemplate:
     volumes:
 # Uncomment the lines below to use an existing cache
@@ -97,12 +95,11 @@ spec:
 
 ### Example builders
 
-Cloud Foundry:
- - `cloudfoundry/cnb:bionic`
- - `cloudfoundry/cnb:cflinuxfs3`
-
 Heroku:
- - `heroku/buildpacks:18`
+ - `heroku/buildpacks:18` &rarr; heroku-18 base image with buildpacks for Ruby, Java, Node.js, Python, Golang, & PHP
+
+Google:
+ - `gcr.io/buildpacks/builder:v1` &rarr; Ubuntu 18 base image with buildpacks for .NET, Go, Java, Node.js, and Python
 
 ## Previous Platform API Versions
 
