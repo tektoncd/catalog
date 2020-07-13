@@ -14,10 +14,57 @@ pipelines.
 
 Each `Task` is provided in a separate directory along with a README.md and a
 Kubernetes manifest, so you can choose which `Task`s to install on your
-cluster. A directory can hold more than one task (e.g. [`golang`](golang)).
+cluster. A directory can hold one task and multiple versions.
 
 _See [our project roadmap](roadmap.md)._
 
+## Catalog Structure
+
+1. Each resource follows the following structure
+
+    ```
+    ./task/                     👈 the kind of the resource
+
+        /argocd                 👈 definition file must have same name
+           /0.1
+             /OWNERS            👈 owners of this resource
+             /README.md
+             /argocd.yaml       👈 the file name should match the resource name
+             /samples/deploy-to-k8s.yaml
+           /0.2/...
+
+        /golang-build
+           /OWNERS
+           /README.md
+           /0.1
+             /README.md
+             /golang-build.yaml
+             /samples/golang-build.yaml
+    ```
+
+2. Resource YAML file includes following changes
+  *  Labels include the version of the resource.
+  *  Annotations include `minimum pipeline version` supported by the resource,
+     `tags` associated with the resource and `displayName` of the resource
+
+  ```yaml
+
+   labels:
+      app.kubernetes.io/version: "0.1"            👈 Version of the resource
+
+    annotations:
+      tekton.dev/pipelines.minVersion: "0.12.1"   👈 Min Version of pipeline resource is compatible
+      tekton.dev/tags: "ansible, cli"             👈 Comma separated list of tags
+      tekton.dev/displayName: "Ansible Tower Cli" 👈 displayName can be optional
+
+  spec:
+    description: |-
+      ansible-tower-cli task simplifies
+      workflow, jobs, manage users...             👈 Summary
+
+      Ansible Tower (formerly ‘AWX’) is a ...
+
+  ```
 
 ## `Task` Kinds
 
