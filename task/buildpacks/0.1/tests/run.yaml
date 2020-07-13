@@ -23,9 +23,9 @@ spec:
       value: ""
     - name: deleteExisting
       value: "true"
-  - name: buildpacks-v3
+  - name: buildpacks
     taskRef:
-      name: buildpacks-v3
+      name: buildpacks
     runAfter:
     - fetch-repository
     workspaces:
