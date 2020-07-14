@@ -53,4 +53,4 @@ stringData:
   GITLAB_TOKEN: $(personal-gitlab-token)
 ```
 
-This [example](../gitlab/create-gitlab-release/example/run.yaml) can be referred to create Taskrun for Gitlab release. 
+This [samples](../0.1/samples/run.yaml) can be referred to create Taskrun for Gitlab release.

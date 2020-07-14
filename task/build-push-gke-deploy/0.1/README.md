@@ -44,7 +44,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 ### Authorizing the Pipeline
 
 See [Authorizing `gcloud`
-commands](../gcloud/README.md#authorizing-gcloud-commands) for authorizing the
+commands](../../gcloud/0.1/README.md#authorizing-gcloud-commands) for authorizing the
 `build-push-gke-deploy` Pipeline using a Google IAM Service Account (the instructions will
 describe authorizing `gcloud`, but the steps are the same).
 
@@ -109,4 +109,4 @@ See
 to learn how to access private Git repositories in Tekton.
 
 See
-[here](build-push-gke-deploy-example.md) for a full example of using this Pipeline.
+[here](../0.1/samples/build-push-gke-deploy-example.md) for a full example of using this Pipeline.

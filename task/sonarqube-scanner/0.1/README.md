@@ -29,7 +29,7 @@ https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/git/git-clone.yaml
 
 ## Workspaces
 
-- **source-dir**: `PersistentVolumeClaim`-type so that volume can be shared among git-clone and sonarqube task. Sample PVC can be found [here](./examples/pvc.yaml)
+- **source-dir**: `PersistentVolumeClaim`-type so that volume can be shared among git-clone and sonarqube task. Sample PVC can be found [here](../0.1/samples/pvc.yaml)
 - **sonar-settings**: To mount the `sonar-project.properties` via the `ConfigMap`. (_Default_ : `emptyDir:{}`)
 
   To mount via the `ConfigMap`:
@@ -57,7 +57,7 @@ Sample IPAddress we will obtain using above command is like http://172.17.0.2:90
 ## Usage
 
 1. `sonar-project.properties` present in Github Repository. For example :- following [repo](https://github.com/vinamra28/sonartest) contains the properties file and Sonar Host URL needs to be updated via the `params`.
-   The sample run for this scenario can be found [here](./examples/run.yaml)
+   The sample run for this scenario can be found [here](../0.1/samples/run.yaml)
 
 2. In case when no `sonar-project.properties` file is present then above two parameters are mandatory to create a `sonar-project.properties` file with the required fields or the file can be mounted via the `ConfigMap`.
 
