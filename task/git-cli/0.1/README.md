@@ -5,7 +5,7 @@ in your Pipeline.
 
 ## `git-cli`
 
-This [task](../git/git-cli.yaml) can be used to perform `git operations`.
+This [task](../0.1/git-cli.yaml) can be used to perform `git operations`.
 All git commands can be found [here](https://git-scm.com/docs).
 
 Command that needs to be run can be passed as a script to the task.
@@ -47,7 +47,7 @@ specifying the command you would like to run as the `GIT_SCRIPT` param.
         git remote add origin https://github.com/kelseyhightower/nocode
         git pull origin master
 ```
-[Git Pipeline](../git/examples/git-cli/pipeline.yaml) can be referred to use
+[Git Pipeline](../0.1/samples/git-cli/pipeline.yaml) can be referred to use
 this task in the pipeline.
 
 **NOTE**

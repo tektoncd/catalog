@@ -66,7 +66,7 @@ populated and used to represent the current state of the Pull Request; before
 [upload](#mode-upload-or-download) mutates the the Pull Request it will compare
 the contents of the `pr` workspace to this file to determine what has changed.
 
-_See [pr-example](.pr-example) for an example of a `pr` workspace poulated with comments, labels,
+_See [pr-example](../0.1/pr-example) for an example of a `pr` workspace poulated with comments, labels,
 and statuses (.MANIFEST file not included)._
 
 ##### statuses
@@ -95,7 +95,7 @@ Each status file is a json file containing a dictionary with the following keys:
 }
 ```
 
-_See [pr-example/status](.pr-example/status) for examples._
+_See [pr-example/status](../0.1/pr-example/status) for examples._
 
 ##### comments
 
@@ -128,7 +128,7 @@ in a vendor agnostic way [with these keys](https://github.com/jenkins-x/go-scm/b
   * `Created` - [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) conforming string
   * `Updated` - [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) conforming string
 
-_See [pr-example/comments](.pr-example/comments) for examples of GitHub comments._
+_See [pr-example/comments](../0.1/pr-example/comments) for examples of GitHub comments._
 
 ## Usage
 
@@ -176,7 +176,7 @@ spec:
     value: some-secret
 ```
 
-[sample/add-comment.yaml](sample/add-comment.yaml) contains an example of a `PipelineRun`
+[sample/add-comment.yaml](../0.1/samples/add-comment.yaml) contains an example of a `PipelineRun`
 which creates a `Pipeline` to exercise this Task's upload and download functionality.
 
 To try out the sample (note that it expects the existence of a [secret](#permissions) called

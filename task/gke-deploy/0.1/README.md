@@ -26,7 +26,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 ### Authorizing `gke-deploy` commands
 
 See [Authorizing `gcloud`
-commands](../gcloud/README.md#authorizing-gcloud-commands) for authorizing the
+commands](../../gcloud/0.1/README.md#authorizing-gcloud-commands) for authorizing the
 `gke-deploy` Task using a Google IAM Service Account (the instructions describe
 authorizing `gcloud`, but the steps are the same).
 

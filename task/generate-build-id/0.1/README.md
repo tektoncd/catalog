@@ -5,7 +5,7 @@ Given a base version, this task generates a unique build id by appending the bas
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/buildid/task.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/generate-build-id/0.1/generate-build-id.yaml
 ```
 
 ## Parameters
@@ -63,9 +63,9 @@ spec:
     - name: get-build-id
       taskRef:
         name: generate-build-id
-      params:  
+      params:
         - name: base-version
-          value: $(params.service-version)       
+          value: $(params.service-version)
     - name: build-api
       taskRef:
         name: build-service-api
@@ -87,7 +87,7 @@ spec:
   params:
     - name: build-id
       description: ID of the current build
-      type: string                          
+      type: string
   steps:
     - name: display-buildid
       image: bash:latest

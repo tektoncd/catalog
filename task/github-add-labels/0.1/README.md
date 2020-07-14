@@ -55,9 +55,9 @@ params:
     - name: REQUEST_URL
       value: https://github.com/Divyansh42/aws-cli/pull/1
     - name: LABELS
-      value: 
+      value:
         - approve
         - kind/feature
 ```
 
-[This](../github/add-labels/example/run.yaml) can be referred to create a Taskrun.
+[This](../0.1/samples/run.yaml) can be referred to create a Taskrun.
