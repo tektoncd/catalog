@@ -5,7 +5,7 @@ in your Pipeline.
 
 ## `git-rebase`
 
-This [task](../git/git-rebase.yaml) will `rebase` the branch based
+This [task](../0.1/git-rebase.yaml) will `rebase` the branch based
 on the user input. Before rebase, if `squashing` of the commits is required,
 then it can be done by providing the `squash count` i.e number of commits to squash.
 
@@ -38,12 +38,12 @@ pull and rebase (_required_).
 ### Usage
 
 This task needs authentication to git in order to push after the rebase.
-This can be done via `secrets` and `service account`. Refer [this](../git/git-rebase-example)
+This can be done via `secrets` and `service account`. Refer [this](../0.1/samples/git-rebase)
 example to create secret and service account for the git authentication.
 
-[Git Rebase](../git/git-rebase-example) pipeline has two tasks, one to clone a
+[Git Rebase](../0.1/samples/git-rebase) pipeline has two tasks, one to clone a
 git repository in the provided workspace and other to perform rebase operation.
-Here, [git-clone](../git/git-clone.yaml) task is used to clone the repository.
+Here, [git-clone](../../git-clone/0.1/git-clone.yaml) task is used to clone the repository.
 
 A workspace called "shared-workspace" is passed first to the `git-clone`
 Task for the code to be checked out on and then to the `git-rebase` Task
@@ -52,7 +52,7 @@ to perform the rebase operation.
 Remote name, Remote URL and Branch name needs to provided in the input
 to set the remote in order to perfrom push and pull operations.
 
-[Git Rebase](../git/git-rebase-example/run.yaml) pipeline can be referred to
+[Git Rebase](../0.1/samples/git-rebase/run.yaml) pipeline can be referred to
 create a `pipeline` and `pipelinerun`.
 
 **NOTE**

@@ -57,7 +57,7 @@ This will make your HTTPS connections insecure
 
 ## Usage
 
-This [example](../kubeconfig-creator/example) task uses a 
+This [example](../0.1/samples) task uses a 
 `shared workspace` with [`PVC`](https://kubernetes.io/docs/concepts/storage/persistent-volumes) 
 to store the `kubeconfig` in the `output` directory. 
 Kubeconfig file is stored at `/workspace/<workspace-name>/kubeconfig`.
@@ -84,7 +84,7 @@ params:
   - name: clientKeyData
     value: LS0tLS1C....
 ```
-[This](../kubeconfig-creator/example/pipeline.yaml) can be referred for the pipeline example.
+[This](../0.1/samples/pipeline.yaml) can be referred for the pipeline example.
 
 
 `Test-task` uses shared-workspace to fetch the kubeconfig file from the

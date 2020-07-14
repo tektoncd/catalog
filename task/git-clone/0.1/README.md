@@ -50,7 +50,7 @@ as well as
 
 The following pipelines demonstrate usage of the git-clone Task:
 
-- [Cloning a branch](./examples/git-clone-checking-out-a-branch.yaml)
-- [Checking out a specific git commit](./examples/git-clone-checking-out-a-commit.yaml)
-- [Checking out a git tag and using the "commit" Task Result](./examples/using-git-clone-task-result.yaml)
+- [Cloning a branch](../0.1/samples/git-clone-checking-out-a-branch.yaml)
+- [Checking out a specific git commit](../0.1/samples/git-clone-checking-out-a-commit.yaml)
+- [Checking out a git tag and using the "commit" Task Result](../0.1/samples/using-git-clone-result.yaml)
 
