@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: shellcheck
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: linter
+    tekton.dev/displayName: "Shellcheck"
+spec:
+  description: >-
+    This task can be used to perform lint check on Shell Script files
+  workspaces:
+    - name: shared-workspace
+      description: A workspace that contains the fetched git repository.
+  params:
+    - name: args
+      type: array
+      description: extra args needs to append
+      default: ["--help"]
+  steps:
+    - name: lint-shell
+      image: koalaman/shellcheck
+      workingDir: $(workspaces.shared-workspace.path)
+      command:
+        - /bin/shellcheck
+      args:
+        - $(params.args)
