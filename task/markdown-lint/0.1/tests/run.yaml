@@ -1,0 +1,48 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: linter-pipeline
+spec:
+  workspaces:
+    - name: shared-workspace
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: https://github.com/vinamra28/tekton-linter-test
+        - name: revision
+          value: "linter-test"
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+    - name: md-lint-run #lint mardown
+      taskRef:
+        name: markdown-lint
+      runAfter:
+        - fetch-repository
+      workspaces:
+        - name: shared-workspace
+          workspace: shared-workspace
+      params:
+        - name: args
+          value: ["."]
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: linter-pipeline-run
+spec:
+  pipelineRef:
+    name: linter-pipeline
+  workspaces:
+    - name: shared-workspace
+      persistentvolumeclaim:
+        claimName: linter-pvc
