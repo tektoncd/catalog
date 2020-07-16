@@ -31,28 +31,6 @@ spec:
       params:
         - name: package
           value: github.com/tektoncd/pipeline
-    - name: run-build
-      taskRef:
-        name: golang-build
-      runAfter:
-        - fetch-repository
-      workspaces:
-        - name: source
-          workspace: shared-workspace
-      params:
-        - name: package
-          value: github.com/tektoncd/pipeline
-    - name: run-test
-      taskRef:
-        name: golang-test
-      runAfter:
-        - fetch-repository
-      workspaces:
-        - name: source
-          workspace: shared-workspace
-      params:
-        - name: package
-          value: github.com/tektoncd/pipeline
 
 ---
 apiVersion: tekton.dev/v1beta1
