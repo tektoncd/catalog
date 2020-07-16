@@ -26,6 +26,6 @@ The `ko` tool is required to update the task.yaml - see these [installation inst
 
 Once you have ko, you can build the binary and resolve the task yaml into installable yaml.
 
-`ko resolve -f config/task.yaml > task.yaml`
+`ko resolve -f config/task.yaml > cloudevent.yaml`
 
 The go import path will be replaced in the yaml by the built container.
