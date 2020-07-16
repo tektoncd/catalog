@@ -4,7 +4,7 @@ This build template builds source into a container image using [Cloud Native Bui
 
 Cloud Native Buildpacks are pluggable, modular tools that transform application source code into OCI images. They replace Dockerfiles in the app development lifecycle, and enable for swift rebasing of images and modular control over images (through the use of builders), among other benefits. This command uses a builder to construct the image, and pushes it to the registry provided.
 
-See also [`buildpacks-separate-phases`](../buildpacks-separate-phases) for the deconstructed version of this task, which runs each of the [lifecycle phases](https://buildpacks.io/docs/concepts/components/lifecycle/#phases) individually (this task uses the [creator binary](https://github.com/buildpacks/spec/blob/platform/0.3/platform.md#operations), which coordinates and runs all of the phases).
+See also [`buildpacks-phases`](../buildpacks-phases) for the deconstructed version of this task, which runs each of the [lifecycle phases](https://buildpacks.io/docs/concepts/components/lifecycle/#phases) individually (this task uses the [creator binary](https://github.com/buildpacks/spec/blob/platform/0.3/platform.md#operations), which coordinates and runs all of the phases).
 
 ## Install the Task
 

@@ -2,16 +2,16 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: buildpacks-separate-phases
+  name: buildpacks-phases
   labels:
     app.kubernetes.io/version: "0.1"
   annotations:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: image-build
-    tekton.dev/displayName: "buildpacks-separate-phases"
+    tekton.dev/displayName: "buildpacks-phases"
 spec:
   description: >-
-    The Buildpacks-Separate-Phases task builds source into a container image and pushes it to
+    The Buildpacks-Phases task builds source into a container image and pushes it to
     a registry, using Cloud Native Buildpacks. This command separately calls the aspects of the
     Cloud Native Buildpacks lifecycle, to provide more granular control over the construction of
     the image.
