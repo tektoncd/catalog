@@ -52,6 +52,6 @@ set -ex
 set -o pipefail
 
 test_yaml_can_install
-test_task_creation */tests
+test_task_creation task/*/*/tests
 
 success
