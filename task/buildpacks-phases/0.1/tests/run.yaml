@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: buildpacks-separate-phases-test-pipeline
+  name: buildpacks-phases-test-pipeline
 spec:
   workspaces:
   - name: shared-workspace
@@ -23,9 +23,9 @@ spec:
       value: ""
     - name: deleteExisting
       value: "true"
-  - name: buildpacks
+  - name: buildpacks-phases
     taskRef:
-      name: buildpacks-separate-phases
+      name: buildpacks-phases
     runAfter:
     - fetch-repository
     workspaces:
@@ -46,10 +46,10 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  name: buildpacks-test-pipeline-run
+  name: buildpacks-phases-test-pipeline-run
 spec:
   pipelineRef:
-    name: buildpacks-test-pipeline
+    name: buildpacks-phases-test-pipeline
   workspaces:
   - name: shared-workspace
     persistentvolumeclaim:
