@@ -28,7 +28,7 @@ source $(dirname $0)/../vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
 function add_sidecar_registry() {
     cp ${1} ${TMPF}.read
 
-    cat ${TMPF}.read | python -c 'import yaml,sys;data=yaml.load(sys.stdin.read());data["spec"]["sidecars"]=[{"image":"registry", "name": "registry"}];print(yaml.dump(data, default_flow_style=False));' > ${TMPF}
+    cat ${TMPF}.read | python -c 'import yaml,sys;data=yaml.load(sys.stdin.read(), Loader=yaml.FullLoader);data["spec"]["sidecars"]=[{"image":"registry", "name": "registry"}];print(yaml.dump(data, default_flow_style=False));' > ${TMPF}
     rm -f ${TMPF}.read
 }
 
