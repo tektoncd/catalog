@@ -1,23 +1,4 @@
 ---
-apiVersion: tekton.dev/v1beta1
-kind: TaskRun
-metadata:
-  name: git-cli-run
-spec:
-  taskRef:
-    name: git-cli
-  workspaces:
-    - name: source
-      emptyDir: {}
-    - name: input
-      emptyDir: {}
-  params:
-    - name: GIT_SCRIPT
-      value: |
-        git init
-        git remote add origin https://github.com/kelseyhightower/nocode
-        git pull origin master
----
 apiVersion: tekton.dev/v1alpha1
 kind: TaskRun
 metadata:
@@ -135,41 +116,3 @@ spec:
         value: https://github.com/kelseyhightower/nocode
       - name: deleteExisting
         value: "true"
----
-apiVersion: tekton.dev/v1alpha1
-kind: TaskRun
-metadata:
-  name: git-batch-merge-test-mode-merge
-spec:
-  workspaces:
-    - name: output
-      emptyDir: {}
-  taskRef:
-    name: git-batch-merge
-  inputs:
-    params:
-      - name: url
-        value: https://github.com/kelseyhightower/nocode
-      - name: mode
-        value: "merge"
-      - name: batchedRefs
-        value: "refs/pull/4014/head refs/pull/3894/head"
----
-apiVersion: tekton.dev/v1alpha1
-kind: TaskRun
-metadata:
-  name: git-batch-merge-test-mode-merge-cherry-pick
-spec:
-  workspaces:
-    - name: output
-      emptyDir: {}
-  taskRef:
-    name: git-batch-merge
-  inputs:
-    params:
-      - name: url
-        value: https://github.com/kelseyhightower/nocode
-      - name: mode
-        value: "cherry-pick"
-      - name: batchedRefs
-        value: "refs/pull/4014/head refs/pull/3894/head"
