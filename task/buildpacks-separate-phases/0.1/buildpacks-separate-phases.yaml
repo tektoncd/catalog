@@ -2,17 +2,19 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: buildpacks
+  name: buildpacks-separate-phases
   labels:
     app.kubernetes.io/version: "0.1"
   annotations:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: image-build
-    tekton.dev/displayName: "buildpacks"
+    tekton.dev/displayName: "buildpacks-separate-phases"
 spec:
   description: >-
-    The Buildpacks task builds source into a container image and pushes it to a registry,
-    using Cloud Native Buildpacks.
+    The Buildpacks-Separate-Phases task builds source into a container image and pushes it to
+    a registry, using Cloud Native Buildpacks. This command separately calls the aspects of the
+    Cloud Native Buildpacks lifecycle, to provide more granular control over the construction of
+    the image.
 
     Cloud Native Buildpacks are pluggable, modular tools that transform application source code
     into OCI images. They replace Dockerfiles in the app development lifecycle, and allow for swift
@@ -25,9 +27,6 @@ spec:
     - name: CACHE
       description: The name of the persistent app cache volume.
       default: empty-dir
-    - name: CACHE_IMAGE
-      description: The name of the persistent app cache image.
-      default: ""
     - name: PLATFORM_DIR
       description: The name of the platform directory.
       default: empty-dir
@@ -43,15 +42,6 @@ spec:
     - name: SOURCE_SUBPATH
       description: A subpath within the `source` input where the source to build is located.
       default: ""
-    - name: SKIP_RESTORE
-      description: Do not write layer metadata or restore cached layers
-      default: "false"
-    - name: RUN_IMAGE
-      description: Reference to a run image to use
-      default: ""
-      # - name: ADDITIONAL_TAGS
-      #   description: Additional space delimited tag(s) to apply to exported image
-      #   default: ""
 
   resources:
     outputs:
@@ -73,15 +63,11 @@ spec:
       command: ["/bin/sh"]
       args:
         - "-c"
-        - |-
+        - >
           chown -R "$(params.USER_ID):$(params.GROUP_ID)" "/tekton/home" &&
           chown -R "$(params.USER_ID):$(params.GROUP_ID)" "/layers" &&
           chown -R "$(params.USER_ID):$(params.GROUP_ID)" "/cache" &&
           chown -R "$(params.USER_ID):$(params.GROUP_ID)" "$(workspaces.source.path)"
-          # if [ -n "$(params.ADDITIONAL_TAGS)" ]; then
-          #   params.ADDITIONAL_TAGS=`echo $(params.ADDITIONAL_TAGS) | sed  -e 's/ / -tag=/g' -e 's/^/-tag=/'`
-          # fi
-          # echo $(params.ADDITIONAL_TAGS)
       volumeMounts:
         - name: layers-dir
           mountPath: /layers
@@ -90,31 +76,80 @@ spec:
       securityContext:
         privileged: true
 
-    - name: create
+    - name: detect
       image: $(params.BUILDER_IMAGE)
       imagePullPolicy: Always
-      command: ["/cnb/lifecycle/creator"]
+      command: ["/cnb/lifecycle/detector"]
       args:
         - "-app=$(workspaces.source.path)/$(params.SOURCE_SUBPATH)"
-        - "-cache-dir=/cache"
-        - "-cache-image=$(params.CACHE_IMAGE)"
-        - "-gid=$(params.GROUP_ID)"
+        - "-group=/layers/group.toml"
+        - "-plan=/layers/plan.toml"
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+        - name: $(params.PLATFORM_DIR)
+          mountPath: /platform
+
+    - name: analyze
+      image: $(params.BUILDER_IMAGE)
+      imagePullPolicy: Always
+      command: ["/cnb/lifecycle/analyzer"]
+      args:
         - "-layers=/layers"
-        - "-platform=/platform"
+        - "-group=/layers/group.toml"
+        - "-cache-dir=/cache"
+        - "$(resources.outputs.image.url)"
+      volumeMounts:
+        - name: $(params.CACHE)
+          mountPath: /cache
+        - name: layers-dir
+          mountPath: /layers
+
+    - name: restore
+      image: $(params.BUILDER_IMAGE)
+      imagePullPolicy: Always
+      command: ["/cnb/lifecycle/restorer"]
+      args:
+        - "-group=/layers/group.toml"
+        - "-layers=/layers"
+        - "-cache-dir=/cache"
+      volumeMounts:
+        - name: $(params.CACHE)
+          mountPath: /cache
+        - name: layers-dir
+          mountPath: /layers
+
+    - name: build
+      image: $(params.BUILDER_IMAGE)
+      imagePullPolicy: Always
+      command: ["/cnb/lifecycle/builder"]
+      args:
+        - "-app=$(workspaces.source.path)/$(params.SOURCE_SUBPATH)"
+        - "-layers=/layers"
+        - "-group=/layers/group.toml"
+        - "-plan=/layers/plan.toml"
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+        - name: $(params.PLATFORM_DIR)
+          mountPath: /platform
+
+    - name: export
+      image: $(params.BUILDER_IMAGE)
+      imagePullPolicy: Always
+      command: ["/cnb/lifecycle/exporter"]
+      args:
+        - "-app=$(workspaces.source.path)/$(params.SOURCE_SUBPATH)"
+        - "-layers=/layers"
+        - "-group=/layers/group.toml"
+        - "-cache-dir=/cache"
         - "-process-type=$(params.PROCESS_TYPE)"
-        - "-skip-restore=$(params.SKIP_RESTORE)"
-        - "-previous-image=$(resources.outputs.image.url)"
-        - "-run-image=$(params.RUN_IMAGE)"
-        - "-uid=$(params.USER_ID)"
-        # - "$(params.ADDITIONAL_TAGS)"
         - "$(resources.outputs.image.url)"
       volumeMounts:
         - name: layers-dir
           mountPath: /layers
         - name: $(params.CACHE)
           mountPath: /cache
-        - name: $(params.PLATFORM_DIR)
-          mountPath: /platform
 
   volumes:
     - name: empty-dir

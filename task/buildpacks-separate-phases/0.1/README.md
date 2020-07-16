@@ -1,15 +1,16 @@
 # Cloud Native Buildpacks
 
-This build template builds source into a container image using [Cloud Native Buildpacks](https://buildpacks.io). To do that, it uses [builders](https://buildpacks.io/docs/concepts/components/builder/#what-is-a-builder) to run buildpacks against your application.
+This build template builds source into a container image using [Cloud Native
+Buildpacks](https://buildpacks.io). To do that, it uses [builders](https://buildpacks.io/docs/concepts/components/builder/#what-is-a-builder) to run buildpacks against your application.
 
 Cloud Native Buildpacks are pluggable, modular tools that transform application source code into OCI images. They replace Dockerfiles in the app development lifecycle, and enable for swift rebasing of images and modular control over images (through the use of builders), among other benefits. This command uses a builder to construct the image, and pushes it to the registry provided.
 
-See also [`buildpacks-separate-phases`](../buildpacks-separate-phases) for the deconstructed version of this task, which runs each of the [lifecycle phases](https://buildpacks.io/docs/concepts/components/lifecycle/#phases) individually (this task uses the [creator binary](https://github.com/buildpacks/spec/blob/platform/0.3/platform.md#operations), which coordinates and runs all of the phases).
+See also [`buildpacks`](../buildpacks) for the combined version of this task, which uses the [creator binary](https://github.com/buildpacks/spec/blob/platform/0.3/platform.md#operations), to run all of the [lifecycle phases](https://buildpacks.io/docs/concepts/components/lifecycle/#phases). This task, in contrast, runs all of the phases separately.
 
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/buildpacks/0.1/buildpacks.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/buildpacks-separate-phases/0.1/buildpacks-separate-phases.yaml
 ```
 
 > **NOTE:** This task is currently only compatible with Tekton **v0.11.0** and above, and CNB Platform API 0.3 (lifecycle v0.7.0 and above). For previous Platform API versions, [see below](#previous-platform-api-versions).
@@ -20,8 +21,6 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 
 * **`CACHE`**: The name of the persistent app cache volume. (_default:_ an empty directory -- effectively no cache)
 
-* **`CACHE_IMAGE`**: The name of the persistent app cache image. (_default:_ no cache image)
-
 * **`PLATFORM_DIR`**: A directory containing platform provided configuration, such as environment variables.
   Files of the format `/platform/env/MY_VAR` with content `my-value` will be translated by the lifecycle into environment variables provided to buildpacks. For more information, see the [buildpacks spec](https://github.com/buildpacks/spec/blob/master/buildpack.md#provided-by-the-platform). (_default:_ an empty directory)
 
@@ -30,10 +29,6 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 * **`GROUP_ID`**: The group ID of the builder image user, as a string value. (_default:_ `"1000"`)
 
 * **`PROCESS_TYPE`**: The default process type to set on the image. (_default:_ `"web"`)
-
-* **`SKIP_RESTORE`**: Do not write layer metadata or restore cached layers. (clear cache between each run) (_default:_ `"false"`)
-
-* **`RUN_IMAGE`**: Reference to a run image to use. (_default:_ run image of the builder)
 
 * **`SOURCE_SUBPATH`**: A subpath within the `source` input where the source to build is located. (_default:_ `""`)
 
@@ -57,7 +52,7 @@ metadata:
   name: example-run
 spec:
   taskRef:
-    name: buildpacks
+    name: buildpacks-separate-phases
   podTemplate:
     volumes:
 # Uncomment the lines below to use an existing cache
