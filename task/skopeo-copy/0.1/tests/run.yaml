@@ -7,7 +7,9 @@ spec:
     - name: srcImageURL
       value: docker://quay.io/temp/kubeconfigwriter:v1
     - name: destImageURL
-      value: localhost:5000/kube:latest
+      value: docker://localhost:5000/kube:latest
+    - name: destTLSverify
+      value: "false"
   taskRef:
     name: skopeo-copy
   workspaces:

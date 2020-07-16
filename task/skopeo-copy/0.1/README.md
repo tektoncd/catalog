@@ -48,6 +48,8 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 
 - **srcImageURL**: The URL of the image to be copied to the `destination` registry.
 - **destImageURL**: The URL of the image where the image from `source` should be copied to.
+- **srcTLSverify**: Verify the TLS on the src registry endpoint
+- **destTLSverify**: Verify the TLS on the dest registry endpoint
 
 ## Workspace
 
