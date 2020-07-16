@@ -29,6 +29,14 @@ spec:
       description: URL of the image where the image from source should be copied to
       type: string
       default: ""
+    - name: srcTLSverify
+      description: Verify the TLS on the src registry endpoint
+      type: string
+      default: "true"
+    - name: destTLSverify
+      description: Verify the TLS on the dest registry endpoint
+      type: string
+      default: "true"
   steps:
     - name: skopeo-copy
       image: quay.io/vinamra2807/skopeo:latest
@@ -46,7 +54,7 @@ spec:
               cmd="$cmd \
                   $url"
             done
-            skopeo copy $cmd
+            skopeo copy $cmd --src-tls-verify=$(params.srcTLSverify) --dest-tls-verify=$(params.destTLSverify)
             echo $cmd
           done < "$filename"
         }
@@ -54,7 +62,7 @@ spec:
         # If single image is to be copied then, it can be passed through
         # params in the taskrun.
         if [ "$(params.srcImageURL)" != "" ] && [ "$(params.destImageURL)" != "" ] ; then
-          skopeo copy "$(params.srcImageURL)" "$(params.destImageURL)"
+          skopeo copy "$(params.srcImageURL)" "$(params.destImageURL)" --src-tls-verify=$(params.srcTLSverify) --dest-tls-verify=$(params.destTLSverify)
         else
           # If file is provided as a configmap in the workspace then multiple images can be copied.
           #
