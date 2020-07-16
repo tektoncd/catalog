@@ -57,7 +57,7 @@ function test_yaml_can_install() {
     # Validate that all the Task CRDs in this repo are valid by creating them in a NS.
     readonly ns="task-ns"
     kubectl create ns "${ns}" || true
-    for runtest in $(find ${REPO_ROOT_DIR} -maxdepth 2 -name '*.yaml'); do
+    for runtest in $(find ${REPO_ROOT_DIR}/task -maxdepth 3 -name '*.yaml'); do
         skipit=
         for ignore in ${TEST_YAML_IGNORES};do
             [[ ${ignore} == $(basename $(echo ${runtest%.yaml})) ]] && skipit=True
@@ -89,7 +89,10 @@ function show_failure() {
 }
 function test_task_creation() {
     for runtest in ${@};do
-        local testname=${runtest%%/*}
+        # remove task/ from beginning
+        local runtestdir=${runtest#*/}
+        # remove /0.1/tests from end
+        local testname=${runtestdir%%/*}
         local tns="${testname}-$$"
         local skipit=
         local maxloop=60 # 10 minutes max
@@ -98,16 +101,18 @@ function test_task_creation() {
             [[ ${ignore} == ${testname} ]] && skipit=True
         done
 
-        ls ${testname}/*.yaml 2>/dev/null >/dev/null || skipit=True
+        # remove /tests from end
+        local taskdir=${runtest%/*}
+        ls ${taskdir}/*.yaml 2>/dev/null >/dev/null || skipit=True
 
         [[ -n ${skipit} ]] && continue
 
         kubectl create namespace ${tns}
 
         # Install the task itself first
-        for yaml in ${testname}/*.yaml;do
+        for yaml in ${taskdir}/*.yaml;do
             cp ${yaml} ${TMPF}
-            [[ -f ${testname}/tests/pre-apply-task-hook.sh ]] && source ${testname}/tests/pre-apply-task-hook.sh
+            [[ -f ${taskdir}/tests/pre-apply-task-hook.sh ]] && source ${taskdir}/tests/pre-apply-task-hook.sh
             function_exists pre-apply-task-hook && pre-apply-task-hook
             kubectl -n ${tns} create -f ${TMPF}
         done
@@ -115,7 +120,7 @@ function test_task_creation() {
         # Install resource and run
         for yaml in ${runtest}/*.yaml;do
             cp ${yaml} ${TMPF}
-            [[ -f ${testname}/tests/pre-apply-taskrun-hook.sh ]] && source ${testname}/tests/pre-apply-taskrun-hook.sh
+            [[ -f ${taskdir}/tests/pre-apply-taskrun-hook.sh ]] && source ${taskdir}/tests/pre-apply-taskrun-hook.sh
             function_exists pre-apply-taskrun-hook && pre-apply-taskrun-hook
             kubectl -n ${tns} create -f ${TMPF}
         done
