@@ -49,9 +49,6 @@ spec:
     - name: RUN_IMAGE
       description: Reference to a run image to use
       default: ""
-      # - name: ADDITIONAL_TAGS
-      #   description: Additional space delimited tag(s) to apply to exported image
-      #   default: ""
 
   resources:
     outputs:
@@ -78,10 +75,6 @@ spec:
           chown -R "$(params.USER_ID):$(params.GROUP_ID)" "/layers" &&
           chown -R "$(params.USER_ID):$(params.GROUP_ID)" "/cache" &&
           chown -R "$(params.USER_ID):$(params.GROUP_ID)" "$(workspaces.source.path)"
-          # if [ -n "$(params.ADDITIONAL_TAGS)" ]; then
-          #   params.ADDITIONAL_TAGS=`echo $(params.ADDITIONAL_TAGS) | sed  -e 's/ / -tag=/g' -e 's/^/-tag=/'`
-          # fi
-          # echo $(params.ADDITIONAL_TAGS)
       volumeMounts:
         - name: layers-dir
           mountPath: /layers
@@ -106,7 +99,6 @@ spec:
         - "-previous-image=$(resources.outputs.image.url)"
         - "-run-image=$(params.RUN_IMAGE)"
         - "-uid=$(params.USER_ID)"
-        # - "$(params.ADDITIONAL_TAGS)"
         - "$(resources.outputs.image.url)"
       volumeMounts:
         - name: layers-dir
