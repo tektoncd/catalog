@@ -1,0 +1,32 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: zap-baseline
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: cli
+    tekton.dev/displayName: "OWASP Zap Baseline"
+spec:
+  description: >-
+    OWASP Zap Baseline is a command line tool testing api endpoints for vulnerabilities.
+
+    Some more stuff should be added here.
+
+  workspaces:
+    - name: zap-folder
+      description: A RW folder where all zap output files is stored
+      mountPath: /zap/wrk
+  params:
+    - name: testURL
+      description: URL of the site to be tested
+      type: string
+      default: ""
+  steps:
+    - name: zap-baseline-scan
+      image: quay.io/nissessenap/zap-proxy:0.0.1
+      script: |
+        # Will turn in to a command
+        #
+        zap-baseline.py -t $(params.testURL) -g gen.conf -w report.md

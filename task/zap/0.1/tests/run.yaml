@@ -1,0 +1,13 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: zap-run
+spec:
+  params:
+    - name: testURL
+      value: https://www.zaproxy.org/
+  taskRef:
+    name: zap-baseline
+  workspaces:
+  - name: zap-folder
+    emptyDir: {}
