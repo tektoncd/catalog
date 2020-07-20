@@ -20,13 +20,17 @@ spec:
       mountPath: /zap/wrk
   params:
     - name: testURL
-      description: URL of the site to be tested
+      description: URL of the site to be tested, must include https:// or http://
       type: string
       default: ""
+    - name: mins
+      description: The number of minutes to spider for
+      type: string
+      default: 1
   steps:
     - name: zap-baseline-scan
       image: quay.io/nissessenap/zap-proxy:0.0.1
       script: |
         # Will turn in to a command
         #
-        zap-baseline.py -t $(params.testURL) -g gen.conf -w report.md
+        zap-baseline.py -t $(params.testURL) -g gen.conf -m $(params.mins) -w report.md
