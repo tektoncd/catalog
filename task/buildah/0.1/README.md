@@ -10,7 +10,7 @@ to assemble a container image, then pushes that image to a container registry.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/buildah/0.1/buildah.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/buildah/buildah.yaml
 ```
 
 ## Parameters
@@ -26,14 +26,11 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
   non-TLS registry) (_default:_ `true`)
 * **FORMAT**: The format of the built container, oci or docker (_default:_
  `oci`)
-* **BUILD_EXTRA_ARGS**: Extra parameters passed for the build command when
-  building images. (_default:_ `""`)
-* **PUSH_EXTRA_ARGS**: Extra parameters passed for the push command when
-  pushing images. (_default:_ `""`)
 
 ## Workspaces
 
-* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) containing the source to build.
+* **source**: A `git`-type `PipelineResource` specifying the location of the
+  source to build.
 
 ## Usage
 

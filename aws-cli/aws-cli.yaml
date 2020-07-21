@@ -1,0 +1,24 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: aws-cli
+spec:
+  workspaces:
+    - name: source
+    - name: secrets
+      mountPath: /tekton/home/.aws
+  params:
+    - name: SCRIPT
+      description: The AWS script to run
+      type: string
+      default: "aws $@"
+    - name: ARGS
+      description: AWS cli arguments to be passed
+      type: array
+      default: ["help"]
+  steps:
+    - name: awscli
+      image: amazon/aws-cli:latest
+      script: "$(params.SCRIPT)"
+      args:
+        - "$(params.ARGS)"  

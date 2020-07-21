@@ -28,7 +28,7 @@ source $(dirname $0)/../vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
 function add_sidecar_registry() {
     cp ${1} ${TMPF}.read
 
-    cat ${TMPF}.read | python3 -c 'import yaml;f=open(0, encoding="utf-8"); data=yaml.load(f.read(), Loader=yaml.FullLoader);data["spec"]["sidecars"]=[{"image":"registry", "name": "registry"}];print(yaml.dump(data, default_flow_style=False));' > ${TMPF}
+    cat ${TMPF}.read | python -c 'import yaml,sys;data=yaml.load(sys.stdin.read());data["spec"]["sidecars"]=[{"image":"registry", "name": "registry"}];print(yaml.dump(data, default_flow_style=False));' > ${TMPF}
     rm -f ${TMPF}.read
 }
 
@@ -57,7 +57,7 @@ function test_yaml_can_install() {
     # Validate that all the Task CRDs in this repo are valid by creating them in a NS.
     readonly ns="task-ns"
     kubectl create ns "${ns}" || true
-    for runtest in $(find ${REPO_ROOT_DIR}/task -maxdepth 3 -name '*.yaml'); do
+    for runtest in $(find ${REPO_ROOT_DIR} -maxdepth 2 -name '*.yaml'); do
         skipit=
         for ignore in ${TEST_YAML_IGNORES};do
             [[ ${ignore} == $(basename $(echo ${runtest%.yaml})) ]] && skipit=True
@@ -82,17 +82,14 @@ function show_failure() {
     kubectl get -n ${tns} taskrun -o yaml
     echo "--- Container Logs"
     for pod in $(kubectl get pod -o name -n ${tns}); do
-        kubectl logs --all-containers -n ${tns} ${pod} || true
+        kubectl logs --all-containers -n ${tns} ${pod}
     done
     exit 1
 
 }
 function test_task_creation() {
     for runtest in ${@};do
-        # remove task/ from beginning
-        local runtestdir=${runtest#*/}
-        # remove /0.1/tests from end
-        local testname=${runtestdir%%/*}
+        local testname=${runtest%%/*}
         local tns="${testname}-$$"
         local skipit=
         local maxloop=60 # 10 minutes max
@@ -101,18 +98,16 @@ function test_task_creation() {
             [[ ${ignore} == ${testname} ]] && skipit=True
         done
 
-        # remove /tests from end
-        local taskdir=${runtest%/*}
-        ls ${taskdir}/*.yaml 2>/dev/null >/dev/null || skipit=True
+        ls ${testname}/*.yaml 2>/dev/null >/dev/null || skipit=True
 
         [[ -n ${skipit} ]] && continue
 
         kubectl create namespace ${tns}
 
         # Install the task itself first
-        for yaml in ${taskdir}/*.yaml;do
+        for yaml in ${testname}/*.yaml;do
             cp ${yaml} ${TMPF}
-            [[ -f ${taskdir}/tests/pre-apply-task-hook.sh ]] && source ${taskdir}/tests/pre-apply-task-hook.sh
+            [[ -f ${testname}/tests/pre-apply-task-hook.sh ]] && source ${testname}/tests/pre-apply-task-hook.sh
             function_exists pre-apply-task-hook && pre-apply-task-hook
             kubectl -n ${tns} create -f ${TMPF}
         done
@@ -120,7 +115,7 @@ function test_task_creation() {
         # Install resource and run
         for yaml in ${runtest}/*.yaml;do
             cp ${yaml} ${TMPF}
-            [[ -f ${taskdir}/tests/pre-apply-taskrun-hook.sh ]] && source ${taskdir}/tests/pre-apply-taskrun-hook.sh
+            [[ -f ${testname}/tests/pre-apply-taskrun-hook.sh ]] && source ${testname}/tests/pre-apply-taskrun-hook.sh
             function_exists pre-apply-taskrun-hook && pre-apply-taskrun-hook
             kubectl -n ${tns} create -f ${TMPF}
         done
@@ -141,18 +136,23 @@ function test_task_creation() {
                 echo -n "Could not find a created taskrun or pipelinerun in ${tns}"
             fi
 
-            breakit=True
+            breakit=
             for status in ${all_status};do
 
                 [[ ${status} == *ERROR || ${reason} == *Fail* || ${reason} == Couldnt* ]] && show_failure ${testname} ${tns}
 
-                if [[ ${status} != True ]];then
+                if [[ ${status} == True ]];then
+                    breakit=True
+                else
                     breakit=
                 fi
             done
 
             if [[ ${breakit} == True ]];then
-                echo -n "SUCCESS: ${testname} pipelinerun has successfully executed" ;
+                echo -n "SUCCESS: ${testname} pipelinerun has successfully executed: " ;
+                for pod in $(kubectl get pod -o name -n ${tns}); do
+                    kubectl logs --all-containers -n ${tns} ${pod}
+                done
                 break
             fi
 

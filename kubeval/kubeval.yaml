@@ -1,0 +1,27 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: kubeval
+spec:
+  workspaces:
+  - name: source
+  params:
+  - name: files
+    default: "."
+  - name: output
+    default: "stdout"
+  - name: args
+    type: array
+    default: []
+
+  steps:
+  - name: kubeval
+    workingDir: $(workspaces.source.path)
+    image: garethr/kubeval:latest
+    command:
+      - kubeval
+      - -d
+      - $(params.files)
+      - -o
+      - $(params.output)
+      - $(params.args)

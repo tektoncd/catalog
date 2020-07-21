@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: gke-deploy
+spec:
+  workspaces:
+  - name: source
+  params:
+  - name: ARGS
+    type: array
+    description: gke-deploy CLI arguments to run
+    default: ["--help"]
+  steps:
+  - name: gke-deploy
+    image: gcr.io/cloud-builders/gke-deploy
+    command: ["/gke-deploy"]
+    workingDir: $(workspaces.source.path)
+    args: ["$(params.ARGS)"]

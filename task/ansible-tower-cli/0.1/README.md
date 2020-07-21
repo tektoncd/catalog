@@ -7,7 +7,7 @@
 
 Install `tower-cli` task:
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/ansible-tower-cli/0.1/ansible-tower-cli-task.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/ansible-tower-cli/ansible-tower-cli-task.yaml
 ```
 
 ## Parameters

@@ -2,16 +2,7 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: build-and-push
-  labels:
-    app.kubernetes.io/version: "0.1"
-  annotations:
-    tekton.dev/pipelines.minVersion: "0.12.1"
-    tekton.dev/tags: deploy
 spec:
-  description: >-
-    This Pipeline builds, pushes, and deploys your application to a Google Kubernetes
-    Engine cluster using gke-deploy.
-
   params:
   - name: pathToContext
     description: The path to the build context relative to your source repo's root. This is used by Kaniko.

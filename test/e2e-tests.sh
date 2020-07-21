@@ -16,7 +16,7 @@
 
 set -x
 
-export RELEASE_YAML=https://github.com/tektoncd/pipeline/releases/download/v0.14.2/release.yaml
+export RELEASE_YAML=https://github.com/tektoncd/pipeline/releases/download/v0.13.2/release.yaml
 
 source $(dirname $0)/../vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
 source $(dirname $0)/e2e-common.sh
@@ -52,6 +52,6 @@ set -ex
 set -o pipefail
 
 test_yaml_can_install
-test_task_creation task/*/*/tests
+test_task_creation */tests
 
 success

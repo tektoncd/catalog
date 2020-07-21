@@ -2,15 +2,7 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: maven
-  labels:
-    app.kubernetes.io/version: "0.1"
-  annotations:
-    tekton.dev/pipelines.minVersion: "0.12.1"
-    tekton.dev/tags: build-tool
 spec:
-  description: >-
-    This Task can be used to run a Maven build.
-
   workspaces:
     - name: source
     - name: maven-settings
@@ -21,7 +13,7 @@ spec:
       default:
         - "package"
     - name: MAVEN_MIRROR_URL
-      description: The Maven repository mirror url
+      description: The Maven repository mirror url 
       type: string
       default: ""
     - name: PROXY_USER

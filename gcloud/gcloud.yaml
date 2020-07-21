@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: gcloud
+spec:
+  params:
+  - name: gcloud-image
+    description: gcloud CLI container image to run this task
+    default: google/cloud-sdk:slim
+  - name: ARGS
+    type: array
+    description: gcloud CLI arguments to run
+    default: ["help"]
+  steps:
+  - name: gcloud
+    image: "$(params.gcloud-image)"
+    command: ["/usr/bin/gcloud"]
+    args: ["$(params.ARGS)"]

@@ -1,0 +1,31 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: conftest
+spec:
+  workspaces:
+  - name: source
+  params:
+  - name: files
+    type: string
+  - name: policy
+    default: "policy"
+  - name: output
+    default: "stdout"
+  - name: args
+    type: array
+    default: []
+
+  steps:
+  - name: conftest
+    workingDir: $(workspaces.source.path)
+    image: instrumenta/conftest:latest
+    command:
+      - conftest
+      - test
+      - $(params.files)
+      - -p
+      - $(params.policy)
+      - -o
+      - $(params.output)
+      - $(params.args)

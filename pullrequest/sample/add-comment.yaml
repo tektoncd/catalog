@@ -1,0 +1,170 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: pr-sample-add-comment-
+spec:
+
+  workspaces:
+  # In the future we can have the test infrastructure these in via TriggerBindings
+  - name: pr
+    persistentVolumeClaim:
+      claimName: shared-task-storage
+
+  params:
+  # For now I'm hardcoding a known pull request and will be providing creds only
+  # manually, but in the future we can make the test infrastructure pass params via the bindings
+  # for a PR that can be written to and the token to use
+  - name: url
+    value: https://github.com/bobcatfish/catservice/pull/20
+  - name: secret-key-ref
+    value: webhook-secret
+
+  pipelineSpec:
+    params:
+    - name: url
+      type: string
+    - name: secret-key-ref
+      type: string
+    workspaces:
+    - name: pr
+
+    tasks:
+    # TODO(pipeline#1986) We might be re-using a PVC so we need to make sure
+    # we erase anything on it
+    - name: clear-workspace-before
+      workspaces:
+      - name: w
+        workspace: pr
+      taskRef:
+        name: clear-workspace
+
+    # Get the starting state of the PR
+    - name: pull-request-fetch
+      runAfter: [clear-workspace-before]
+      taskRef:
+        name: pull-request
+      workspaces:
+      - name: pr
+        workspace: pr
+      params:
+      - name: mode
+        value: download
+      - name: url
+        value: $(params.url)
+      - name: provider
+        value: github
+      - name: secret-key-ref
+        value: $(params.secret-key-ref)
+
+    # Check how many comments were on the PR before we did anything so we can
+    # check at the end that one was added successfully
+    - name: count-comments-before
+      runAfter: [pull-request-fetch]
+      taskRef:
+        name: count-comments
+      workspaces:
+      - name: pr
+        workspace: pr
+
+    # Add a comment to the workspace using the current date and time to make it unique
+    - name: add-comment
+      runAfter: [count-comments-before]
+      workspaces:
+      - name: pr
+        workspace: pr
+      taskSpec:
+        workspaces:
+        - name: pr
+        steps:
+        - name: write-comment
+          image: ubuntu
+          script: |
+            #!/usr/bin/env bash
+            set -xe
+
+            NOW=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+            COMMENT="How about right now? It's $NOW"
+            echo $COMMENT > $(workspaces.pr.path)/comments/$NOW
+
+    # Actually update the pull request with the comment
+    - name: pull-request-update
+      runAfter: [add-comment]
+      taskRef:
+        name: pull-request
+      workspaces:
+      - name: pr
+        workspace: pr
+      params:
+      - name: mode
+        value: upload
+      - name: url
+        value: $(params.url)
+      - name: provider
+        value: github
+      - name: secret-key-ref
+        value: $(params.secret-key-ref)
+
+    # Clear the workspace so we can re-fetch the PR and see that it was updated
+    - name: clear-workspace-after
+      runAfter: [pull-request-update]
+      workspaces:
+      - name: w
+        workspace: pr
+      taskRef:
+        name: clear-workspace
+
+    # Grab the new state of the PR
+    - name: pull-request-fetch-after
+      runAfter: [clear-workspace-after]
+      taskRef:
+        name: pull-request
+      workspaces:
+      - name: pr
+        workspace: pr
+      params:
+      - name: mode
+        value: download
+      - name: url
+        value: $(params.url)
+      - name: provider
+        value: github
+      - name: secret-key-ref
+        value: $(params.secret-key-ref)
+
+
+    # Get the number of comments now that we should have added one
+    - name: count-comments-after
+      runAfter: [pull-request-fetch-after]
+      taskRef:
+        name: count-comments
+      workspaces:
+      - name: pr
+        workspace: pr
+
+    # Finally we'll make sure that the number of comments on the PR has
+    # increased, since we added one!
+    - name: check-count
+      runAfter: [count-comments-after]
+      workspaces:
+      - name: pr
+        workspace: pr
+      params:
+      - name: before-count
+        value: "$(tasks.count-comments-before.results.count)"
+      - name: after-count
+        value: "$(tasks.count-comments-after.results.count)"
+      taskSpec:
+        params:
+        - name: before-count
+          type: string
+        - name: after-count
+          type: string
+        workspaces:
+        - name: pr
+        steps:
+        - name: echo
+          image: ubuntu
+          script: |
+            #!/usr/bin/env bash
+            set -xe
+            [[ $(params.after-count) -gt $(params.before-count) ]]

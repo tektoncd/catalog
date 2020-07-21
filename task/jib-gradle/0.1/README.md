@@ -7,7 +7,7 @@ Jib works with [Gradle](https://github.com/GoogleContainerTools/jib/tree/master/
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/jib-gradle/0.1/jib-gradle.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/jib-gradle/jib-gradle.yaml
 ```
 
 
@@ -18,7 +18,8 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 
 ## Workspaces
 
-* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) containing the source to build.
+* **source**: A `git`-type `PipelineResource` specifying the location of the
+  source to build.
 
 ## Resources
 

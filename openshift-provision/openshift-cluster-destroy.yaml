@@ -1,0 +1,24 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: openshift-uninstall
+spec:
+  workspaces:
+    - name: install-dir
+      mountPath: "/tekton/home/"
+  params:
+    - name: OPENSHIFT_INSTALLER_IMAGE
+      type: string
+      description: OpenShift installer base image for UPI installation
+      default: quay.io/openshift/origin-upi-installer:4.4
+  steps:
+    - name: remove-cluster
+      image: $(params.OPENSHIFT_INSTALLER_IMAGE)
+      workingDir: $(workspaces.install-dir.path)
+      script: |
+        #!/usr/bin/env bash
+
+        echo "Trying to delete the cluster"
+        timeout 30m /bin/openshift-install destroy cluster --log-level=debug || true
+      securityContext:
+        runAsUser: 0

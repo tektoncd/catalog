@@ -39,7 +39,7 @@ kubectl --namespace default create secret generic docker-registry-config --from-
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/makisu/0.1/makisu.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/makisu/makisu.yaml
 ```
 
 ## Parameters
@@ -53,7 +53,8 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 
 ## Workspaces
 
-* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) containing the source to build.
+* **source**: A `git`-type `PipelineResource` specifying the location of the
+  source to build.
 
 ## Resources
 

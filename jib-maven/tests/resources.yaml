@@ -1,0 +1,21 @@
+---
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: image
+spec:
+  type: image
+  params:
+    - name: url
+      value: localhost:5000/tekton-pipelines/console-java-simple
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jib-maven-source-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi

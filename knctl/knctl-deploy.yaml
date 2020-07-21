@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: knctl-deploy
+spec:
+  params:
+  - name: service
+    description: Name of the service to deploy
+  resources:
+    inputs:
+    - name: image
+      type: image
+  steps:
+  # the first step is required as knctl doesn't support inCluster configuration.
+  - name: kubeconfig
+    image: gcr.io/cloud-builders/kubectl  # it is huge
+    command: ["/bin/bash"]
+    args:
+    - -c
+    - mkdir -p /tekton/home/.kube; kubectl config view > /tekton/home/.kube/config
+  - name: rollout
+    image: quay.io/openshift-pipeline/knctl
+    command: ["/usr/bin/knctl"]
+    args:
+    - deploy
+    - --service
+    - $(params.service)
+    - --image
+    - $(resources.inputs.image.url)

@@ -7,7 +7,7 @@ only the `deploy` subcommand as of today.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/knctl-deploy/0.1/knctl-deploy.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/knctl/knctl-deploy.yaml
 ```
 
 ## Parameters

@@ -1,0 +1,50 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: replace-tokens-pipeline
+spec:
+  workspaces:
+    - name: shared-workspace
+    - name: json-workspace
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: https://github.com/vinamra28/replace-tokens-plugin.git
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+    - name: replace-tokens
+      taskRef:
+        name: replace-tokens
+      params:
+        - name: inputFilePath
+          value: "./sample.yaml"
+      runAfter:
+        - fetch-repository
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: token
+          workspace: json-workspace
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: replace-tokens-pipeline-run
+spec:
+  pipelineRef:
+    name: replace-tokens-pipeline
+  workspaces:
+    - name: shared-workspace
+      persistentvolumeclaim:
+        claimName: replace-tokens-source-pvc
+    - name: json-workspace
+      configmap: 
+        name: tokens-configmap

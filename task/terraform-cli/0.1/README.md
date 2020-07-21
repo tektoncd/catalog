@@ -8,7 +8,7 @@
 
 Install `terraform-cli` task for kubernetes 1.6+:
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/terraform-cli/0.1/terraform-cli.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/terraform-cli/terraform-cli-task-kube1.6.yaml
 ```
 This task currently works only on kubernetes 1.6+ support for a task that works on older versions of kubernetes will be added soon.
 
@@ -20,7 +20,7 @@ This task currently works only on kubernetes 1.6+ support for a task that works 
 
 ## Workspaces
 
-* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) containing the terraform HCL or JSON files.
+* **source:** A `git`-type `PipelineResource` specifying the location of the terraform HCL or JSON files
 
 
 ## Terraform-Secret

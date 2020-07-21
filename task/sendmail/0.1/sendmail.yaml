@@ -2,16 +2,7 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: sendmail
-  labels:
-    app.kubernetes.io/version: "0.1"
-  annotations:
-    tekton.dev/pipelines.minVersion: "0.12.1"
-    tekton.dev/tags: mail
-    tekton.dev/displayName: "send mail"
 spec:
-  description: >-
-    This task sends a simple email to receivers via SMTP server
-
   params:
   - name: server
     type: string

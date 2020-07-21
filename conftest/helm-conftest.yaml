@@ -1,0 +1,31 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: helm-conftest
+spec:
+  workspaces:
+  - name: source
+  params:
+  - name: chart
+    default: "."
+  - name: policy
+    default: "policy"
+  - name: output
+    default: "stdout"
+  - name: args
+    type: array
+    default: []
+
+  steps:
+  - name: helm-conftest
+    workingDir: $(workspaces.source.path)
+    image: instrumenta/helm-conftest:latest
+    command:
+      - helm
+      - conftest
+      - $(params.chart)
+      - -p
+      - $(params.policy)
+      - -o
+      - $(params.output)
+      - $(params.args)

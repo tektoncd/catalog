@@ -13,7 +13,7 @@ This `buildkit-daemonless` Task is similar to [`buildkit`](../buildkit) but does
 ## Install
 
 ```console
-$ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/buildkit-daemonless/0.1/buildkit-daemonless.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/buildkit-daemonless/buildkit-daemonless.yaml
 task.tekton.dev/buildkit-daemonless created
 ```
 
@@ -24,7 +24,7 @@ task.tekton.dev/buildkit-daemonless created
 
 ## Workspaces
 
-* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) containing the source to build.
+* **source**: A `git`-type `PipelineResource` specifying the location of the source to build.
 
 ## Resources
 
