@@ -1,0 +1,56 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: remote-ssh-commands
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: ssh, ssh remote
+    tekton.dev/displayName: "ssh remote commands"
+spec:
+  description: >-
+    The following task can be used to execute commands on remote machine.
+
+    The following task takes host and required credentials as input along
+    with the script and execute them on respective host machine and
+    produce the output.
+  workspaces:
+    - name: credentials
+      description: >-
+        The workspace contains secrets can be used to authenticate
+        with the HOST.
+  params:
+    - name: HOST
+      type: string
+      description: Remote host to connect
+    - name: USERNAME
+      type: string
+      description: SSH username
+    - name: PORT
+      type: string
+      description: SSH port, default is 22
+      default: "22"
+    - name: SSH_SCRIPT
+      type: string
+      description: The script which you want to execute on remote server
+    - name: USE_INSECURE_CIPHER
+      type: string
+      description: include more ciphers with use_insecure_cipher
+      default: "false"
+  steps:
+    - name: ssh
+      image: appleboy/drone-ssh
+      workingDir: $(workspaces.creds.path)
+      script: |
+
+        export script="$(params.SSH_SCRIPT)"
+        cmd=""
+        [[ -f ./privatekey ]] && cmd="$cmd -i ./privatekey"
+        [[ -f ./password ]] && cmd="$cmd -P $(cat ./password)"
+        [[ -f ./passphrase ]] && cmd="$cmd --ssh-passphrase $(cat ./passphrase)"
+        [[ -f ./fingerprint ]] && cmd="$cmd --fingerprint $(cat ./fingerprint)"
+        [[ -f ./ciphers ]] && cmd="$cmd --ciphers $(cat ./ciphers)"
+        [[ $(params.USE_INSECURE_CIPHER) == "true" ]] && cmd="$cmd --useInsecureCipher true"
+
+        drone-ssh -H $(params.HOST) -p $(params.PORT) -u $(params.USERNAME) -s "$script" $cmd
