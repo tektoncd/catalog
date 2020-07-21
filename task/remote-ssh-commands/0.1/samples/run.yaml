@@ -1,0 +1,22 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: remote-ssh-commands-run
+spec:
+  taskRef:
+    name: remote-ssh-commands
+  workspaces:
+    - name: credentials
+      secret:
+        secretName: remote-ssh-secret
+  params:
+    - name: HOST
+      value: "127.0.0.1"
+    - name: USERNAME
+      value: "username"
+    - name: SSH_SCRIPT
+      value: |
+        #!/bin/sh
+        hostname
+        uname
+        ps -ef
