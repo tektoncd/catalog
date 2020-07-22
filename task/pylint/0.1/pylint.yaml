@@ -1,0 +1,44 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: pylint
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: python, pylint
+    tekton.dev/displayName: pylint
+
+spec:
+  description: >-
+    This task will run pylint on the provided input.
+
+  workspaces:
+    - name: source
+  params:
+    - name: PYTHON
+      description: The used Python version, more precisely the tag for the Python image
+      type: string
+      default: "3.6"
+    - name: SOURCE_PATH
+      description: The path to the source code
+      default: "."
+    - name: MODULE_PATH
+      description: The path to the module which should be analysed by pylint
+      default: "."
+    - name: ARGS
+      description: The additional arguments to be used with pylint
+      type: string
+      default: ""
+    - name: REQUIREMENTS_FILE
+      description: The name of the requirements file inside the source location
+      default: "requirements.txt"
+  steps:
+    - name: lint
+      image: docker.io/python:$(inputs.params.PYTHON)
+      workingDir: /workspace/source
+      script: |
+          pip install -r $(inputs.params.SOURCE_PATH)/$(inputs.params.REQUIREMENTS_FILE)
+          pip show pylint || echo "###\nWarning: Pylint is missing in your requirements\n###" && pip install pylint
+          pylint $(inputs.params.ARGS) $(inputs.params.MODULE_PATH)
