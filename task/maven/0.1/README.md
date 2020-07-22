@@ -10,6 +10,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 
 ## Parameters
 
+- **MAVEN_IMAGE**: The base image for maven (_default_:`gcr.io/cloud-builders/mvn`)
 - **GOALS**: Maven `goals` to be executed
 - **MAVEN_MIRROR_URL**: Maven mirror url (to be inserted into ~/.m2/settings.xml)   
 - **PROXY_USER**: Username to login to the proxy server (to be inserted into ~/.m2/settings.xml)
