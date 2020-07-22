@@ -15,6 +15,10 @@ spec:
     - name: source
     - name: maven-settings
   params:
+    - name: MAVEN_IMAGE
+      type: string
+      description: Maven base image
+      default: gcr.io/cloud-builders/mvn
     - name: GOALS
       description: maven goals to run
       type: array
@@ -106,7 +110,7 @@ spec:
         [[ -f $(workspaces.maven-settings.path)/settings.xml ]] || echo skipping settings
 
     - name: mvn-goals
-      image: gcr.io/cloud-builders/mvn
+      image: $(params.MAVEN_IMAGE)
       workingDir: $(workspaces.source.path)
       command: ["/usr/bin/mvn"]
       args:
