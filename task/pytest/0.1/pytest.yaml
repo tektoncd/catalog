@@ -1,0 +1,41 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: pytest
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: python, pytest
+    tekton.dev/displayName: pytest
+
+spec:
+  description: >-
+    This task will run pytest on the provided input.
+
+  workspaces:
+    - name: source
+  params:
+    - name: PYTHON
+      description: The used Python version, more precisely the tag for the Python image
+      type: string
+      default: "3.6"
+    - name: ARGS
+      description: The additional arguments to be used with pytest
+      type: string
+      default: ""
+    - name: SOURCE_PATH
+      description: The path to the source code
+      default: "."
+    - name: REQUIREMENTS_FILE
+      description: The name of the requirements file inside the source location
+      default: "requirements.txt"
+  steps:
+    - name: unit-test
+      image: docker.io/python:$(inputs.params.PYTHON)
+      workingDir: /workspace/source
+      script: |
+          pip install -r $(inputs.params.SOURCE_PATH)/$(inputs.params.REQUIREMENTS_FILE)
+          pip show pytest || echo "###\nWarning: Pytest is missing in your requirements\n###" && pip install pytest
+          pytest $(inputs.params.ARGS) $(inputs.params.SOURCE-PATH)
