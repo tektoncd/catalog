@@ -33,21 +33,25 @@ spec:
   steps:
   - name: build-and-push
     image: gcr.io/cloud-builders/mvn
-    command:
-    - mvn
-    - -B
-    - compile
-    - com.google.cloud.tools:jib-maven-plugin:build
-    - -Duser.home=/tekton/home
-    - -Djib.allowInsecureRegistries=$(params.INSECUREREGISTRY)
-    - -Djib.to.image=$(resources.outputs.image.url)
+    # Make sh evaluate $HOME.
+    script: |
+      #!/bin/sh
+      mvn -B \
+        -Duser.home=$HOME \
+        -Djib.allowInsecureRegistries=$(params.INSECUREREGISTRY) \
+        -Djib.to.image=$(resources.outputs.image.url) \
+        compile \
+        com.google.cloud.tools:jib-maven-plugin:build
     workingDir: $(workspaces.source.path)/$(params.DIRECTORY)
+    env:
+    - name: HOME
+      value: /workspace
     volumeMounts:
     - name: $(params.CACHE)
-      mountPath: /tekton/home/.m2
+      mountPath: /workspace/.m2
       subPath: m2-cache
     - name: $(params.CACHE)
-      mountPath: /tekton/home/.cache
+      mountPath: /workspace/.cache
       subPath: jib-cache
 
   volumes:
