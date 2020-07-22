@@ -42,6 +42,9 @@ spec:
     - name: SOURCE_SUBPATH
       description: A subpath within the `source` input where the source to build is located.
       default: ""
+    - name: HOME_OVERRIDE
+      description: Override the home directory during detect and build to hide secrets from buildpacks.
+      default: empty-dir
 
   resources:
     outputs:
@@ -76,6 +79,18 @@ spec:
       securityContext:
         privileged: true
 
+    - name: copy-stack-toml
+      image: $(params.BUILDER_IMAGE)
+      imagePullPolicy: Always
+      command: ["/bin/sh"]
+      args:
+        - "-c"
+        - >
+          cp /cnb/stack.toml /layers/
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+
     - name: detect
       image: $(params.BUILDER_IMAGE)
       imagePullPolicy: Always
@@ -89,15 +104,19 @@ spec:
           mountPath: /layers
         - name: $(params.PLATFORM_DIR)
           mountPath: /platform
+        - name: $(params.HOME_OVERRIDE)
+          mountPath: /tekton/home
 
     - name: analyze
-      image: $(params.BUILDER_IMAGE)
+      image: buildpacksio/lifecycle:0.8.1
       imagePullPolicy: Always
       command: ["/cnb/lifecycle/analyzer"]
       args:
         - "-layers=/layers"
         - "-group=/layers/group.toml"
         - "-cache-dir=/cache"
+        - "-uid=$(params.USER_ID)"
+        - "-gid=$(params.GROUP_ID)"
         - "$(resources.outputs.image.url)"
       volumeMounts:
         - name: $(params.CACHE)
@@ -106,13 +125,15 @@ spec:
           mountPath: /layers
 
     - name: restore
-      image: $(params.BUILDER_IMAGE)
+      image: buildpacksio/lifecycle:0.8.1
       imagePullPolicy: Always
       command: ["/cnb/lifecycle/restorer"]
       args:
         - "-group=/layers/group.toml"
         - "-layers=/layers"
         - "-cache-dir=/cache"
+        - "-uid=$(params.USER_ID)"
+        - "-gid=$(params.GROUP_ID)"
       volumeMounts:
         - name: $(params.CACHE)
           mountPath: /cache
@@ -133,9 +154,11 @@ spec:
           mountPath: /layers
         - name: $(params.PLATFORM_DIR)
           mountPath: /platform
+        - name: $(params.HOME_OVERRIDE)
+          mountPath: /tekton/home
 
     - name: export
-      image: $(params.BUILDER_IMAGE)
+      image: buildpacksio/lifecycle:0.8.1
       imagePullPolicy: Always
       command: ["/cnb/lifecycle/exporter"]
       args:
@@ -144,6 +167,9 @@ spec:
         - "-group=/layers/group.toml"
         - "-cache-dir=/cache"
         - "-process-type=$(params.PROCESS_TYPE)"
+        - "-uid=$(params.USER_ID)"
+        - "-gid=$(params.GROUP_ID)"
+        - "-stack=/layers/stack.toml"
         - "$(resources.outputs.image.url)"
       volumeMounts:
         - name: layers-dir
