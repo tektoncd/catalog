@@ -49,3 +49,23 @@ spec:
 ```
 
 In this example, the Git repo being used is expected to have a `setup.py` file at the root of the repository. [setup.py](https://packaging.python.org/tutorials/packaging-projects/#creating-setup-py) is build script for [setuptools](https://pypi.org/project/setuptools/)
+
+This TaskRun outputs several `Results`:
+
+- A `sha256` hash for each uploaded file (the bdist and the sdist packages).
+- The name of the uploaded package
+- The version of the uploaded package
+
+This looks like:
+
+```
+  taskResults:
+  - name: bdist_sha
+    value: 97dd35b7097443b6896734d979a1a52c64023f17474e4027d69d2df0b9acb797  dist/foo.whl
+  - name: package_name
+    value: foo
+  - name: package_version
+    value: 2.24.4
+  - name: sdist_sha
+    value: 8fda69bc68ece690d135d0091ebdd10a8c15db477c2eafce0d0a65bc9712f5bf  dist/foo.tar.gz
+```
