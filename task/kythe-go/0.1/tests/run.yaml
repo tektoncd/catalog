@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
-  name: kythe-go
+  name: kythe-go-run
 spec:
   workspaces:
     - name: output
