@@ -54,6 +54,10 @@ kind: PipelineRun
 metadata:
   name: publish-package-pipeline-run
 spec:
+  podTemplate:
+    securityContext:
+      runAsNonRoot: false
+      runAsUser: 0
   pipelineRef:
     name: publish-package-pipeline
   workspaces:

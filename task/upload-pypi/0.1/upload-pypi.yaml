@@ -49,4 +49,20 @@ spec:
           name: pypi-secret
           key: password
     script: |
-      twine upload dist/*
+      twine upload --disable-progress-bar dist/*
+      # Now write out all our results, stripping newlines.
+      # sdist files are .tar.gz's
+      sha256sum dist/*.tar.gz | tr -d '\n' | tee $(results.sdist_sha.path)
+      # bdist files are .whls's
+      sha256sum dist/*.whl | tr -d '\n' | tee $(results.bdist_sha.path)
+      python setup.py --name | tr -d '\n' | tee $(results.package_name.path)
+      python setup.py --version | tr -d '\n' | tee $(results.package_version.path)
+  results:
+  - name: sdist_sha
+    description: sha256 (and filename) of the sdist package
+  - name: bdist_sha
+    description: sha256 (and filename) of the bdist package
+  - name: package_name
+    description: name of the uploaded package
+  - name: package_version
+    description: version of the uploaded package
