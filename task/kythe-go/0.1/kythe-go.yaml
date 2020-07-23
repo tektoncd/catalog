@@ -29,3 +29,5 @@ spec:
         - name: OUTPUT
           value: $(workspaces.output.path)
       args: ["$(params.package)"]
+      securityContext:
+        privileged: true
