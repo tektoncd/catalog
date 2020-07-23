@@ -113,6 +113,12 @@ some environment variables to it that would be applied :
 1. **pre-apply-task-hook.sh**: Script to run before applying the task
 2. **pre-apply-taskrun-hook.sh**: Script to run before applying the taskruns or other yaml files.
 
+We have some helper functions you can use from your `hook` scripts :
+
+* **add_sidecar_registry**: This will add a registry as a sidecar to allow the builder tasks to upload image directly to this sidecar registry instead of having to rely on external registries.
+* **add_git_clone_task**: This will add the git clone task to your temporary namespace.
+
+
 What can you run from those scripts is whatever defined in the test-runner
 image, if you need to have another binary available feel free to make a PR to this Dockerfile :
 
