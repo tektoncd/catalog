@@ -32,6 +32,11 @@ function add_sidecar_registry() {
     rm -f ${TMPF}.read
 }
 
+# Add the git_clone task
+function add_git_clone_task() {
+    kubectl -n ${tns} apply -f ./task/git-clone/0.1/git-clone.yaml
+}
+
 function install_pipeline_crd() {
   local latestreleaseyaml
   echo ">> Deploying Tekton Pipelines"
