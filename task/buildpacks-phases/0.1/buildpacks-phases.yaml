@@ -42,9 +42,6 @@ spec:
     - name: SOURCE_SUBPATH
       description: A subpath within the `source` input where the source to build is located.
       default: ""
-    - name: HOME_OVERRIDE
-      description: Override the home directory during detect and build to hide secrets from buildpacks.
-      default: empty-dir
 
   resources:
     outputs:
@@ -104,7 +101,7 @@ spec:
           mountPath: /layers
         - name: $(params.PLATFORM_DIR)
           mountPath: /platform
-        - name: $(params.HOME_OVERRIDE)
+        - name: empty-dir
           mountPath: /tekton/home
 
     - name: analyze
@@ -154,7 +151,7 @@ spec:
           mountPath: /layers
         - name: $(params.PLATFORM_DIR)
           mountPath: /platform
-        - name: $(params.HOME_OVERRIDE)
+        - name: empty-dir
           mountPath: /tekton/home
 
     - name: export
