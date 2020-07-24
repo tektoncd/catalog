@@ -39,6 +39,7 @@ spec:
       image: docker.io/python:$(inputs.params.PYTHON)
       workingDir: /workspace/source
       script: |
-          pip install -r $(inputs.params.SOURCE_PATH)/$(inputs.params.REQUIREMENTS_FILE)
-          pip show pylint || echo "###\nWarning: Pylint is missing in your requirements\n###" && pip install pylint
-          pylint $(inputs.params.ARGS) $(inputs.params.MODULE_PATH)
+        export PATH=$PATH:$HOME/.local/bin
+        pip install -r $(inputs.params.SOURCE_PATH)/$(inputs.params.REQUIREMENTS_FILE)
+        pip show pylint || echo "###\nWarning: Pylint is missing in your requirements\n###" && pip install pylint
+        pylint $(inputs.params.ARGS) $(inputs.params.MODULE_PATH)
