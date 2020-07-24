@@ -36,6 +36,7 @@ spec:
       image: docker.io/python:$(inputs.params.PYTHON)
       workingDir: /workspace/source
       script: |
-          pip install -r $(inputs.params.SOURCE_PATH)/$(inputs.params.REQUIREMENTS_FILE)
-          pip show pytest || echo "###\nWarning: Pytest is missing in your requirements\n###" && pip install pytest
-          pytest $(inputs.params.ARGS) $(inputs.params.SOURCE-PATH)
+        export PATH=$PATH:$HOME/.local/bin
+        pip install -r $(inputs.params.SOURCE_PATH)/$(inputs.params.REQUIREMENTS_FILE)
+        pip show pytest || echo "###\nWarning: Pytest is missing in your requirements\n###" && pip install pytest
+        pytest $(inputs.params.ARGS) $(inputs.params.SOURCE-PATH)
