@@ -1,11 +1,11 @@
 # Maven
 
-This Task can be used to run a Maven goals on a simple maven project.
+This Task can be used to run a Maven goals on a simple maven project or on a multi-module maven project.
 
 ## Install the Task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/maven/0.1/maven.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/maven/0.2/maven.yaml
 ```
 
 ## Parameters
@@ -19,6 +19,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 - **PROXY_NON_PROXY_HOSTS**: Non proxy hosts to be reached directly bypassing the proxy (to be inserted into ~/.m2/settings.xml)
 - **PROXY_PORT**: Port number on which the proxy port listens (to be inserted into ~/.m2/settings.xml)
 - **PROXY_PROTOCOL**: http or https protocol whichever is applicable (to be inserted into ~/.m2/settings.xml)
+- **CONTEXT_DIR**: The context directory within the repository for sources on which we want to execute maven goals. (_Default_: ".")
 
 ## Workspaces
 
@@ -39,7 +40,7 @@ spec:
 
 ## Usage
 
-This Pipeline and PipelineRun runs a Maven build
+This Pipeline and PipelineRun runs a Maven build on a particular module in a multi-module maven project
 
 ### With Defaults
 
@@ -61,7 +62,7 @@ spec:
           workspace: shared-workspace
       params:
         - name: url
-          value: https://github.com/spring-projects/spring-petclinic
+          value: https://github.com/redhat-developer-demos/tekton-tutorial
         - name: subdirectory
           value: ""
         - name: deleteExisting
@@ -71,6 +72,14 @@ spec:
         name: maven
       runAfter:
         - fetch-repository
+      params:
+        - name: CONTEXT_DIR
+          value: "apps/greeter/java/quarkus"
+        - name: GOALS
+          value:
+            - -DskipTests
+            - clean
+            - package
       workspaces:
         - name: maven-settings
           workspace: maven-settings
@@ -114,7 +123,7 @@ spec:
           workspace: shared-workspace
       params:
         - name: url
-          value: https://github.com/spring-projects/spring-petclinic
+          value: https://github.com/redhat-developer-demos/tekton-tutorial
         - name: subdirectory
           value: ""
         - name: deleteExisting
@@ -122,11 +131,18 @@ spec:
     - name: maven-run
       taskRef:
         name: maven
+      runAfter:
+        - fetch-repository
       params:
         - name: MAVEN_MIRROR_URL
           value: http://repo1.maven.org/maven2
-      runAfter:
-        - fetch-repository
+        - name: CONTEXT_DIR
+          value: "apps/greeter/java/quarkus"
+        - name: GOALS
+          value:
+            - -DskipTests
+            - clean
+            - package
       workspaces:
         - name: maven-settings
           workspace: maven-settings
@@ -141,7 +157,7 @@ spec:
 ### With Custom /.m2/settings.yaml
 
 A user provided custom `settings.xml` can be used with the Maven Task. To do this we need to mount the `settings.xml` on the Maven Task.
-Following steps demonstrate the use of a `ConfigMap` to mount a custom `settings.xml`.
+Following steps demonstrate the use of a ConfigMap to mount a custom `settings.xml`.
 
 1. create configmap
 
@@ -191,7 +207,7 @@ spec:
           workspace: shared-workspace
       params:
         - name: url
-          value: https://github.com/spring-projects/spring-petclinic
+          value: https://github.com/redhat-developer-demos/tekton-tutorial
         - name: subdirectory
           value: ""
         - name: deleteExisting
@@ -199,11 +215,16 @@ spec:
     - name: maven-run
       taskRef:
         name: maven
-      params:
-        - name: MAVEN_MIRROR_URL
-          value: http://repo1.maven.org/maven2
       runAfter:
         - fetch-repository
+      params:
+        - name: CONTEXT_DIR
+          value: "apps/greeter/java/quarkus"
+        - name: GOALS
+          value:
+            - -DskipTests
+            - clean
+            - package
       workspaces:
         - name: maven-settings
           workspace: maven-settings
