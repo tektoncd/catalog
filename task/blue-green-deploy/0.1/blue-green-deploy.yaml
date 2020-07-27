@@ -33,6 +33,7 @@ spec:
       workingDir: $(workspaces.manifest-dir.path)
       script: |
         #!/usr/bin/env bash
+        set -u -o pipefail
 
         if [[ -f $(workspaces.kubeconfig-dir.path)/kubeconfig ]]; then
           export KUBECONFIG=$(workspaces.kubeconfig-dir.path)/kubeconfig
@@ -79,7 +80,7 @@ spec:
           for reason in $(getReasons $deploy_name); do
             if [[ "$reason" == "ProgressDeadlineExceeded" ]]; then
               local status=$(getStatusAtIndex $deploy_name ${INDEX})
-              [[ "$status" != "False" ]] && return 0 || return 1
+              [[ "$status" == "True" ]] && return 0 || return 1
             fi
             ((INDEX++))
           done
@@ -104,6 +105,12 @@ spec:
             [[ $? -eq 0 ]] && break
             sleep 5
           done
+          # If ProgressDeadlineExceeded then break from the main
+          # and avoid checking for the next condition
+          checkProgressDeadline ${deploy_name}
+          if [[ $? -eq 0 ]]; then
+            echo "Failed to change the service" && break
+          fi
           # If MinimumReplicas are available then check
           # for the unavailable Pods
           # Also checking for the ProgressDeadlineExceeded condition
