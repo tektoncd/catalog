@@ -10,7 +10,7 @@ metadata:
   namespace: default
 spec:
   description: >-
-    This Task deploys (or delete) a Kubernates resource (pod). It uses
+    This Task deploys (or delete) a Kubernetes resource (pod). It uses
     kubectl for that.
 
   params:
