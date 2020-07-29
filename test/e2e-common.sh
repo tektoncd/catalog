@@ -98,7 +98,13 @@ function test_task_creation() {
         local runtestdir=${runtest#*/}
         # remove /0.1/tests from end
         local testname=${runtestdir%%/*}
-        local tns="${testname}-$$"
+        # get version of the task
+        local version=$(basename $(basename $(dirname $runtest)))
+        # check version is in given format
+        [[ ${version} =~ ^[0-9]+\.[0-9]+$ ]] || { echo "ERROR: version of the task is not set properly"; exit 1;}
+        # replace . with - in version as not supported in namespace name
+        version="$( echo $version | tr '.' '-' )"
+        local tns="${testname}-${version}"
         local skipit=
         local maxloop=60 # 10 minutes max
 
