@@ -12,8 +12,6 @@ spec:
   description: >-
     OWASP Zap Baseline is a command line tool testing api endpoints for vulnerabilities.
 
-    Some more stuff should be added here.
-
   workspaces:
     - name: zap-folder
       description: A RW folder where all zap output files is stored
@@ -23,14 +21,32 @@ spec:
       description: URL of the site to be tested, must include https:// or http://
       type: string
       default: ""
+    - name: configFile
+      description: Path to zap-scan-config
+      type: string
+      default: scan.conf
+    - name: cmName
+      description: Name of cm containing scan.conf
+      type: string
+      default: zap-scan-config
     - name: mins
       description: The number of minutes to spider for
       type: string
-      default: 1
+      default: "1"
   steps:
     - name: zap-baseline-scan
       image: quay.io/nissessenap/zap-proxy:0.0.1
       script: |
         # Will turn in to a command
         #
-        zap-baseline.py -t $(params.testURL) -g gen.conf -m $(params.mins) -w report.md
+        zap-baseline.py -t $(params.testURL) -c $(params.configFile) -m $(params.mins) -w report.md
+      volumeMounts:
+        - name: zap-scan-config
+          mountPath: "/zap/wrk/$(params.configFile)"
+          subPath: "$(params.configFile)"
+
+
+  volumes:
+    - name: zap-scan-config
+      configMap:
+        name: "$(params.cmName)"

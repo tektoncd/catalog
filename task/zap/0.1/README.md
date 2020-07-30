@@ -10,7 +10,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 
 ## Parameters
 
-- **testURL**: The URL to be scanned
+- **testURL**: The URL to be scanned.
+- **configFile**: Path to zap-scan-config, is stored under /zap/wrk/, ca you only set the file name.
+- **cmName**: Name of cm containing scan.conf
+- **mins**: Number of minutes to let the scanner run
 
 ## Workspace
 

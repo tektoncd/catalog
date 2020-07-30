@@ -12,6 +12,3 @@ spec:
   - name: zap-folder
     persistentVolumeClaim:
       claimName: zap-report
-  - name: zap-config
-    configmap:
-      name: zap-scan-config
