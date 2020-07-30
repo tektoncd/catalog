@@ -1,3 +1,4 @@
+---
 apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
@@ -9,5 +10,5 @@ spec:
   taskRef:
     name: zap-baseline
   workspaces:
-  - name: zap-folder
-    emptyDir: {}
+    - name: zap-folder
+      emptyDir: {}

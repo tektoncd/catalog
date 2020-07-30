@@ -1,3 +1,4 @@
+---
 apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
@@ -9,6 +10,6 @@ spec:
     - name: testURL
       value: https://www.zaproxy.org/
   workspaces:
-  - name: zap-folder
-    persistentVolumeClaim:
-      claimName: zap-report
+    - name: zap-folder
+      persistentVolumeClaim:
+        claimName: zap-report
