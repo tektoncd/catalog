@@ -6,6 +6,20 @@ As background, the [Apache OpenWhisk project](https://openwhisk.apache.org/) pro
 
 The project provides a set of [supported language runtimes](https://openwhisk.apache.org/downloads.html#component-releases) that includes a proxy that enforces a *documented contract for function initialization (function injection) and execution* along with a standard context. Several of these runtimes, such as NodeJS, Python and Java, have been updated to support execution on as containers on either OpenWhisk's Kubernetes or [Knative Serving](https://github.com/knative/serving) clusters. In the latter case, the resultant containers can be run as on Knative without requiring an OpenWhisk control plane.
 
+---
+
+## Index
+
+* [Pipeline resources](#pipeline-resources) - describes the resources that comprise the pipeline and its dependency graph *(i.e., workspace, tasks, conditions)*.
+* [Running the pipeline](#running-the-pipeline)
+    * [Prerequisites](#prerequisites) - lists prerequisites to deploy and run the pipeline and its samples.
+    * [Kubernetes resources](#kubernetes-resources) - lists the tested minimum resource configuration compatible with Docker Desktop *(i.e., CPU, memory and swap)*.
+    * [Verify Kubernetes](#verify-kubernetes) - sanity checks to assure your Kubernetes instance is ready.
+* [Installing pipeline resources](#installing-pipeline-resources) - describes how to set environment variables and run the deployment script for all pipeline resources.
+* [Building OpenWhisk-compatible applications](#building-openwhisk-compatible-applications) - describes how to configure the pipeline to build images compatible for either Knative or OpenWhisk target clusters in any supported language *(e.g., NodeJS, Python or Java)*.
+
+---
+
 ## Pipeline resources
 
 The pipeline also uses a consistent series of tasks to perform similar functional steps for each language.  Each supported language has a series of language-specific task implementations that all appear as their own branch of the pipeline.
@@ -46,6 +60,8 @@ In order to run the sample applications, you must also install Knative:
   - which requires a networking layer selection.
   - we chose [Istio without sidecars](https://knative.dev/v0.14-docs/install/installing-istio/#installing-istio-without-sidecar-injection)
 
+### Kubernetes resources
+
 #### Docker Desktop resources
 
 If using Docker Desktop, verify in the Docker Desktop menu dropdown that you see "Kubernetes is running". If not, then enable it by selecting **Preferences** -> **Kubernetes**  and check "enable" then wait for it to start.
@@ -56,7 +72,7 @@ Further verify that you have allocated enough resources to run all sample applic
 - [x] Memory: 8.0 GiB
 - [x] Swap: 1.5 GiB
 
-#### Verify Kubernetes
+### Verify Kubernetes
 
 1. Verify node is ready
     </br>
@@ -220,7 +236,7 @@ Follow these instructions to install the pipeline resources:
 
     </details>
 
-## Building OpenWhisk-compatible applications for Knative using the pipeline
+## Building OpenWhisk-compatible applications
 
 In this section, we will describe how to use the pipeline to build and deploy Serverless application images for the following popular OpenWhisk languages using some sample functions:
 
@@ -228,11 +244,11 @@ In this section, we will describe how to use the pipeline to build and deploy Se
 - [Python](#python)
 - [Java](#java)
 
-In addition, we will show how to confugre the pipeline to produce a Serverless application image that is compatible with:
+In addition, we will show how to configure the pipeline to produce a Serverless application image that is compatible with:
 
-- [Knative](https://knative.dev/) (default)
+- [Knative](https://knative.dev/) *(default configuration)*
 - [Apache OpenWhisk](https://openwhisk.apache.org/)
-- [Project Coligo](https://cloud.ibm.com/docs/knative?topic=knative-kn-faqs) *an IBM experimental Knative-based container platform*
+- [IBM Code Engine](https://cloud.ibm.com/docs/knative?topic=knative-kn-faqs) *an IBM experimental Knative-based container platform*
 
 ### NodeJS
 
@@ -252,13 +268,13 @@ These tasks are only executed if the `Condition` named `is-nodejs-runtime` retur
 
 #### Running the NodeJS example
 
-The `PipelineRun` resource used to build a NodeJS application is named `build-javascript-app-image` and derived from the template file [pipelinerun-build-padding-app.yaml.tmpl](pipelinerun/javascript/pipelinerun-javascript.yaml.tmpl).
+The `PipelineRun` resource used to build a NodeJS application is named `build-javascript-app-image` and derived from the template file [pipelinerun-build-padding-app.yaml.tmpl](samples/javascript/pipelinerun-javascript.yaml.tmpl).
 
 1. Execute `PipelineRun` with:
 
     ```bash
-    sed -e 's/${DOCKER_USERNAME}/'"$DOCKER_USERNAME"'/' pipelinerun/javascript/pipelinerun-javascript.yaml.tmpl > pipelinerun/javascript/pipelinerun-javascript.yaml
-    kubectl apply -f pipelinerun/javascript/pipelinerun-javascript.yaml
+    sed -e 's/${DOCKER_USERNAME}/'"$DOCKER_USERNAME"'/' samples/javascript/pipelinerun-javascript.yaml.tmpl > samples/javascript/pipelinerun-javascript.yaml
+    kubectl apply -f samples/javascript/pipelinerun-javascript.yaml
     ```
 
 2. Confirm that the `PipelineRun` completed successfully:
@@ -317,14 +333,14 @@ The `PipelineRun` resource used to build a NodeJS application is named `build-ja
 3. Create a new service on Knative with:
 
     ```bash
-    sed -e 's/${DOCKER_USERNAME}/'"$DOCKER_USERNAME"'/' services/service-openwhisk-javascript-app.yaml.tmpl > services/service-openwhisk-javascript-app.yaml
-    kubectl apply -f services/service-openwhisk-javascript-app.yaml
+    sed -e 's/${DOCKER_USERNAME}/'"$DOCKER_USERNAME"'/' samples/javascript/service-openwhisk-javascript-app.yaml.tmpl > samples/javascript/service-openwhisk-javascript-app.yaml
+    kubectl apply -f samples/javascript/service-openwhisk-javascript-app.yaml
     ```
 
 4. Run the application service:
 
     ```bash
-    curl -H "Host: openwhisk-javascript-app.default.example.com" -d '@pipelinerun/javascript/left-padding-data-run.json' -H "Content-Type: application/json" -X POST http://localhost/
+    curl -H "Host: openwhisk-javascript-app.default.example.com" -d '@samples/javascript/left-padding-data-run.json' -H "Content-Type: application/json" -X POST http://localhost/
     {"padded":[".........................Hello","..................How are you?"]}
     ```
 
@@ -348,13 +364,13 @@ These tasks are only executed if the `Condition` named `is-python-runtime` retur
 
 #### Running the Python example
 
-The `PipelineRun` resource used to build a Python application is derived from the template file named [pipelinerun-python.yaml.tmpl](pipelinerun/python/pipelinerun-python.yaml.tmpl).
+The `PipelineRun` resource used to build a Python application is derived from the template file named [pipelinerun-python.yaml.tmpl](samples/python/pipelinerun-python.yaml.tmpl).
 
 1. Execute `PipelineRun` with:
 
     ```bash
-    sed -e 's/${DOCKER_USERNAME}/'"$DOCKER_USERNAME"'/' pipelinerun/python/pipelinerun-python.yaml.tmpl > pipelinerun/python/pipelinerun-python.yaml
-    kubectl apply -f pipelinerun/python/pipelinerun-python.yaml
+    sed -e 's/${DOCKER_USERNAME}/'"$DOCKER_USERNAME"'/' samples/python/pipelinerun-python.yaml.tmpl > samples/python/pipelinerun-python.yaml
+    kubectl apply -f samples/python/pipelinerun-python.yaml
     ```
 
 2. Confirm that the `PipelineRun` completed successfully:
@@ -417,8 +433,8 @@ The `PipelineRun` resource used to build a Python application is derived from th
 3. Create a new service on Knative with:
 
     ```bash
-    sed -e 's/${DOCKER_USERNAME}/'"$DOCKER_USERNAME"'/' services/service-openwhisk-python-app.yaml.tmpl > services/service-openwhisk-python-app.yaml
-    kubectl apply -f services/service-openwhisk-python-app.yaml
+    sed -e 's/${DOCKER_USERNAME}/'"$DOCKER_USERNAME"'/' samples/python/service-openwhisk-python-app.yaml.tmpl > samples/python/service-openwhisk-python-app.yaml
+    kubectl apply -f samples/python/service-openwhisk-python-app.yaml
     ```
 
 4. Run the application service:
@@ -452,13 +468,13 @@ These tasks are only executed if the `Condition` named `is-java-runtime` returns
 
 #### Running the Java example
 
-The `PipelineRun` resource used to build a Java application is derived from the template file named [pipelinerun-java.yaml.tmpl](pipelinerun/java/pipelinerun-java.yaml.tmpl).
+The `PipelineRun` resource used to build a Java application is derived from the template file named [pipelinerun-java.yaml.tmpl](samples/java/pipelinerun-java.yaml.tmpl).
 
 1. Execute `PipelineRun` with:
 
     ```shell script
-    sed -e 's/${DOCKER_USERNAME}/'"$DOCKER_USERNAME"'/' pipelinerun/java/pipelinerun-java.yaml.tmpl > pipelinerun/java/pipelinerun-java.yaml
-    kubectl apply -f pipelinerun/java/pipelinerun-java.yaml
+    sed -e 's/${DOCKER_USERNAME}/'"$DOCKER_USERNAME"'/' samples/java/pipelinerun-java.yaml.tmpl > samples/java/pipelinerun-java.yaml
+    kubectl apply -f samples/java/pipelinerun-java.yaml
     ```
 
 2. Confirm that the `PipelineRun` completed successfully:
@@ -522,8 +538,8 @@ The `PipelineRun` resource used to build a Java application is derived from the 
 3. Create a new service on Knative with:
 
     ```shell script
-    sed -e 's/${DOCKER_USERNAME}/'"$DOCKER_USERNAME"'/' services/service-openwhisk-java-app.yaml.tmpl > services/service-openwhisk-java-app.yaml
-    kubectl apply -f services/service-openwhisk-java-app.yaml
+    sed -e 's/${DOCKER_USERNAME}/'"$DOCKER_USERNAME"'/' samples/java/service-openwhisk-java-app.yaml.tmpl > samples/java/service-openwhisk-java-app.yaml
+    kubectl apply -f samples/java/service-openwhisk-java-app.yaml
     ```
 
 4. Invoke the Java sample application service with some different images
@@ -535,7 +551,7 @@ The `PipelineRun` resource used to build a Java application is derived from the 
     Run the following curl command to convert the image:
 
     ```bash
-    curl -H "Host: openwhisk-java-app.default.example.com" -d '@pipelinerun/java/01-dice-color.json' -H "Content-Type: application/json" -X POST http://localhost/run | jq -r '.body' | base64 -D > 01-dice-gray.png
+    curl -H "Host: openwhisk-java-app.default.example.com" -d '@samples/java/01-dice-color.json' -H "Content-Type: application/json" -X POST http://localhost/run | jq -r '.body' | base64 -D > 01-dice-gray.png
     ```
 
     The images before and after conversion:
@@ -547,7 +563,7 @@ The `PipelineRun` resource used to build a Java application is derived from the 
     Run the following curl command to convert the image:
 
     ```bash
-    curl -H "Host: openwhisk-java-app.default.example.com" -d '@pipelinerun/java/02-conf-crowd.json' -H "Content-Type: application/json" -X POST http://localhost/run | jq -r '.body' | base64 -D > 02-conf-crowd-gray.png
+    curl -H "Host: openwhisk-java-app.default.example.com" -d '@samples/java/02-conf-crowd.json' -H "Content-Type: application/json" -X POST http://localhost/run | jq -r '.body' | base64 -D > 02-conf-crowd-gray.png
     ```
 
     The images before and after conversion:

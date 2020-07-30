@@ -17,6 +17,6 @@ bin/
 ##############################################
 # Artifacts from examples
 ##############################################
-pipelinerun/javascript/pipelinerun-javascript.yaml
-pipelinerun/java/pipelinerun-java.yaml
-pipelinerun/python/pipelinerun-python.yaml
+samples/javascript/pipelinerun-javascript.yaml
+samples/java/pipelinerun-java.yaml
+samples/python/pipelinerun-python.yaml

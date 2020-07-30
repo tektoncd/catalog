@@ -1,0 +1,446 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-openwhisk-app
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: openwhisk, knative, source-to-image, build-tool, faas, serverless
+    tekton.dev/displayName: "OpenWhisk application pipeline for Knative"
+spec:
+  workspaces:
+    - name: openwhisk-workspace
+  params:
+    - name: OW_APP_PATH
+      description: "Relative or Absolute path of the application source in the GitHub repo"
+      type: string
+      default: ""
+    - name: OW_APP_NODE_VERSION
+      description: "Any specific Node version needed to compile/run application source on"
+      type: string
+      default: "node"
+    - name: OW_APP_PYTHON_VERSION
+      description: "Any specific Python version needed to compile/run application source on"
+      default: "python"
+    - name: OW_ACTION_ARCHIVE_NAME
+      type: string
+      default: "action.zip"
+    - name: DOCKERFILE
+      description: "The path to the dockerfile to build from Runtime Repo"
+      type: string
+      default: "Dockerfile"
+    - name: OW_RUNTIME_DEBUG
+      description: "flag to indicate debug mode should be on/off"
+      type: string
+      default: "false"
+    - name: OW_RUNTIME_PLATFORM
+      description: "flag to indicate the platform, one of [openwhisk, knative, ... ]"
+      type: string
+      default: "knative"
+    - name: OW_ACTION_NAME
+      description: "name of the action"
+      type: string
+      default: ""
+    - name: OW_ACTION_CODE
+      description: "JavaScript source code to be evaluated"
+      type: string
+      default: ""
+    - name: OW_ACTION_MAIN
+      description: "name of the function in the __OW_ACTION_CODE to call as the action handler"
+      type: string
+      default: "main"
+    - name: OW_ACTION_BINARY
+      description: "flag to indicate zip function, for zip actions, __OW_ACTION_CODE must be base64 encoded string"
+      type: string
+      default: "true"
+    - name: OW_HTTP_METHODS
+      description: "list of HTTP methods, any combination of [GET, POST, PUT, and DELETE], default is [POST]"
+      type: string
+      default: "[POST]"
+    - name: OW_ACTION_RAW
+      description: "flag to indicate raw HTTP handling, interpret and process an incoming HTTP body directly"
+      type: string
+      default: "false"
+    # Parameters for Java Applications
+    - name: OW_APP_JAVA_VERSION
+      description: "Any specific Node version needed to compile/run application source on"
+      type: string
+      default: "adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u222-b10_openj9-0.15.1"
+    - name: OW_RUNTIME_CONTEXT
+      description: "The path to the dockerfile to build from Runtime Repo"
+      type: string
+      default: "dir:///workspaces/openwhisk-workspace/runtime/"
+    - name: OW_BUILD_CONFIG_PATH
+      description: "The path to the build configuration script (build.gradle) in Runtime Repo"
+      default: "core/java8/proxy/"
+    - name: JAR_NAME
+      description: "Jar name of the application source"
+      type: string
+      default: "OWAutoInit"
+    - name: MAVEN_BUILD_OUTPUT_PATH
+      description: "Maven build path where the jar file is created"
+      type: string
+      default: "./"
+    - name: OW_AUTO_INIT_MAIN
+      description: "Function name"
+      type: string
+      default: "main"
+  resources:
+    - name: app-git
+      type: git
+    - name: runtime-git
+      type: git
+    - name: app-image
+      type: image
+  tasks:
+    #####################################################################
+    # Javascript (NodeJS) Tasks
+    # - clone-nodejs-app-source (clone-app-repo-to-workspace)
+    #     - Task to Clone Application Source
+    # - clone-nodejs-runtime-source (clone-runtime-repo-to-workspace)
+    #     - Task to Clone Runtime Source
+    # - install-npm-packages (task-install-npm-packages)
+    #     - Task to Clone Application Source and Install necessary Dependencies
+    # - build-archive-node (task-build-archive)
+    #     - Task to archive application source
+    # - build-openwhisk-app-image-node (openwhisk)
+    #     - Task to build an image with OpenWhisk Runtime and Application Source
+    #####################################################################
+    # Task to Clone Application Source
+    - name: clone-nodejs-app-source
+      taskRef:
+        name: clone-app-repo-to-workspace
+      conditions:
+        - conditionRef: is-nodejs-runtime
+          params:
+            - name: OW_APP_PATH
+              value: $(params.OW_APP_PATH)
+          resources:
+            - name: app-git
+              resource: app-git
+      workspaces:
+        - name: openwhisk-workspace
+          workspace: openwhisk-workspace
+      resources:
+        inputs:
+          - name: app-git
+            resource: app-git
+    #####################################################################
+    # Task to Clone Runtime Source
+    - name: clone-nodejs-runtime-source
+      taskRef:
+        name: clone-runtime-repo-to-workspace
+      runAfter:
+        - clone-nodejs-app-source
+      workspaces:
+        - name: openwhisk-workspace
+          workspace: openwhisk-workspace
+      resources:
+        inputs:
+          - name: runtime-git
+            resource: runtime-git
+    #####################################################################
+    # Task to Clone Application Source and Install necessary Dependencies
+    - name: install-npm-packages
+      taskRef:
+        name: task-install-npm-packages
+      runAfter:
+        - clone-nodejs-app-source
+      workspaces:
+        - name: openwhisk-workspace
+          workspace: openwhisk-workspace
+      params:
+        - name: OW_APP_PATH
+          value: $(params.OW_APP_PATH)
+        - name: OW_APP_NODE_VERSION
+          value: $(params.OW_APP_NODE_VERSION)
+    #####################################################################
+    # Task to archive application source
+    - name: build-archive-node
+      taskRef:
+        name: task-build-archive
+      runAfter:
+        - install-npm-packages
+      workspaces:
+        - name: openwhisk-workspace
+          workspace: openwhisk-workspace
+      params:
+        - name: OW_APP_PATH
+          value: $(params.OW_APP_PATH)
+        - name: OW_APP_NODE_VERSION
+          value: $(params.OW_APP_NODE_VERSION)
+        - name: OW_ACTION_ARCHIVE_NAME
+          value: $(params.OW_ACTION_ARCHIVE_NAME)
+    #####################################################################
+    # Task to build an image with OpenWhisk Runtime and Application Source
+    - name: build-openwhisk-app-image-node
+      taskRef:
+        name: openwhisk-node
+      runAfter:
+        - clone-nodejs-runtime-source
+        - build-archive-node
+      workspaces:
+        - name: openwhisk-workspace
+          workspace: openwhisk-workspace
+      resources:
+        outputs:
+          - name: app-image
+            resource: app-image
+      params:
+        - name: DOCKERFILE
+          value: $(params.DOCKERFILE)
+        - name: OW_RUNTIME_DEBUG
+          value: $(params.OW_RUNTIME_DEBUG)
+        - name: OW_RUNTIME_PLATFORM
+          value: $(params.OW_RUNTIME_PLATFORM)
+        - name: OW_ACTION_NAME
+          value: $(params.OW_ACTION_NAME)
+        - name: OW_ACTION_CODE
+          value: $(params.OW_ACTION_CODE)
+        - name: OW_ACTION_MAIN
+          value: $(params.OW_ACTION_MAIN)
+        - name: OW_ACTION_BINARY
+          value: $(params.OW_ACTION_BINARY)
+        - name: OW_HTTP_METHODS
+          value: $(params.OW_HTTP_METHODS)
+        - name: OW_ACTION_RAW
+          value: $(params.OW_ACTION_RAW)
+        - name: OW_APP_PATH
+          value: $(params.OW_APP_PATH)
+        - name: OW_ACTION_ARCHIVE_NAME
+          value: $(params.OW_ACTION_ARCHIVE_NAME)
+    #####################################################################
+    # Python Tasks
+    # - clone-python-app-source (clone-app-repo-to-workspace)
+    #     - Task to Clone Application Source
+    # - clone-python-runtime-source (clone-runtime-repo-to-workspace)
+    #     - Task to Clone Runtime Source
+    # - install-pip-packages (task-install-npm-packages)
+    #     - Task to Clone Application Source and Install necessary Dependencies
+    # - build-archive-python (task-build-archive)
+    #     - Task to archive application source
+    # - build-openwhisk-app-image-python (openwhisk)
+    #     - Task to build an image with OpenWhisk Runtime and Application Source
+    #####################################################################
+    # Task to Clone Application Source
+    - name: clone-python-app-source
+      taskRef:
+        name: clone-app-repo-to-workspace
+      conditions:
+        - conditionRef: is-python-runtime
+          params:
+            - name: OW_APP_PATH
+              value: $(params.OW_APP_PATH)
+          resources:
+            - name: app-git
+              resource: app-git
+      workspaces:
+        - name: openwhisk-workspace
+          workspace: openwhisk-workspace
+      resources:
+        inputs:
+          - name: app-git
+            resource: app-git
+    #####################################################################
+    # Task to Clone Runtime Source
+    - name: clone-python-runtime-source
+      taskRef:
+        name: clone-runtime-repo-to-workspace
+      runAfter:
+        - clone-python-app-source
+      workspaces:
+        - name: openwhisk-workspace
+          workspace: openwhisk-workspace
+      resources:
+        inputs:
+          - name: runtime-git
+            resource: runtime-git
+    #####################################################################
+    # Task to Clone Application Source and Install necessary Dependencies
+    - name: install-pip-packages
+      taskRef:
+        name: task-install-pip-packages
+      runAfter:
+        - clone-python-app-source
+      workspaces:
+        - name: openwhisk-workspace
+          workspace: openwhisk-workspace
+      params:
+        - name: OW_APP_PATH
+          value: $(params.OW_APP_PATH)
+        - name: OW_APP_PYTHON_VERSION
+          value: $(params.OW_APP_PYTHON_VERSION)
+    #####################################################################
+    # Task to archive application source
+    - name: build-archive-python
+      taskRef:
+        name: task-build-archive-python
+      runAfter:
+        - install-pip-packages
+      workspaces:
+        - name: openwhisk-workspace
+          workspace: openwhisk-workspace
+      params:
+        - name: OW_APP_PATH
+          value: $(params.OW_APP_PATH)
+        - name: OW_APP_PYTHON_VERSION
+          value: $(params.OW_APP_PYTHON_VERSION)
+        - name: OW_ACTION_ARCHIVE_NAME
+          value: $(params.OW_ACTION_ARCHIVE_NAME)
+    #####################################################################
+    # Task to build an image with OpenWhisk Runtime and Application Source
+    - name: build-openwhisk-app-image-python
+      taskRef:
+        name: openwhisk-python
+      runAfter:
+        - clone-python-runtime-source
+        - build-archive-python
+      workspaces:
+        - name: openwhisk-workspace
+          workspace: openwhisk-workspace
+      resources:
+        outputs:
+          - name: app-image
+            resource: app-image
+      params:
+        - name: DOCKERFILE
+          value: $(params.DOCKERFILE)
+        - name: OW_RUNTIME_DEBUG
+          value: $(params.OW_RUNTIME_DEBUG)
+        - name: OW_RUNTIME_PLATFORM
+          value: $(params.OW_RUNTIME_PLATFORM)
+        - name: OW_ACTION_NAME
+          value: $(params.OW_ACTION_NAME)
+        - name: OW_ACTION_CODE
+          value: $(params.OW_ACTION_CODE)
+        - name: OW_ACTION_MAIN
+          value: $(params.OW_ACTION_MAIN)
+        - name: OW_ACTION_BINARY
+          value: $(params.OW_ACTION_BINARY)
+        - name: OW_HTTP_METHODS
+          value: $(params.OW_HTTP_METHODS)
+        - name: OW_ACTION_RAW
+          value: $(params.OW_ACTION_RAW)
+        - name: OW_APP_PATH
+          value: $(params.OW_APP_PATH)
+        - name: OW_ACTION_ARCHIVE_NAME
+          value: $(params.OW_ACTION_ARCHIVE_NAME)
+    #####################################################################
+    # Java Tasks
+    # - clone-java-app-source (clone-app-repo-to-workspace)
+    #     - Task to Clone Application Source
+    # - clone-java-runtime-source (clone-runtime-repo-to-workspace)
+    #     - Task to Clone Runtime Source
+    # - create-jar-with-maven (create-jar-with-maven)
+    #     - Create application JAR with maven
+    # - build-runtime-with-gradle (build-runtime-with-gradle)
+    #     - Build runtime with gradle, run after creating application JAR
+    # - build-shared-class-cache (build-shared-class-cache)
+    #     - Build shared class cache, run after building runtime
+    # - finalize-runtime-with-function (finalize-runtime-with-function)
+    #     - Finalize runtime with function (JAR file) after building shared class cache
+    #####################################################################
+    # Task to Clone Application Source
+    - name: clone-java-app-source
+      taskRef:
+        name: clone-app-repo-to-workspace
+      conditions:
+        - conditionRef: is-java-runtime
+          params:
+            - name: OW_APP_PATH
+              value: $(params.OW_APP_PATH)
+          resources:
+            - name: app-git
+              resource: app-git
+      workspaces:
+        - name: openwhisk-workspace
+          workspace: openwhisk-workspace
+      resources:
+        inputs:
+          - name: app-git
+            resource: app-git
+    #####################################################################
+    # Task to Clone Runtime Source
+    - name: clone-java-runtime-source
+      taskRef:
+        name: clone-runtime-repo-to-workspace
+      runAfter:
+        - clone-java-app-source
+      workspaces:
+        - name: openwhisk-workspace
+          workspace: openwhisk-workspace
+      resources:
+        inputs:
+          - name: runtime-git
+            resource: runtime-git
+    #####################################################################
+    # Create application JAR with maven
+    - name: create-jar-with-maven
+      taskRef:
+        name: create-jar-with-maven
+      runAfter:
+        - clone-java-app-source
+      workspaces:
+        - name: openwhisk-workspace
+          workspace: openwhisk-workspace
+      params:
+        - name: MAVEN_BUILD_OUTPUT_PATH
+          value: $(params.MAVEN_BUILD_OUTPUT_PATH)
+        - name: JAR_NAME
+          value: $(params.JAR_NAME)
+    #####################################################################
+    # Build runtime with gradle, run after creating application JAR
+    - name: build-runtime-with-gradle
+      taskRef:
+        name: build-runtime-with-gradle
+      runAfter:
+        - clone-java-runtime-source
+      workspaces:
+        - name: openwhisk-workspace
+          workspace: openwhisk-workspace
+      params:
+        - name: OW_APP_JAVA_VERSION
+          value: $(params.OW_APP_JAVA_VERSION)
+        - name: OW_BUILD_CONFIG_PATH
+          value: $(params.OW_BUILD_CONFIG_PATH)
+    #####################################################################
+    # Build shared class cache, run after building runtime
+    - name: build-shared-class-cache
+      taskRef:
+        name: build-shared-class-cache
+      runAfter:
+        - build-runtime-with-gradle
+      workspaces:
+        - name: openwhisk-workspace
+          workspace: openwhisk-workspace
+      params:
+        - name: OW_APP_JAVA_VERSION
+          value: $(params.OW_APP_JAVA_VERSION)
+        - name: OW_BUILD_CONFIG_PATH
+          value: $(params.OW_BUILD_CONFIG_PATH)
+    #####################################################################
+    # Finalize runtime with function (JAR file) after building shared class cache
+    - name: finalize-runtime-with-function
+      taskRef:
+        name: finalize-runtime-with-function
+      runAfter:
+        - build-shared-class-cache
+      workspaces:
+        - name: openwhisk-workspace
+          workspace: openwhisk-workspace
+      resources:
+        outputs:
+          - name: app-image
+            resource: app-image
+      params:
+        - name: DOCKERFILE
+          value: $(params.DOCKERFILE)
+        - name: OW_RUNTIME_CONTEXT
+          value: $(params.OW_RUNTIME_CONTEXT)
+        - name: MAVEN_BUILD_OUTPUT_PATH
+          value: $(params.MAVEN_BUILD_OUTPUT_PATH)
+        - name: JAR_NAME
+          value: $(params.JAR_NAME)
+        - name: OW_AUTO_INIT_MAIN
+          value: $(params.OW_AUTO_INIT_MAIN)
