@@ -1,0 +1,14 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: gated-pipeline-run
+spec:
+  serviceAccountName: git-rebase-service-account
+  pipelineRef:
+    name: gated-pipeline
+  params:
+  - name: prometheus_endpoint
+    value: your.prometheus.endpoint:9090
+  - name: promotion_sink
+    value: replace-with-your-uri
