@@ -37,9 +37,16 @@ spec:
   steps:
     - name: lint
       image: docker.io/python:$(inputs.params.PYTHON)
-      workingDir: /workspace/source
+      workingDir: $(workspaces.source.path)
       script: |
         export PATH=$PATH:$HOME/.local/bin
-        pip install -r $(inputs.params.SOURCE_PATH)/$(inputs.params.REQUIREMENTS_FILE)
-        pip show pylint || echo "###\nWarning: Pylint is missing in your requirements\n###" && pip install pylint
+        if [ -n "$(inputs.params.REQUIREMENTS_FILE)" ] && [ -e "$(inputs.params.REQUIREMENTS_FILE)" ];then
+           pip install -r $(inputs.params.SOURCE_PATH)/$(inputs.params.REQUIREMENTS_FILE)
+           pip show pylint || {
+              echo "###\nWarning: Pylint is missing in your requirements\n###";
+              pip install pylint
+           }
+        else
+           pip install pylint
+        fi
         pylint $(inputs.params.ARGS) $(inputs.params.MODULE_PATH)
