@@ -1,0 +1,44 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: gated-pipeline
+spec:
+  params:
+    - name: prometheus_endpoint
+      type: string
+      description: The triggers endpoint to send out completion CloudEvent
+      default: ""
+    - name: promotion_sink
+      type: string
+      description: The triggers endpoint to send out promotion CloudEvent
+      default: ""
+  tasks:
+    - name: gate-slo
+      taskRef:
+        name: prometheus-gate
+      params:
+      - name: range_time
+        value: "-5m"
+      - name: target_value
+        value: "0"
+      - name: prometheus_endpoint
+        value: "$(params.prometheus_endpoint)"
+      - name: range_query
+        value: kube_endpoint_address_not_ready{namespace="default"}
+      - name: target_strategy
+        value: equals
+    - name: send-promotion-events
+      taskRef:
+        name: cloudevent
+      params:
+      - name: sink
+        value: $(params.promotion_sink)
+      - name: eventID
+        value: "success.1234"
+      - name: eventType
+        value: "promoted.event"
+      - name: source
+        value: "development-pipeline"
+      - name: data
+        value: '{"message": "The gate succeeded. Woo"}'
