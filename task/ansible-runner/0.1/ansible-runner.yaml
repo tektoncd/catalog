@@ -1,0 +1,61 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: ansible-runner
+  labels:
+    app.kubernetes.io/version: '0.1'
+    app.kubernetes.io/ansible-version: '2.9.20'
+    app.kubernetes.io/ansible-k8s-version: '0.11.0'
+  annotations:
+    tekton.dev/pipelines.minVersion: '0.12.1'
+    tekton.dev/tags: cli
+    tekton.dev/displayName: 'Ansible Runner'
+spec:
+  description: >-
+    Task to run Ansible playbooks using Ansible Runner
+
+  workspaces:
+    - name: runner-dir
+      description: The Ansibler runner directory
+  params:
+    - name: project-dir
+      description: The project directory under the workspace runner-dir
+      default: 'project'
+    - name: script
+      description: The ansible-playbook command to run
+      type: string
+      default: 'ansible-runner run $@'
+    - name: args
+      description: The arguments to pass ansible-runner
+      type: array
+      default:
+        - --help
+  steps:
+    - name: requirements
+      image: docker.io/ansible/ansible-runner
+      script: |
+        #!/bin/bash
+        set -e
+        if [ -f requirements.txt ];
+        then
+          pip3 install --user \
+            -r requirements.txt
+        fi
+
+        if [ -f  requirements.yml ];
+        then
+          ansible-galaxy role install -vv \
+            -r requirements.yml
+          ansible-galaxy collection install -vv \
+            -r requirements.yml
+        fi
+      workingDir: '$(workspaces.runner-dir.path)/$(params.project-dir)'
+
+    - name: run-playbook
+      image: docker.io/ansible/ansible-runner
+      script: '$(params.script)'
+      args:
+        - $(params.args)
+        - $(params.project-dir)
+      workingDir: '$(workspaces.runner-dir.path)'
