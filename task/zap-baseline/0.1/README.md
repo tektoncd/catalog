@@ -5,7 +5,7 @@
 ## Install the Task
 
 ```shell
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/zap/0.1/zap-baseline.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/zap-baseline/0.1/zap-baseline.yaml
 ```
 
 ## Parameters
