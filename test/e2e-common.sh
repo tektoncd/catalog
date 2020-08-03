@@ -125,6 +125,19 @@ function test_task_creation() {
             cp ${yaml} ${TMPF}
             [[ -f ${taskdir}/tests/pre-apply-task-hook.sh ]] && source ${taskdir}/tests/pre-apply-task-hook.sh
             function_exists pre-apply-task-hook && pre-apply-task-hook
+
+            [[ -d ${taskdir}/tests/fixtures ]] && {
+                cat <<EOF>>${TMPF}
+  sidecars:
+  - image: quay.io/chmouel/go-rest-api-test
+    name: go-rest-api
+    env:
+      - name: CONFIG
+        value: |
+$(cat ${taskdir}/tests/fixtures/*.yaml|sed 's/^/          /')
+EOF
+            }
+
             kubectl -n ${tns} create -f ${TMPF}
         done
 
