@@ -36,8 +36,6 @@ There are others also similar to that:
 
 This `task` can be used to copy one or more than one images to-and fro various storage mechanisms.
 
-This task uses image from [this](https://github.com/tektoncd/plumbing/tree/master/tekton/images/skopeo) Dockerfile.
-
 ## Install the Task
 
 ```
