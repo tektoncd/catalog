@@ -1,0 +1,80 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: s2i-java-binary-build-test-pipeline
+spec:
+  workspaces:
+    - name: shared-workspace
+    - name: maven-settings
+    - name: images-url
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: https://github.com/spring-projects/spring-petclinic
+        - name: revision
+          value: "d367e2b4b41a2de899b0f438bc984a7c1c011b77"
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+    - name: maven-run
+      taskRef:
+        name: maven
+      runAfter:
+        - fetch-repository
+      workspaces:
+        - name: maven-settings
+          workspace: maven-settings
+        - name: source
+          workspace: shared-workspace
+    - name: s2i-java-binary-build
+      taskRef:
+        name: s2i-java-binary-build
+      runAfter:
+        - maven-run
+      workspaces:
+        - name: binary
+          workspace: shared-workspace
+      params:
+        - name: BUILD_NAME
+          value: java-binary-build-test
+        - name: BINARY_PATH
+          value: ./target
+    - name: copy-image
+      taskRef:
+        name: skopeo-copy
+      runAfter:
+        - s2i-java-binary-build
+      workspaces:
+        - name: images-url
+          workspace: images-url
+      params:
+        - name: srcImageURL
+          value: docker://$(tasks.s2i-java-binary-build.results.image-url)
+        - name: destImageURL
+          value: docker://localhost:5000/java-binary-build:latest
+        - name: destTLSverify
+          value: "false"
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: s2i-java-binary-build-test-pipeline-run
+spec:
+  pipelineRef:
+    name: s2i-java-binary-build-test-pipeline
+  workspaces:
+    - name: maven-settings
+      emptyDir: {}
+    - name: shared-workspace
+      persistentvolumeclaim:
+        claimName: source-pvc
+    - name: images-url
+      emptyDir: {}

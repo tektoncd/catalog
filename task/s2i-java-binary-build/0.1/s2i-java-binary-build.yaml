@@ -1,0 +1,53 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: s2i-java-binary-build
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: image-build, java
+
+spec:
+  description: >-
+    S2i Java Binary Build task takes the binary file as an input and create an
+    image of that application and pass the image URL to the result of the task.
+
+    This task creates a build configuration and starts a new build from the
+    created build config.
+
+  workspaces:
+    - name: binary
+  params:
+    - name: BUILD_NAME
+      type: string
+      description: Name to use for generated build artifacts.
+      default: java-binary-build
+    - name: BINARY_PATH
+      type: string
+      description: Path to the directory where binary is present.
+  results:
+    - name: image-url
+      description: Generated image URL, that can be used by the other tasks.
+  steps:
+    - name: image-build
+      image: quay.io/openshift/origin-cli:latest
+      workingDir: $(workspaces.binary.path)/$(params.BINARY_PATH)
+      script: |
+        #!/usr/bin/env bash
+
+        file=$(find -type f -name "*.jar")
+
+        # Generate the build configuration
+        oc new-build java --name="$(params.BUILD_NAME)" --binary=true
+
+        # Trigger Build
+
+        oc start-build bc/"$(params.BUILD_NAME)" --from-file=$file --follow
+
+        # Get the pushed image URL
+        PUSHED_IMAGE_URL=$(oc get is $(params.BUILD_NAME) --template='{{.status.dockerImageRepository}}')
+
+        # Make sure we don't add a trailing newline to the result!
+        echo -n "$PUSHED_IMAGE_URL" > $(results.image-url.path)
