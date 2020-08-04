@@ -2,7 +2,7 @@
 
 The following task can help you to deploy an application using the Blue-Green deployment strategy. This task gives you the flexibility to deploy a version of the application from the blue zone to the green zone without disturbing the previous version in the blue zone. It works by making the service point to the newer version of the application deployed.
 
-- If you are deploying the first version of the application then it will go into the blue zone and for that you need to provide deployment and service manifests via the `workspaces` and in the `params` the service name and version. Sample Kubernetes manifests for version v1 can be found [here](./example/v1-deploy).
+- If you are deploying the first version of the application then it will go into the blue zone and for that you need to provide deployment and service manifests via the `workspaces` and in the `params` the service name and version. Sample Kubernetes manifests for version v1 can be found [here](./samples/v1-deploy).
 - For further new deployments, it will get deployed in the other zone and then the current service will now point to the new deployment. For example if we have a deployment running in the blue zone then we will deploy the next deployment in the green zone and make the service point to the green zone or vice versa.
 
 ## Installing the Task
@@ -26,7 +26,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 
 - **SERVICE_NAME**: The service name pointing to the existing deployment. (_Note_: The service name for the new deployment should be same)
 - **NEW_VERSION**: The version of the deployment to be deployed in the green/blue zone
-- **MANIFEST**: The deployment manifest URL file path provided in case the manifest is present on Github. (_Example_: "https://raw.githubusercontent.com/tektoncd/catalog/master/task/blue-green-deploy/0.1/example/v1-deploy/blue-deployment.yaml")
+- **MANIFEST**: The deployment manifest URL file path provided in case the manifest is present on Github. (_Example_: "https://raw.githubusercontent.com/tektoncd/catalog/master/task/blue-green-deploy/0.1/samples/v1-deploy/blue-deployment.yaml")
 
 # Usage
 
@@ -50,7 +50,7 @@ spec:
     - name: NEW_VERSION
       value: v2
     - name: MANIFEST
-      value: "https://raw.githubusercontent.com/tektoncd/catalog/master/task/blue-green-deploy/0.1/example/v2-deploy/green-deployment.yaml"
+      value: "https://raw.githubusercontent.com/tektoncd/catalog/master/task/blue-green-deploy/0.1/samples/v2-deploy/green-deployment.yaml"
   workspaces:
     - name: manifest-dir
       emptyDir: {}
