@@ -20,7 +20,7 @@ spec:
     - name: PYTHON
       description: The used Python version, more precisely the tag for the Python image
       type: string
-      default: "3.8"
+      default: "latest"
     - name: ARGS
       description: The additional arguments to be used with pytest
       type: string
@@ -37,8 +37,18 @@ spec:
       workingDir: $(workspaces.source.path)
       script: |
         export PATH=$PATH:$HOME/.local/bin
-        pip install -r $(inputs.params.SOURCE_PATH)/$(inputs.params.REQUIREMENTS_FILE)
-        pip show pytest || (echo "###\nWarning: Pytest is missing in your requirements\n###" && pip install pytest)
-        pip show coverage || (echo "###\nWarning: Coverage is missing in your requirements\n###" && pip install coverage)
-        coverage run -m pytest $(inputs.params.ARGS) $(inputs.params.SOURCE-PATH)
+        if [ -n "$(inputs.params.REQUIREMENTS_FILE)" ] && [ -e "$(inputs.params.REQUIREMENTS_FILE)" ];then
+          pip install -r $(inputs.params.SOURCE_PATH)/$(inputs.params.REQUIREMENTS_FILE)
+          pip show pytest || {
+            echo "###\nWarning: Pytest is missing in your requirements\n###";
+            pip install pytest
+          }
+          pip show coverage || {
+            echo "###\nWarning: Coverage is missing in your requirements\n###";
+            pip install coverage
+          }
+        else
+          pip install pytest coverage
+        fi
+        coverage run -m pytest $(inputs.params.ARGS) $(inputs.params.SOURCE_PATH)
         coverage report -m
