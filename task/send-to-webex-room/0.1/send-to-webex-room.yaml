@@ -11,6 +11,8 @@ spec:
   description: >-
     This task posts a text message to a webex room.
 
+    By leveraging the Webex Bot API you can authenticate with Bot API token and send text messages to a room by ID.
+
   params:
     - name: webex-token-secret-name
       type: string
