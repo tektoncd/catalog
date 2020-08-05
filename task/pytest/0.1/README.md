@@ -18,7 +18,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 
 ## Parameters
 
-* **PYTHON**: The used Python version, more precisely the tag for the Python image (_default_: `3.6`)
+* **PYTHON**: The used Python version, more precisely the tag for the Python image (_default_: `latest`)
 * **ARGS**: The additional arguments to be used with pytest
 * **SOURCE_PATH**: The path to the source code (_default_: `.`)
 * **REQUIREMENTS_FILE**: The name of the requirements file inside the source location (_default_: `requirements.txt`)
