@@ -1,6 +1,6 @@
-# GKE End to End Cluster Create
+# GKE Cluster Create
 
-The Task `gke-e2e-cluster-create` can be used to create a GKE cluster in a GCP
+The Task `gke-cluster-create` can be used to create a GKE cluster in a GCP
 project and fetch a kubeconfig that can be used (in a context with both kubectl and gcloud
 available) to make requests to the cluster.
 
