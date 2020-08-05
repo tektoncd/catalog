@@ -1,0 +1,64 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: gke-add-cluster-admin
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: "gke"
+    tekton.dev/displayName: "GKE Add Cluster Admin"
+spec:
+  description: |
+    Create a cluster admin user in a GKE cluster.
+
+    This Task will authenticate with a GKE cluster using gcloud and then create a new
+    user in the cluster with cluster admin priviledges.
+    The service account provided via gcp-service-account must have `container.clusterRoleBindings.create`
+    permissions in the target GKE project that the cluster lives in.
+
+  params:
+  - name: private-key-path
+    description: The path to the private key within the gcp-service-account workspace.
+  - name: new-username
+    description: The name to use for the new user
+    default: cluster-admin
+  workspaces:
+  - name: gcp-service-account
+    description: |
+      A Secret or volume containing the private key of a GCP service account that can access the GKE cluster
+      in the kubeconfig, is able to create users in the cluster and can grant cluster-admin permissions.
+      gcloud auth will be initialized with this service account.
+  - name: kubeconfig
+    description: |
+      A workspace into which a kubeconfig file called `kubeconfig` has been written that contains the information
+      required to access the cluster. The kubeconfig will be used in a container that has gcloud installed and
+      so supports using gcloud to authenticate.
+
+      The new user's token information will be added to the kubeconfig and the user for the current context will be
+      set to this user.
+  steps:
+  - name: create-user
+    image: google/cloud-sdk@sha256:12fada1b09cde6aaaab8a8638923d98f87ac3f3fb9b2c9a7872c45d14e3439e2
+    script: |
+      # Configure gcloud to use the provided service account
+      gcloud auth activate-service-account --key-file=$(workspaces.gcp-service-account.path)/$(params.private-key-path)
+
+      # Create the new user
+      export KUBECONFIG=$(workspaces.kubeconfig.path)/kubeconfig
+      kubectl -n kube-system create serviceaccount $(params.new-username)
+
+      # Give the new user cluster-admin priviledges
+      kubectl create clusterrolebinding $(params.new-username)-binding \
+        --clusterrole=cluster-admin \
+        --serviceaccount=kube-system:$(params.new-username)
+
+      # Get the user's auth token
+      TOKENNAME=`kubectl -n kube-system get serviceaccount/$(params.new-username) -o jsonpath='{.secrets[0].name}'`
+      TOKEN=`kubectl -n kube-system get secret $TOKENNAME -o jsonpath='{.data.token}'| base64 --decode`
+
+      # Add the new user's token to the kubeconfig file and update update the current context to use it
+      kubectl config set-credentials $(params.new-username) --token=$TOKEN
+      kubectl config set-context --current --user=$(params.new-username)
+
+      kubectl get pod

@@ -1,0 +1,86 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: pipelines-install-
+spec:
+  # This service account exists in the tekton-releases prow cluster
+  serviceAccountName: boskos-heartbeat
+  workspaces:
+  - name: kubeconfig
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5M
+  - name: test-account-secret
+    secret:
+      # This secret exists in the tekton-releases prow cluster
+      secretName: test-account
+  pipelineSpec:
+    params:
+    - name: owner-name
+      default: pipelines-install-
+    workspaces:
+    - name: kubeconfig
+    - name: test-account-secret
+    tasks:
+    - name: boskos-acquire
+      taskRef:
+        name: boskos-acquire
+      params:
+        - name: owner-name
+          value: $(params.owner-name)
+    - name: create-cluster
+      taskRef:
+        name: gke-cluster-create
+      params:
+      - name: project-name
+        value: $(tasks.boskos-acquire.results.leased-resource)
+      - name: private-key-path
+        value: service-account.json
+      - name: identifier
+        value: create-and-add-test
+      workspaces:
+      - name: gcp-service-account
+        workspace: test-account-secret
+      - name: kubeconfig
+        workspace: kubeconfig
+    - name: add-cluster-admin
+      # TODO(pipeline#1878): actually a dependency on the kubeconfig workspace
+      runAfter: [create-cluster]
+      taskRef:
+        name: gke-add-cluster-admin
+      params:
+      - name: new-username
+        value: cluster-admin-user
+      - name: private-key-path
+        value: service-account.json
+      workspaces:
+      - name: gcp-service-account
+        workspace: test-account-secret
+      - name: kubeconfig
+        workspace: kubeconfig
+    - name: install
+      # TODO(pipeline#1878): actually a dependency on the kubeconfig workspace
+      runAfter: [add-cluster-admin]
+      taskRef:
+        name: tekton-pipelines-install
+      params:
+      - name: pipelines-version
+        value: v0.12.0
+      workspaces:
+      - name: kubeconfig
+        workspace: kubeconfig
+    - name: boskos-release
+      runAfter: [install]
+      taskRef:
+        name: boskos-release
+      params:
+      - name: leased-resource
+        # TODO(pipeline#2557): This is a good candidate for a finally clause: without it
+        # you'll need to manually delete the heatbeat pod if the pipeline fails
+        value: $(tasks.boskos-acquire.results.leased-resource)
+      - name: owner-name
+        value: $(params.owner-name)

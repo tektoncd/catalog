@@ -8,6 +8,11 @@ The cluster created will have a firewall applied such that the only traffic allo
 in the cluster will be SSH, TCP services running on 80 or 8080, and services exposed via the
 NodePort default range (https://kubernetes.io/docs/concepts/services-networking/service/#nodeport).
 
+## ServiceAccount
+
+This Task will use the service account provided via the `gcp-service-account` workspace and will
+not use the permissions of the TaskRun's ServiceAccount.
+
 ## Parameters
 
 * **project-name**: The name of the GCP project in which to create the GKE cluster. (_required_)

@@ -1,0 +1,34 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: tekton-pipelines-install
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: "tekton,test"
+    tekton.dev/displayName: "Tekton Pipelines Install"
+spec:
+  description: |
+    Install the specified version of Tekton Pipelines.
+
+    If you are looking to manage an installation of Tekton Pipelines, you probably want
+    to use https://github.com/tektoncd/operator instead. This Task can be used to apply
+    a specified release of Tekton to an existing cluster, for example for testing.
+  params:
+  - name: pipelines-version
+    description: The version of Tekton Pipelines to install. Expected format `v.0.0`.
+  workspaces:
+  - name: kubeconfig
+    description: |
+      A workspace into which a kubeconfig file called `kubeconfig` has been written that contains a default
+      context configured to have cluster admin priviledges on the cluster.
+  steps:
+  - name: apply-config
+    image: lachlanevenson/k8s-kubectl@sha256:3a5e22a406a109f4f26ec06b5f1f6a66ae0cd0e185bc28499eb7b7a3bbf1fe09
+    args:
+    - "--kubeconfig"
+    - "$(workspaces.kubeconfig.path)/kubeconfig"
+    - "apply"
+    - "--filename"
+    - "https://storage.googleapis.com/tekton-releases/pipeline/previous/$(params.pipelines-version)/release.yaml"
