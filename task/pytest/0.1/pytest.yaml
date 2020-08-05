@@ -20,7 +20,7 @@ spec:
     - name: PYTHON
       description: The used Python version, more precisely the tag for the Python image
       type: string
-      default: "3.6"
+      default: "latest"
     - name: ARGS
       description: The additional arguments to be used with pytest
       type: string
@@ -34,9 +34,16 @@ spec:
   steps:
     - name: unit-test
       image: docker.io/python:$(inputs.params.PYTHON)
-      workingDir: /workspace/source
+      workingDir: $(workspaces.source.path)
       script: |
         export PATH=$PATH:$HOME/.local/bin
-        pip install -r $(inputs.params.SOURCE_PATH)/$(inputs.params.REQUIREMENTS_FILE)
-        pip show pytest || echo "###\nWarning: Pytest is missing in your requirements\n###" && pip install pytest
-        pytest $(inputs.params.ARGS) $(inputs.params.SOURCE-PATH)
+        if [ -n "$(inputs.params.REQUIREMENTS_FILE)" ] && [ -e "$(inputs.params.REQUIREMENTS_FILE)" ];then
+          pip install -r $(inputs.params.SOURCE_PATH)/$(inputs.params.REQUIREMENTS_FILE)
+          pip show pytest || {
+            echo "###\nWarning: Pytest is missing in your requirements\n###";
+            pip install pytest
+          }
+        else
+          pip install pytest
+        fi
+        pytest $(inputs.params.ARGS) $(inputs.params.SOURCE_PATH)

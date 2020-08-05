@@ -18,7 +18,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 
 ## Parameters
 
-* **PYTHON**: The used Python version, more precisely the tag for the Python image (_default_: `3.6`)
+* **PYTHON**: The used Python version, more precisely the tag for the Python image (_default_: `latest`)
 * **SOURCE_PATH**: The path to the source code (_default_: `.`)
 * **MODULE_PATH**: The path to the module which should be analysed by pylint (_default_: `.`)
 * **ARGS**: The additional arguments to be used with pylint
