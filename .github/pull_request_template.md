@@ -12,7 +12,6 @@ review them:
 
 - [ ] Includes [docs](https://github.com/tektoncd/community/blob/master/standards.md#principles) (if user facing)
 - [ ] Commit messages follow [commit message best practices](https://github.com/tektoncd/community/blob/master/standards.md#commit-messages)
-- [ ] Yaml file complies with [yamllint](https://github.com/adrienverge/yamllint) rules.
 - [ ] Complies with [Catalog Orgainization TEP][TEP], see [example]. **Note** [An issue has been filed to automate this validation][validation]
   - [ ] File path follows  `<kind>/<name>/<version>/name.yaml`
   - [ ] Has `README.md` at `<kind>/<name>/<version>/README.md`
