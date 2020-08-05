@@ -10,7 +10,7 @@ Create a bot as decribed over [here](https://developer.webex.com/docs/bots).
 ## Install the Task and create a secret
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/send-to-webex/0.1/send-to-webex-room.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/send-to-webex-room/0.1/send-to-webex-room.yaml
 ```
 
 Create a secret that has the Webex API bot token.
