@@ -1,0 +1,38 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: send-to-webex-room
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: messaging
+spec:
+  description: >-
+    This task posts a text message to a webex room.
+
+    By leveraging the Webex Bot API you can authenticate with Bot API token and send text messages to a room by ID.
+
+  params:
+    - name: webex-token-secret-name
+      type: string
+      description: secret name of the Webex Bot API token
+      default: webex-token-secret
+    - name: room-id
+      type: string
+      description: ID of room
+    - name: message
+      type: string
+      description: plain text message
+  steps:
+    - name: post
+      image: curlimages/curl:7.71.1
+      script: |
+        #!/bin/sh
+        /usr/bin/curl -X POST -H 'Content-type: application/json' -H 'Authorization: Bearer '$WEBEX_TOKEN --data '{"roomId":"$(params.room-id)","text":"$(params.message)"}' https://webexapis.com/v1/messages
+      env:
+        - name: WEBEX_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: $(params.webex-token-secret-name)
+              key: token
