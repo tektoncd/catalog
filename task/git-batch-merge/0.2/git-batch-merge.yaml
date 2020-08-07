@@ -1,0 +1,139 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: git-batch-merge
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: git
+    tekton.dev/displayName: "git batch merge"
+spec:
+  description: >-
+    This task takes a set of refspecs, fetches them and performs git operations
+    (cherry-pick or merge) to apply them in order on the given base revision (default master).
+
+    The resulting commit SHA will not match across taskruns, but the git tree SHA should
+    match. This can be useful for batch testing changes, for example, when you want to
+    batch up your PRs into a single merge by taking the HEAD of the branch you want to merge
+    to, and adding all the PRs to it. This concept is used in tools such as Tide to
+    batch test PR’s, and Zuul CI Gating, to perform speculative execution of
+    PR’s/change requests individually
+
+  workspaces:
+    - name: output
+      description: The git repo will be cloned onto the volume backing this workspace
+  params:
+    - name: url
+      description: git url to clone
+      type: string
+    - name: revision
+      description: base git revision to checkout (branch, tag, sha, ref…)
+      type: string
+      default: master
+    - name: refspec
+      description: base git refspec to fetch before checking out revision
+      type: string
+      default: "refs/heads/master:refs/heads/master"
+    - name: batchedRefs
+      description: git refs to fetch and batch on top of revision using the given mode (must be a valid refname, no commit SHA's)
+      type: string
+    - name: gitUserName
+      description: git user name to use for creating the batched commit (First Last)
+      type: string
+      default: GitBatch Task
+    - name: gitUserEmail
+      description: git user email to use for creating the batched commit (First.Last@domain.com)
+      type: string
+      default: GitBatch.Task@tekton.dev
+    - name: mode
+      description: git operation to perform while batching (choose from merge, cherry-pick)
+      type: string
+      default: merge
+    - name: submodules
+      description: defines if the resource should initialize and fetch the submodules
+      type: string
+      default: "true"
+    - name: depth
+      description: performs a shallow clone where only the most recent commit(s) will be fetched
+      type: string
+      default: "0"
+    - name: sslVerify
+      description: defines if http.sslVerify should be set to true or false in the global git config
+      type: string
+      default: "true"
+    - name: subdirectory
+      description: subdirectory inside the "output" workspace to clone the git repo into
+      type: string
+      default: ""
+    - name: deleteExisting
+      description: clean out the contents of the repo's destination directory (if it already exists) before trying to clone the repo there
+      type: string
+      default: "false"
+  results:
+    - name: commit
+      description: The final commit SHA that was obtained after batching all provided refs onto revision
+    - name: tree
+      description: The git tree SHA that was obtained after batching all provided refs onto revision.
+  steps:
+    - name: clone
+      image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.14.2
+      script: |
+        CHECKOUT_DIR="$(workspaces.output.path)/$(params.subdirectory)"
+
+        cleandir() {
+          # Delete any existing contents of the repo directory if it exists.
+          #
+          # We don't just "rm -rf $CHECKOUT_DIR" because $CHECKOUT_DIR might be "/"
+          # or the root of a mounted volume.
+          if [[ -d "$CHECKOUT_DIR" ]] ; then
+            # Delete non-hidden files and directories
+            rm -rf "$CHECKOUT_DIR"/*
+            # Delete files and directories starting with . but excluding ..
+            rm -rf "$CHECKOUT_DIR"/.[!.]*
+            # Delete files and directories starting with .. plus any other character
+            rm -rf "$CHECKOUT_DIR"/..?*
+          fi
+        }
+
+        if [[ "$(params.deleteExisting)" == "true" ]] ; then
+          cleandir
+        fi
+
+        p="$(params.batchedRefs)"
+        refs="$(params.refspec)"
+        for ref in $p; do
+          refs="$refs $ref:refs/batch/$ref"
+        done
+
+        /ko-app/git-init \
+          -url "$(params.url)" \
+          -revision "$(params.revision)" \
+          -refspec "$refs" \
+          -path "$CHECKOUT_DIR" \
+          -sslVerify="$(params.sslVerify)" \
+          -submodules="$(params.submodules)" \
+          -depth "$(params.depth)"
+
+        git -C $CHECKOUT_DIR config user.name "$(params.gitUserName)"
+        git -C $CHECKOUT_DIR config user.email "$(params.gitUserEmail)"
+
+        mode="$(params.mode)"
+        if [[ $mode == "merge" ]]; then
+          for ref in $p; do
+             git -C $CHECKOUT_DIR merge --quiet --allow-unrelated-histories refs/batch/$ref
+          done
+        elif [[ $mode == "cherry-pick" ]]; then
+          for ref in $p; do
+             git -C $CHECKOUT_DIR cherry-pick --allow-empty --keep-redundant-commits refs/batch/$ref
+          done
+        else
+            echo "unsupported mode $mode"
+            exit 1
+        fi
+
+        RESULT_SHA="$(git -C $CHECKOUT_DIR rev-parse HEAD)"
+        TREE_SHA="$(git -C $CHECKOUT_DIR rev-parse HEAD^{tree})"
+        # Make sure we don't add a trailing newline to the result!
+        echo -n "$(echo $RESULT_SHA | tr -d '\n')" > $(results.commit.path)
+        echo -n "$(echo $TREE_SHA | tr -d '\n')" > $(results.tree.path)

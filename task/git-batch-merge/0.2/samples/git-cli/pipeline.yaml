@@ -1,0 +1,63 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: git-pipeline
+spec:
+  workspaces:
+    - name: shared-workspace
+    - name: input
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: https://github.com/kelseyhightower/nocode
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+    - name: git-cli
+      taskRef:
+        name: git-cli
+      runAfter:
+        - fetch-repository
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: input
+          workspace: input
+      params:
+        - name: GIT_USER_NAME
+          value: git_username
+        - name: GIT_USER_EMAIL
+          value: git_email
+        - name: GIT_SCRIPT
+          value: |
+
+            cp $(workspaces.input.path)/* $(workspaces.source.path)
+            git add .
+            git commit -m 'Add sample file'
+            git push origin master
+  results:
+    - name: commit
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: git-pipeline-run
+spec:
+  serviceAccountName: git-service-account
+  pipelineRef:
+    name: git-pipeline
+  workspaces:
+    - name: shared-workspace
+      persistentvolumeclaim:
+        claimName: source-pvc
+    - name: input
+      configmap:
+        name: files
