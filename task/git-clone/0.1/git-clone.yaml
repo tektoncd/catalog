@@ -64,12 +64,16 @@ spec:
       description: git no proxy - opt out of proxying HTTP/HTTPS requests
       type: string
       default: ""
+    - name: gitInitImage
+      description: The image used where the git-init binary is.
+      default: "gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.14.2"
+      type: string
   results:
     - name: commit
       description: The precise commit SHA that was fetched by this Task
   steps:
     - name: clone
-      image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.14.2
+      image: $(params.gitInitImage)
       script: |
         CHECKOUT_DIR="$(workspaces.output.path)/$(params.subdirectory)"
 
