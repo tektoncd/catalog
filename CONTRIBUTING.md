@@ -124,6 +124,17 @@ image, if you need to have another binary available feel free to make a PR to th
 
 https://github.com/tektoncd/plumbing/blob/master/prow/images/test-runner/Dockerfile
 
+An helper script called [run-test.sh](test/run-test.sh) is provider in the
+[test](./test) directory to help the developer running the test locally. Just
+specify the task name and the version as the first and the second argument i.e:
+
+```bash
+./test/run-test.sh git-clone 0.1
+```
+
+and it will use your kubernetes to run the test and show you the outputs as done
+in the CI.
+
 ### Owning and Maintaining a Task
 
 Individual tasks should maintained by one or more users of
