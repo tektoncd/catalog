@@ -70,6 +70,10 @@ spec:
       description: clean out the contents of the repo's destination directory (if it already exists) before trying to clone the repo there
       type: string
       default: "false"
+    - name: gitInitImage
+      description: The image used where the git-init binary is.
+      default: "gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.14.2"
+      type: string
   results:
     - name: commit
       description: The final commit SHA that was obtained after batching all provided refs onto revision
@@ -77,7 +81,7 @@ spec:
       description: The git tree SHA that was obtained after batching all provided refs onto revision.
   steps:
     - name: clone
-      image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.14.2
+      image: $(params.gitInitImage)
       script: |
         CHECKOUT_DIR="$(workspaces.output.path)/$(params.subdirectory)"
 
