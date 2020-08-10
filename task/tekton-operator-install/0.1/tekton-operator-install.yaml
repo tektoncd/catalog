@@ -1,0 +1,217 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: tekton-operator-install
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: operator, tekton, deploy
+    tekton.dev/displayName: "Tekton Operator Install"
+spec:
+  description: >-
+    This task can be used to install Tekton pipelines and also it's
+    components using Tekton Operator on a new cluster.
+  workspaces:
+    - name: kubeconfig
+      description: >-
+        The workspace consisting of kubeconfig file so that operator
+        can install tekton components on fresh cluster
+  params:
+    - name: OPERATOR_VERSION
+      type: string
+      description: Tekton operator version to be installed
+      default: "latest"
+    - name: INSTALL_TRIGGERS
+      type: string
+      description: If triggers needs to be installed
+      default: "false"
+    - name: INSTALL_DASHBOARD
+      type: string
+      description: If Tekton dashboard to be installed
+      default: "false"
+    - name: INSTALL_EXTENSION_WEBHOOKS
+      type: string
+      description: If Tekton Extension Webhooks needs to be installed
+      default: "false"
+  steps:
+    - name: install-operator
+      image: lachlanevenson/k8s-kubectl@sha256:3a5e22a406a109f4f26ec06b5f1f6a66ae0cd0e185bc28499eb7b7a3bbf1fe09
+      workingDir: $(workspaces.kubeconfig.path)
+      script: |
+        #!/bin/sh
+        set -u -o pipefail
+
+        [[ -f ./kubeconfig ]] && \
+        export KUBECONFIG=./kubeconfig || \
+        (echo "please provide kubeconfig file" && exit 1)
+
+        # check whether CR is installed or not
+        checkCodeStatus() {
+          local crd_name=${1}
+          local cr_name=${2}
+          kubectl get "${crd_name}" "${cr_name}" \
+            -o jsonpath='{range .status.conditions[0]}{.code}{"\n"}{end}'
+        }
+
+        # check the version of the installed CR
+        checkVersionStatus() {
+          local crd_name=${1}
+          local cr_name=${2}
+          kubectl get "${crd_name}" "${cr_name}" \
+            -o jsonpath='{range .status.conditions[0]}{.version}{"\n"}{end}'
+        }
+
+        show_failure() {
+          echo "failed to install $1 $2"
+          exit 1
+        }
+
+        main(){
+          kubectl apply -f https://storage.googleapis.com/tekton-releases/operator/$(params.OPERATOR_VERSION)/release.notags.yaml
+          local maxloop=30 # 5 minutes max
+
+          # check operator and pipeline correctly installed or not
+          # display the version of pipeline
+          local count=0
+          while true; do
+            # hard timeout condition
+            [[ ${count} == ${maxloop} ]] && show_failure "tektonpipelines" "cluster"
+
+            local codeStatus=$(checkCodeStatus "tektonpipelines" "cluster")
+            [[ "$codeStatus" == "installed" ]] && \
+            checkVersionStatus "tektonpipelines" "cluster" && break
+            sleep 10
+            count=$((count+1))
+          done
+          echo "successfully installed operator version $(params.OPERATOR_VERSION)"
+        }
+
+        main "$@"
+
+    - name: install-addon
+      image: lachlanevenson/k8s-kubectl@sha256:3a5e22a406a109f4f26ec06b5f1f6a66ae0cd0e185bc28499eb7b7a3bbf1fe09
+      workingDir: $(workspaces.kubeconfig.path)
+      script: |
+        #!/bin/sh
+        set -u -o pipefail
+
+        [[ -f ./kubeconfig ]] && \
+        export KUBECONFIG=./kubeconfig || \
+        (echo "please provide kubeconfig file" && exit 1)
+
+        # create TektonAddon CR manifest and apply that directly
+        createCustomResource() {
+          cr_name=${1}
+          cat <<EOF | kubectl apply -f -
+        apiVersion: operator.tekton.dev/v1alpha1
+        kind: TektonAddon
+        metadata:
+          name: ${cr_name}
+        EOF
+        }
+
+        # check whether CR is installed or not
+        checkCodeStatus() {
+          local crd_name=${1}
+          local cr_name=${2}
+          kubectl get "${crd_name}" "${cr_name}" \
+            -o jsonpath='{range .status.conditions[0]}{.code}{"\n"}{end}'
+        }
+
+        # check the version of the installed CR
+        checkVersionStatus() {
+          local crd_name=${1}
+          local cr_name=${2}
+          kubectl get "${crd_name}" "${cr_name}" \
+            -o jsonpath='{range .status.conditions[0]}{.version}{"\n"}{end}'
+        }
+
+        show_failure() {
+          echo "failed to install $1 $2"
+          exit 1
+        }
+
+        checkInstallation() {
+          local addon_status=${1}
+          local addon_is_success=${2}
+          if [[ "$addon_status" == "true" ]] && [[ "$addon_is_success" == "true" ]]; then
+            return 0
+          elif [[ "$addon_status" == "false" ]] && [[ "$addon_is_success" == "false" ]]; then
+            return 0
+          else
+            return 1
+          fi
+        }
+
+        main() {
+          local maxloop=30 # 5 minutes max
+          local count=0
+          local trigger_success=false
+          local dashboard_success=false
+          local extension_success=false
+
+          [[ $(params.INSTALL_TRIGGERS) == "false" ]] && \
+          [[ $(params.INSTALL_DASHBOARD) == "false" ]] && \
+          [[ $(params.INSTALL_EXTENSION_WEBHOOKS) == "false" ]] && \
+          echo "No addons to be installed" && exit 0
+
+          [[ $(params.INSTALL_TRIGGERS) == "true" ]] && \
+          createCustomResource "trigger"
+          [[ $(params.INSTALL_DASHBOARD) == "true" ]] && \
+          kubectl create clusterrolebinding tekton-operator-cluster-admin \
+            --clusterrole cluster-admin --serviceaccount tekton-operator:tekton-operator && \
+          createCustomResource "dashboard"
+          [[ $(params.INSTALL_EXTENSION_WEBHOOKS) == "true" ]] && \
+          createCustomResource "extensionwebhooks"
+
+          while true; do
+
+            # hard timeout condition
+            if [[ ${count} == ${maxloop} ]]; then
+              # check for trigger failure after timeout
+              [[ "$trigger_success" == "false" ]] && show_failure "tektonaddon" "trigger"
+              # check for dashboard failure after timeout
+              [[ "$dashboard_success" == "false" ]] && show_failure "tektonaddon" "dashboard"
+              # check for extension webhooks failure in case of timeout
+              [[ "$extension_success" == "false" ]] && show_failure "tektonaddon" "extensionwebhooks"
+            fi
+
+            #if Trigger needs to be installed then check the status
+            [[ $(params.INSTALL_TRIGGERS) == "true" ]] && [[ $trigger_success == "false" ]] && \
+            [[ $(checkCodeStatus "tektonaddon" "trigger") == "installed" ]] && \
+            checkVersionStatus "tektonaddon" "trigger" && trigger_success=true
+
+            #if dashboard needs to be installed then check the status
+            [[ $(params.INSTALL_DASHBOARD) == "true" ]] && [[ dashboard_success == "false" ]] && \
+            [[ $(checkCodeStatus "tektonaddon" "dashboard") == "installed" ]] && \
+            checkVersionStatus "tektonaddon" "dashboard" && dashboard_success=true
+
+            #if extension webhooks needs to be installed then check the status
+            [[ $(params.INSTALL_EXTENSION_WEBHOOKS) == "true" ]] && [[ $extension_success == "false" ]] && \
+            [[ $(checkCodeStatus "tektonaddon" "extensionwebhooks") == "installed" ]] && \
+            checkVersionStatus "tektonaddon" "extensionwebhooks" && extension_success=true
+
+            local all_addon_install_status="false"
+
+            #check for Trigger
+            checkInstallation "$(params.INSTALL_TRIGGERS)" "$trigger_success"
+            [[ $? -eq 0 ]] && all_addon_install_status=true || all_addon_install_status=false
+
+            #check for Dashboard
+            checkInstallation "$(params.INSTALL_DASHBOARD)" "$dashboard_success"
+            [[ $? -eq 0 ]] && all_addon_install_status=true || all_addon_install_status=false
+
+            #check for extension webhooks
+            checkInstallation "$(params.INSTALL_EXTENSION_WEBHOOKS)" "$extension_success"
+            [[ $? -eq 0 ]] && all_addon_install_status=true || all_addon_install_status=false
+
+            [[ "$all_addon_install_status" == "true" ]] && \
+            echo "successfully installed" && break
+
+            sleep 10
+            count=$((count+1))
+          done
+        }
+
+        main "$@"
