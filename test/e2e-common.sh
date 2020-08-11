@@ -137,15 +137,25 @@ function test_task_creation() {
         done
 
         local cnt=0
+        local all_status=''
+        local reason=''
         while true;do
             [[ ${cnt} == ${maxloop} ]] && show_failure ${testname} ${tns}
 
-            all_status=$(kubectl get -n ${tns} pipelinerun --output=jsonpath='{.items[*].status.conditions[*].status}')
-            reason=$(kubectl get -n ${tns} pipelinerun --output=jsonpath='{.items[*].status.conditions[*].reason}')
-
+            # sometimes we don't get all_status and reason in one go so
+            # wait until we get the reason and all_status for 5 iterations
+            for _ in {1..5}; do
+                all_status=$(kubectl get -n ${tns} pipelinerun --output=jsonpath='{.items[*].status.conditions[*].status}')
+                reason=$(kubectl get -n ${tns} pipelinerun --output=jsonpath='{.items[*].status.conditions[*].reason}')
+                [[ ! -z ${all_status} ]] && [[ ! -z ${reason} ]] && break
+            done
+            
             if [[ -z ${all_status} && -z ${reason} ]];then
-                all_status=$(kubectl get -n ${tns} taskrun --output=jsonpath='{.items[*].status.conditions[*].status}')
-                reason=$(kubectl get -n ${tns} taskrun --output=jsonpath='{.items[*].status.conditions[*].reason}')
+                for _ in {1..5}; do
+                    all_status=$(kubectl get -n ${tns} taskrun --output=jsonpath='{.items[*].status.conditions[*].status}')
+                    reason=$(kubectl get -n ${tns} taskrun --output=jsonpath='{.items[*].status.conditions[*].reason}')
+                    [[ ! -z ${all_status} ]] && [[ ! -z ${reason} ]] && break
+                done
             fi
 
             if [[ -z ${all_status} || -z ${reason} ]];then
