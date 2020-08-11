@@ -21,7 +21,7 @@ spec:
       default: ["--help"]
   steps:
     - name: lint-markdown-files
-      image: markdownlint/markdownlint
+      image: markdownlint/markdownlint:0.9.0
       workingDir: $(workspaces.shared-workspace.path)
       command:
         - mdl
