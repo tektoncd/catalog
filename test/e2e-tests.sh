@@ -46,7 +46,7 @@ TEST_YAML_IGNORES=${TEST_YAML_IGNORES:-""}
 
 # Allow ignoring some yaml tests, space separated, should be the basename of the
 # test for example "s2i"
-TEST_TASKRUN_IGNORES=${TEST_TASKRUN_IGNORES:-""}
+TEST_TASKRUN_IGNORES=${TEST_TASKRUN_IGNORES:-"docker-build"}
 
 set -ex
 set -o pipefail
