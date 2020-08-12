@@ -72,7 +72,7 @@ spec:
       default: "false"
     - name: gitInitImage
       description: The image used where the git-init binary is.
-      default: "gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.15.1"
+      default: "gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.15.2"
       type: string
   results:
     - name: commit
