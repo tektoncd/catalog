@@ -43,7 +43,7 @@ function install_pipeline_crd() {
   if [[ -n ${RELEASE_YAML} ]];then
 	latestreleaseyaml=${RELEASE_YAML}
   else
-    latestreleaseyaml=$(curl -s https://api.github.com/repos/tektoncd/pipeline/releases|python -c "import sys, json;x=json.load(sys.stdin);ass=x[0]['assets'];print([ x['browser_download_url'] for x in ass if x['name'] == 'release.yaml'][0])")
+    latestreleaseyaml="https://storage.googleapis.com/tekton-releases/latest/release.yaml"
   fi
   [[ -z ${latestreleaseyaml} ]] && fail_test "Could not get latest released release.yaml"
   kubectl apply -f ${latestreleaseyaml} ||
