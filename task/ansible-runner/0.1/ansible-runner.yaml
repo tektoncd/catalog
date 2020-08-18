@@ -22,10 +22,6 @@ spec:
     - name: project-dir
       description: The project directory under the workspace runner-dir
       default: 'project'
-    - name: script
-      description: The ansible-playbook command to run
-      type: string
-      default: 'ansible-runner run $@'
     - name: args
       description: The arguments to pass ansible-runner
       type: array
@@ -37,6 +33,7 @@ spec:
       script: |
         #!/bin/bash
         set -e
+
         if [ -f requirements.txt ];
         then
           pip3 install --user \
@@ -54,8 +51,10 @@ spec:
 
     - name: run-playbook
       image: docker.io/ansible/ansible-runner
-      script: '$(params.script)'
+      command: ['entrypoint']
       args:
+        - ansible-runner
+        - run
         - $(params.args)
         - $(params.project-dir)
       workingDir: '$(workspaces.runner-dir.path)'
