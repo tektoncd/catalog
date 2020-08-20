@@ -1,0 +1,54 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: git-clone-chart-testing
+spec:
+  workspaces:
+  - name: shared-data
+  - name: input
+  description: TODO 
+  params:
+  - name: repo-url
+    type: string
+    description: The git repository URL to clone from.
+  - name: revision
+    default: main
+  tasks:
+  # Todo add Slack posts inbetween each
+  tasks:
+    - name: clone
+      taskRef:
+        name: git-clone
+      workspaces:
+      - name: output
+        workspace: shared-data
+      params:
+      - name: url
+        value: $(params.repo-url)
+      - name: revision
+        value: $(params.revision)
+
+    - name: history
+      runAfter: [clone]
+      taskRef: 
+        name: git-cli
+      workspaces:
+        - name: source
+          workspace: shared-data
+        - name: input
+          workspace: input
+      params:
+        - name: GIT_SCRIPT
+          value: |
+            git fetch --prune --unshallow
+
+    - name: lint
+      runAfter: [history]
+      taskRef:
+        name: helm-chart-testing
+      workspaces:                                 
+      - name: source                              
+        workspace: shared-data
+      params:
+      - name: command
+        value: lint

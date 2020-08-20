@@ -1,0 +1,34 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: helm-chart-testing
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: test
+    tekton.dev/displayName: "helm chart testing"
+spec:
+  description: >-
+    These tasks make it possible to use Chart Testing within your Tekton pipelines
+
+    Chart Testing is a tool ... TODO
+
+  workspaces:
+  - name: source
+  params:
+  - name: image
+    default: "quay.io/helmpack/chart-testing:v3.0.0"
+  - name: config
+    default: "./ct.yaml"
+  - name: command
+    default: "lint"
+  - name: kubeconfig
+    default: ""
+
+  steps:
+  - name: helm-chart-testing
+    workingDir: $(workspaces.source.path)
+    image: $(params.image)
+    script: |
+      ct $(params.command) --config $(params.config)
