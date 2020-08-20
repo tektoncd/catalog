@@ -33,7 +33,7 @@ as well as
 
 * **url**: git url to clone (_required_)
 * **revision**: git revision to checkout (branch, tag, sha, ref…) (_default_: master)
-* **refspec**: git refspec to fetch before checking out revision (_default_:refs/heads/master:refs/heads/master)
+* **refspec**: git refspec to fetch before checking out revision (_default_: "")
 * **submodules**: defines if the resource should initialize and fetch the submodules (_default_: true)
 * **depth**: performs a shallow clone where only the most recent commit(s) will be fetched (_default_: 1)
 * **sslVerify**: defines if http.sslVerify should be set to true or false in the global git config (_default_: true)
