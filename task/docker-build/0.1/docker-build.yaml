@@ -11,11 +11,9 @@ metadata:
 spec:
   description: >-
     This task will build and push an image using docker.
-
     The task will build an out image out of a Dockerfile.
     This image will be pushed to an image registry.
     The image will be built and pushed using a dind sidecar over TCP+TLS.
-
   params:
   - name: image
     description: Reference of the image docker will produce.
@@ -33,6 +31,9 @@ spec:
     default: ""
   - name: push_extra_args
     description: Extra parameters passed for the push command when pushing images.
+    default: ""
+  - name: insecure_registry
+    description: Allows the user to push to an insecure registry that has been specified
     default: ""
   workspaces:
   - name: source
@@ -86,6 +87,7 @@ spec:
       - --storage-driver=vfs
       - --userland-proxy=false
       - --debug
+      - --insecure-registry=$(params.insecure_registry)
     securityContext:
       privileged: true
     env:
