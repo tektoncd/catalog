@@ -71,6 +71,8 @@ spec:
   results:
     - name: commit
       description: The precise commit SHA that was fetched by this Task
+    - name: url
+      description: The precise URL that was fetched by this Task
   steps:
     - name: clone
       image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.14.2
@@ -123,3 +125,4 @@ spec:
         fi
         # ensure we don't add a trailing newline to the result
         echo -n "$RESULT_SHA" > $(results.commit.path)
+        echo -n "$(params.url)" > $(results.url.path)
