@@ -18,6 +18,8 @@ cluster. A directory can hold one task and multiple versions.
 
 _See [our project roadmap](roadmap.md)._
 
+#### [Hub Preview](https://hub-preview.tekton.dev/) provides an easy way to search and discover all Tekton resources
+
 ## Catalog Structure
 
 1. Each resource follows the following structure
