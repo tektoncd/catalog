@@ -32,6 +32,14 @@ spec:
       description: The Maven repository mirror url
       type: string
       default: ""
+    - name: SERVER_USER
+      description: The username for the server
+      type: string
+      default: ""
+    - name: SERVER_PASSWORD
+      description: The password for the server
+      type: string
+      default: ""
     - name: PROXY_USER
       description: The username for the proxy server
       type: string
@@ -73,6 +81,10 @@ spec:
 
         cat > $(workspaces.maven-settings.path)/settings.xml <<EOF
         <settings>
+          <servers>
+            <!-- The servers added here are generated from environment variables. Don't change. -->
+            <!-- ### SERVER's USER INFO from ENV ### -->
+          </servers>
           <mirrors>
             <!-- The mirrors added here are generated from environment variables. Don't change. -->
             <!-- ### mirrors from ENV ### -->
@@ -104,6 +116,17 @@ spec:
           xml="$xml\
               </proxy>"
           sed -i "s|<!-- ### HTTP proxy from ENV ### -->|$xml|" $(workspaces.maven-settings.path)/settings.xml
+        fi
+
+        if [ -n "$(params.SERVER_USER)" -a -n "$(params.SERVER_PASSWORD)" ]; then
+          xml="<server>\
+            <id>serverid</id>"
+          xml="$xml\
+                <username>$(params.SERVER_USER)</username>\
+                <password>$(params.SERVER_PASSWORD)</password>"
+          xml="$xml\
+              </server>"
+          sed -i "s|<!-- ### SERVER's USER INFO from ENV ### -->|$xml|" $(workspaces.maven-settings.path)/settings.xml
         fi
 
         if [ -n "$(params.MAVEN_MIRROR_URL)" ]; then
