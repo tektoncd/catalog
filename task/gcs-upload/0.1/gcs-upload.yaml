@@ -50,7 +50,7 @@ spec:
       fi
 
       if [[ -d "$SOURCE" ]]; then
-        gsutil rsync -d -r "$SOURCE" "$(params.location)"
+        gsutil -m rsync -d -r "$SOURCE" "$(params.location)"
       else
         gsutil cp "$SOURCE" "$(params.location)"
       fi

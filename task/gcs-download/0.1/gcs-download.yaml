@@ -55,7 +55,7 @@ spec:
 
       if [[ "$(params.typeDir)" == "true" ]]; then
         mkdir -p "$DESTINATION"
-        gsutil rsync -d -r "$(params.location)" "$DESTINATION"
+        gsutil -m rsync -d -r "$(params.location)" "$DESTINATION"
       else
         gsutil cp $(params.location) "$DESTINATION"
       fi
