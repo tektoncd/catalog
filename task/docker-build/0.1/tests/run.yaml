@@ -1,4 +1,3 @@
----
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
@@ -30,7 +29,9 @@ spec:
       workspace: shared-workspace
     params:
     - name: image
-      value: localhost:5000/nocode
+      value: registry.docker-build-0-1.svc.cluster.local:5000/nocode
+    - name: insecure_registry
+      value: registry.docker-build-0-1.svc.cluster.local:5000
 ---
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun

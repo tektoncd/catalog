@@ -1,10 +1,6 @@
-# Git Task
+# `git-clone`
 
-This `Task` is Git task to work with repositories used by other tasks
-in your Pipeline.
-## `git-clone`
-
-**Please Note: this Task is only compatible with Tekton Pipelines versions 0.11-rc1 and greater!**
+**Please Note: this Task is only compatible with Tekton Pipelines versions 0.14.0 and greater!**
 
 This `Task` has two required inputs:
 
@@ -32,8 +28,8 @@ as well as
 ### Parameters
 
 * **url**: git url to clone (_required_)
-* **revision**: git revision to checkout (branch, tag, sha, ref…) (_default_: master)
-* **refspec**: git refspec to fetch before checking out revision (_default_:refs/heads/master:refs/heads/master)
+* **revision**: git revision to checkout (branch, tag, sha, ref…) (_default_: "")
+* **refspec**: git refspec to fetch before checking out revision (_default_:"")
 * **submodules**: defines if the resource should initialize and fetch the submodules (_default_: true)
 * **depth**: performs a shallow clone where only the most recent commit(s) will be fetched (_default_: 1)
 * **sslVerify**: defines if http.sslVerify should be set to true or false in the global git config (_default_: true)
@@ -47,14 +43,16 @@ as well as
 ### Results
 
 * **commit**: The precise commit SHA that was fetched by this Task
+* **url**: The precise URL that was fetched by this Task
 
 ## Usage
 
-### `git-clone`
+If the `revision` is not provided in the param of the taskrun
+then it will auto-detect the branch as specified by the `default`
+in the respective git repository.
 
 The following pipelines demonstrate usage of the git-clone Task:
 
-- [Cloning a branch](../0.1/samples/git-clone-checking-out-a-branch.yaml)
-- [Checking out a specific git commit](../0.1/samples/git-clone-checking-out-a-commit.yaml)
-- [Checking out a git tag and using the "commit" Task Result](../0.1/samples/using-git-clone-result.yaml)
-
+- [Cloning a branch](../0.2/samples/git-clone-checking-out-a-branch.yaml)
+- [Checking out a specific git commit](../0.2/samples/git-clone-checking-out-a-commit.yaml)
+- [Checking out a git tag and using the "commit" Task Result](../0.2/samples/using-git-clone-result.yaml)

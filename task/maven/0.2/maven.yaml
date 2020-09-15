@@ -3,7 +3,7 @@ kind: Task
 metadata:
   name: maven
   labels:
-    app.kubernetes.io/version: "0.1"
+    app.kubernetes.io/version: "0.2"
   annotations:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: build-tool
@@ -56,6 +56,12 @@ spec:
       description: Protocol for the proxy ie http or https
       type: string
       default: "http"
+    - name: CONTEXT_DIR
+      type: string
+      description: >-
+        The context directory within the repository for sources on
+        which we want to execute maven goals.
+      default: "."
   steps:
     - name: mvn-settings
       image: registry.access.redhat.com/ubi8/ubi-minimal:latest
@@ -111,7 +117,7 @@ spec:
 
     - name: mvn-goals
       image: $(params.MAVEN_IMAGE)
-      workingDir: $(workspaces.source.path)
+      workingDir: $(workspaces.source.path)/$(params.CONTEXT_DIR)
       command: ["/usr/bin/mvn"]
       args:
         - -s
