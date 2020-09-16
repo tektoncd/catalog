@@ -17,7 +17,7 @@ Command that needs to be run can be passed as a script to the task.
 
 ### Parameters
 
-* **BASE_MAGE**: The base image for the task.
+* **BASE_IMAGE**: The base image for the task.
 (_default_: `alpine/git:latest`)
 * **GIT_USER_NAME**: Git user name for performing git operation.
 * **GIT_USER_EMAIL**:  Git user email for performing git operation.
