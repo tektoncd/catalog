@@ -75,7 +75,7 @@ spec:
       description: The precise URL that was fetched by this Task
   steps:
     - name: clone
-      image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.14.2
+      image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.16.2
       script: |
         #!/bin/sh
         set -eu -o pipefail
