@@ -16,7 +16,7 @@ spec:
       type: string
   steps:
     - name: pull-and-push
-      image: quay.io/buildah/stable:v1.14.8
+      image: quay.io/buildah/stable:v1.15.1
       script: |
         # Login to ecr
         buildah login \
