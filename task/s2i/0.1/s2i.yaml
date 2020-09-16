@@ -61,7 +61,7 @@ spec:
     - -t
     - $(resources.outputs.image.url)
     - .
-    image: quay.io/buildah/stable
+    image: quay.io/buildah/stable:v1.15.1
     securityContext:
       privileged: true
     volumeMounts:
@@ -77,7 +77,7 @@ spec:
     - --tls-verify=$(params.TLSVERIFY)
     - $(resources.outputs.image.url)
     - docker://$(resources.outputs.image.url)
-    image: quay.io/buildah/stable
+    image: quay.io/buildah/stable:v1.15.1
     securityContext:
       privileged: true
     volumeMounts:
