@@ -1,0 +1,16 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  generateName: github-app-token-
+spec:
+  taskRef:
+    name: github-app-token
+  params:
+    - name: installation_id
+      value: 12345
+    - name: application_id
+      value: 67890
+  workspaces:
+    - name: secrets
+      secret:
+        secretName: github-app-secret
