@@ -37,7 +37,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 * **TARGET_URL:**: The target URL to associate with this status. This URL will
   be linked from the GitHub UI to allow users to easily see the source of the
   status. For example you can link to a
-  [dashboard](https://github.com/tektoncd/dahsboard) URL so users can follow a
+  [dashboard](https://github.com/tektoncd/dashboard) URL so users can follow a
   Pipeline/Task run.
 * **DESCRIPTION:**: A short description of the status. _e.g:_ `Building your PR`
 * **CONTEXT:** The GitHub context, A string label to differentiate this status
