@@ -11,12 +11,13 @@ metadata:
     tekton.dev/displayName: "set github status"
 spec:
   description: >-
-    This task will set the CI as running and add a link to the openshift console
-    viewer url.
+    This task will set the status of the CI job to the specified value along
+    with a link to the specified target URL where developers can follow the
+    progress of the CI job.
 
-    The `github-set-status` task allows external services to mark GtiHUB commits
+    The `github-set-status` task allows external services to mark GitHub commits
     with an `error`, `failure`, `pending`, or `success` state, which is then
-    reflected in pull requests involving those commits.Statuses include as well a
+    reflected in pull requests involving those commits. Statuses include as well a
     `description` and a `target_url`, to give the user informations about the CI
     statuses or a direct link to the full log.
 
