@@ -1,0 +1,15 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  generateName: gcs-ls-
+spec:
+  workspaces:
+    - name: credentials
+      emptyDir: {}
+  params:
+    - name: "command"
+      value: "ls"
+    - name: "options"
+      value: ["gs://tekton-releases"]
+  taskRef:
+    name: "gcs-generic"
