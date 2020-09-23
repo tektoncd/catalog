@@ -26,11 +26,11 @@ spec:
    description: |
       The path inside the credentials workspace to the GOOGLE_APPLICATION_CREDENTIALS key file.
    type: string
-   default: service_account.json
+   default: ''
  - name: image
    description: google cloud image that will be used in steps.
    type: string
-   default: google/cloud-sdk
+   default: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
  steps:
  - name: credential-setup
    image: "$(params.image)"
