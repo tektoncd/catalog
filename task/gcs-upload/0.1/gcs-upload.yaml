@@ -32,7 +32,7 @@ spec:
     default: service_account.json
   steps:
   - name: upload
-    image: google/cloud-sdk
+    image: gcr.io/google.com/cloudsdktool/cloud-sdk:310.0.0@sha256:cb03669fcdb9191d55a6200f2911fff3baec0b8c39b156d95b68aabe975ac506 #tag: 310.0.0
     script: |
       #!/usr/bin/env bash
       set -xe

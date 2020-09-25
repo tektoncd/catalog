@@ -22,7 +22,7 @@ spec:
     - name: MAVEN_IMAGE
       type: string
       description: Maven base image
-      default: gcr.io/cloud-builders/mvn
+      default: gcr.io/cloud-builders/mvn@sha256:57523fc43394d6d9d2414ee8d1c85ed7a13460cbb268c3cd16d28cfb3859e641 #tag: latest
     - name: GOALS
       description: maven goals to run
       type: array
@@ -58,7 +58,7 @@ spec:
       default: "http"
   steps:
     - name: mvn-settings
-      image: registry.access.redhat.com/ubi8/ubi-minimal:latest
+      image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
       script: |
         #!/usr/bin/env bash
 

@@ -34,7 +34,7 @@ spec:
     - name: source
   steps:
     - name: upgrade
-      image: lachlanevenson/k8s-helm:$(inputs.params.helm_version)
+      image: docker.io/lachlanevenson/k8s-helm:$(inputs.params.helm_version)
       workingDir: /workspace/source
       script: |
         echo current installed helm releases

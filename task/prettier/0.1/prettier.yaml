@@ -29,7 +29,7 @@ spec:
   - name: prettierImage
     type: string
     description: Prettier image used to run Prettier.
-    default: elnebuloso/prettier:latest
+    default: docker.io/elnebuloso/prettier:2.1.1@sha256:a42d03000e17d343f57ec156820d64934c76d9a0d2ce4abd602f92fd18d5e6d4 #tag: 2.1.1
   steps:
   - name: check
     image: $(params.prettierImage)

@@ -30,13 +30,13 @@ spec:
     default: "terraform-creds"
   steps:
     - name: init
-      image: quay.io/rcmendes/terraform-cli:latest
+      image: quay.io/rcmendes/terraform-cli@sha256:cfb8e04b1f62791758370a748d31affe284dcdc93a91eed232c15a05e39ec1a1 #tag: latest
       workingDir: $(workspaces.source.path)
       command: ["/usr/local/bin/terraform"]
       args:
         - "init"
     - name: terraform-cli
-      image: quay.io/rcmendes/terraform-cli:latest
+      image: quay.io/rcmendes/terraform-cli@sha256:cfb8e04b1f62791758370a748d31affe284dcdc93a91eed232c15a05e39ec1a1 #tag: latest
       workingDir: /workspace/source
       command: ["/usr/local/bin/terraform"]
       args:

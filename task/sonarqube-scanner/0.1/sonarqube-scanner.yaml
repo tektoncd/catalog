@@ -30,7 +30,7 @@ spec:
       default: ""
   steps:
     - name: sonar-properties-create
-      image: registry.access.redhat.com/ubi8/ubi-minimal:latest
+      image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
       workingDir: $(workspaces.source-dir.path)
       script: |
         #!/usr/bin/env bash
@@ -73,7 +73,7 @@ spec:
         cat $(workspaces.source-dir.path)/sonar-project.properties
 
     - name: sonar-scan
-      image: sonarsource/sonar-scanner-cli
+      image: docker.io/sonarsource/sonar-scanner-cli:4.5@sha256:b8c95a37025f3c13162118cd55761ea0b2a13d1837f9deec51b7b6d82c52040a #tag: 4.5
       workingDir: $(workspaces.source-dir.path)
       command:
         - sonar-scanner

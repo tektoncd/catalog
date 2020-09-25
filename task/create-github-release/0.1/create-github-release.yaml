@@ -45,8 +45,8 @@ spec:
       default: GITHUB_TOKEN
   steps:
     - name: create-release
-      workingdir: $(workspaces.source.path)
-      image: quay.io/diagrawa/github-hub:latest
+      workingDir: $(workspaces.source.path)
+      image: quay.io/diagrawa/github-hub@sha256:a002e05e3c3362f49dc31b8c16c10d76c6dbd854fdb0f596eaae8ac8b792adfb #tag: latest
       script: |
         #!/usr/bin/env bash
         set -ex

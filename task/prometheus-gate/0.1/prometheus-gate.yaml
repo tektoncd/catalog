@@ -42,7 +42,7 @@ spec:
     default: "1m"
   steps:
   - name: gate
-    image: iancoffey/prometheus-gate-cf7c3e662ede0a4e9bc24d37d2af86d6@sha256:c3df9d8400aef7acb76f409d1e347c5ecaa6f28a69df50981c14bfe87add85d7
+    image: docker.io/iancoffey/prometheus-gate-cf7c3e662ede0a4e9bc24d37d2af86d6@sha256:c3df9d8400aef7acb76f409d1e347c5ecaa6f28a69df50981c14bfe87add85d7
     env:
     - name: "PROMETHEUS_ENDPOINT"
       value: $(params.prometheus_endpoint)

@@ -59,7 +59,7 @@ spec:
   steps:
     # Ensure the builder's user has read/write permissions for needed directories.
     - name: prepare
-      image: alpine
+      image: docker.io/library/alpine:3.12@sha256:d7342993700f8cd7aba8496c2d0e57be0666e80b4c441925fc6f9361fa81d10e #tag: 3.12
       imagePullPolicy: Always
       command: ["/bin/sh"]
       args:
@@ -107,7 +107,7 @@ spec:
           mountPath: /tekton/home
 
     - name: analyze
-      image: buildpacksio/lifecycle:0.8.1
+      image: docker.io/buildpacksio/lifecycle:0.8.1@sha256:261b7f85b4af986b5802eabc14d581d1830b1d9e38379f99740f5bcdd8a75b86 #tag: 0.8.1
       imagePullPolicy: Always
       command: ["/cnb/lifecycle/analyzer"]
       args:
@@ -124,7 +124,7 @@ spec:
           mountPath: /layers
 
     - name: restore
-      image: buildpacksio/lifecycle:0.8.1
+      image: docker.io/buildpacksio/lifecycle:0.8.1@sha256:261b7f85b4af986b5802eabc14d581d1830b1d9e38379f99740f5bcdd8a75b86 #tag: 0.8.1
       imagePullPolicy: Always
       command: ["/cnb/lifecycle/restorer"]
       args:
@@ -157,7 +157,7 @@ spec:
           mountPath: /tekton/home
 
     - name: export
-      image: buildpacksio/lifecycle:0.8.1
+      image: docker.io/buildpacksio/lifecycle:0.8.1@sha256:261b7f85b4af986b5802eabc14d581d1830b1d9e38379f99740f5bcdd8a75b86 #tag: 0.8.1
       imagePullPolicy: Always
       command: ["/cnb/lifecycle/exporter"]
       args:

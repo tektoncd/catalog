@@ -35,7 +35,7 @@ spec:
       default: "latest"
   steps:
     - name: upgrade-from-repo
-      image: lachlanevenson/k8s-helm:$(inputs.params.helm_version)
+      image: docker.io/lachlanevenson/k8s-helm:$(inputs.params.helm_version)
       script: |
         echo current installed helm releases
         helm list --namespace "$(inputs.params.release_namespace)"
