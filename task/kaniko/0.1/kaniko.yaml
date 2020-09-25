@@ -29,7 +29,7 @@ spec:
     default: ""
   - name: BUILDER_IMAGE
     description: The image on which builds will run
-    default: gcr.io/kaniko-project/executor:latest
+    default: gcr.io/kaniko-project/executor@sha256:e36c9fa99279217c4bb8ee172819b441c3ca8ef946dc0e28b21721eefb2ba70a
   workspaces:
   - name: source
   results:
@@ -69,6 +69,6 @@ spec:
       runAsUser: 0
   - name: digest-to-results
     workingDir: $(workspaces.source.path)
-    image: stedolan/jq
+    image: docker.io/stedolan/jq@sha256:a61ed0bca213081b64be94c5e1b402ea58bc549f457c2682a86704dd55231e09
     script: |
       cat $(params.CONTEXT)/image-digested | jq '.[0].value' -rj | tee /tekton/results/IMAGE-DIGEST

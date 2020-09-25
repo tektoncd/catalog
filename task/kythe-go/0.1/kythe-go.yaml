@@ -24,7 +24,7 @@ spec:
       description: Go package to analyze.
   steps:
     - name: analyze-packages
-      image: gcr.io/kythe-public/golang-extractor:stable
+      image: gcr.io/kythe-public/golang-extractor:stable@sha256:b55233e8a077f94863aacb1c2755fab45be564f49c7ba6fe63ba674099b8cffb #tag: stable
       env:
         - name: OUTPUT
           value: $(workspaces.output.path)

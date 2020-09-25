@@ -27,7 +27,7 @@ spec:
       default: ["help"]
   steps:
     - name: awscli
-      image: amazon/aws-cli:latest
+      image: docker.io/amazon/aws-cli:2.0.52@sha256:1506cec98a7101c935176d440a14302ea528b8f92fcaf4a6f1ea2d7ecef7edc4 #tag: 2.0.52
       script: "$(params.SCRIPT)"
       args:
         - "$(params.ARGS)"

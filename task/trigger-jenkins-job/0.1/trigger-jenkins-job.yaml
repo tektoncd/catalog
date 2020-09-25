@@ -34,7 +34,7 @@ spec:
       default: [""]
   steps:
     - name: trigger-pipeline
-      image: registry.access.redhat.com/ubi8/ubi:latest
+      image: registry.access.redhat.com/ubi8/ubi:8.2
       workingDir: $(workspaces.source.path)
       args:
         - $(params.JOB_PARAMS)

@@ -21,7 +21,7 @@ spec:
       default: ["--help"]
   steps:
     - name: lint-typescript
-      image: pipelinecomponents/tslint:latest
+      image: docker.io/pipelinecomponents/tslint:0.14.1@sha256:85c7dd3f2b6d411fd01b8ad489afd20fb6ac4b2560f29ca506782c1f1a8d9b45 #tag: 0.14.1
       workingDir: $(workspaces.shared-workspace.path)
       command:
         - tslint

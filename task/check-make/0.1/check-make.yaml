@@ -21,7 +21,7 @@ spec:
       default: ["--help"]
   steps:
     - name: lint-makefile
-      image: cytopia/checkmake
+      image: docker.io/cytopia/checkmake:0.1.0@sha256:50957311f1ae25fd5925e1a45798d323cf00b3654cd1eede8db7814c72cec41d #tag: 0.1.0
       workingDir: $(workspaces.shared-workspace.path)
       command:
         - checkmake

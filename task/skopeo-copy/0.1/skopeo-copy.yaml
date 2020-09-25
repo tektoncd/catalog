@@ -39,7 +39,7 @@ spec:
       default: "true"
   steps:
     - name: skopeo-copy
-      image: quay.io/skopeo/stable
+      image: quay.io/skopeo/stable:v1.1.1@sha256:bf464a54a9e14756d82e219ceba8b3fafdb0d85960ac37cc0e10aada37251864 #tag: v1.1.1
       script: |
         # Function to copy multiple images.
         #

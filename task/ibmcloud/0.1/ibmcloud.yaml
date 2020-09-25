@@ -14,7 +14,7 @@ spec:
   params:
   - name: ibmcloud-image
     description: IBM Cloud CLI container image to run this task
-    default: ibmcom/ibm-cloud-developer-tools-amd64:latest
+    default: docker.io/ibmcom/ibm-cloud-developer-tools-amd64:1.2.3@sha256:d755714b208f9cb6162c6d9cef09337d6de88bbde8ee534b6973721ec3284102 #tag: 1.2.3
   - name: ARGS
     type: array
     description: IBM Cloud CLI arguments to run
