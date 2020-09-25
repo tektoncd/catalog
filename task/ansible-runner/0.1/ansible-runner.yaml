@@ -29,7 +29,7 @@ spec:
         - --help
   steps:
     - name: requirements
-      image: docker.io/ansible/ansible-runner
+      image: docker.io/ansible/ansible-runner:1.4.6@sha256:bd09ef403f2f90f2c6bd133d7533e939058903f69223c5f12557a49e3aed14bb #tag: 1.4.6
       script: |
         #!/bin/bash
         set -e
@@ -50,7 +50,7 @@ spec:
       workingDir: '$(workspaces.runner-dir.path)/$(params.project-dir)'
 
     - name: run-playbook
-      image: docker.io/ansible/ansible-runner
+      image: docker.io/ansible/ansible-runner:1.4.6@sha256:bd09ef403f2f90f2c6bd133d7533e939058903f69223c5f12557a49e3aed14bb #tag: 1.4.6
       command: ['entrypoint']
       args:
         - ansible-runner

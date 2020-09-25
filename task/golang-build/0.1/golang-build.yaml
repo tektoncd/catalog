@@ -37,7 +37,7 @@ spec:
   - name: source
   steps:
   - name: build
-    image: golang:$(params.version)
+    image: docker.io/library/golang:$(params.version)
     script: |
       SRC_PATH="$GOPATH/src/$(params.package)"
       mkdir -p $SRC_PATH

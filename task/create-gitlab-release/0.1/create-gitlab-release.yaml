@@ -48,7 +48,7 @@ spec:
       default: GITLAB_TOKEN
   steps:
     - name: create-release
-      image: registry.access.redhat.com/ubi8/ubi-minimal:latest
+      image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
       script: |
         #!/usr/bin/env bash
 

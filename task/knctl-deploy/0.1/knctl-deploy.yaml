@@ -24,13 +24,13 @@ spec:
   steps:
   # the first step is required as knctl doesn't support inCluster configuration.
   - name: kubeconfig
-    image: gcr.io/cloud-builders/kubectl  # it is huge
+    image: gcr.io/cloud-builders/kubectl@sha256:8ab94be8b2b4f3d117f02d868b39540fddd225447abf4014f7ba4765cb39f753  # it is huge
     command: ["/bin/bash"]
     args:
     - -c
     - mkdir -p /tekton/home/.kube; kubectl config view > /tekton/home/.kube/config
   - name: rollout
-    image: quay.io/openshift-pipeline/knctl
+    image: quay.io/openshift-pipeline/knctl@sha256:cd7a21902360ee19e7d7ba2a4c56d003e6dd4f377c274fc795497c5ad55298e9
     command: ["/usr/bin/knctl"]
     args:
     - deploy

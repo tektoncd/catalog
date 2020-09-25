@@ -34,7 +34,7 @@ spec:
     - "--name=$(params.leased-resource)"
     - "--target-state=dirty"
   - name: stop-boskosctl-heartbeat
-    image: lachlanevenson/k8s-kubectl@sha256:3a5e22a406a109f4f26ec06b5f1f6a66ae0cd0e185bc28499eb7b7a3bbf1fe09
+    image: docker.io/lachlanevenson/k8s-kubectl@sha256:3a5e22a406a109f4f26ec06b5f1f6a66ae0cd0e185bc28499eb7b7a3bbf1fe09
     args:
     - "delete"
     - "pod"

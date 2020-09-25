@@ -77,7 +77,7 @@ spec:
               name: github
               key: token
 
-      image: registry.access.redhat.com/ubi8/ubi:latest
+      image: registry.access.redhat.com/ubi8/ubi:8.2
       script: |
         #!/usr/libexec/platform-python
         import json

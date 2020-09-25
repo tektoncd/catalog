@@ -29,7 +29,7 @@ spec:
   steps:
   - name: conftest
     workingDir: $(workspaces.source.path)
-    image: instrumenta/conftest:latest
+    image: docker.io/instrumenta/conftest:v0.21.0@sha256:7da62b227612d5cf50d6de80db740b77bcfb7fd52b2e1aa679dd9edd692fec21 #tag: v0.21.0
     command:
       - conftest
       - test

@@ -22,7 +22,7 @@ spec:
     description: plain text message
   steps:
   - name: post
-    image: curlimages/curl:7.68.0
+    image: docker.io/curlimages/curl:7.68.0@sha256:99a8e9629b3ae26efb977e1a98f4786d6bd730c5ab4dea64632e297d7c3e7151 #tag: 7.68.0
     script: |
       #!/bin/sh
       /usr/bin/curl -X POST -H 'Content-type: application/json' --data '{"text":"$(params.message)"}' $URL

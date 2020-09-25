@@ -30,7 +30,7 @@ spec:
     description: recipient email addresses (space delimited list)
   steps:
   - name: send
-    image: python:3.8-alpine
+    image: docker.io/library/python:3.8-alpine@sha256:c31682a549a3cc0a02f694a29aed07fd252ad05935a8560237aed99b8e87bf77 #tag: 3.8-alpine
     script: |
       #!/usr/bin/env python3
       import smtplib, ssl, os

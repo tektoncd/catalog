@@ -29,7 +29,7 @@ spec:
       description: The newer version of the deployment to be deployed in another zone
   steps:
     - name: change-deployment
-      image: quay.io/openshift/origin-cli:latest
+      image: quay.io/openshift/origin-cli:4.4
       workingDir: $(workspaces.manifest-dir.path)
       script: |
         #!/usr/bin/env bash
