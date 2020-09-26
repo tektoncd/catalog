@@ -1,0 +1,52 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: goreleaser
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: golang, release-automation, package
+    tekton.dev/displayName: "GoReleaser"
+spec:
+  description: >-
+    GoReleaser builds Go binaries for several platforms.
+
+    It creates a GitHub release and then pushes a Homebrew formula to a tap repository.
+  workspaces:
+    - name: source
+      mountPath: /workspace/src/$(params.package)
+      description: >-
+        The workspace containing the Go source code
+        which needs to be released.
+  params:
+    - name: package
+      description: base package to build in
+    - name: github-token-secret
+      description: name of the secret holding the github-token
+      default: bot-token-github
+    - name: github-token-secret-key
+      description: name of the secret key holding the github-token
+      default: bot-token
+    - name: flags
+      description: flags to pass to `goreleaser release`
+      default: --timeout=30m
+  steps:
+    - name: pull
+      image: docker.io/goreleaser/goreleaser@sha256:8a596892311c6a5ca45f531eeaf415138e3ea04f3f3d7bd11b46ec320e2d593f
+      workingDir: $(workspaces.source.path)
+      script: |
+        git status; git fetch -p --all
+    - name: release
+      image: docker.io/goreleaser/goreleaser@sha256:1705d73d62a271d9b4684534d9ed3f5fef943e353d22d79693b8d48d730f4db1
+      workingDir: $(workspaces.source.path)
+      script: |
+        goreleaser release $(params.flags)
+      env:
+        - name: GOPATH
+          value: /workspace
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: $(params.github-token-secret)
+              key: $(params.github-token-secret-key)
