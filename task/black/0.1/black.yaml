@@ -1,0 +1,30 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: black
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: formatter, python
+    tekton.dev/displayName: "Python Black"
+spec:
+  description: >-
+    This task can be used to format Python code
+  workspaces:
+    - name: shared-workspace
+      description: >-
+        The workspace containing python source code which we want to format.
+  params:
+    - name: args
+      type: array
+      description: extra args that needs to be appended
+      default: ["--help"]
+  steps:
+    - name: format-python-code
+      image: docker.io/cytopia/black@sha256:2ec766f1c7e42e6b59c0873ce066fa0a2aa2bf8a80dbc1c40f1566bb539303e0
+      workingDir: $(workspaces.shared-workspace.path)
+      command:
+        - black
+      args:
+        - $(params.args)
