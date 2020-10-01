@@ -165,7 +165,14 @@ function test_task_creation() {
             breakit=True
             for status in ${all_status};do
 
-                [[ ${status} == *ERROR || ${reason} == *Fail* || ${reason} == Couldnt* ]] && show_failure ${testname} ${tns}
+                set -x
+                if [[ ${status} == *ERROR ||
+                          ${reason} == *Fail* ||
+                          ${reason} == Couldnt* ]];then
+                    set +x
+                    show_failure ${testname} ${tns}
+                fi
+                set +x
 
                 if [[ ${status} != True ]];then
                     breakit=
