@@ -1,0 +1,39 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: pylint
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: python, pylint
+    tekton.dev/displayName: pylint
+
+spec:
+  description: >-
+    This task will run pylint on the provided input.
+
+  workspaces:
+    - name: source
+  params:
+    - name: image
+      description: The container image with pylint
+      default: docker.io/cytopia/pylint@sha256:6e5b49b6d54cbd845b93139eeb3f4f558b07bf6a87001ce254782463df1443d2
+    - name: args
+      description: The arguments to pass to the pylint CLI.
+      type: array
+      default: [""]
+    - name: path
+      description: The path to the module which should be analysed by pylint
+      default: "."
+      type: string
+  steps:
+    - name: pylint
+      image: $(params.image)
+      workingDir: $(workspaces.source.path)
+      command:
+        - pylint
+      args:
+        - $(params.args)
+        - $(params.path)
