@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: kaniko-build
+
+spec:
+  params:
+  - name: pathToContext
+    description: The path to the build context relative to your source repo's root. This is used by Kaniko.
+    default: .
+  - name: pathToDockerFile
+    description: The path to the dockerfile to build, relative to the context.
+    default: Dockerfile
+  - name: imageUrl
+    description: URL of image repository.
+  - name: imageTag
+    description: Tag to apply to the built image.
+    default: latest
+  workspaces:
+  - name: source
+  steps:
+  - name: build-and-push
+    image: gcr.io/kaniko-project/executor
+    command:
+    - /kaniko/executor
+    args:
+    - --dockerfile=$(params.pathToDockerFile)
+    - --destination=$(params.imageUrl):$(params.imageTag)
+    - --context=$(workspaces.source.path)/$(params.pathToContext)

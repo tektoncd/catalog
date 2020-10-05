@@ -3,10 +3,21 @@
 
 This Pipeline builds, pushes, and deploys your application to a Google Kubernetes Engine cluster using [`gke-deploy`](https://github.com/GoogleCloudPlatform/cloud-builders/tree/master/gke-deploy).
 
+## Install the task
+
+```
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/pipeline/gke-deploy-build-push/0.1/support/kaniko-build.yaml
+```
+
+```
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/pipeline/gke-deploy-build-push/0.1/support/gke-deploy.yaml
+
+```
+
 ## Install the Pipeline
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/build-push-gke-deploy/0.1/build-push-gke-deploy.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/pipeline/gke-deploy-build-push/0.1/gke-deploy-build-push.yaml
 ```
 
 ## Workspaces
@@ -77,7 +88,7 @@ metadata:
   name: build-push-gke-deploy-run
 spec:
   pipelineRef:
-    name: build-push-gke-deploy
+    name: gke-deploy-build-push
   serviceAccountName: workload-identity-sa  # <-- a SA configured with Workload Identity
   workspaces:
   - name: source

@@ -1,0 +1,36 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: gke-deploy
+spec:
+  params:
+  - name: pathToKubernetesConfigs
+    description: The path to the Kubernetes configs to deploy, relative to your source repo's root.
+  - name: imageUrl
+    description: URL of image repository
+  - name: imageTag
+    description: Tag of the images to be used.
+    default: latest
+  - name: clusterName
+    description: Name of target GKE cluster to deploy to.
+  - name: clusterLocation
+    description: Zone/region of target GKE cluster to deploy to.
+  - name: clusterProject
+    description: Project of target GKE cluster to deploy to.
+    default: ""
+  workspaces:
+  - name: source
+  steps:
+  - name: deploy-using-gke-deploy
+    image: gcr.io/cloud-builders/gke-deploy
+    workingDir: $(workspaces.source.path)
+    command: ["/gke-deploy"]
+    args:
+    - "run"
+    - "--image=$(params.imageUrl):$(params.imageTag)"
+    - "--filename=$(workspaces.source.path)/$(params.pathToKubernetesConfigs)"
+    - "--cluster=$(params.clusterName)"
+    - "--location=$(params.clusterLocation)"
+    - "--project=$(params.clusterProject)"
+    - "--output=/var/tmp/gke-deploy"

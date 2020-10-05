@@ -1,0 +1,80 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: gke-deploy-build-push
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: build, push, deploy
+spec:
+  description: >-
+    This Pipeline builds, pushes, and deploys your application to a Google Kubernetes
+    Engine cluster using gke-deploy.
+  workspaces:
+  - name: source
+  params:
+  - name: pathToContext
+    type: string
+    description: The path to the build context relative to your source repo's root. This is used by Kaniko.
+    default: .
+  - name: pathToDockerFile
+    type: string
+    description: The path to the dockerfile to build, relative to the context.
+    default: Dockerfile
+  - name: pathToKubernetesConfigs
+    type: string
+    description: The path to the Kubernetes configs to deploy, relative to your source repo's root.
+  - name: imageUrl
+    type: string
+    description: URL of image repository.
+  - name: imageTag
+    type: string
+    description: Tag to apply to the built image.
+    default: latest
+  - name: clusterName
+    type: string
+    description: Name of target GKE cluster to deploy to.
+  - name: clusterLocation
+    type: string
+    description: Zone/region of target GKE cluster to deploy to.
+  - name: clusterProject
+    type: string
+    description: Project of target GKE cluster to deploy to.
+    default: ""
+  tasks:
+  - name: kaniko-build
+    taskRef:
+      name: kaniko-build
+    params:
+    - name: pathToContext
+      value: "$(params.pathToContext)"
+    - name: imageUrl
+      value: "$(params.imageUrl)"
+    - name: imageTag
+      value: "$(params.imageTag)"
+    workspaces:
+    - name: source
+      workspace: source
+  - name: deploy
+    taskRef:
+      name: deploy
+    runAfter:
+    - kaniko-build
+    params:
+    - name: pathToKubernetesConfigs
+      value: "$(params.pathToKubernetesConfigs)"
+    - name: imageUrl
+      value: "$(params.imageUrl)"
+    - name: imageTag
+      value: "$(params.imageTag)"
+    - name: clusterName
+      value: "$(params.clusterName)"
+    - name: clusterLocation
+      value: "$(params.clusterLocation)"
+    - name: clusterProject
+      value: "$(params.clusterProject)"
+    workspaces:
+    - name: source
+      workspace: source
