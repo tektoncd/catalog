@@ -1,0 +1,28 @@
+---
+headers:
+  method: GET
+  path: /api/v3/repos/{repo:[^/]+/[^/]+}/issues/{issue:[0-9]+}/labels
+response:
+  status: 200
+  content-type: text/json
+  output: |
+   [
+     {
+       "id": 208045946,
+       "node_id": "MDU6TGFiZWwyMDgwNDU5NDY=",
+       "url": "https://api.github.com/repos/octocat/Hello-World/labels/bug",
+       "name": "bug",
+       "description": "Something isn't working",
+       "color": "f29513",
+       "default": true
+     },
+     {
+       "id": 208045947,
+       "node_id": "MDU6TGFiZWwyMDgwNDU5NDc=",
+       "url": "https://api.github.com/repos/octocat/Hello-World/labels/enhancement",
+       "name": "enhancement",
+       "description": "New feature or request",
+       "color": "a2eeef",
+       "default": false
+     }
+   ]
