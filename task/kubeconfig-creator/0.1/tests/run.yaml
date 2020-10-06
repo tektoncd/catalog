@@ -1,0 +1,27 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: kubeconfig-creator-creator
+spec:
+  pipelineSpec:
+    workspaces:
+      - name: output
+    tasks:
+      - name: kubeconfig-creator-test
+        taskRef:
+          name: kubeconfig-creator
+        workspaces:
+          - name: output
+            workspace: output
+        params:
+          - name: name
+            value: "unbeaunavire"
+          - name: url
+            value: "http://chezmoi"
+          - name: username
+            value: "hellocmoi"
+          - name: password
+            value: "meregardepas"
+  workspaces:
+  - name: output
+    emptyDir: {}
