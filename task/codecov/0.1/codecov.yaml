@@ -1,0 +1,50 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: codecov
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: build,ci
+    tekton.dev/displayName: "upload coverage report to codecov"
+spec:
+  description: >-
+    This task publishes coverage report to Codecov.io.
+
+    This task will help you publishes the coverage report of your project to
+    https://codecov.io.
+
+  params:
+    - name: codecov-token-secret
+      type: string
+      description: Name of the secret holding the github-token.
+      default: codecov-token
+    - name: codecov-token-secret-key
+      type: string
+      description: Name of the secret key holding the codecov token
+      default: token
+    - name: args
+      type: array
+      description: Extra arguments to be passed to the codecov script.
+      default: ["-Z"]
+
+  workspaces:
+    - name: source
+
+  steps:
+    - name: codecov-run
+      image: gcr.io/tekton-releases/dogfooding/test-runner@sha256:44aa00796831a4ed5586152058dd96a6d14174b8a4ea9fcae663fb37f72c9454
+      workingDir: $(workspaces.source.path)
+      env:
+        - name: CODECOV_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: $(params.codecov-token-secret)
+              key: $(params.codecov-token-secret-key)
+      script: |
+        #!/usr/bin/env bash
+        bash <(wget -O- -o/dev/null https://codecov.io/bash) $@
+      args:
+        - $(params.args)

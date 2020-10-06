@@ -1,0 +1,64 @@
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: codecov-token
+stringData:
+  token: SECRET_TOKEN
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: codecov-test
+spec:
+  pipelineSpec:
+    workspaces:
+      - name: source
+    tasks:
+      - name: fetch-repository
+        taskRef:
+          name: git-clone
+        workspaces:
+          - name: output
+            workspace: source
+        params:
+          - name: url
+            value: https://github.com/chmouel/go-rest-api-test
+          - name: subdirectory
+            value: ""
+          - name: deleteExisting
+            value: "true"
+
+      - name: run-test
+        taskRef:
+          name: golang-test
+        runAfter:
+          - fetch-repository
+        workspaces:
+          - name: source
+            workspace: source
+        params:
+          - name: package
+            value: github.com/chmouel/go-rest-api-test
+          - name: flags
+            value: "-race -coverprofile=coverage.txt -covermode=atomic"
+      - name: codecov-test
+        runAfter:
+          - run-test
+        taskRef:
+          name: codecov
+        params:
+          - name: args
+            value: ["-d"]
+        workspaces:
+          - name: source
+            workspace: source
+  workspaces:
+    - name: source
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 500Mi
