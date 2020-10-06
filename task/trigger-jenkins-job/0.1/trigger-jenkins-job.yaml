@@ -40,57 +40,66 @@ spec:
         - $(params.JOB_PARAMS)
       script: |
         #!/usr/libexec/platform-python
-
-        import os
-        import json
-        import sys
         import base64
-        import urllib
+        import http.cookiejar
+        import os
+        import sys
         import urllib.request
 
-        args = sys.argv[1:]
+        JENKINS_URL = """$(params.JENKINS_HOST_URL)"""
+        JOB_NAME = """$(params.JOB_NAME)"""
+        USERNAME = os.getenv("USERNAME")
+        APITOKEN = os.getenv("API_TOKEN")
 
-        queryType = "buildWithParameters"
-        finalArgs=""
-        data={}
-        filename=""
+        def build_args(args):
+            data = {}
+            filename = ""
+            for params in args:
+                if "@" in params:
+                    filename += params.split("=")[1][1:]
+                elif "=" in params:
+                    key_value = params.split("=")
+                    data[key_value[0]] = key_value[1]
+            if data:
+                data = urllib.parse.urlencode(data).encode("utf-8")
+            return (data, filename)
 
-        for params in args:
-          if '@' in params:
-            filename+=params.split("=")[1][1:]
-          elif len(params) != 0:
-            keyValue=params.split("=")
-            data[keyValue[0]]=keyValue[1]
-          else:
-            queryType = "build"
 
-        url = "$(params.JENKINS_HOST_URL)"+"/job/"+"$(params.JOB_NAME)"+"/"+queryType
+        def get_crumb(headers, cookiejar):
+            url = f"{JENKINS_URL}/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,%22:%22,//crumb)"
+            opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cookiejar))
+            opener.addheaders = headers
+            return opener.open(url)
 
-        # creating Basic Authorization header
-        username=os.getenv('USERNAME')
-        apitoken=os.getenv('API_TOKEN')
-        credentials = ('%s:%s' % (username,apitoken))
-        base64string = base64.b64encode(credentials.encode('ascii'))
 
-        # Adding required Headers
-        requiredHeaders={
-          "Jenkins-Crumb": os.getenv('JENKINS_CRUMB'),
-          "Authorization": "Basic "+base64string.decode('ascii')
-        }
+        def main():
+            data, filename = build_args(sys.argv[1:])
 
-        data = urllib.parse.urlencode(data)
-        data = data.encode('utf-8') # data should be bytes
-        request = urllib.request.Request(url, data=data, headers=requiredHeaders)
+            if data:
+                query_type = "buildWithParameters"
+            else:
+                query_type = "build"
+            job_url = f"{JENKINS_URL}/job/{JOB_NAME}/{query_type}"
 
-        # Adding headers in case file is to be uploaded
-        if len(filename)!=0:
-          requiredHeaders['Content-Type']="multipart/form-data"
-          requiredHeaders['Content-Length']=os.stat(filename).st_size
-          request = urllib.request.Request(url, open(filename, 'rb'), headers=requiredHeaders)
+            jarhead = http.cookiejar.CookieJar()
+            base64string = base64.b64encode(f"{USERNAME}:{APITOKEN}".encode("utf-8"))
+            headers = [("Authorization", f"Basic {base64string.decode('utf-8')}")]
 
-        opener = urllib.request.build_opener()
-        with opener.open(request) as f:
-          f.read().decode('utf-8')
+            crumb = get_crumb(headers, jarhead).read().decode().replace("Jenkins-Crumb:", "")
+            headers.append(("Jenkins-Crumb", crumb))
+
+            request = urllib.request.Request(job_url, data=data)
+            if filename:
+                headers.append(("Content-Type", "multipart/form-data"))
+                headers.append(("Content-Length", os.stat(filename).st_size))
+                request = urllib.request.Request(job_url, open(filename, "rb"))
+
+            opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jarhead))
+            opener.addheaders = headers
+            with opener.open(request) as handle:
+                print(f"Job has started, status: {handle.status}")
+                handle.read().decode("utf-8")
+        main()
 
       env:
         - name: USERNAME
