@@ -135,6 +135,62 @@ specify the task name and the version as the first and the second argument i.e:
 and it will use your kubernetes to run the test and show you the outputs as done
 in the CI.
 
+#### End to end Testing for external services
+
+Some tasks need to be able to access some external REST api services.
+To be able to test those tasks we are using the ["Go Rest api
+test"](https://github.com/chmouel/go-rest-api-test) project.
+The Go rest api test project is a simple service that replies back to http
+requests according to rules.
+
+As an example see the [github-add-comment task](task/github-add-comment).
+For this task to be tested we need to be able to *"fake"* the Github REST api
+calls. To be able to do so, we are adding a go-rest-api-test rule inside the
+[testing](task/github-add-comment/0.1/tests/fixtures) repository, the rule looks
+like this :
+
+```yaml
+---
+headers:
+  method: POST
+  path: /repos/{repo:[^/]+/[^/]+}/issues/{issue:[0-9]+}/comments
+response:
+  status: 200
+  output: '{"status": 200}'
+  content-type: text/json
+```
+
+The rules is saying that for every **POST** requests going to this url :
+
+`/repos/${ORG}/${REPO}/issues/${issues}/comments`
+
+we will reply by a `200` status and output `{"status": 200}`
+
+The [Pipelinerun](task/github-add-comment/0.1/tests/run.yaml) test for the
+github-add-comment task overrides the github host url in its param to point to
+`localhost:8080` :
+
+```yaml
+    - name: GITHUB_HOST_URL
+      value: http://localhost:8080
+```
+
+In the [test runner](test/e2e-common.sh) if we find a directory called
+`task/${task}/${version}/tests/fixtures` we automatically spin up the
+["go-rest-api-test"](https://github.com/chmouel/go-rest-api-test) server as a
+sidecar container with the test's fixtures yaml as the config. It will be then
+available to the task locally to this URL `http://localhost:8080`.
+
+The task runs against that service instead of the github servcer and the
+responder replies with the right calls, we know then that the task has been
+properly tested.
+
+The only requirement to use the fixtures testing facility is to be have the task
+having the capability via a task parameter to override the URL.
+
+The `go-rest-api-test` is a very simple service at the moment and may see other
+improvements in the future to support more robust testing.
+
 ### Owning and Maintaining a Task
 
 Individual tasks should maintained by one or more users of
