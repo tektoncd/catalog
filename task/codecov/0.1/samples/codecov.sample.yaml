@@ -1,0 +1,60 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: codecov-python-sample-run-
+spec:
+  pipelineSpec:
+    params:
+      - name: repo_url
+      - name: revision
+    workspaces:
+      - name: source
+    tasks:
+      - name: fetch
+        taskRef:
+          name: git-clone
+        params:
+          - name: url
+            value: $(params.repo_url)
+          - name: revision
+            value: $(params.revision)
+        workspaces:
+          - name: output
+            workspace: source
+      - name: python-unittest
+        runAfter: [fetch]
+        taskRef:
+          name: pytest
+        params:
+          - name: ARGS
+            value: "--cov=./ --cov-report=xml"
+        workspaces:
+          - name: source
+            workspace: source
+      - name: codecov
+        runAfter: [python-unittest]
+        taskRef:
+          name: codecov
+        params:
+          - name: codecov-token-secret
+            value: "codecov-secret"
+          - name: codecov-token-secret-key
+            value: "secret"
+        workspaces:
+          - name: source
+            workspace: source
+  params:
+    - name: repo_url
+      value: https://github.com/pypa/sampleproject
+    - name: revision
+      value: master
+  workspaces:
+    - name: source
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
