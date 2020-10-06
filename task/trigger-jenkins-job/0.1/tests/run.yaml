@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: trigger-jenkins-job-run
+spec:
+  pipelineSpec:
+    workspaces:
+      - name: source
+    tasks:
+      - name: trigger-jenkins-job-test
+        taskRef:
+          name: trigger-jenkins-job
+        workspaces:
+          - name: source
+            workspace: source
+        params:
+          - name: JENKINS_HOST_URL
+            value: http://jenkins:8080
+          - name: JOB_NAME
+            value: "test"
+  workspaces:
+  - name: source
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Mi
