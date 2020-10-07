@@ -137,7 +137,24 @@ in the CI.
 #### End to end Testing for external services
 
 Some tasks need to be able to access some external REST api services.
-To be able to test those tasks we are using the ["Go Rest api
+
+There is two approach for testing external services, the first one if you can is to spin up a deployment of the service tests and exposed as a kubernetes service and the second one is an http rest api reflector for task that connect to rest apis endpoint that cannot be available as a deployment (i.e: Saas services like github)
+
+For the first approach, you can take the [trigger-jenkins-build test](task/trigger-jenkins-job/0.1/tests/) as an example.
+
+You will want to modify the [pre-apply-task-hook.sh](task/trigger-jenkins-job/0.1/tests/pre-apply-task-hook.sh) script to create the deployment and make it available to your test pipelinerun.
+
+Here is a rundown of the steps we are doing in `trigger-jenkins-build/pre-apply-task-hook.sh` script :
+
+- Create a deployment with the `jenkins` image
+- Wait until the deployment has completed.
+- expose the deployment as a service, which would then be easily available for other pods in the namespace.
+- Do some shenanigans inside the jenkins pod so we can grab the jenkins apikey and create a new jenkins job.
+- create a secret with the apikey, username and other stuff.
+
+The [test pipelinerun](task/trigger-jenkins-job/0.1/tests/run.yaml) for the `trigger-jenkins-build/` will then points to `http://jenkins:8080` which it the service URL where our just deployed jenkins is exposed and use the secrets credentials from the just created secret in the `pre-apply-task-hook.sh` script.
+
+For those other services where you can't spin up a new deployment of the service easily, the tes runner support the ["Go Rest api
 test"](https://github.com/chmouel/go-rest-api-test) project.
 The Go rest api test project is a simple service that replies back to http
 requests according to rules.
