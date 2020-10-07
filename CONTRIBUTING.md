@@ -116,8 +116,7 @@ some environment variables to it that would be applied :
 We have some helper functions you can use from your `hook` scripts :
 
 * **add_sidecar_registry**: This will add a registry as a sidecar to allow the builder tasks to upload image directly to this sidecar registry instead of having to rely on external registries.
-* **add_git_clone_task**: This will add the git clone task to your temporary namespace.
-
+* **add_task**: Install a task into the testing namespace, the first argument is the name of the task, the second argument is the version of the task. If the version is equal to `latest` it will install the latest version of the task.
 
 What can you run from those scripts is whatever defined in the test-runner
 image, if you need to have another binary available feel free to make a PR to this Dockerfile :
