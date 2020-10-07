@@ -32,9 +32,20 @@ function add_sidecar_registry() {
     rm -f ${TMPF}.read
 }
 
-# Add the git_clone task
-function add_git_clone_task() {
-    kubectl -n ${tns} apply -f ./task/git-clone/0.1/git-clone.yaml
+function add_task() {
+    local array path_version task
+    task=${1}
+    if [[ "${2}" == "latest" ]];then
+        array=($(echo task/${task}/*|sort -u))
+        path_version=${array[-1]}
+	else
+		path_version=task/${task}/${2}
+        if [[ ! -d ${path_version} ]];then
+            echo "I could not find version '${2}' for the task '${task}' in ./task/"
+            exit 1
+        fi
+	fi
+    kubectl -n "${tns}" apply -f "${path_version}"/"${task}".yaml
 }
 
 function install_pipeline_crd() {
@@ -93,7 +104,7 @@ function show_failure() {
 
 }
 function test_task_creation() {
-    for runtest in ${@};do
+    for runtest in "${@}";do
         # remove task/ from beginning
         local runtestdir=${runtest#*/}
         # remove /0.1/tests from end
