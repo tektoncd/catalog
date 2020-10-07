@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Add git-clone
-add_git_clone_task
+add_task git-clone latest
 
 # Add service account
 kubectl -n ${tns} create serviceaccount helm-pipeline-run-sa -o yaml --dry-run=client | kubectl apply -f -

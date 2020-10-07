@@ -5,4 +5,4 @@
 add_sidecar_registry ${TMPF}
 
 # Add git-clone
-add_git_clone_task
+add_task git-clone latest
