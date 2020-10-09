@@ -35,16 +35,16 @@ spec:
     default: auto
   workspaces:
   - name: source
-    mountPath: /workspace/src/$(params.package)
   steps:
   - name: build
     image: golang:$(params.version)
-    workingDir: $(workspaces.source.path)
     script: |
+      SRC_PATH="$GOPATH/src/$(params.package)"
+      mkdir -p $SRC_PATH
+      cp -R "$(workspaces.source.path)"/* $SRC_PATH
+      cd $SRC_PATH
       go build $(params.flags) $(params.packages)
     env:
-    - name: GOPATH
-      value: /workspace
     - name: GOOS
       value: "$(params.GOOS)"
     - name: GOARCH
