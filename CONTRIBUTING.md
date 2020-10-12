@@ -138,7 +138,7 @@ in the CI.
 
 Some tasks need to be able to access some external REST api services.
 
-There is two approach for testing external services, the first one if you can is to spin up a deployment of the service tests and exposed as a kubernetes service and the second one is an http rest api reflector for task that connect to rest apis endpoint that cannot be available as a deployment (i.e: Saas services like github)
+There are two approaches for testing external services, the first one if you can is to spin up a deployment of the service tests and exposed as a kubernetes service and the second one is an http rest api reflector for task that connect to rest apis endpoint that cannot be available as a deployment (i.e: Saas services like github)
 
 For the first approach, you can take the [trigger-jenkins-build test](task/trigger-jenkins-job/0.1/tests/) as an example.
 
@@ -154,7 +154,7 @@ Here is a rundown of the steps we are doing in `trigger-jenkins-build/pre-apply-
 
 The [test pipelinerun](task/trigger-jenkins-job/0.1/tests/run.yaml) for the `trigger-jenkins-build/` will then points to `http://jenkins:8080` which it the service URL where our just deployed jenkins is exposed and use the secrets credentials from the just created secret in the `pre-apply-task-hook.sh` script.
 
-For those other services where you can't spin up a new deployment of the service easily, the tes runner support the ["Go Rest api
+For those other services where you can't spin up a new deployment of the service easily, the test runner support the ["Go Rest api
 test"](https://github.com/chmouel/go-rest-api-test) project.
 The Go rest api test project is a simple service that replies back to http
 requests according to rules.
