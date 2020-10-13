@@ -1,0 +1,20 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: jenkins-run
+spec:
+  taskRef:
+    name: jenkins
+  params:
+    - name: JENKINS_HOST_URL
+      value: http://localhost:8080
+    - name: JENKINS_SECRETS
+      value: jenkins-credentials
+    - name: ARGS
+      value:
+        - start
+        - test
+        - id=123
+  workspaces:
+    - name: source
+      emptyDir: {}
