@@ -1,0 +1,244 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: jenkins
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: jenkins, build
+    tekton.dev/displayName: "jenkins operation"
+spec:
+  description: >-
+    The following task can be used to interact with the the Jenkins REST API.
+  workspaces:
+    - name: source
+      description: >-
+        The workspace which can be used to mount files which can be
+        send via the API to the Jenkins job.
+  results:
+    - name: build_number
+  params:
+    - name: JENKINS_HOST_URL
+      type: string
+      description: Server URL on which Jenkins is running
+    - name: JENKINS_SECRETS
+      type: string
+      description: Jenkins secret containing credentials
+      default: jenkins-credentials
+    - name: ARGS
+      type: array
+      description: The argument to send to the control script, see README of this task for details.
+      default: ["--help"]
+  steps:
+    - name: jenkins-control
+      image: registry.access.redhat.com/ubi8:8.2
+      workingDir: $(workspaces.source.path)
+      args:
+        - $(params.ARGS)
+      env:
+        - name: BUILD_ID_RESULTS_PATH
+          value: $(results.build_number.path)
+        - name: USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: $(params.JENKINS_SECRETS)
+              key: username
+        - name: API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: $(params.JENKINS_SECRETS)
+              key: apitoken
+      script: |
+        #!/usr/libexec/platform-python
+        import argparse
+        import base64
+        import http.cookiejar
+        import json
+        import os
+        import sys
+        import time
+        import urllib.request
+
+        COOKIE_JAR = http.cookiejar.CookieJar()
+
+        JENKINS_URL = """$(params.JENKINS_HOST_URL)"""
+        USERNAME = os.getenv("USERNAME")
+        PASSWORD = os.getenv("API_TOKEN")
+
+        BUILD_ID_RESULTS_PATH = os.getenv("BUILD_ID_RESULTS_PATH")
+
+
+        def parse_args(args):
+            parser = argparse.ArgumentParser(
+                description='Tekton jenkins task control CLI', )
+
+            actions = parser.add_subparsers(title="Actions")
+
+            start = actions.add_parser("start", help="Start a Jenkins Job")
+            start.add_argument("--file-to-upload",
+                               type=str,
+                               help="The path of the file to upload to job.")
+            start.add_argument("--wait-started",
+                               action='store_true',
+                               default=False,
+                               help="Wether to wait for the job to be started.")
+            start.add_argument("--wait-finished",
+                               action='store_true',
+                               default=False,
+                               help="Wether to wait for the job to be finished.")
+            start.add_argument("job", type=str)
+            start.add_argument("job_parameters", nargs="*")
+
+            log = actions.add_parser("log", help="Get log of a JOB")
+            log.add_argument("--output-file",
+                             type=str,
+                             help="The location where to save logs on the filesystem.")
+
+            log.add_argument("job", type=str)
+            log.add_argument("build_number", nargs="?")
+
+            if len(args) == 0:
+                parser.print_help()
+                sys.exit(1)
+
+            args = parser.parse_args(args)
+            args.action = sys.argv[1]
+            return args
+
+
+        def build_parameters(parameters):
+            data = {}
+            for params in parameters:
+                if "=" in params:
+                    key_value = params.split("=")
+                    data[key_value[0]] = key_value[1]
+            if data:
+                data = urllib.parse.urlencode(data).encode("utf-8")
+            return data
+
+
+        def get_crumb(headers, cookiejar):
+            url = f"{JENKINS_URL}/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,%22:%22,//crumb)"
+            opener = urllib.request.build_opener(
+                urllib.request.HTTPCookieProcessor(cookiejar))
+            opener.addheaders = headers
+            return opener.open(url)
+
+
+        def build_req(url, data=None, debug=False, file_to_upload=None):
+            base64string = base64.b64encode(f"{USERNAME}:{PASSWORD}".encode("utf-8"))
+            headers = [("Authorization", f"Basic {base64string.decode('utf-8')}")]
+
+            crumb = get_crumb(headers, COOKIE_JAR).read().decode().replace(
+                "Jenkins-Crumb:", "")
+            headers.append(("Jenkins-Crumb", crumb))
+
+            # TODO(chmou):This doesn't seem to work or i can't make it to work :\
+            if file_to_upload:
+                headers.append(("Content-Type", "multipart/form-data"))
+                headers.append(("Content-Length", os.stat(file_to_upload).st_size))
+                request = urllib.request.Request(url, open(file_to_upload, "rb"))
+            else:
+                request = urllib.request.Request(url, data=data)
+
+            opener = urllib.request.build_opener(
+                urllib.request.HTTPCookieProcessor(COOKIE_JAR))
+            opener.addheaders = headers
+            if debug:
+                print(f"Requesting {url} with data={repr(data)}")
+            return (opener, request)
+
+
+        def get_job_info(job, build_number='lastBuild'):
+            url = f"{JENKINS_URL}/job/{job}/{build_number}/api/json?depth=0"
+            opener, request = build_req(url)
+            return json.loads(opener.open(request).read())
+
+
+        def wait_for_build_started(job_name, _info_current):
+            try:
+                _info = get_job_info(job_name)
+            except urllib.error.HTTPError as err:
+                if not hasattr(err, "code") or err.code != 404:
+                    raise
+                _info = {'id': 0}
+
+            max_loop = 100
+            current = 0
+            print(f"Waiting for job '{job_name}' to start.")
+            while _info_current['id'] == _info['id']:
+                try:
+                    _info = get_job_info(job_name)
+                except urllib.error.HTTPError as err:
+                    if not hasattr(err, "code") or err.code != 404:
+                        raise
+                if current >= max_loop:
+                    raise Exception(
+                        f"It took to long to wait for the job '{job_name}' to start")
+                current += 1
+                time.sleep(5)
+            print(f"Job '{job_name}' has started with build number: {_info['id']}")
+            return _info
+
+
+        def wait_for_build_completed(job_name, build_number):
+            job_info = get_job_info(job_name, build_number)
+            max_loop = 100
+            current = 0
+            print(f"Waiting for job '{job_name}' to be completed")
+            while True:
+                if 'building' in job_name and job_info['building']:
+                    job_info = get_job_info(job_name)
+                    if current >= max_loop:
+                        raise Exception(
+                            f"It took to long to wait for the job '{job_name}' to complete"
+                        )
+                    current += 1
+                    time.sleep(5)
+                    continue
+                break
+            print(f"Job '{job_name}' has completed: {job_info['url']}")
+            return job_info
+
+
+        def main():
+            args = parse_args(sys.argv[1:])
+            data = {}
+            if args.action == "log":
+                query_type = f"{args.build_number}/consoleText"
+            elif args.action == "start":
+                if args.job_parameters:
+                    data = build_parameters(args.job_parameters)
+                    query_type = "buildWithParameters"
+                else:
+                    query_type = "build"
+
+            url = f"{JENKINS_URL}/job/{args.job}/{query_type}"
+
+            # We catch the error in case the job has never been started yet.
+            try:
+                _info_current = get_job_info(args.job)
+            except urllib.error.HTTPError:
+                _info_current = {'id': 0}
+            opener, request = build_req(url, data=data, debug=True)
+            with opener.open(request) as handle:
+                output = handle.read().decode("utf-8")
+                if output:
+                    print(output)
+                if 'output_file' in args:
+                    open(args.output_file, 'w').write(output)
+
+            if args.action == "start":
+                print(f"Job {args.job} has started.")
+                if args.wait_started or args.wait_finished:
+                    _info_current = wait_for_build_started(args.job, _info_current)
+                if args.wait_finished:
+                    wait_for_build_completed(args.job, _info_current['id'])
+
+            if BUILD_ID_RESULTS_PATH and _info_current['id'] != 0:
+                open(BUILD_ID_RESULTS_PATH, 'w').write(_info_current['id'])
+
+
+        if __name__ == '__main__':
+            main()
