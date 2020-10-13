@@ -1,0 +1,61 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: jenkins-run
+spec:
+  pipelineSpec:
+    results:
+      - name: build_number
+        description: The run build number
+        value: $(tasks.start.results.build_number)
+    workspaces:
+      - name: source
+    tasks:
+      - name: start
+        taskRef:
+          name: jenkins
+        workspaces:
+          - name: source
+            workspace: source
+        params:
+          - name: JENKINS_HOST_URL
+            value: http://jenkins:8080
+          - name: ARGS
+            value: ["start", "--wait-finished", "test", "Word=World"]
+      - name: log
+        runAfter:
+          - start
+        taskRef:
+          name: jenkins
+        workspaces:
+          - name: source
+            workspace: source
+        params:
+          - name: JENKINS_HOST_URL
+            value: http://jenkins:8080
+          - name: ARGS
+            value: ["log", "test", "$(tasks.start.results.build_number)", "--output-file=$(workspaces.source.path)/output.log"]
+      - name: check
+        runAfter:
+          - log
+        taskSpec:
+          workspaces:
+          - name: source
+          steps:
+          - name: check-it-baby
+            image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
+            script: |
+                ls $(workspaces.source.path)
+                grep "Hello World" $(workspaces.source.path)/output.log
+        workspaces:
+          - name: source
+            workspace: source
+  workspaces:
+  - name: source
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Mi
