@@ -1,0 +1,49 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: minio-cli
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: cli
+    tekton.dev/displayName: "minio cli"
+spec:
+  description: >-
+   MinIO is a High Performance Object Storage released under Apache License v2.0.
+   It is API compatible with Amazon S3 cloud storage service.
+
+   This task lists all the buckets available on the MinIO server.
+
+  params:
+  - name: server-url
+    type: string
+    description: MinIO server URL
+  - name: server-alias
+    type: string
+    description: MinIO server alias
+  - name: key-tokens
+    type: string
+    description: Secret for the MinIO server
+  - name: cli-command
+    description: The minio cli command to tun
+    type: string
+    default: "--help"
+  steps:
+  - name: run-command
+    image: docker.io/minio/mc:RELEASE.2021-03-23T05-46-11Z
+    script: |
+      mc config host add $(params.server-alias) $(params.server-url) $minio_access_key $minio_secret_key
+      mc $(params.cli-command) $(params.server-alias)
+    env:
+    - name: minio_access_key
+      valueFrom:
+        secretKeyRef:
+          name: $(params.key-tokens)
+          key: access-token
+    - name: minio_secret_key
+      valueFrom:
+        secretKeyRef:
+          name: $(params.key-tokens)
+          key: secret-token
