@@ -163,6 +163,10 @@ EOF
         local cnt=0
         local all_status=''
         local reason=''
+        # we temporary disable the debug output here since it fill up the
+        # logs a lot while waiting for the task to fail/succeed
+        set +x
+        echo "$(date '+%x %Hh%M:%S') Waiting for task ${testname} to finish successfully."
         while true;do
             [[ ${cnt} == ${maxloop} ]] && show_failure ${testname} ${tns}
 
@@ -197,14 +201,17 @@ EOF
             done
 
             if [[ ${breakit} == True ]];then
-                echo -n "SUCCESS: ${testname} pipelinerun has successfully executed" ;
+                echo "$(date '+%x %Hh%M:%S') SUCCESS: ${testname} pipelinerun has successfully executed" ;
                 break
             fi
 
             sleep 10
             cnt=$((cnt+1))
         done
+        set -x
 
-        kubectl delete ns ${tns}
+        # Delete namespace unless we specify the CATALOG_TEST_SKIP_CLEANUP env
+        # variable so we can debug in case the user needs it.
+        [[ -z ${CATALOG_TEST_SKIP_CLEANUP} ]] && kubectl delete ns ${tns}
     done
 }
