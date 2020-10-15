@@ -1,0 +1,91 @@
+# ###
+# This example relies on the git-clone Task:
+# https://github.com/tektoncd/catalog/tree/master/task/git-clone/0.2
+#
+# ###
+#
+# This Pipeline will first clone a git repository into a shared workspace.
+# The workspace will then be copied to the Orka VM, and the supplied build
+# script will be executed inside the VM.
+# Build artifacts will then be transferred back to the Tekton workspace,
+# which can be consumed by a later Task in the Pipeline, or simply
+# saved to a cloud storage bucket.
+#
+# ###
+# Install the git-clone task:
+# kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/git-clone/0.2/git-clone.yaml
+# ###
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-audiokit-pipeline
+spec:
+  workspaces:
+    - name: shared-data
+  tasks:
+    - name: fetch-repo
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-data
+      params:
+        - name: url
+          value: https://github.com/audiokit/AudioKit.git
+    - name: build-audiokit
+      runAfter:
+        - fetch-repo
+      taskRef:
+        name: orka-full
+      params:
+        - name: base-image
+          value: catalina-buildtools-90G.img
+        - name: cpu-count
+          value: "6"
+        - name: vcpu-count
+          value: "6"
+        - name: verbose
+          value: "true"
+        - name: script
+          value: |
+            cd AudioKit/iOS
+            time xcodebuild
+      workspaces:
+        - name: orka
+          workspace: shared-data
+    - name: show-build
+      runAfter:
+        - build-audiokit
+      workspaces:
+        - name: source
+          workspace: shared-data
+      taskSpec:
+        workspaces:
+          - name: source
+        steps:
+          - name: list
+            image: docker.io/macstadium/orka-tekton-runner:2020-10-23-a93757dc-0.1@sha256:e8ed3370dcb91cdb8bcd4e9a7e9f6652879d80acdab9644cda69a98cd8c93339
+            script: |
+              #!/bin/sh
+              set -ex
+              ls -al $(workspaces.source.path)/AudioKit/iOS
+              ls -al $(workspaces.source.path)/AudioKit/iOS/build
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: run-build-audiokit-pipeline
+spec:
+  pipelineRef:
+    name: build-audiokit-pipeline
+  workspaces:
+    - name: shared-data
+      volumeClaimTemplate:
+        spec:
+          storageClassName: manual
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
