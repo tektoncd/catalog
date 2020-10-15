@@ -1,0 +1,12 @@
+---
+- name: ssh-server
+  image: panubo/sshd:1.3.0
+  env:
+    - name: "SSH_USERS"
+      value: "admin:1000:1000"
+    - name: "SSH_ENABLE_PASSWORD_AUTH"
+      value: "true"
+  volumeMounts:
+    - name: startup-script
+      mountPath: "/etc/entrypoint.d"
+      readOnly: true
