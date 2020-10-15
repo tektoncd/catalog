@@ -1,0 +1,21 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: orka-full-test-run
+spec:
+  taskRef:
+    name: orka-full
+  params:
+    - name: base-image
+      value: base-image.img
+    - name: copy-build
+      value: "false"
+    - name: verbose
+      value: "true"
+    - name: script
+      value: |
+        echo "Hello from TektonCD test"
+  workspaces:
+    - name: orka
+      emptyDir: {}
