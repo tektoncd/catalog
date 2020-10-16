@@ -40,7 +40,4 @@ kubectl $ACTION --namespace=$NAMESPACE -f resources/orka-tekton-config.yaml
 rm -f resources/orka-tekton-config.yaml
 
 # Install tasks
-kubectl $ACTION --namespace=$NAMESPACE \
-  -f orka-init.yaml \
-  -f orka-deploy.yaml \
-  -f orka-teardown.yaml
+kubectl $ACTION --namespace=$NAMESPACE -f orka-modular.yaml
