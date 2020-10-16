@@ -34,13 +34,13 @@ else
 fi
 
 # Install config map
-sed -e 's|$(url)|'"$ORKA_API"'|' resources/orka-tekton-config.yml.tmpl \
-  > resources/orka-tekton-config.yml
-kubectl $ACTION --namespace=$NAMESPACE -f resources/orka-tekton-config.yml
-rm -f resources/orka-tekton-config.yml
+sed -e 's|$(url)|'"$ORKA_API"'|' resources/orka-tekton-config.yaml.tmpl \
+  > resources/orka-tekton-config.yaml
+kubectl $ACTION --namespace=$NAMESPACE -f resources/orka-tekton-config.yaml
+rm -f resources/orka-tekton-config.yaml
 
 # Install tasks
 kubectl $ACTION --namespace=$NAMESPACE \
-  -f orka-init.yml \
-  -f orka-deploy.yml \
-  -f orka-teardown.yml
+  -f orka-init.yaml \
+  -f orka-deploy.yaml \
+  -f orka-teardown.yaml

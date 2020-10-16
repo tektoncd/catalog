@@ -31,7 +31,7 @@ else
   ACTION="apply"
 fi
 
-sed -e 's|$(namespace)|'"$NAMESPACE"'|' resources/orka-runner.yml.tmpl \
-  > resources/orka-runner.yml
-kubectl $ACTION -f resources/orka-runner.yml
-rm -f resources/orka-runner.yml
+sed -e 's|$(namespace)|'"$NAMESPACE"'|' resources/orka-runner.yaml.tmpl \
+  > resources/orka-runner.yaml
+kubectl $ACTION -f resources/orka-runner.yaml
+rm -f resources/orka-runner.yaml
