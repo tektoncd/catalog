@@ -1,0 +1,25 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: orka-tekton-config
+data:
+  ORKA_API: http://localhost:8080
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: orka-creds
+type: Opaque
+stringData:
+  email: tekton-svc@macstadium.com
+  password: p@ssw0rd
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: orka-ssh-creds
+type: Opaque
+stringData:
+  username: admin
+  password: admin

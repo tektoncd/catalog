@@ -65,7 +65,7 @@ spec:
           - name: source
         steps:
           - name: list
-            image: sburtonmacstadium/tekton-orka
+            image: macstadium/orka-tekton-runner
             script: |
               #!/bin/sh
               set -ex

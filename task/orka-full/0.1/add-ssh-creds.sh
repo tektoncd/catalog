@@ -21,7 +21,7 @@ if [ -n "$1" ]; then
     ACTION="apply"
   elif [[ "$1" == "-d" || "$1" = "--delete" ]]; then
     ACTION="delete"
-    kubectl $ACTION --namespace=$NAMESPACE -f resources/orka-ssh-creds.yml.tmpl
+    kubectl $ACTION --namespace=$NAMESPACE -f resources/orka-ssh-creds.yaml.tmpl
     exit 0
   elif [[ "$1" == "--help" ]]; then
     echo "$USAGE"
@@ -42,7 +42,7 @@ if [[ ! $SSH_USERNAME || ! $SSH_PASSWORD ]]; then
 fi
 
 sed -e 's|$(username)|'"$SSH_USERNAME"'|' \
-  -e 's|$(password)|'"$SSH_PASSWORD"'|' resources/orka-ssh-creds.yml.tmpl \
-  > resources/orka-ssh-creds.yml
-kubectl $ACTION --namespace=$NAMESPACE -f resources/orka-ssh-creds.yml
-rm -f resources/orka-ssh-creds.yml
+  -e 's|$(password)|'"$SSH_PASSWORD"'|' resources/orka-ssh-creds.yaml.tmpl \
+  > resources/orka-ssh-creds.yaml
+kubectl $ACTION --namespace=$NAMESPACE -f resources/orka-ssh-creds.yaml
+rm -f resources/orka-ssh-creds.yaml
