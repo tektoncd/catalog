@@ -11,6 +11,8 @@ spec:
       value: base-image.img
     - name: copy-build
       value: "false"
+    - name: verbose
+      value: "true"
     - name: script
       value: |
         echo "Hello from TektonCD test"
