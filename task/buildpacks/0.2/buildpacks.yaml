@@ -1,0 +1,114 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: buildpacks
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: image-build
+    tekton.dev/displayName: "buildpacks"
+spec:
+  description: >-
+    The Buildpacks task builds source into a container image and pushes it to a registry,
+    using Cloud Native Buildpacks.
+
+    Cloud Native Buildpacks are pluggable, modular tools that transform application source code
+    into OCI images. They replace Dockerfiles in the app development lifecycle, and allow for swift
+    rebasing of images, and give modular control over images through the use of builders, among other
+    benefits. This command uses a builder to construct the image, and pushes it to the registry provided.
+
+  params:
+    - name: BUILDER_IMAGE
+      description: The image on which builds will run (must include lifecycle and compatible buildpacks).
+    - name: CACHE
+      description: The name of the persistent app cache volume.
+      default: empty-dir
+    - name: CACHE_IMAGE
+      description: The name of the persistent app cache image.
+      default: ""
+    - name: PLATFORM_DIR
+      description: The name of the platform directory.
+      default: empty-dir
+    - name: USER_ID
+      description: The user ID of the builder image user.
+      default: "1000"
+    - name: GROUP_ID
+      description: The group ID of the builder image user.
+      default: "1000"
+    - name: PROCESS_TYPE
+      description: The default process type to set on the image.
+      default: "web"
+    - name: SOURCE_SUBPATH
+      description: A subpath within the `source` input where the source to build is located.
+      default: ""
+    - name: SKIP_RESTORE
+      description: Do not write layer metadata or restore cached layers
+      default: "false"
+    - name: RUN_IMAGE
+      description: Reference to a run image to use
+      default: ""
+
+  resources:
+    outputs:
+      - name: image
+        type: image
+
+  workspaces:
+    - name: source
+
+  stepTemplate:
+    env:
+      - name: CNB_PLATFORM_API
+        value: "0.3"
+
+  steps:
+    - name: prepare
+      # Latest alpine as of Oct 22, 2020
+      image: docker.io/alpine@sha256:203ee936961c0f491f72ce9d3c3c67d9440cdb1d61b9783cf340baa09308ffc1
+      imagePullPolicy: Always
+      command: ["/bin/sh"]
+      args:
+        - "-c"
+        - |-
+          chown -R "$(params.USER_ID):$(params.GROUP_ID)" "/tekton/home" &&
+          chown -R "$(params.USER_ID):$(params.GROUP_ID)" "/layers" &&
+          chown -R "$(params.USER_ID):$(params.GROUP_ID)" "/cache" &&
+          chown -R "$(params.USER_ID):$(params.GROUP_ID)" "$(workspaces.source.path)"
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+        - name: $(params.CACHE)
+          mountPath: /cache
+
+    - name: create
+      image: $(params.BUILDER_IMAGE)
+      imagePullPolicy: Always
+      command: ["/cnb/lifecycle/creator"]
+      args:
+        - "-app=$(workspaces.source.path)/$(params.SOURCE_SUBPATH)"
+        - "-cache-dir=/cache"
+        - "-cache-image=$(params.CACHE_IMAGE)"
+        - "-gid=$(params.GROUP_ID)"
+        - "-layers=/layers"
+        - "-platform=/platform"
+        - "-process-type=$(params.PROCESS_TYPE)"
+        - "-skip-restore=$(params.SKIP_RESTORE)"
+        - "-previous-image=$(resources.outputs.image.url)"
+        - "-run-image=$(params.RUN_IMAGE)"
+        - "-uid=$(params.USER_ID)"
+        - "$(resources.outputs.image.url)"
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+        - name: $(params.CACHE)
+          mountPath: /cache
+        - name: $(params.PLATFORM_DIR)
+          mountPath: /platform
+
+  volumes:
+    - name: empty-dir
+      emptyDir: {}
+    - name: layers-dir
+      emptyDir: {}
