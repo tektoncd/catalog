@@ -4,7 +4,7 @@ headers:
   path: /token
 response:
   status: 200
-  output: '{"token": "xxxx"}'
+  output: '{"token": "abcd"}'
   content-type: text/json
 ---
 headers:
@@ -20,7 +20,7 @@ headers:
   path: /resources/vm/deploy
 response:
   status: 200
-  output: '{"ip": "localhost", "ssh_port": "8822"}'
+  output: '{"ip": "localhost", "ssh_port": "22"}'
   content-type: text/json
 ---
 headers:
