@@ -11,6 +11,7 @@ These are the criteria that every PR should meet, please check them off as you
 review them:
 
 - [ ] Includes [docs](https://github.com/tektoncd/community/blob/master/standards.md#principles) (if user facing)
+- [ ] Includes [tests](https://github.com/tektoncd/community/blob/master/standards.md#principles) (if functionality of task changed or new task added)
 - [ ] Commit messages follow [commit message best practices](https://github.com/tektoncd/community/blob/master/standards.md#commit-messages)
 - [ ] Complies with [Catalog Organization TEP][TEP], see [example]. **Note** [An issue has been filed to automate this validation][validation]
   - [ ] File path follows  `<kind>/<name>/<version>/name.yaml`
