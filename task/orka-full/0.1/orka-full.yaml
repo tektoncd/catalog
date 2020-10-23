@@ -82,7 +82,7 @@ spec:
       default: password
   steps:
     - name: copy-script
-      image: macstadium/orka-tekton-runner
+      image: macstadium/orka-tekton-runner:2020-10-23-a93757dc-0.1
       script: |
         #!/bin/sh
         SCRIPT=$(mktemp)
@@ -92,7 +92,7 @@ spec:
         EOF
         copy-script $SCRIPT
     - name: build
-      image: macstadium/orka-tekton-runner
+      image: macstadium/orka-tekton-runner:2020-10-23-a93757dc-0.1
       env:
         - name: ORKA_API
           valueFrom:
