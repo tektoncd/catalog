@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: myapp-v2
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: myapp
@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
         - name: myapp
-          image: janakiramm/myapp:v2
+          image: quay.io/vinamra2807/social-client:v2
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 80
+            - containerPort: 3000
               name: http
