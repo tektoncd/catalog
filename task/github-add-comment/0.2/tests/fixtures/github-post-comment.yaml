@@ -1,0 +1,8 @@
+---
+headers:
+  method: POST
+  path: /repos/{repo:[^/]+/[^/]+}/issues/{issue:[0-9]+}/comments
+response:
+  status: 200
+  output: '{"status": 200}'
+  content-type: text/json
