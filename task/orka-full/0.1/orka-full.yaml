@@ -3,7 +3,18 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: orka-full
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.16.0"
 spec:
+  description: >-
+    With this set of Tasks, you can use your Orka environment
+    to run macOS builds and macOS-related testing from your Tekton pipelines.
+
+    This Task creates a VM template with the specified configuration,
+    deploys a VM instance from it, and then cleans up the environment.
+    All operations in this `Task` are performed against an Orka environment.
   params:
     - name: base-image
       type: string
