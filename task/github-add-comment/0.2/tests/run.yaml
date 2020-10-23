@@ -1,0 +1,25 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: github-add-comment-test
+spec:
+  tasks:
+  - name: add-comment
+    taskRef:
+      name: github-add-comment
+    params:
+    - name: GITHUB_HOST_URL
+      value: http://127.0.0.1:8080
+    - name: COMMENT
+      value: "Hello from TektonCD test"
+    - name: REQUEST_URL
+      value: https://github.com/tektoncd/catalog/issues/1
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: github-add-comment-test-run
+spec:
+  pipelineRef:
+    name: github-add-comment-test
