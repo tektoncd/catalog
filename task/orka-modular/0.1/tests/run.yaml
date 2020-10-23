@@ -1,0 +1,45 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: orka-modular-test
+spec:
+  workspaces:
+    - name: shared-data
+  tasks:
+    - name: setup
+      taskRef:
+        name: orka-init
+      params:
+        - name: base-image
+          value: base-image.img
+    - name: say-hello
+      taskRef:
+        name: orka-deploy
+      params:
+        - name: copy-build
+          value: "false"
+        - name: verbose
+          value: "true"
+        - name: script
+          value: |
+            echo "Hello from TektonCD test"
+      workspaces:
+        - name: orka
+          workspace: shared-data
+  finally:
+    - name: cleanup
+      taskRef:
+        name: orka-teardown
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: orka-modular-test-run
+spec:
+  serviceAccountName: orka-svc
+  pipelineRef:
+    name: orka-modular-test
+  workspaces:
+    - name: shared-data
+      emptyDir: {}
