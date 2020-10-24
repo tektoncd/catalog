@@ -5,4 +5,4 @@
     items:
       - key: "startup-script"
         path: "startup.sh"
-        mode: 0700
+        mode: 448

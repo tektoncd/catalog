@@ -265,7 +265,7 @@ spec:
         items:
           - key: $(params.ssh-password-key)
             path: $(params.ssh-password-key)
-            mode: 0400
+            mode: 256
   workspaces:
     - name: orka
 ---
