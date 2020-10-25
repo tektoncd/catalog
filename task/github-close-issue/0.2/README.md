@@ -1,3 +1,4 @@
+
 # Close an issue or a pull request
 
 The `github-close-issue` task let you close a pull request or an
@@ -6,14 +7,14 @@ issue.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/github-close-issue/0.1/github-close-issue.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/github-close-issue/0.2/github-close-issue.yaml
 ```
 
 ## Secrets
 
-This tasks would expect to have a secret set in the kubernetes secret `github`
-with a GitHub token in the key `token`, you can easily create it on the
-command line with `kubectl` like this :
+This Task requires access to a GitHub token set via a Kubernetes Secret. By default, the name of this Secret should be `github` and the secret key should be `token`, but you can configure this via the `GITHUB_TOKEN_SECRET_NAME` and `GITHUB_TOKEN_SECRET_KEY` [parameters](#parameters) described below.
+
+To create such a Secret via `kubectl`:
 
 ```
 kubectl create secret generic github --from-literal token="MY_TOKEN"
@@ -21,7 +22,7 @@ kubectl create secret generic github --from-literal token="MY_TOKEN"
 
 Check [this](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) to get personal access token for `Github`.
 
-See GitHub's documentation on [Understanding scopes for OAuth Apps](https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/) to figure out what scopes you need to give to this token to add comment to an issue or a pull request.
+See GitHub's documentation on [Understanding scopes for OAuth Apps](https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/) to figure out what scopes you need to give to this token to close an issue or a pull request.
 
 ## Parameters
 
@@ -29,6 +30,10 @@ See GitHub's documentation on [Understanding scopes for OAuth Apps](https://deve
 * **API_PATH_PREFIX:**: The GitHub Enterprise has a prefix for the API path. _e.g:_ `/api/v3`
 * **REQUEST_URL:**: The GitHub pull request or issue url, (_e.g:_
   `https://github.com/tektoncd/catalog/issues/46`)
+* **GITHUB_TOKEN_SECRET_NAME**: The name of the Kubernetes Secret that
+  contains the GitHub token. (_default:_ `github`).
+* **GITHUB_TOKEN_SECRET_KEY**: The key within the Kubernetes Secret that contains the GitHub token. (_default:_ `token`).
+
 
 ## Usage
 
