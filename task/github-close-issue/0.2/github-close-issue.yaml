@@ -1,0 +1,93 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: github-close-issue
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: github
+    tekton.dev/displayName: "close github issue"
+spec:
+  description: >-
+    This Task will close a pull request or an issue.
+
+  params:
+  - name: GITHUB_HOST_URL
+    description: |
+      The GitHub host, adjust this if you run a GitHub enteprise.
+    default: "api.github.com"
+    type: string
+
+  - name: API_PATH_PREFIX
+    description: |
+      The API path prefix, GitHub Enterprise has a prefix e.g. /api/v3
+    default: ""
+    type: string
+
+  - name: REQUEST_URL
+    description: |
+      The GitHub issue or pull request URL where we want to add a new
+      comment.
+    type: string
+
+  - name: GITHUB_TOKEN_SECRET_NAME
+    description: |
+      The name of the Kubernetes Secret that contains the GitHub token.
+    type: string
+    default: github
+
+  - name: GITHUB_TOKEN_SECRET_KEY
+    description: |
+      The key within the Kubernetes Secret that contains the GitHub token.
+    type: string
+    default: token
+
+  steps:
+    - name: close-issue
+      env:
+        - name: GITHUBTOKEN
+          valueFrom:
+            secretKeyRef:
+              name: $(params.GITHUB_TOKEN_SECRET_NAME)
+              key: $(params.GITHUB_TOKEN_SECRET_KEY)
+
+      image: registry.access.redhat.com/ubi8/ubi:latest
+      script: |
+        #!/usr/libexec/platform-python
+        import json
+        import os
+        import http.client
+        import urllib.parse
+
+        split_url = urllib.parse.urlparse(
+            "$(params.REQUEST_URL)").path.split("/")
+
+        # This will convert https://github.com/foo/bar/pull/202 to
+        # api url path /repos/foo/issues/202
+        api_url = "$(params.API_PATH_PREFIX)" + "/repos/" + "/".join(split_url[1:3]) + \
+                  "/issues/" + split_url[-1]
+
+        # Trying to avoid quotes issue as much as possible by using triple
+        # quotes
+        data = {"state": "closed"}
+
+        print("Sending this data to GitHub on : ")
+        print(data)
+
+        conn = http.client.HTTPSConnection("$(params.GITHUB_HOST_URL)")
+        r = conn.request(
+            "PATCH",
+            api_url,
+            body=json.dumps(data),
+            headers={
+                "User-Agent": "TektonCD, the peaceful cat",
+                "Authorization": "Bearer " + os.environ["GITHUBTOKEN"],
+            })
+        resp = conn.getresponse()
+        if not str(resp.status).startswith("2"):
+            print("Error: %d" % (resp.status))
+            print(resp.read())
+        else:
+          print(f"$(params.REQUEST_URL) has been closed.")
