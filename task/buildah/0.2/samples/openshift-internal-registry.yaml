@@ -1,0 +1,86 @@
+# Your custom CA, on OpenShift to be able to get the internal registry custom
+# certificates you can just import it to your namespace with :
+# oc get configmaps \
+#   -n openshift-controller-manager openshift-service-ca -o yaml | \
+#   sed '/namespace/d'|kubectl apply -f-
+---
+kind: ConfigMap
+metadata:
+  name: openshift-service-ca
+apiVersion: v1
+data:
+  service-ca.crt: |
+    -----BEGIN CERTIFICATE-----
+    MIIDUTCCAjmgAwIBAgIIUaNbmFRnX2gwDQYJKoZIhvcNAQELBQAwNjE0MDIGA1UE
+    Awwrb3BlbnNoaWZ0LXNlcnZpY2Utc2VydmluZy1zaWduZXJAMTYwMzczMDU0MTAe
+    Fw0yMDEwMjYxNjQyMjFaFw0yMjEyMjUxNjQyMjJaMDYxNDAyBgNVBAMMK29wZW5z
+    aGlmdC1zZXJ2aWNlLXNlcnZpbmctc2lnbmVyQDE2MDM3MzA1NDEwggEiMA0GCSqG
+    SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDHNbOTMqKCISgRiq2LW2SPFBUcg9etDLqP
+    A9fwOVJPxRW5FpyRS9k9g28WpCi7jjf/Um5sid+AO4QkZ2bnHcGAtSq75bIHkYsh
+    sNVlfeQlJ1pcxAyxspUr/SFyQ63HmVcH/Xw9MRASE3TmPp/KYRNMT3Yz+sZOzhiz
+    mczxvzpxF26Vz/YzlSfzDDe6B8lT8Dv+s/Hnx/cBKFw53Q0U5VbBpbCuGLMG9VoQ
+    kog79skdY9aNF83wNH9V2DMb9Yzqf3IFFgfBlQQbqc6C2AutWDLzzyHWXs+Oa4E3
+    /ovdskwGP9/TKgF7zgbqAZLKhtch24m/SVY7cuJpzKRJ4gQ7ff21AgMBAAGjYzBh
+    MA4GA1UdDwEB/wQEAwICpDAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBT1jpOw
+    4Tz/bifAgNYCP6JH3J3tyjAfBgNVHSMEGDAWgBT1jpOw4Tz/bifAgNYCP6JH3J3t
+    yjANBgkqhkiG9w0BAQsFAAOCAQEAqYZqX/qMXxOUuiBcd+LawuL8eCYyvcbV6jWW
+    /j3Evko1WznrXyHnTeDLsOUt4gS9VeftqzIBFdWMJ58pmX68/dZxuZJNZq+GOMQn
+    Pxjz7s+xoHPqE6YH+YPMLJfCbHzuqfKH872jN+dilxR4gUCSrCFQMOdkAz5cy5JX
+    Ktor0wWhOTJuioC2RfOuh1PG+7jOTUf/6H5fnxzRN7aAyAd0sA4n3r2jN7ypfRKg
+    jOBL06I4xPicJJAH/K2Uq03Y8dT7xVJY2WAKg/+K4uxRgQlbCKT9oj7An4zyheMP
+    0MFG1w4cfO/2p/IVZMG7QZyIfCywuhFH9L3x9q1C5qrw0RGSsw==
+    -----END CERTIFICATE-----
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: buildah-custom-ca-
+spec:
+  workspaces:
+  - name: shared-workspace
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+  # Make sure the path ends up as ca.crt or buildah would not be able to find
+  # it.
+  - name: sslcertdir
+    configMap:
+      name: openshift-service-ca
+      defaultMode: 420
+      items:
+      - key: service-ca.crt
+        path: ca.crt
+      namespace: openshift-controller-manager
+  pipelineSpec:
+    workspaces:
+    - name: shared-workspace
+    - name: sslcertdir
+      optional: true
+    tasks:
+      - name: fetch-repository
+        taskRef:
+          name: git-clone
+        workspaces:
+        - name: output
+          workspace: shared-workspace
+        params:
+        - name: url
+          value: https://github.com/kelseyhightower/nocode
+      - name: buildah
+        taskRef:
+          name: buildah
+        runAfter:
+        - fetch-repository
+        workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: sslcertdir
+          workspace: sslcertdir
+        params:
+        # This will push to the openshift internal registry
+        - name: IMAGE
+          value: image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/$(context.pipelineRun.name)
