@@ -28,12 +28,17 @@ spec:
       description: The path to the module which should be analysed by pylint
       default: "."
       type: string
+    - name: requirements_file
+      description: The name of the requirements file inside the source location
+      default: "requirements.txt"
   steps:
     - name: pylint
       image: $(params.image)
       workingDir: $(workspaces.source.path)
-      command:
-        - pylint
-      args:
-        - $(params.args)
-        - $(params.path)
+      script: |
+        export HOME=/tmp/python
+        export PATH=$PATH:/tmp/python/.local/bin
+        if [ -n "$(inputs.params.requirements_file)" ] && [ -e "$(inputs.params.requirements_file)" ];then
+            python -mpip install --user -r $(inputs.params.requirements_file)
+        fi
+        pylint $(inputs.params.args) $(inputs.params.path)

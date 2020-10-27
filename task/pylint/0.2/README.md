@@ -17,6 +17,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 
 * **args**: The arguments to be passed to the pylint CLI. This parameter is required to run this task. (_Default_: `[""]`)
 * **path**: The path to the module which should be analysed by pylint. (_Default_: `"."`)
+* **requirements_file**: The path to the requirements file to pip install for your application to be checked. (_Default_: `"requirements.txt"`)
 
 ## Usage
 
