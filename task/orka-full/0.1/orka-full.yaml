@@ -9,7 +9,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.16.0"
 spec:
   description: >-
-    With this set of Tasks, you can use your Orka environment
+    With this Task, you can use your Orka environment
     to run macOS builds and macOS-related testing from your Tekton pipelines.
 
     This Task creates a VM template with the specified configuration,
