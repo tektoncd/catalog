@@ -41,4 +41,4 @@ spec:
         if [ -n "$(inputs.params.requirements_file)" ] && [ -e "$(inputs.params.requirements_file)" ];then
             python -mpip install --user -r $(inputs.params.requirements_file)
         fi
-        pylint $(inputs.params.args) $(inputs.params.path)
+        pylint $(inputs.params.args[*]) $(inputs.params.path)
