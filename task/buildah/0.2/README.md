@@ -34,7 +34,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 ## Workspaces
 
 * **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) containing the source to build.
-* **sslcertdir**: An [*optional* Workspace](https://github.com/tektoncd/pipeline/blob/v0.17.0/docs/workspaces.md#optional-workspaces) containing your custom SSL certificates to connect to the registry. Buildah will look for files ending with *.crt, *.cert, *.key into this workspace. See [this sample](./samples/buildah-custom-ssl.yaml) for a complete example on how to use it with OpenShift internal registry.
+* **sslcertdir**: An [*optional* Workspace](https://github.com/tektoncd/pipeline/blob/v0.17.0/docs/workspaces.md#optional-workspaces) containing your custom SSL certificates to connect to the registry. Buildah will look for files ending with *.crt, *.cert, *.key into this workspace. See [this sample](./samples/openshift-internal-registry.yaml) for a complete example on how to use it with OpenShift internal registry.
 
 ## Usage
 
