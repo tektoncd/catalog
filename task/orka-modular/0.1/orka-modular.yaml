@@ -71,7 +71,7 @@ spec:
     - name: vm-name
   steps:
     - name: init
-      image: macstadium/orka-tekton-runner:2020-10-23-a93757dc-0.1
+      image: docker.io/macstadium/orka-tekton-runner:2020-10-23-a93757dc-0.1@sha256:e8ed3370dcb91cdb8bcd4e9a7e9f6652879d80acdab9644cda69a98cd8c93339
       env:
         - name: ORKA_API
           valueFrom:
@@ -208,7 +208,7 @@ spec:
       default: vm-name
   steps:
     - name: copy-script
-      image: macstadium/orka-tekton-runner:2020-10-23-a93757dc-0.1
+      image: docker.io/macstadium/orka-tekton-runner:2020-10-23-a93757dc-0.1@sha256:e8ed3370dcb91cdb8bcd4e9a7e9f6652879d80acdab9644cda69a98cd8c93339
       script: |
         #!/bin/sh
         SCRIPT=$(mktemp)
@@ -218,7 +218,7 @@ spec:
         EOF
         copy-script $SCRIPT
     - name: build
-      image: macstadium/orka-tekton-runner:2020-10-23-a93757dc-0.1
+      image: docker.io/macstadium/orka-tekton-runner:2020-10-23-a93757dc-0.1@sha256:e8ed3370dcb91cdb8bcd4e9a7e9f6652879d80acdab9644cda69a98cd8c93339
       env:
         - name: ORKA_API
           valueFrom:
@@ -307,7 +307,7 @@ spec:
       default: vm-name
   steps:
     - name: teardown
-      image: macstadium/orka-tekton-runner:2020-10-23-a93757dc-0.1
+      image: docker.io/macstadium/orka-tekton-runner:2020-10-23-a93757dc-0.1@sha256:e8ed3370dcb91cdb8bcd4e9a7e9f6652879d80acdab9644cda69a98cd8c93339
       env:
         - name: ORKA_API
           valueFrom:
