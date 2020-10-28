@@ -1,7 +1,10 @@
 #!/bin/bash
 
+set -e
+
 : ${NAMESPACE:="default"}
 
+BASE_URL="https://raw.githubusercontent.com/tektoncd/catalog/master/task/orka-modular/0.1"
 USAGE=$(cat <<EOF
 Usage:
   NAMESPACE=<namespace> EMAIL=<email> PASSWORD=<password> ./add-orka-creds.sh [-a|-d|--apply|--delete]
@@ -21,7 +24,7 @@ if [ -n "$1" ]; then
     ACTION="apply"
   elif [[ "$1" == "-d" || "$1" = "--delete" ]]; then
     ACTION="delete"
-    kubectl $ACTION --namespace=$NAMESPACE -f resources/orka-creds.yaml.tmpl
+    kubectl $ACTION --namespace=$NAMESPACE -f ${BASE_URL}/resources/orka-creds.yaml.tmpl
     exit 0
   elif [[ "$1" == "--help" ]]; then
     echo "$USAGE"
@@ -41,8 +44,12 @@ if [[ ! $EMAIL || ! $PASSWORD ]]; then
   exit 1
 fi
 
+YAML_TEMPLATE=$(mktemp)
+trap "rm -f $YAML_TEMPLATE" EXIT
+
+curl --fail --location ${BASE_URL}/resources/orka-creds.yaml.tmpl --output $YAML_TEMPLATE
 sed -e 's|$(email)|'"$EMAIL"'|' \
-  -e 's|$(password)|'"$PASSWORD"'|' resources/orka-creds.yaml.tmpl \
-  > resources/orka-creds.yaml
-kubectl $ACTION --namespace=$NAMESPACE -f resources/orka-creds.yaml
-rm -f resources/orka-creds.yaml
+  -e 's|$(password)|'"$PASSWORD"'|' $YAML_TEMPLATE \
+  > ${YAML_TEMPLATE}.new
+mv ${YAML_TEMPLATE}.new $YAML_TEMPLATE
+kubectl $ACTION --namespace=$NAMESPACE -f $YAML_TEMPLATE

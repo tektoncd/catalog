@@ -1,7 +1,10 @@
 #!/bin/bash
 
+set -e
+
 : ${NAMESPACE:="default"}
 
+BASE_URL="https://raw.githubusercontent.com/tektoncd/catalog/master/task/orka-modular/0.1"
 USAGE=$(cat <<EOF
 Usage:
   NAMESPACE=<namespace> ./add-service-account.sh [-a|-d|--apply|--delete]
@@ -31,7 +34,11 @@ else
   ACTION="apply"
 fi
 
-sed -e 's|$(namespace)|'"$NAMESPACE"'|' resources/orka-runner.yaml.tmpl \
-  > resources/orka-runner.yaml
-kubectl $ACTION -f resources/orka-runner.yaml
-rm -f resources/orka-runner.yaml
+YAML_TEMPLATE=$(mktemp)
+trap "rm -f $YAML_TEMPLATE" EXIT
+
+curl --fail --location ${BASE_URL}/resources/orka-runner.yaml.tmpl --output $YAML_TEMPLATE
+sed -e 's|$(namespace)|'"$NAMESPACE"'|' $YAML_TEMPLATE \
+  > ${YAML_TEMPLATE}.new
+mv ${YAML_TEMPLATE}.new $YAML_TEMPLATE
+kubectl $ACTION --namespace=$NAMESPACE -f $YAML_TEMPLATE

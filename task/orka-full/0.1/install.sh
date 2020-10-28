@@ -1,8 +1,11 @@
 #!/bin/bash
 
+set -e
+
 : ${NAMESPACE:="default"}
 : ${ORKA_API:="http://10.221.188.100"}
 
+BASE_URL="https://raw.githubusercontent.com/tektoncd/catalog/master/task/orka-full/0.1"
 USAGE=$(cat <<EOF
 Usage:
   NAMESPACE=<namespace> ORKA_API=<url> ./install.sh [-a|-d|--apply|--delete]
@@ -21,6 +24,11 @@ if [ -n "$1" ]; then
     ACTION="apply"
   elif [[ "$1" == "-d" || "$1" = "--delete" ]]; then
     ACTION="delete"
+    kubectl $ACTION --namespace=$NAMESPACE \
+      -f ${BASE_URL}/resources/orka-tekton-config.yaml.tmpl \
+      --ignore-not-found
+    kubectl $ACTION --namespace=$NAMESPACE -f ${BASE_URL}/orka-full.yaml
+    exit 0
   elif [[ "$1" == "--help" ]]; then
     echo "$USAGE"
     exit 0
@@ -34,10 +42,14 @@ else
 fi
 
 # Install config map
-sed -e 's|$(url)|'"$ORKA_API"'|' resources/orka-tekton-config.yaml.tmpl \
-  > resources/orka-tekton-config.yaml
-kubectl $ACTION --namespace=$NAMESPACE -f resources/orka-tekton-config.yaml
-rm -f resources/orka-tekton-config.yaml
+YAML_TEMPLATE=$(mktemp)
+trap "rm -f $YAML_TEMPLATE" EXIT
+
+curl --fail --location ${BASE_URL}/resources/orka-tekton-config.yaml.tmpl --output $YAML_TEMPLATE
+sed -e 's|$(url)|'"$ORKA_API"'|' $YAML_TEMPLATE \
+  > ${YAML_TEMPLATE}.new
+mv ${YAML_TEMPLATE}.new $YAML_TEMPLATE
+kubectl $ACTION --namespace=$NAMESPACE -f $YAML_TEMPLATE
 
 # Install tasks
-kubectl $ACTION --namespace=$NAMESPACE -f orka-full.yaml
+kubectl $ACTION --namespace=$NAMESPACE -f ${BASE_URL}/orka-full.yaml
