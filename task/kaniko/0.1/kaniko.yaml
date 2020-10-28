@@ -26,7 +26,7 @@ spec:
     description: The build context used by Kaniko.
     default: ./
   - name: EXTRA_ARGS
-    default: ""
+    type: array
   - name: BUILDER_IMAGE
     description: The image on which builds will run
     default: gcr.io/kaniko-project/executor@sha256:e36c9fa99279217c4bb8ee172819b441c3ca8ef946dc0e28b21721eefb2ba70a
@@ -47,7 +47,7 @@ spec:
       value: /tekton/home/.docker
     command:
     - /kaniko/executor
-    - $(params.EXTRA_ARGS)
+    - $(params.EXTRA_ARGS[*])
     - --dockerfile=$(params.DOCKERFILE)
     - --context=$(workspaces.source.path)/$(params.CONTEXT)  # The user does not need to care the workspace and the source.
     - --destination=$(params.IMAGE)
