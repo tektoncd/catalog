@@ -19,7 +19,6 @@ set -x
 export RELEASE_YAML=https://github.com/tektoncd/pipeline/releases/download/v0.17.1/release.yaml
 
 source $(dirname $0)/../vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
-source $(dirname $0)/../vendor/github.com/tektoncd/plumbing/scripts/presubmit-tests.sh
 source $(dirname $0)/e2e-common.sh
 
 TMPF=$(mktemp /tmp/.mm.XXXXXX)
@@ -57,13 +56,12 @@ set -o pipefail
 
 all_tests=$(echo task/*/*/tests)
 
-if [[ -z ${TEST_RUN_ALL_TESTS} ]];then
-    # Defining WORK_DIR so we can get list_changed_files function working
-    # properly.
-    WORK_DIR="$(mktemp -d)"
-    export WORK_DIR
+function detect_new_tasks() {
+    git --no-pager diff --name-only "${PULL_BASE_SHA}".."${PULL_SHA}"|grep 'task/[^\/]*/[^\/]*/tests/[^/]*.yaml'|xargs dirname|sort -u
+}
 
-    all_tests=$({ grep '/tests/[^/]*yaml' "$(list_changed_files)" || true; } | sed 's/\(.*\)\/.*/\1/')
+if [[ -z ${TEST_RUN_ALL_TESTS} ]];then
+    all_tests=$(detect_new_tasks || true)
     [[ -z ${all_tests} ]] && {
         echo "No tests has been detected in this PR. exiting."
         success
