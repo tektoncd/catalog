@@ -113,7 +113,7 @@ function show_failure() {
 }
 function test_task_creation() {
     local runtest
-    for runtest in "${@}";do
+    for runtest in $@;do
         # remove task/ from beginning
         local runtestdir=${runtest#*/}
         # remove /0.1/tests from end
