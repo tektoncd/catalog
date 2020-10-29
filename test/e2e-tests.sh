@@ -63,7 +63,7 @@ if [[ -z ${TEST_RUN_ALL_TESTS} ]];then
     WORK_DIR="$(mktemp -d)"
     export WORK_DIR
 
-    all_tests=$({ grep '/tests/[^/]*yaml' "$(list_changed_files)" || true; } | sed 's/\(.*\)\/.*/\1/')
+    all_tests=$({ echo "$(list_changed_files)"|grep '/tests/[^/]*yaml' |xargs dirname|sort -u || true; })
     [[ -z ${all_tests} ]] && {
         echo "No tests has been detected in this PR. exiting."
         success
