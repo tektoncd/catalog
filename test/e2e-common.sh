@@ -36,7 +36,7 @@ function add_task() {
     local array path_version task
     task=${1}
     if [[ "${2}" == "latest" ]];then
-        array=($(echo task/${task}/*|sort -u))
+        array=($(echo task/${task}/*/|sort -u))
         path_version=${array[-1]}
 	else
 		path_version=task/${task}/${2}
