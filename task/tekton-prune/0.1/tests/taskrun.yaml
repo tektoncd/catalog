@@ -1,0 +1,19 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: tekton-prune-test-run
+spec:
+  params:
+    - name: max_number
+      value: "1"
+    - name: no_execute
+      value: "true"
+    - name: object
+      value: "taskrun"
+    - name: labels
+      value: "testme=please"
+  serviceAccountName: tekton-object-role-sa
+  taskRef:
+    kind: Task
+    name: tekton-prune

@@ -1,0 +1,187 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: tekton-prune
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: tekton, misc
+    tekton.dev/displayName: "tekton prune"
+spec:
+  description: >-
+    This task help you cleanup old tekton objects.
+    .
+    This usually used to cleanup the Tekton *Runs objects but it can be used for
+    any other kubernetes objects.
+  params:
+    - name: object
+      type: string
+      description: The type of the tekton object to clean
+      default: ""
+    - name: max_days
+      type: string
+      description: Maximum number of days to keep.
+      default: ""
+    - name: max_numbers
+      type: string
+      description: Maximum number of object to keep.
+      default: ""
+    - name: labels
+      description: Labels to filter the tekton objects separated by a comma.
+      default: ""
+    - name: no_execute
+      type: string
+      description: Wether to execute the actual deletion, (yes or no)
+      default: "no"
+    - name: namespace
+      type: string
+      description: The target namespace
+      default: ""
+  steps:
+    - name: tekton-object-cleanups
+      image: docker.io/alpine/k8s:1.18.2@sha256:aea8eec2057c752b5d956041f160c8ff18c191576d881fb757743a80bfa48fab
+      script: |
+        #!/usr/bin/env python3
+        import argparse
+        import datetime
+        import json
+        import subprocess
+        import sys
+
+
+        def execute(command):
+            """Execute commmand"""
+            result = ""
+            try:
+                result = subprocess.run(["/bin/sh", "-c", command],
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.STDOUT,
+                                        check=True)
+            except subprocess.CalledProcessError as exception:
+                print(
+                    f"Status code: {exception.returncode}: Output: \n{exception.output}"
+                )
+                raise exception
+            return result
+
+
+        def parse_args(args):
+            parser = argparse.ArgumentParser(description='Tekton object cleaners', )
+
+            parser.add_argument(
+                "--labels",
+                type=str,
+                help=
+                "Labels to filter objects with, multiple labels can be separated by comma."
+            )
+
+            parser.add_argument(
+                "--no-execute",
+                type=str,
+                choices=["yes", "true", "false", "no"],
+                help=
+                "Do not delete just print the kubectl command line (to check what will be deleted)."
+            )
+
+            parser.add_argument("--object",
+                                required=True,
+                                type=str,
+                                help="The type of the tekton object to clean.")
+
+            parser.add_argument("--namespace", type=str, help="The target namespace.")
+
+            parser.add_argument(
+                "--max_days",
+                type=str,
+                help="Maximum number of days to keep before deleting the older ones.")
+
+            parser.add_argument("--max_number",
+                                type=str,
+                                help="Maximum number of objects to keep.")
+
+            if len(args) == 0:
+                parser.print_help()
+                sys.exit(1)
+
+            args = parser.parse_args(args)
+
+            if args.max_days and args.max_number:
+                sys.stderr.write(
+                    "--max_number and --max_days are exclusive and cannot be specified at the same time."
+                )
+                sys.exit(1)
+
+            if not args.max_days and not args.max_number:
+                sys.stderr.write(
+                    "neither --max_number or --max_days has been specified.")
+                sys.exit(1)
+
+            if args.max_days and not args.max_days.isdigit():
+                sys.stderr.write(f"{args.max_days} should be a number")
+                sys.exit(1)
+            elif args.max_number and not args.max_number.isdigit():
+                sys.stderr.write(f"{args.max_number} should be a number.")
+                sys.exit(1)
+
+            if args.labels:
+                for label in args.labels.split(","):
+                    if "=" not in label:
+                        sys.stderr.write(
+                            f"label '{label}' does not have an assignment it should be `label=value`"
+                        )
+                        sys.exit(1)
+
+            return args
+
+
+        def main():
+            args = parse_args(sys.argv[1:])
+            labels = [f"-l {k}" for k in args.labels.split(",")] if args.labels else []
+            namespace_str = f"-n {args.namespace}" if args.namespace else ""
+
+            cmdline = f"kubectl {namespace_str} get {args.object} {' '.join(labels)} -o json"
+            output = json.loads(execute(cmdline).stdout.decode())
+
+            def parse_ts(timest):
+                return datetime.datetime.strptime(timest, '%Y-%m-%dT%H:%M:%SZ')
+
+            if args.max_days:
+                results = [
+                    i['metadata']['name'] for i in output['items']
+                    if datetime.datetime.now() >
+                    parse_ts(i['metadata']['creationTimestamp']) +
+                    datetime.timedelta(days=int(args.max_days))
+                ]
+                print(
+                    f"Deleting {len(results)} {args.object} older than {args.max_days} days"
+                )
+            elif args.max_number:
+                allp = {
+                    i['metadata']['name']: parse_ts(i['metadata']['creationTimestamp'])
+                    for i in output['items']
+                }
+                results = sorted(allp, key=allp.get,
+                                 reverse=True)[int(args.max_number):]
+                print(
+                    f"Keeping the {args.max_number} newest {args.object} and deleting the {len(results)} others: {','.join(results)}"
+                )
+            else:
+                raise Exception("This should not happen?")
+
+            cmdline = f'kubectl {namespace_str} delete {args.object} {" ".join(results)}'
+            if args.no_execute and args.no_execute.lower() in ("yes", "true"):
+                print(cmdline)
+            else:
+                execute(cmdline)
+
+
+        if __name__ == '__main__':
+            main()
+      args:
+        - --labels=$(params.labels)
+        - --max_days=$(params.max_days)
+        - --max_number=$(params.max_number)
+        - --object=$(params.object)
+        - --no-execute=$(params.no_execute)
+        - --namespace=$(params.namespace)
