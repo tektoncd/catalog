@@ -39,6 +39,7 @@ as well as
 * **httpsProxy**: git HTTPS proxy server for SSL requests (_default_: "")
 * **noProxy**: git no proxy - opt out of proxying HTTP/HTTPS requests (_default_: "")
 * **verbose**: log the commands that are executed during `git-clone`'s operation (_default_: true)
+* **gitInitImage**: the image used where the git-init binary is (_default_: "gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.17.3")
 
 ### Results
 
