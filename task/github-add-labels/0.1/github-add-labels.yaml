@@ -10,11 +10,11 @@ metadata:
     tekton.dev/displayName: "add github label"
 spec:
   description: >-
-    This Task will add a label to an issue in Gitlab.
+    This Task will add a label to an issue in Github.
 
-    A collection of tasks to help working with the GitLab API.
+    A collection of tasks to help working with the Github API.
     Most tasks would expect to have a secret set in the kubernetes
-    secret `gitlab`with a GitLab token in the key `token`.
+    secret `github` with a Github token in the key `token`.
 
   params:
   - name: GITHUB_HOST_URL
