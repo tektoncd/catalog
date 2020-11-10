@@ -126,7 +126,7 @@ We have some helper functions you can use from your `hook` scripts :
 What can you run from those scripts is whatever defined in the test-runner
 image, if you need to have another binary available feel free to make a PR to this Dockerfile :
 
-https://github.com/tektoncd/plumbing/blob/master/prow/images/test-runner/Dockerfile
+https://github.com/tektoncd/plumbing/blob/master/tekton/images/test-runner/Dockerfile
 
 An helper script called [run-test.sh](test/run-test.sh) is provider in the
 [test](./test) directory to help the developer running the test locally. Just
