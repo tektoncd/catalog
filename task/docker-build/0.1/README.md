@@ -41,7 +41,7 @@ spec:
   - name: image
     value: localhost:5000/nocode
   taskRef:
-    name: docker
+    name: docker-build
   workspaces:
   - name: source
     persistentVolumeClaim:
