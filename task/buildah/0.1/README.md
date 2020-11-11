@@ -40,7 +40,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 This TaskRun runs the Task to fetch a Git repo, and build and push a container
 image using Buildah.
 
-```
+```yaml
 apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:

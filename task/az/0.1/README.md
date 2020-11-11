@@ -5,7 +5,7 @@ This task performs operations on Microsoft Azure resources using `az`.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/azure-cli/azure_cli.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/az/0.1/az.yaml
 ```
 
 ## Parameters

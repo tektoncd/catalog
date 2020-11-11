@@ -62,7 +62,7 @@ See [here](../0.1/samples/run.yaml) for example of `aws s3` command.
 
 - To support multiple `aws` commands to run on a single task, SCRIPT can be used as follows:
 
-  ```
+  ```yaml
   - name: SCRIPT
     value: |
       aws s3 mb s3://test-bucket
@@ -79,7 +79,7 @@ See [here](../0.1/samples/run.yaml) for example of `aws s3` command.
     ```
     otherwise, if `Volume(e.g. ConfigMap) is needed:
 
-    ```
+    ```yaml
     workspaces:
       - name: source
         configmap:
