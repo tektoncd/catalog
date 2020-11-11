@@ -10,7 +10,7 @@ metadata:
     tekton.dev/displayName: "golangci lint"
 spec:
   description: >-
-    This Task is Golang task to validate Go proje
+    This Task is Golang task to validate Go projects.
 
   params:
   - name: package

@@ -17,7 +17,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 
 ## Parameters
 
-- **Region**: Region for AWS, ensure that you specify the same 
+- **region**: Region for AWS, ensure that you specify the same 
     Region that your Amazon ECR registry exists in.
 
 ## Workspaces
