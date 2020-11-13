@@ -1,0 +1,36 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: scorecard
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: scorecard
+    tekton.dev/displayName: OSSF scorecard
+
+spec:
+  description: >-
+    This task can be used to calculate the scorecard results for a repository
+
+  params:
+    - name: REPO
+      description: The repository URL to inspect
+      type: string
+    - name: GITHUB-OAUTH_SECRET
+      description: The GitHub secret with credentials
+      type: string
+      default: "github"
+  steps:
+    - name: scorecard
+      image: gcr.io/openssf/scorecard@sha256:c16e433f68799fe69dc0f9675c7ba5d2553846b57262550c86c71165269a7961 # tag v1
+      script: |
+        /go/src/github.com/ossf/scorecard/scorecard --repo=$(inputs.params.REPO)
+
+      env:
+        - name: GITHUB_AUTH_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: $(params.GITHUB-OAUTH_SECRET)
+              key: token
