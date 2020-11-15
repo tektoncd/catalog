@@ -57,7 +57,7 @@ set -o pipefail
 all_tests=$(echo task/*/*/tests)
 
 function detect_new_tasks() {
-    git --no-pager diff --name-only "${PULL_BASE_SHA}".."${PULL_SHA}"|grep 'task/[^\/]*/[^\/]*/tests/[^/]*.yaml'|xargs dirname|sort -u
+    git --no-pager diff --name-only "${PULL_BASE_SHA}".."${PULL_PULL_SHA}"|grep 'task/[^\/]*/[^\/]*/tests/[^/]*.yaml'|xargs -I {} dirname {}|sort -u
 }
 
 if [[ -z ${TEST_RUN_ALL_TESTS} ]];then
