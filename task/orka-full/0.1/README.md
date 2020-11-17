@@ -40,7 +40,7 @@ data:
 
 ```sh
 kubectl apply --namespace=<namespace> -f orka-configuration.yaml
-kubectl apply --namespace=<namespace> -f https://raw.githubusercontent.com/tektoncd/catalog/orka-0.1/task/orka-full/0.1/orka-full.yaml
+kubectl apply --namespace=<namespace> -f https://raw.githubusercontent.com/tektoncd/catalog/task/orka-full/0.1/orka-full.yaml
 ```
 
 Omit `--namespace` if installing in the `default` namespace.
