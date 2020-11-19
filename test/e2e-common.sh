@@ -134,7 +134,13 @@ function test_task_creation() {
 
         # remove /tests from end
         local taskdir=${runtest%/*}
+
+        # check whether test folder exists or not inside task dir
+        # if not then run the tests for next task (if any)
+        [ ! -d $runtest ] && skipit=True
+
         ls ${taskdir}/*.yaml 2>/dev/null >/dev/null || skipit=True
+
         cat ${taskdir}/*.yaml | grep 'tekton.dev/deprecated: \"true\"' && skipit=True
 
         [[ -n ${skipit} ]] && continue

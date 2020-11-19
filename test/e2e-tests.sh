@@ -56,12 +56,15 @@ set -o pipefail
 
 all_tests=$(echo task/*/*/tests)
 
-function detect_new_tasks() {
-    git --no-pager diff --name-only "${PULL_BASE_SHA}".."${PULL_PULL_SHA}"|grep 'task/[^\/]*/[^\/]*/tests/[^/]*.yaml'|xargs -I {} dirname {}|sort -u
+function detect_new_changed_tasks() {
+    # detect for changes in tests dir of the task
+    git --no-pager diff --name-only "${PULL_BASE_SHA}".."${PULL_PULL_SHA}"|grep 'task/[^\/]*/[^\/]*/tests/[^/]*.yaml'|xargs -I {} dirname {}
+    # detect for changes in the task manifest
+    git --no-pager diff --name-only "${PULL_BASE_SHA}".."${PULL_PULL_SHA}"|grep 'task/[^\/]*/[^\/]*/*[^/]*.yaml'|xargs -I {} dirname {}|awk '{print $1"/tests"}'
 }
 
 if [[ -z ${TEST_RUN_ALL_TESTS} ]];then
-    all_tests=$(detect_new_tasks || true)
+    all_tests=$(detect_new_changed_tasks|sort -u || true)
     [[ -z ${all_tests} ]] && {
         echo "No tests has been detected in this PR. exiting."
         success
