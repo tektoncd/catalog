@@ -106,6 +106,9 @@ spec:
           mountPath: /cache
         - name: $(params.PLATFORM_DIR)
           mountPath: /platform
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
 
   volumes:
     - name: empty-dir

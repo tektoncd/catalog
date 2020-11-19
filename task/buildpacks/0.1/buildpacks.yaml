@@ -8,6 +8,7 @@ metadata:
   annotations:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: image-build
+    tekton.dev/deprecated: "true"
     tekton.dev/displayName: "buildpacks"
 spec:
   description: >-
