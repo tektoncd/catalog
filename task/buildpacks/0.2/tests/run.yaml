@@ -35,7 +35,7 @@ spec:
     - name: SOURCE_SUBPATH
       value: apps/java-maven
     - name: BUILDER_IMAGE
-      value: cnbs/sample-builder:alpine
+      value: cnbs/sample-builder:alpine@sha256:329dd975bed06758c891d29014b98a3baaf381afb36d7375c3140bfbbb94fb08
     - name: CACHE
       value: buildpacks-cache
     resources:
