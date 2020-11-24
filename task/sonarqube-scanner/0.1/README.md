@@ -39,6 +39,11 @@ https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/git/git-clone.yaml
   ```
   kubectl create configmap sonar-properties --from-file="sonar-project.properties"
   ```
+  
+  To create secret for sonar login
+  ```bash
+  kubectl create secret generic sonar-login --from-literal='token=$TOKEN'
+  ```
 
 ## Running SonarQube Server locally using Docker
 
@@ -97,6 +102,10 @@ spec:
           value: http://172.17.0.2:9000
         - name: SONAR_PROJECT_KEY
           value: testapp
+        - name: SONAR_LOGIN_SECRET_NAME
+          value: sonar-login
+        - name: SONAR_LOGIN_SECRET_KEY
+          value: token
       workspaces:
         - name: source-dir
           workspace: shared-workspace
