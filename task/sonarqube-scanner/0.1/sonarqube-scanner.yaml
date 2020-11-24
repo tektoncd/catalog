@@ -33,6 +33,7 @@ spec:
       default: ""
     - name: SONAR_LOGIN_SECRET_KEY
       description: Sonar login secret key
+      default: ""
   steps:
     - name: sonar-properties-create
       env:
@@ -74,14 +75,14 @@ spec:
             replaceValues $(workspaces.source-dir.path)/sonar-project.properties sonar.projectKey $(params.SONAR_PROJECT_KEY)
           fi
           if [[ -n "$SONAR_LOGIN" ]]; then
-            replaceValues $(workspaces.source-dir.path)/sonar-project.properties sonar.login $(params.SONAR_LOGIN)
+            replaceValues $(workspaces.source-dir.path)/sonar-project.properties sonar.login $SONAR_LOGIN
           fi
         else
           touch sonar-project.properties
           echo "sonar.projectKey=$(params.SONAR_PROJECT_KEY)" >> sonar-project.properties
           echo "sonar.host.url=$(params.SONAR_HOST_URL)" >> sonar-project.properties
-          if [[ -n "$(params.SONAR_PROJECT_KEY)" ]]; then
-            echo "sonar.login=$(params.SONAR_LOGIN)" >> sonar-project.properties
+          if [[ -n "$SONAR_LOGIN" ]]; then
+            echo "sonar.login=$SONAR_LOGIN" >> sonar-project.properties
           fi
           echo "sonar.sources=." >> sonar-project.properties
         fi
