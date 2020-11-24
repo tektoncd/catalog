@@ -73,7 +73,7 @@ spec:
           if [[ -n "$(params.SONAR_PROJECT_KEY)" ]]; then
             replaceValues $(workspaces.source-dir.path)/sonar-project.properties sonar.projectKey $(params.SONAR_PROJECT_KEY)
           fi
-          if [[ -n "$(params.SONAR_LOGIN)" ]]; then
+          if [[ -n "$SONAR_LOGIN" ]]; then
             replaceValues $(workspaces.source-dir.path)/sonar-project.properties sonar.login $(params.SONAR_LOGIN)
           fi
         else
