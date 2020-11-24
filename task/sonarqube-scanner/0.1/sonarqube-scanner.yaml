@@ -40,7 +40,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: $(params.SONAR_LOGIN_SECRET_NAME)
-              value: $(params.SONAR_LOGIN_SECRET_KEY)
+              key: $(params.SONAR_LOGIN_SECRET_KEY)
       image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
       workingDir: $(workspaces.source-dir.path)
       script: |
