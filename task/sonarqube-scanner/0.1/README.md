@@ -24,7 +24,8 @@ https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/git/git-clone.yaml
 
 - **SONAR_HOST_URL**: Host URL where the sonarqube server is running
 - **SONAR_PROJECT_KEY**: Project's unique key
-- **SONAR_LOGIN**: Login token
+- **SONAR_LOGIN_SECRET_NAME**: Secret name where the login token stored
+- **SONAR_LOGIN_SECRET_KEY**: Secret key
 
 > _Note_ : Parameters are provided in that case when we want to override the corresponding values in `sonar-project.properties` or there is no `sonar-project.properties` present for the project which needs to be analyzed
 

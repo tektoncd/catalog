@@ -28,11 +28,19 @@ spec:
     - name: SONAR_PROJECT_KEY
       description: Project's unique key
       default: ""
-    - name: SONAR_LOGIN
-      description: Login token
+    - name: SONAR_LOGIN_SECRET_NAME
+      description: Sonar login secret name
       default: ""
+    - name: SONAR_LOGIN_SECRET_KEY
+      description: Sonar login secret key
   steps:
     - name: sonar-properties-create
+      env:
+        - name: SONAR_LOGIN
+          valueFrom:
+            secretKeyRef:
+              name: $(params.SONAR_LOGIN_SECRET_NAME)
+              value: $(params.SONAR_LOGIN_SECRET_KEY)
       image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
       workingDir: $(workspaces.source-dir.path)
       script: |
