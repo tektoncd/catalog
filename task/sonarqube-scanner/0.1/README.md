@@ -66,7 +66,7 @@ Sample IPAddress we will obtain using above command is like http://172.17.0.2:90
 
 2. In case when no `sonar-project.properties` file is present then above two parameters are mandatory to create a `sonar-project.properties` file with the required fields or the file can be mounted via the `ConfigMap`.
 
-```
+```yaml
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
@@ -107,8 +107,6 @@ spec:
           workspace: sonar-settings
         - name: sonar-secret
           workspace: sonar-secret
-          secret:
-            secretName: sonar-login
 ---
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
@@ -123,4 +121,7 @@ spec:
         claimName: sonar-source-pvc
     - name: sonar-settings
       emptyDir: {}
+    - name: sonar-secret
+      secret:
+        secretName: sonar-login
 ```
