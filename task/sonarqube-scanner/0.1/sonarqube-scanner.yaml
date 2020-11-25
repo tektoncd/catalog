@@ -37,7 +37,7 @@ spec:
         #!/usr/bin/env bash
 
         if [ ! -f $(workspaces.sonar-secret.path)/token ]; then
-          export SONAR_LOGIN=$(workspaces.sonar.sonar-secret)
+          export SONAR_LOGIN=$(cat $(workspaces.sonar-secret.path)/token)
         fi
 
         replaceValues() {
