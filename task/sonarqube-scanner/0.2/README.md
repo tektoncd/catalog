@@ -9,7 +9,7 @@ For creating your own `sonar-project.properties` please follow the guide [here](
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/sonarqube-scanner/0.1/sonarqube-scanner.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/sonarqube-scanner/0.2/sonarqube-scanner.yaml
 ```
 
 ## Pre-requisite
@@ -141,9 +141,9 @@ spec:
         name: sonarqube-scanner
       params:
         - name: SONAR_HOST_URL
-          value: https://SONAR_HOST
+          value: http://172.17.0.2:9000
         - name: SONAR_PROJECT_KEY
-          value: PROJECT_KEY
+          value: testapp
       workspaces:
         # Other workspaces...
         - name: sonar-ca-certs
