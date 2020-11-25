@@ -3,7 +3,7 @@ kind: Task
 metadata:
   name: sonarqube-scanner
   labels:
-    app.kubernetes.io/version: "0.1"
+    app.kubernetes.io/version: "0.2"
   annotations:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: security
@@ -21,6 +21,11 @@ spec:
   workspaces:
     - name: source-dir
     - name: sonar-settings
+      optional: true
+    - name: sonar-secret
+      optional: true
+    - name: sonar-ca-certs
+      optional: true
   params:
     - name: SONAR_HOST_URL
       description: Host URL where the sonarqube server is running
@@ -34,6 +39,10 @@ spec:
       workingDir: $(workspaces.source-dir.path)
       script: |
         #!/usr/bin/env bash
+
+        if [[ "$(workspaces.sonar-secret.bound)" == "true" ]]; then
+          export SONAR_LOGIN=$(cat $(workspaces.sonar-secret.path)/token)
+        fi
 
         replaceValues() {
           filename=$1
@@ -62,10 +71,16 @@ spec:
           if [[ -n "$(params.SONAR_PROJECT_KEY)" ]]; then
             replaceValues $(workspaces.source-dir.path)/sonar-project.properties sonar.projectKey $(params.SONAR_PROJECT_KEY)
           fi
+          if [[ -n "$SONAR_LOGIN" ]]; then
+            replaceValues $(workspaces.source-dir.path)/sonar-project.properties sonar.login $SONAR_LOGIN
+          fi
         else
           touch sonar-project.properties
           echo "sonar.projectKey=$(params.SONAR_PROJECT_KEY)" >> sonar-project.properties
           echo "sonar.host.url=$(params.SONAR_HOST_URL)" >> sonar-project.properties
+          if [[ -n "$SONAR_LOGIN" ]]; then
+            echo "sonar.login=$SONAR_LOGIN" >> sonar-project.properties
+          fi
           echo "sonar.sources=." >> sonar-project.properties
         fi
 
@@ -75,5 +90,9 @@ spec:
     - name: sonar-scan
       image: docker.io/sonarsource/sonar-scanner-cli:4.5@sha256:b8c95a37025f3c13162118cd55761ea0b2a13d1837f9deec51b7b6d82c52040a #tag: 4.5
       workingDir: $(workspaces.source-dir.path)
-      command:
-        - sonar-scanner
+      script: |
+        #!/usr/bin/env bash
+        if [[ "$(workspaces.sonar-ca-certs.bound)" == "true" ]]; then
+          keytool -keystore cacerts -storepass changeit -noprompt -trustcacerts -importcert -alias cert -file $(workspaces.sonar-ca-certs.path)/cert.cer
+        fi
+        sonar-scanner

@@ -1,0 +1,51 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: sonarqube-pipeline
+spec:
+  workspaces:
+    - name: shared-workspace
+    - name: sonar-settings
+    - name: sonar-secret
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: https://github.com/vinamra28/sonartest
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+    - name: code-analysis
+      taskRef:
+        name: sonarqube-scanner
+      runAfter:
+        - fetch-repository
+      params:
+        - name: SONAR_HOST_URL
+          value: https://sonar.citadel
+      workspaces:
+        - name: source-dir
+          workspace: shared-workspace
+        - name: sonar-settings
+          workspace: sonar-settings
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: sonarqube-run
+spec:
+  pipelineRef:
+    name: sonarqube-pipeline
+  workspaces:
+    - name: shared-workspace
+      persistentvolumeclaim:
+        claimName: sonar-source-pvc
+    - name: sonar-settings
+      emptyDir: {}
