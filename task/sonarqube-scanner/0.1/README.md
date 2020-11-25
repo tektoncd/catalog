@@ -101,8 +101,6 @@ spec:
           workspace: shared-workspace
         - name: sonar-settings
           workspace: sonar-settings
-        - name: sonar-secret
-          workspace: sonar-secret
 ---
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
@@ -117,7 +115,4 @@ spec:
         claimName: sonar-source-pvc
     - name: sonar-settings
       emptyDir: {}
-    - name: sonar-secret
-      secret:
-        secretName: sonar-login
 ```
