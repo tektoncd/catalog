@@ -24,8 +24,6 @@ https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/git/git-clone.yaml
 
 - **SONAR_HOST_URL**: Host URL where the sonarqube server is running
 - **SONAR_PROJECT_KEY**: Project's unique key
-- **SONAR_LOGIN_SECRET_NAME**: Secret name where the login token stored
-- **SONAR_LOGIN_SECRET_KEY**: Secret key
 
 > _Note_ : Parameters are provided in that case when we want to override the corresponding values in `sonar-project.properties` or there is no `sonar-project.properties` present for the project which needs to be analyzed
 
@@ -42,7 +40,7 @@ https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/git/git-clone.yaml
   
   To create secret for sonar login
   ```bash
-  kubectl create secret generic sonar-login --from-literal='token=$TOKEN'
+  kubectl create secret generic sonar-login --from-file='token'
   ```
 
 ## Running SonarQube Server locally using Docker
@@ -102,15 +100,15 @@ spec:
           value: http://172.17.0.2:9000
         - name: SONAR_PROJECT_KEY
           value: testapp
-        - name: SONAR_LOGIN_SECRET_NAME
-          value: sonar-login
-        - name: SONAR_LOGIN_SECRET_KEY
-          value: token
       workspaces:
         - name: source-dir
           workspace: shared-workspace
         - name: sonar-settings
           workspace: sonar-settings
+        - name: sonar-secret
+          workspace: sonar-secret
+          secret:
+            secretName: sonar-login
 ---
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun

@@ -21,6 +21,7 @@ spec:
   workspaces:
     - name: source-dir
     - name: sonar-settings
+    - name: sonar-secret
   params:
     - name: SONAR_HOST_URL
       description: Host URL where the sonarqube server is running
@@ -28,24 +29,16 @@ spec:
     - name: SONAR_PROJECT_KEY
       description: Project's unique key
       default: ""
-    - name: SONAR_LOGIN_SECRET_NAME
-      description: Sonar login secret name
-      default: ""
-    - name: SONAR_LOGIN_SECRET_KEY
-      description: Sonar login secret key
-      default: ""
   steps:
     - name: sonar-properties-create
-      env:
-        - name: SONAR_LOGIN
-          valueFrom:
-            secretKeyRef:
-              name: $(params.SONAR_LOGIN_SECRET_NAME)
-              key: $(params.SONAR_LOGIN_SECRET_KEY)
       image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
       workingDir: $(workspaces.source-dir.path)
       script: |
         #!/usr/bin/env bash
+
+        if [ ! -f $(workspaces.sonar-secret.path)/token ]; then
+          export SONAR_LOGIN=$(workspaces.sonar.sonar-secret)
+        fi
 
         replaceValues() {
           filename=$1
