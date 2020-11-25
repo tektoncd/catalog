@@ -62,9 +62,9 @@ Sample IPAddress we will obtain using above command is like http://172.17.0.2:90
 ## Usage
 
 1. `sonar-project.properties` present in Github Repository. For example :- following [repo](https://github.com/vinamra28/sonartest) contains the properties file and Sonar Host URL needs to be updated via the `params`.
-   The sample run for this scenario can be found [here](../0.1/samples/run.yaml)
+   The sample run for this scenario can be found [here](../0.1/samples/run.yaml).
 
-2. In case when no `sonar-project.properties` file is present then above two parameters are mandatory to create a `sonar-project.properties` file with the required fields or the file can be mounted via the `ConfigMap`.
+2. In case when no `sonar-project.properties` file is present then above two parameters are mandatory to create a `sonar-project.properties` file with the required fields, or the file can be mounted via the `ConfigMap`.
 
 ```yaml
 ---
@@ -105,8 +105,6 @@ spec:
           workspace: shared-workspace
         - name: sonar-settings
           workspace: sonar-settings
-        - name: sonar-secret
-          workspace: sonar-secret
 ---
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
@@ -121,6 +119,50 @@ spec:
         claimName: sonar-source-pvc
     - name: sonar-settings
       emptyDir: {}
+```
+
+### Custom CA certs and Sonar login
+
+```yaml
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: sonarqube-pipeline
+spec:
+  workspaces:
+    # Other workspaces...
+    - name: sonar-ca-certs
+    - name: sonar-secret
+  tasks:
+    # Other tasks...
+    - name: code-analysis
+      taskRef:
+        name: sonarqube-scanner
+      params:
+        - name: SONAR_HOST_URL
+          value: https://SONAR_HOST
+        - name: SONAR_PROJECT_KEY
+          value: PROJECT_KEY
+      workspaces:
+        # Other workspaces...
+        - name: sonar-ca-certs
+          workspace: sonar-ca-certs
+        - name: sonar-secret
+          workspace: sonar-secret
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: sonarqube-run
+spec:
+  pipelineRef:
+    name: sonarqube-pipeline
+  workspaces:
+    # ... other workspaces
+    - name: sonar-ca-certs
+      secret:
+        secretName: sonar-certificate-crt
     - name: sonar-secret
       secret:
         secretName: sonar-login
