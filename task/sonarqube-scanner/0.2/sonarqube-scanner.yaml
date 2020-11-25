@@ -84,15 +84,12 @@ spec:
           echo "sonar.sources=." >> sonar-project.properties
         fi
 
-        echo "---------------------------"
-        cat $(workspaces.source-dir.path)/sonar-project.properties
-
     - name: sonar-scan
       image: docker.io/sonarsource/sonar-scanner-cli:4.5@sha256:b8c95a37025f3c13162118cd55761ea0b2a13d1837f9deec51b7b6d82c52040a #tag: 4.5
       workingDir: $(workspaces.source-dir.path)
       script: |
         #!/usr/bin/env bash
         if [[ "$(workspaces.sonar-ca-certs.bound)" == "true" ]]; then
-          keytool -keystore cacerts -storepass changeit -noprompt -trustcacerts -importcert -alias cert -file $(workspaces.sonar-ca-certs.path)/cert.cer
+          keytool -keystore /opt/java/openjdk/lib/security/cacerts -storepass changeit -noprompt -trustcacerts -importcert -alias cert -file $(workspaces.sonar-ca-certs.path)/cert.cer
         fi
         sonar-scanner
