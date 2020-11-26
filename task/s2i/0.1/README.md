@@ -109,7 +109,7 @@ Here is a non-exhaustive list of well maintained s2i builder image
   - [`centos/python-27-centos7`](https://hub.docker.com/r/centos/python-27-centos7)
   - [`centos/python-35-centos7`](https://hub.docker.com/r/centos/python-35-centos7)
   - [`centos/python-36-centos7`](https://hub.docker.com/r/centos/python-36-centos7)
-  - [`centos/python-37-centos7`](https://hub.docker.com/r/centos/python-37-centos7)
+  - [`centos/python-38-centos7`](https://hub.docker.com/r/centos/python-38-centos7)
 - [ruby](https://github.com/sclorg/s2i-ruby-container)
   - [`centos/ruby-23-centos7`](https://hub.docker.com/r/centos/ruby-23-centos7)
   - [`centos/ruby-24-centos7`](https://hub.docker.com/r/centos/ruby-24-centos7)
