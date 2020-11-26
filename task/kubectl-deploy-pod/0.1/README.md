@@ -1,6 +1,6 @@
 # Kubectl
 
-This Task deploys (or delete) a Kubernates resource (pod). It uses
+This Task deploys (or delete) a Kubernetes resource (pod). It uses
 [`kubectl`](https://kubernetes.io/zh/docs/reference/kubectl/kubectl/) for that.
 
 ## Install the Task
