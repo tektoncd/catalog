@@ -107,8 +107,8 @@ spec:
         - name: $(params.PLATFORM_DIR)
           mountPath: /platform
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
+        runAsUser: $(params.USER_ID)
+        runAsGroup: $(params.GROUP_ID)
 
   volumes:
     - name: empty-dir
