@@ -113,6 +113,8 @@ function show_failure() {
 }
 function test_task_creation() {
     local runtest
+    declare -A task_to_wait_for
+
     for runtest in $@;do
         # remove task/ from beginning
         local runtestdir=${runtest#*/}
@@ -126,7 +128,6 @@ function test_task_creation() {
         version="$( echo $version | tr '.' '-' )"
         local tns="${testname}-${version}"
         local skipit=
-        local maxloop=60 # 10 minutes max
 
         for ignore in ${TEST_TASKRUN_IGNORES};do
             [[ ${ignore} == ${testname} ]] && skipit=True
@@ -145,10 +146,13 @@ function test_task_creation() {
 
         [[ -n ${skipit} ]] && continue
 
-        kubectl create namespace ${tns}
+        # In case of rerun it's fine to ignore this error
+        kubectl create namespace ${tns} >/dev/null 2>/dev/null || :
 
         # Install the task itself first
         for yaml in ${taskdir}/*.yaml;do
+            started=$(date '+%Hh%M:%S')
+            echo "${started} STARTING: ${testname}/${version} "
             cp ${yaml} ${TMPF}
             [[ -f ${taskdir}/tests/pre-apply-task-hook.sh ]] && source ${taskdir}/tests/pre-apply-task-hook.sh
             function_exists pre-apply-task-hook && pre-apply-task-hook
@@ -165,6 +169,10 @@ $(cat ${taskdir}/tests/fixtures/*.yaml|sed 's/^/          /')
 EOF
             }
 
+            # Make sure we have deleted the content, this is in case of rerun
+            # and namespace hasn't been cleaned up or there is some Cluster*
+            # stuff, which really should not be allowed.
+            kubectl -n ${tns} delete -f ${TMPF} >/dev/null 2>/dev/null || true
             kubectl -n ${tns} create -f ${TMPF}
         done
 
@@ -173,43 +181,61 @@ EOF
             cp ${yaml} ${TMPF}
             [[ -f ${taskdir}/tests/pre-apply-taskrun-hook.sh ]] && source ${taskdir}/tests/pre-apply-taskrun-hook.sh
             function_exists pre-apply-taskrun-hook && pre-apply-taskrun-hook
+
+            # Make sure we have deleted the content, this is in case of rerun
+            # and namespace hasn't been cleaned up or there is some Cluster*
+            # stuff, which really should not be allowed.
+            kubectl -n ${tns} delete -f ${TMPF} >/dev/null 2>/dev/null || true
             kubectl -n ${tns} create -f ${TMPF}
         done
 
-        local cnt=0
-        local all_status=''
-        local reason=''
-        # we temporary disable the debug output here since it fill up the
-        # logs a lot while waiting for the task to fail/succeed
-        set +x
-        echo "$(date '+%x %Hh%M:%S') Waiting for task ${testname} to finish successfully."
-        while true;do
-            [[ ${cnt} == ${maxloop} ]] && show_failure ${testname} ${tns}
+        task_to_wait_for["$testname/${version}"]="${tns}|$started"
+    done
 
+    # I would refactor this to a function but bash limitation is too great, really need a rewrite the sooner
+    # the uglness to pass a hashmap to a function https://stackoverflow.com/a/17557904/145125
+    local cnt=0
+    local all_status=''
+    local reason=''
+    local maxloop=60 # 10 minutes max
+
+    set +x
+    while true;do
+        # If we have timed out then show failures of what's remaining in
+        # task_to_wait_for we assume only first one fails this
+        [[ ${cnt} == "${maxloop}" ]] && {
+            for testname in "${!task_to_wait_for[@]}";do
+                target_ns=${task_to_wait_for[$testname]}
+                show_failure "${testname}" "${target_ns}"
+            done
+        }
+        [[ -z ${task_to_wait_for[*]} ]] && {
+            break
+        }
+
+        for testname in "${!task_to_wait_for[@]}";do
+            target_ns=${task_to_wait_for[$testname]%|*}
+            started=${task_to_wait_for[$testname]#*|}
             # sometimes we don't get all_status and reason in one go so
             # wait until we get the reason and all_status for 5 iterations
-            for _ in {1..5}; do
-                all_status=$(kubectl get -n ${tns} pipelinerun --output=jsonpath='{.items[*].status.conditions[*].status}')
-                reason=$(kubectl get -n ${tns} pipelinerun --output=jsonpath='{.items[*].status.conditions[*].reason}')
+            for tektontype in pipelinerun taskrun;do
+                for _ in {1..10}; do
+                    all_status=$(kubectl get -n ${target_ns} ${tektontype} --output=jsonpath='{.items[*].status.conditions[*].status}')
+                    reason=$(kubectl get -n ${target_ns} ${tektontype} --output=jsonpath='{.items[*].status.conditions[*].reason}')
+                    [[ ! -z ${all_status} ]] && [[ ! -z ${reason} ]] && break
+                    sleep 1
+                done
+                # No need to check taskrun if pipelinerun has been set
                 [[ ! -z ${all_status} ]] && [[ ! -z ${reason} ]] && break
             done
 
-            if [[ -z ${all_status} && -z ${reason} ]];then
-                for _ in {1..5}; do
-                    all_status=$(kubectl get -n ${tns} taskrun --output=jsonpath='{.items[*].status.conditions[*].status}')
-                    reason=$(kubectl get -n ${tns} taskrun --output=jsonpath='{.items[*].status.conditions[*].reason}')
-                    [[ ! -z ${all_status} ]] && [[ ! -z ${reason} ]] && break
-                done
-            fi
-
             if [[ -z ${all_status} || -z ${reason} ]];then
-                echo -n "Could not find a created taskrun or pipelinerun in ${tns}"
+                echo "Could not find a created taskrun or pipelinerun in ${target_ns}"
             fi
 
             breakit=True
             for status in ${all_status};do
-
-                [[ ${status} == *ERROR || ${reason} == *Fail* || ${reason} == Couldnt* ]] && show_failure ${testname} ${tns}
+                [[ ${status} == *ERROR || ${reason} == *Fail* || ${reason} == Couldnt* ]] && show_failure ${testname} ${target_ns}
 
                 if [[ ${status} != True ]];then
                     breakit=
@@ -217,17 +243,15 @@ EOF
             done
 
             if [[ ${breakit} == True ]];then
-                echo "$(date '+%x %Hh%M:%S') SUCCESS: ${testname} pipelinerun has successfully executed" ;
-                break
+                unset task_to_wait_for[$testname]
+                [[ -z ${CATALOG_TEST_SKIP_CLEANUP} ]] && kubectl delete ns ${target_ns} >/dev/null
+                echo "${started}::$(date '+%Hh%M:%S') SUCCESS: ${testname} testrun has successfully executed" ;
             fi
 
-            sleep 10
-            cnt=$((cnt+1))
         done
-        set -x
 
-        # Delete namespace unless we specify the CATALOG_TEST_SKIP_CLEANUP env
-        # variable so we can debug in case the user needs it.
-        [[ -z ${CATALOG_TEST_SKIP_CLEANUP} ]] && kubectl delete ns ${tns}
+        sleep 10
+        cnt=$((cnt+1))
     done
+    set -x
 }
