@@ -16,6 +16,9 @@
 
 set -x
 
+# Configure the number of parallel tests running at the same time, start from 0
+MAX_NUMBERS_OF_PARALLEL_TASKS=4 # => 5
+
 export RELEASE_YAML=https://github.com/tektoncd/pipeline/releases/download/v0.18.0/release.yaml
 
 source $(dirname $0)/../vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
@@ -73,6 +76,22 @@ fi
 
 test_yaml_can_install "${all_tests}"
 
-test_task_creation "${all_tests}"
+function test_tasks {
+    local cnt=0
+    local task_to_tests=""
+
+    for runtest in $@;do
+        task_to_tests="${task_to_tests} ${runtest}"
+        if [[ ${cnt} == "${MAX_NUMBERS_OF_PARALLEL_TASKS}" ]];then
+            test_task_creation "${task_to_tests}"
+            cnt=0
+            task_to_tests=""
+            continue
+        fi
+        cnt=$((cnt+1))
+    done
+}
+
+test_tasks "${all_tests}"
 
 success
