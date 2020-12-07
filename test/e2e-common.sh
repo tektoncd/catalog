@@ -21,6 +21,10 @@
 
 RELEASE_YAML=${RELEASE_YAML:-}
 
+# Define a custom kubectl path if you like
+KUBECTL_CMD=${KUBECTL_CMD:-kubectl}
+
+
 source $(dirname $0)/../vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
 
 # Add an internal registry as sidecar to a task so we can upload it directly
@@ -45,7 +49,7 @@ function add_task() {
             exit 1
         fi
 	fi
-    kubectl -n "${tns}" apply -f "${path_version}"/"${task}".yaml
+    ${KUBECTL_CMD} -n "${tns}" apply -f "${path_version}"/"${task}".yaml
 }
 
 function install_pipeline_crd() {
@@ -57,12 +61,12 @@ function install_pipeline_crd() {
     latestreleaseyaml="https://storage.googleapis.com/tekton-releases/pipeline/latest/release.yaml"
   fi
   [[ -z ${latestreleaseyaml} ]] && fail_test "Could not get latest released release.yaml"
-  kubectl apply -f ${latestreleaseyaml} ||
-    fail_test "Build pipeline installation failed"
+  ${KUBECTL_CMD} apply -f ${latestreleaseyaml} ||
+      fail_test "Build pipeline installation failed"
 
   # Make sure thateveything is cleaned up in the current namespace.
   for res in pipelineresources tasks pipelines taskruns pipelineruns; do
-    kubectl delete --ignore-not-found=true ${res}.tekton.dev --all
+    ${KUBECTL_CMD} delete --ignore-not-found=true ${res}.tekton.dev --all
   done
 
   # Wait for pods to be running in the namespaces we are deploying to
@@ -73,7 +77,7 @@ function test_yaml_can_install() {
     # Validate that all the Task CRDs in this repo are valid by creating them in a NS.
     readonly ns="task-ns"
     all_tasks="$*"
-    kubectl create ns "${ns}" || true
+    ${KUBECTL_CMD} create ns "${ns}" || true
     local runtest
     for runtest in ${all_tasks}; do
         # remove task/ from beginning
@@ -88,7 +92,7 @@ function test_yaml_can_install() {
         done
         [[ -n ${skipit} ]] && break
         echo "Checking ${testname}"
-        kubectl -n ${ns} apply -f <(sed "s/namespace:.*/namespace: task-ns/" "${runtest}")
+        ${KUBECTL_CMD} -n ${ns} apply -f <(sed "s/namespace:.*/namespace: task-ns/" "${runtest}")
     done
 }
 
@@ -97,16 +101,16 @@ function show_failure() {
 
     echo "FAILED: ${testname} task has failed to comeback properly" ;
     echo "--- Task Dump"
-    kubectl get -n ${tns} task -o yaml
+    ${KUBECTL_CMD} get -n ${tns} task -o yaml
     echo "--- Pipeline Dump"
-    kubectl get -n ${tns} pipeline -o yaml
+    ${KUBECTL_CMD} get -n ${tns} pipeline -o yaml
     echo "--- PipelineRun Dump"
-    kubectl get -n ${tns} pipelinerun -o yaml
+    ${KUBECTL_CMD} get -n ${tns} pipelinerun -o yaml
     echo "--- TaskRun Dump"
-    kubectl get -n ${tns} taskrun -o yaml
+    ${KUBECTL_CMD} get -n ${tns} taskrun -o yaml
     echo "--- Container Logs"
-    for pod in $(kubectl get pod -o name -n ${tns}); do
-        kubectl logs --all-containers -n ${tns} ${pod} || true
+    for pod in $(${KUBECTL_CMD} get pod -o name -n ${tns}); do
+        ${KUBECTL_CMD} logs --all-containers -n ${tns} ${pod} || true
     done
     exit 1
 
@@ -147,7 +151,7 @@ function test_task_creation() {
         [[ -n ${skipit} ]] && continue
 
         # In case of rerun it's fine to ignore this error
-        kubectl create namespace ${tns} >/dev/null 2>/dev/null || :
+        ${KUBECTL_CMD} create namespace ${tns} >/dev/null 2>/dev/null || :
 
         # Install the task itself first
         for yaml in ${taskdir}/*.yaml;do
@@ -172,8 +176,8 @@ EOF
             # Make sure we have deleted the content, this is in case of rerun
             # and namespace hasn't been cleaned up or there is some Cluster*
             # stuff, which really should not be allowed.
-            kubectl -n ${tns} delete -f ${TMPF} >/dev/null 2>/dev/null || true
-            kubectl -n ${tns} create -f ${TMPF}
+            ${KUBECTL_CMD} -n ${tns} delete -f ${TMPF} >/dev/null 2>/dev/null || true
+            ${KUBECTL_CMD} -n ${tns} create -f ${TMPF}
         done
 
         # Install resource and run
@@ -185,8 +189,8 @@ EOF
             # Make sure we have deleted the content, this is in case of rerun
             # and namespace hasn't been cleaned up or there is some Cluster*
             # stuff, which really should not be allowed.
-            kubectl -n ${tns} delete -f ${TMPF} >/dev/null 2>/dev/null || true
-            kubectl -n ${tns} create -f ${TMPF}
+            ${KUBECTL_CMD} -n ${tns} delete -f ${TMPF} >/dev/null 2>/dev/null || true
+            ${KUBECTL_CMD} -n ${tns} create -f ${TMPF}
         done
 
         task_to_wait_for["$testname/${version}"]="${tns}|$started"
@@ -220,8 +224,8 @@ EOF
             # wait until we get the reason and all_status for 5 iterations
             for tektontype in pipelinerun taskrun;do
                 for _ in {1..10}; do
-                    all_status=$(kubectl get -n ${target_ns} ${tektontype} --output=jsonpath='{.items[*].status.conditions[*].status}')
-                    reason=$(kubectl get -n ${target_ns} ${tektontype} --output=jsonpath='{.items[*].status.conditions[*].reason}')
+                    all_status=$(${KUBECTL_CMD} get -n ${target_ns} ${tektontype} --output=jsonpath='{.items[*].status.conditions[*].status}')
+                    reason=$(${KUBECTL_CMD} get -n ${target_ns} ${tektontype} --output=jsonpath='{.items[*].status.conditions[*].reason}')
                     [[ ! -z ${all_status} ]] && [[ ! -z ${reason} ]] && break
                     sleep 1
                 done
@@ -244,7 +248,7 @@ EOF
 
             if [[ ${breakit} == True ]];then
                 unset task_to_wait_for[$testname]
-                [[ -z ${CATALOG_TEST_SKIP_CLEANUP} ]] && kubectl delete ns ${target_ns} >/dev/null
+                [[ -z ${CATALOG_TEST_SKIP_CLEANUP} ]] && ${KUBECTL_CMD} delete ns ${target_ns} >/dev/null
                 echo "${started}::$(date '+%Hh%M:%S') SUCCESS: ${testname} testrun has successfully executed" ;
             fi
 
