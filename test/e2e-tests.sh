@@ -90,6 +90,11 @@ function test_tasks {
         fi
         cnt=$((cnt+1))
     done
+
+    # in case if there are some remaining tasks
+    if [[ -n ${task_to_tests} ]];then
+        test_task_creation "${task_to_tests}"
+    fi
 }
 
 test_tasks "${all_tests}"
