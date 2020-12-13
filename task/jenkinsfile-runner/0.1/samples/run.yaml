@@ -1,0 +1,13 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: jenkinsfile-runner-run
+spec:
+  taskRef:
+    name: jenkinsfile-runner
+  params:
+    - name: JENKINSFILE_URL
+      value: https://raw.githubusercontent.com/akram/jenkinsfile-runner-openshift/f2f/Jenkinsfile
+  workspaces:
+    - name: source
+      emptyDir: {}

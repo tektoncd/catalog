@@ -1,0 +1,34 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: jenkinsfile-runner-run
+spec:
+  pipelineSpec:
+    results:
+      - name: build_number
+        description: The run build number
+        value: $(tasks.start.results.build_number)
+    workspaces:
+      - name: source
+    tasks:
+      - name: start
+        taskRef:
+          name: jenkinsfile-runner
+        workspaces:
+          - name: source
+            workspace: source
+        params:
+          - name: JENKINSFILE_URL
+            value: https://raw.githubusercontent.com/akram/jenkinsfile-runner-openshift/f2f/Jenkinsfile
+        workspaces:
+          - name: source
+            workspace: source
+  workspaces:
+  - name: source
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Mi

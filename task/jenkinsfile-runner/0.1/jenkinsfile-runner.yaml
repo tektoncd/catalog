@@ -1,0 +1,50 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: jenkinsfile-runner
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: jenkins, build
+    tekton.dev/displayName: "jenkinsfile-runner"
+spec:
+  description: >-
+    Runs a Jenkinsfile into a tekton Task.
+  workspaces:
+    - name: source
+      description: >-
+        The workspace which can be used to mount files which can be
+        send via the API to the Jenkins job.
+  results:
+    - name: build_number
+  params:
+    - name: JENKINSFILE_URL
+      type: string
+      description: The full URL of the Jenkinsfile
+  steps:
+    - name: jenkinsfile-runner
+      image: quay.io/akram/tekton-jenkinsfile-runner:0.1
+      workingDir: $(workspaces.source.path)
+      args:
+        - $(params.JENKINSFILE_URL)
+      script: |
+        #!/bin/sh
+        JENKINSFILE_URL=$1
+
+        export JAVA_OPTS="${JAVA_OPTS:+$JAVA_OPTS}"
+        export JAVA_OPTS="${JAVA_OPTS} -Dhudson.TcpSlaveAgentListener.hostName=$(hostname -i)"
+        export JAVA_OPTS="${JAVA_OPTS} -Djenkins.model.Jenkins.slaveAgentPort=50000"
+        export JAVA_OPTS="${JAVA_OPTS} -Djenkins.model.Jenkins.slaveAgentPortEnforce=true"
+        export JAVA_OPTS="${JAVA_OPTS} -Dhudson.slaves.NodeProvisioner.initialDelay=1" # How long to wait after startup before starting to provision nodes from clouds
+        export JAVA_OPTS="${JAVA_OPTS} -Dhudson.slaves.ConnectionActivityMonitor.timeToPing=30000" # wait after startup to start checking agent connections, in milliseconds.
+        curl -ks -o /tmp/Jenkinsfile $JENKINSFILE_URL 2> /dev/null 
+        if [ $? -ne 0 ]; then
+          echo "Error while trying to download Jenkinsfile from $JENKINSFILE_URL"
+          exit 1
+        else
+          echo "Jenkinsfile downloaded"
+        fi
+        mkdir -p /tmp/workspace
+        /app/bin/jenkinsfile-runner-launcher run -p /usr/share/jenkins/ref/plugins/ -f /tmp/Jenkinsfile  -w /tmp/workspace
+
