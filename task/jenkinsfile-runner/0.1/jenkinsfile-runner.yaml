@@ -12,6 +12,8 @@ spec:
   description: >-
     Runs a Jenkinsfile into a tekton Task.
   workspaces:
+    - name: jenkins
+      mountPath: /usr/share/jenkins/
     - name: source
       description: >-
         The workspace which can be used to mount files which can be

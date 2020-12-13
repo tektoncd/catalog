@@ -3,6 +3,9 @@ kind: PipelineRun
 metadata:
   name: jenkinsfile-runner-run
 spec:
+  podTemplate:
+    securityContext:
+      runAsUser: 0 # because the jenkinsfile-runner image cannot run without using uid 0, we are forcing this. :-( FIXME
   pipelineSpec:
     results:
       - name: build_number
@@ -10,6 +13,7 @@ spec:
         value: $(tasks.start.results.build_number)
     workspaces:
       - name: source
+      - name: jenkins
     tasks:
       - name: start
         taskRef:
@@ -25,10 +29,6 @@ spec:
             workspace: source
   workspaces:
   - name: source
-    volumeClaimTemplate:
-      spec:
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: 1Mi
+    emptyDir: {}
+  - name: jenkins
+    emptyDir: {}
