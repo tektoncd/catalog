@@ -19,7 +19,7 @@ spec:
     description: Reference of the image docker will produce.
   - name: builder_image
     description: The location of the docker builder image.
-    default: docker.io/library/docker:stable@sha256:18ff92d3d31725b53fa6633d60bed323effb6d5d4588be7b547078d384e0d4bf #tag: stable
+    default: docker.io/library/docker:19
   - name: dockerfile
     description: Path to the Dockerfile to build.
     default: ./Dockerfile
@@ -81,7 +81,7 @@ spec:
       - mountPath: /certs/client
         name: dind-certs
   sidecars:
-  - image: docker:dind
+  - image: docker:19-dind
     name: server
     args:
       - --storage-driver=vfs
