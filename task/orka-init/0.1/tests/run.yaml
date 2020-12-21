@@ -1,0 +1,12 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: orka-init-test-run
+spec:
+  serviceAccountName: orka-svc
+  taskRef:
+    name: orka-init
+  params:
+    - name: base-image
+      value: base-image.img
