@@ -1,0 +1,32 @@
+---
+headers:
+  method: POST
+  path: /token
+response:
+  status: 200
+  output: '{"token": "abcd"}'
+  content-type: text/json
+---
+headers:
+  method: POST
+  path: /resources/vm/create
+response:
+  status: 200
+  output: '{"status": 200}'
+  content-type: text/json
+---
+headers:
+  method: POST
+  path: /resources/vm/deploy
+response:
+  status: 200
+  output: '{"ip": "localhost", "ssh_port": "22", "vm_id": "wxyz"}'
+  content-type: text/json
+---
+headers:
+  method: DELETE
+  path: /resources/vm/delete
+response:
+  status: 200
+  output: '{"message": "Successfully deleted VM"}'
+  content-type: text/json
