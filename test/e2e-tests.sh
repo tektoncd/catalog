@@ -61,7 +61,7 @@ all_tests=$(echo task/*/*/tests)
 
 function detect_new_changed_tasks() {
     # detect for changes in tests dir of the task
-    git --no-pager diff --name-only "${PULL_BASE_SHA}".."${PULL_PULL_SHA}"|grep 'task/[^\/]*/[^\/]*/tests/[^/]*.yaml'|xargs -I {} dirname {}
+    git --no-pager diff --name-only "${PULL_BASE_SHA}".."${PULL_PULL_SHA}"|grep 'task/[^\/]*/[^\/]*/tests/[^/]*'|xargs -I {} dirname {}
     # detect for changes in the task manifest
     git --no-pager diff --name-only "${PULL_BASE_SHA}".."${PULL_PULL_SHA}"|grep 'task/[^\/]*/[^\/]*/*[^/]*.yaml'|xargs -I {} dirname {}|awk '{print $1"/tests"}'
 }
