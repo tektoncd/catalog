@@ -25,7 +25,7 @@ spec:
     description: The service account with the AWS keys
   steps:
   - name: delete-cluster
-    image: weaveworks/eksctl:0.35.0@sha256:48c1fa508970a01fd87a73ac7932a7160479d678cd019a3c84533d911fc54327
+    image: docker.io/weaveworks/eksctl:0.35.0@sha256:48c1fa508970a01fd87a73ac7932a7160479d678cd019a3c84533d911fc54327
     script: |
       echo "Tearing down the eks cluster"
       eksctl delete cluster \
