@@ -35,7 +35,7 @@ spec:
         optional: true
   steps:
     - name: oc
-      image: quay.io/openshift/origin-cli:4.4
+      image: quay.io/openshift/origin-cli:4.6
       script: "$(params.SCRIPT)"
       args:
         - "$(params.ARGS)"

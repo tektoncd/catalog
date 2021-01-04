@@ -25,7 +25,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 - **REPLICAS**: Required replicas for the cluster.
 - **REGION**: The region to deploy your cluster in.
 - **PROJECT_ID**: The project id is required in case of deploying at google cloud platform (`gcp`).
-- **OPENSHIFT_INSTALLER_IMAGE**: OpenShift installer base image for UPI installation (_default_: quay.io/openshift/origin-upi-installer:4.4)
+- **OPENSHIFT_INSTALLER_IMAGE**: OpenShift installer base image for UPI installation (_default_: quay.io/openshift/origin-upi-installer:4.6)
 
 ### **Workspaces**
 

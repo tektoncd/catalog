@@ -12,7 +12,7 @@ spec:
       readOnly: true
   steps:
     - name: get
-      image: quay.io/openshift/origin-cli:latest
+      image: quay.io/openshift/origin-cli:4.6
       script: |
 
         export KUBECONFIG="$(workspaces.input.path)/$(inputs.params.filename)"
