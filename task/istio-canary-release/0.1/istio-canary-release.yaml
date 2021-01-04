@@ -38,7 +38,7 @@ spec:
       default: ""
   steps:
     - name: canary-deploy
-      image: quay.io/openshift/origin-cli:4.4
+      image: quay.io/openshift/origin-cli:4.6
       workingDir: $(workspaces.istio-manifest-dir.path)
       script: |
         #!/usr/bin/env bash
