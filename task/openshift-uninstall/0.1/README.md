@@ -22,7 +22,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 
 ### **Parameters**
 
-- **OPENSHIFT_INSTALLER_IMAGE**: OpenShift installer base image for UPI installation (_default_: quay.io/openshift/origin-upi-installer:4.4)
+- **OPENSHIFT_INSTALLER_IMAGE**: OpenShift installer base image for UPI installation (_default_: quay.io/openshift/origin-upi-installer:4.6)
 
 ## Usage
 
