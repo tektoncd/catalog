@@ -128,7 +128,7 @@ image, if you need to have another binary available feel free to make a PR to th
 
 https://github.com/tektoncd/plumbing/blob/master/tekton/images/test-runner/Dockerfile
 
-An helper script called [run-test.sh](test/run-test.sh) is provider in the
+A helper script called [`run-test.sh`](test/run-test.sh) is provider in the
 [test](./test) directory to help the developer running the test locally. Just
 specify the task name and the version as the first and the second argument i.e:
 
