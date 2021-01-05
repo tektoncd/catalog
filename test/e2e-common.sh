@@ -24,6 +24,37 @@ RELEASE_YAML=${RELEASE_YAML:-}
 # Define a custom kubectl path if you like
 KUBECTL_CMD=${KUBECTL_CMD:-kubectl}
 
+# Dependency checks
+
+## Bash must be 4 or greater to support associative arrays
+
+if [ "${BASH_VERSINFO:-0}" -lt 4 ];then
+    echo "this script must be executed in bash >= 4"
+    exit 1
+fi
+
+## Commands
+
+function require_command() {
+    if ! command -v ${1} &> /dev/null;then
+        echo "required command '${1}' not be found"
+        exit 1
+    fi
+}
+
+require_command python3
+
+## Python Modules
+
+function require_python_module() {
+    if ! ${1} -m pip show ${2} &> /dev/null;then
+        echo "required '${1}' module '${2}' not be found"
+        echo "you can try installing it via '${1} -m pip install ${2}'"
+        exit 1
+    fi
+}
+
+require_python_module python3 pyyaml
 
 source $(dirname $0)/../vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
 
