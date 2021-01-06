@@ -28,7 +28,7 @@ spec:
     name: powershell
   params:
     - name: command
-      value: "Write-Output 'Hello World'"
+      value: "Write-Output 'Hello World'; `$random = get-random -Minimum 0 -Maximum 100; write-output 'Created this number for you $random'"
     - name: tag
       value: latest
     - name: verbose
