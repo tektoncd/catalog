@@ -1,0 +1,22 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: powershell-pipeline
+spec:
+  tasks:
+    - name: invoke-script
+      taskRef:
+        name: powershell
+      params:
+        - name: command
+          value: "Write-Output 'Hello World'"
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: powershell-pipeline-run
+spec:
+  pipelineRef:
+    name: powershell-pipeline
