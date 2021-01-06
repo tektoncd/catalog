@@ -27,11 +27,11 @@ spec:
       default: "SilentlyContinue"
   steps:
     - name: invoke-script
-      image: mcr.microsoft.com/powershell:$(inputs.params.tag)
+      image: mcr.microsoft.com/powershell:$(params.tag)
       script: |
         #!/usr/bin/env pwsh
         
-        $VerbosePreference = "$(inputs.params.verbose)"
-        $command = "$(inputs.params.command)"
+        $VerbosePreference = "$(params.verbose)"
+        $command = "$(params.command)"
         Write-Verbose -Message "Received command:`n$command"
         Invoke-Expression -Command $command
