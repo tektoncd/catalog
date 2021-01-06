@@ -30,7 +30,6 @@ spec:
       image: mcr.microsoft.com/powershell:$(params.tag)
       script: |
         #!/usr/bin/env pwsh
-        
         $VerbosePreference = "$(params.verbose)"
         $command = "$(params.command)"
         Write-Verbose -Message "Received command:`n$command"
