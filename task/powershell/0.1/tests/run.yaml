@@ -11,7 +11,6 @@ spec:
       params:
         - name: command
           value: "Write-Output 'Hello World'"
-
 ---
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
