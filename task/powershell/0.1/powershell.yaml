@@ -1,0 +1,36 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: powershell
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: powershell, pwsh
+    tekton.dev/displayName: powershell
+spec:
+  description: >-
+    This task will run powershell commands
+  params:
+    - name: tag
+      description: The tag for the Powershell image
+      type: string
+      default: "latest"
+    - name: command
+      description: The Powershell command
+      type: string
+      default: "Write-Output 'Please use command parameter to enter'"
+    - name: verbose
+      description: Verbosity level for command
+      type: string
+      default: "SilentlyContinue"
+  steps:
+    - name: invoke-script
+      image: mcr.microsoft.com/powershell:$(params.tag)
+      script: |
+        #!/usr/bin/env pwsh
+        $VerbosePreference = "$(params.verbose)"
+        $command = "$(params.command)"
+        Write-Verbose -Message "Received command:`n$command"
+        Invoke-Expression -Command $command
