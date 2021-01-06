@@ -1,0 +1,36 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: powershell-pipeline
+spec:
+  tasks:
+    - name: invoke-script
+      taskRef:
+        name: powershell
+      params:
+        - name: command
+          value: "Write-Output 'Hello World'"
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: powershell-pipeline-run
+spec:
+  pipelineRef:
+    name: powershell-pipeline
+---
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: example-powershell
+spec:
+  taskRef:
+    name: powershell
+  params:
+    - name: command
+      value: "Write-Output 'Hello World'; `$random = get-random -Minimum 0 -Maximum 100; write-output 'Created this number for you $random'"
+    - name: tag
+      value: latest
+    - name: verbose
+      value: Continue
