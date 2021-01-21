@@ -116,6 +116,11 @@ function test_yaml_can_install() {
         # remove /0.1/tests from end
         local testname=${runtestdir%%/*}
         runtest=${runtest//tests}
+
+        # in case a task is being removed then it's directory
+        # doesn't exists, so skip the test for YAML
+        [ ! -d "${runtest%%/*}/${testname}" ] && continue
+
         runtest="${runtest}${testname}.yaml"
         skipit=
         for ignore in ${TEST_YAML_IGNORES};do
