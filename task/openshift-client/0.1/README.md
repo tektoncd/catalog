@@ -16,6 +16,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 
 * **SCRIPT:** script of oc commands to execute  e.g. `oc get pod $1 -0 yaml` This will take the first value of ARGS as pod name (_default_: `oc $@`)
 
+* **VERSION:** The OpenShift version to use (_default_: `4.6`)
 
 ## Resources
 
