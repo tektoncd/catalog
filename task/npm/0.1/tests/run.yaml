@@ -1,0 +1,59 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: npm-run
+spec:
+  workspaces:
+    - name: shared-workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Gi
+  pipelineSpec:
+    workspaces:
+      - name: shared-workspace
+    tasks:
+      - name: fetch-repository
+        taskRef:
+          name: git-clone
+        workspaces:
+          - name: output
+            workspace: shared-workspace
+        params:
+          - name: url
+            value: https://github.com/vinamra28/sonartest
+          - name: subdirectory
+            value: ""
+          - name: deleteExisting
+            value: "true"
+      - name: install-dependencies
+        taskRef:
+          name: npm
+        workspaces:
+          - name: source
+            workspace: shared-workspace
+        params:
+          - name: PATH_CONTEXT
+            value: "app"
+          - name: ARGS
+            value:
+              - clean-install
+        runAfter:
+          - fetch-repository
+      - name: run-test
+        taskRef:
+          name: npm
+        workspaces:
+          - name: source
+            workspace: shared-workspace
+        params:
+          - name: PATH_CONTEXT
+            value: "app"
+          - name: ARGS
+            value:
+              - test
+        runAfter:
+          - install-dependencies
