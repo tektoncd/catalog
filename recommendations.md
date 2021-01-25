@@ -60,3 +60,204 @@ On the catalog, this means that you should, where possible:
         runAsUser: 0 # root uid == 0
         privileged: true
   ```
+
+## Don't use interpolation in shell scripts
+
+Using `$(tekton.task)` interpolation in the `script` or as a `sh -c`
+string is extremely fragile.  The interpolation done by tekton is not
+aware of the context in which the interpolation happens.  A space, a
+quote sign, a backslash or newline could easily thwart an otherwise
+beautiful script.
+
+```
+  steps:
+  - name: foo
+    image: myimage
+    script: |
+      echo $(params.one)
+```
+
+If `params.one` happens to contain a quote, then the resultin shell
+script might look like this:
+
+```
+echo '
+```
+
+This script is not valid, and the task will fail.
+
+Instead, use environment variables or arguments, which are not
+interpolated into the script
+
+```
+  steps:
+  - name: foo
+    image: myimage
+    env:
+      - name: PARAM_ONE
+        value: $(params.one)
+    script: |
+      echo "$PARAM_ONE"
+```
+
+The script will now correctly print out the value of $PARAM_ONE,
+regardless of what it contains.
+
+
+## Extract task code (scripts) to their own files
+
+As a task grows in complexity, it becomes harder and harder to
+maintain it in-line.  Because you have already avoided interpolation
+in the script, there is no real need for the script to be in-lined
+into the Task.
+
+Use a ConfigMap for your script, and mount the configmap in the task.
+Use a single _command:_ that executes your script (optionally with
+environment variables and with parameters):
+
+
+```
+  volumes:
+  - name: scripts
+    configMap:
+      name: my-task-scripts
+      defaultMode: 0755
+  steps:
+  - name: foo
+    image: myimage
+    volumeMounts:
+    - name: scripts
+      mountPath: /mnt/scripts
+    volume
+    command: 
+    - /mnt/scripts/my-command.sh
+```
+
+This allows you to create and update your configmap from a real
+script.  An external script-file allows you to edit it stand-alone as
+a proper script file, rather than in-lined into a tekton task yaml
+file.  This gives you better completion, syntax checking, and many
+other benefits.  You can even run the script locally.
+
+
+```
+#!/bin/bash
+# my-command.sh
+echo "${PARAM_ONE-Hello world}"
+```
+
+To create the configmap:
+
+```
+kubectl create configmap my-task-scripts --from-file=my-command.sh
+```
+
+For bonus points, use a kustomize generator to create your task; this
+allows you simple "kubectl apply -k" 
+
+## Remember that there are other languages than sh and bash
+
+Yes, sh and bash are DSLs for running processes, but sometimes there
+are other languages more suited for what you're trying to do.  Tekton
+Pipelines' main positive attribute is the ability to have the right
+tool available for every step, and that includes the _interpreter_.
+Use python or other scripting languages when that is warranted.
+
+## Test and verify your task code
+
+Use sound engineering principles when building Tekton Task code.
+Since the code can reside in external files, it's possible to split
+them up and have test harnesses that test various code paths.  Have a
+build system that runs the task's test harness whenever you make
+changes to them before you commit, and of course a Tekton Pipeline to
+verify that your tests are passing before merging.
+
+## Create idempotent tasks and pipelines
+
+When you design tasks and pipelines, they should, as much as possible
+be written in an idempotent manner.  Idempotency means that it is safe
+to re-execute, and this can be used to your advantage.  If designed
+properly, it can also allow you to skip work that has already happened
+(see level-based approach).
+
+## Clearly define the format of input parameters and results
+
+Specify the format when defining parameters and results, even down to
+trailing whitespace.  Specify the intention behind them.  For
+parameters, indicate if there are other tasks that might have an output
+that matches.  For a result, indicate where you might use the result.
+
+This is especially important when building tasks that may be composed
+in different ways, and where the results of some tasks are intended to
+be the parameters to other tasks.
+
+## Use composable parameter formats
+
+Especially when passing lists of items betweek tasks (i.e. a list of
+items from one task, designed to be the parameter of another task),
+avoid using structured strings, tab-separated values, or even
+line-separated values.  Such formats are prone to error due to simple
+whitespace mistakes, or a rogue value that contains a hard-to-detect
+newline.
+
+Instead use a more structured data format like e.g. a json stream or
+more formally [JSON Text Sequences RFC
+7464](https://tools.ietf.org/html/rfc7464), and use jq to process the
+different _records_ that are passed in to a task.  This ensures you
+can pass almost any conceivable type of data without any escaping
+issues.
+
+```
+# task foo
+  steps:
+  - name: foo
+    image: myimage
+    script: |
+      echo '{"value": 123}' >> $(results.data.path)
+
+# task other
+  steps:
+  - name: bar
+    image: myimage
+    script: |
+      printf '{"size": "large"}' >> $(results.data.path)
+      printf '{"size": "small", "fake": true}' >> $(results.data.path)
+
+# pipeline
+  - name: example
+    taskRef:
+      kind: Task
+      name: pipeline
+    params:
+    - name: data
+      value: |
+        $(tasks.foo.results.data)
+        $(tasks.bar.results.data)
+```
+
+Here, the "foo" and "bar" task results and the "data" parameter of the
+pipeline have been defined to be _of type JSON Stream_, allowing the
+pipeline author to construct the pipeline parameter value directly by
+concatinating the results.  This construct does not fall apart when
+the data is on one line or split on multiple lines.
+
+## Use "level-based" approach to your advantage
+
+If you have a task that creates another pipelinerun in order to
+complete its work, you should leverage the fact that `kubectl apply`
+has "create-or-update" semantics.  If you _apply_ a pipelinerun that
+already exists, it means that you don't need to rerun the pipeline.
+
+For example, if you have a task that takes a commit as a parameter,
+say `abc123def`, and its job is to create a pipelinerun with that
+commit as a parameter (and the other pipeline is idempotent, and does
+not need to be re-run for the same commit), then you could _apply_ the
+pipelinerun `run-abc123def`.  The first time, `run-abc123def` won't
+exist, and a PipelineRun will be created, running the pipeline.  If,
+at a later point in time, the task happens to be run with the same
+commit, it will again _apply_ the pipelinerun `run-abc123def`.  Since
+it already exists, nothing happens.
+
+This technique can be used to "short circuit" work when it is not
+necessary to _re-run_.
+
