@@ -27,7 +27,7 @@ spec:
       description: |
         The base image for the task.
       type: string
-      default: docker.io/alpine/git:v2.26.2@sha256:8715680f27333935bb384a678256faf8e8832a5f2a0d4a00c9d481111c5a29c0 #tag: v2.26.2
+      default: docker.io/alpine/git:v2.26.2@sha256:23618034b0be9205d9cc0846eb711b12ba4c9b468efdd8a59aac1d7b1a23363f #tag: v2.26.2
 
     - name: GIT_USER_NAME
       type: string
