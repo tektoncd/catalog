@@ -54,7 +54,7 @@ spec:
         - mountPath: /gen-source
           name: gen-source
     - name: build
-      image: quay.io/buildah/stable:v1.15.1
+      image: quay.io/buildah/stable:v1.17.0
       workingDir: /gen-source
       script: |
         [[ "$(workspaces.sslcertdir.bound)" == "true" ]] && CERT_DIR_FLAG="--cert-dir $(workspaces.sslcertdir.path)"
@@ -68,7 +68,7 @@ spec:
         - mountPath: /gen-source
           name: gen-source
     - name: push
-      image: quay.io/buildah/stable:v1.15.1
+      image: quay.io/buildah/stable:v1.17.0
       script: |
         [[ "$(workspaces.sslcertdir.bound)" == "true" ]] && CERT_DIR_FLAG="--cert-dir $(workspaces.sslcertdir.path)"
         buildah ${CERT_DIR_FLAG} push --tls-verify=$(params.TLSVERIFY) --digestfile $(workspaces.source.path)/image-digest \
