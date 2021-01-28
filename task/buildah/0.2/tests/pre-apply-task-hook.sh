@@ -4,6 +4,7 @@ TMD=$(mktemp -d)
 
 # Generate SSL Certificate
 openssl req -newkey rsa:4096 -nodes -sha256 -keyout "${TMD}"/ca.key -x509 -days 365 \
+        -addext "subjectAltName = DNS:registry" \
         -out "${TMD}"/ca.crt -subj "/C=FR/ST=IDF/L=Paris/O=Tekton/OU=Catalog/CN=registry"
 
 # Create a configmap from these certs
