@@ -1,0 +1,35 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: aws-cli
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/tags: cli
+    tekton.dev/displayName: "aws cli"
+spec:
+  description: >-
+    This task performs operations on Amazon Web Services resources using aws.
+
+  workspaces:
+    - name: source
+      optional: true
+    - name: secrets
+      optional: true
+      mountPath: /tekton/home/.aws
+  params:
+    - name: SCRIPT
+      description: The AWS script to run
+      type: string
+      default: "aws $@"
+    - name: ARGS
+      description: AWS cli arguments to be passed
+      type: array
+      default: ["help"]
+  steps:
+    - name: awscli
+      image: docker.io/amazon/aws-cli:2.0.52@sha256:1506cec98a7101c935176d440a14302ea528b8f92fcaf4a6f1ea2d7ecef7edc4 #tag: 2.0.52
+      script: "$(params.SCRIPT)"
+      args:
+        - "$(params.ARGS)"
