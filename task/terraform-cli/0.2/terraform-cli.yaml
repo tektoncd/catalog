@@ -1,0 +1,77 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: terraform-cli
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: cli
+    tekton.dev/displayName: "terraform cli"
+spec:
+  description: >-
+    Terraform is an open-source infrastructure as code software tool created by HashiCorp.
+
+    It enables users to define and provision a datacenter infrastructure using a high-level
+    configuration language known as Hashicorp Configuration Language (HCL), or optionally JSON
+
+    This Task will do a terraform init before it executes the actual configured ARGS from parameter.
+  workspaces:
+  - name: source
+  params:
+  - name: ARGS
+    description: The terraform cli commands to tun
+    type: array
+    default:
+    - "--help"
+  - name: terraform-secret
+    description: The terraform secret with credentials
+    type: string
+    default: "terraform-creds"
+  - name: image
+    description: the terraform image to use
+    type: string
+    default: docker.io/hashicorp/terraform:light
+  - name: httpProxy
+    description: HTTP proxy server for non-SSL requests
+    type: string
+    default: ""
+  - name: httpsProxy
+    description: HTTPS proxy server for SSL requests
+    type: string
+    default: ""
+  - name: noProxy
+    description: no proxy - opt out of proxying HTTP/HTTPS requests
+    type: string
+    default: ""
+  steps:
+    - name: init
+      image: $(params.image)
+      workingDir: $(workspaces.source.path)
+      command: ["terraform"]
+      env:
+        - name: "HTTP_PROXY"
+          value: $(params.httpProxy)
+        - name: "HTTPS_PROXY"
+          value: $(params.httpsProxy)
+        - name: "HTTP_PROXY"
+          value: $(params.httpProxy)
+      args:
+        - "init"
+    - name: terraform-cli
+      image: $(params.image)
+      workingDir: /workspace/source
+      command: ["terraform"]
+      args:
+        - "$(params.ARGS)"
+      env:
+        - name: "HTTP_PROXY"
+          value: $(params.httpProxy)
+        - name: "HTTPS_PROXY"
+          value: $(params.httpsProxy)
+        - name: "HTTP_PROXY"
+          value: $(params.httpProxy)
+      envFrom:
+        - secretRef:
+            name: $(params.terraform-secret)
