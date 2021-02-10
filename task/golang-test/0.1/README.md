@@ -12,6 +12,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 
 * **package**: base package to build in
 * **packages**: packages to test (_default:_ ./cmd/...)
+* **context**: path to the directory to use as context (default: .)
 * **version**: golang version to use for builds (_default:_ latest)
 * **flags**: flags to use for `go test` command (_default:_ -race -cover -v)
 * **GOOS**: operating system target (_default:_ linux)
