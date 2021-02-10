@@ -12,6 +12,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 ### Parameters
 
 * **package**: base package under validation
+* **context**: path to the directory to use as context (default: .)
 * **flags**: flags to use for `golangci-lint` command (_default:_--verbose)
 * **version**: golangci-lint version to use (_default:_ v1.16)
 * **GOOS**: operating system target (_default:_ linux)
