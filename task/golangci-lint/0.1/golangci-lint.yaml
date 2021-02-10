@@ -15,6 +15,9 @@ spec:
   params:
   - name: package
     description: base package (and its children) under validation
+  - name: context
+    description: path to the directory to use as context.
+    default: "."
   - name: flags
     description: flags to use for the test command
     default: --verbose
@@ -36,7 +39,7 @@ spec:
   steps:
   - name: lint
     image: docker.io/golangci/golangci-lint:$(params.version)
-    workingDir: $(workspaces.source.path)
+    workingDir: $(workspaces.source.path)/$(params.context)
     script: |
       golangci-lint run $(params.flags)
     env:
