@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: jenkins
-        image: jenkins/jenkins:lts
+        image: jenkins/jenkins:2.263.2-lts-centos7@sha256:666a183ad54ddd2ccd1f4bc84dadf0085254a528ab96b98a790569a6c8ca3799
         ports:
         - containerPort: 8080
         volumeMounts:
