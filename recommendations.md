@@ -66,7 +66,7 @@ On the catalog, this means that you should, where possible:
 Yes, sh and bash are DSLs for running processes, but sometimes there
 are other languages more suited for what you're trying to do.  Tekton
 Pipelines' main positive attribute is the ability to have the right
-tool available for every step, and that includes the _interpreter_.
+tool available for every step, including the _interpreter_.
 Use python or another scripting languages when that is warranted.
 
 A python example:
@@ -185,7 +185,7 @@ environment variables and with parameters):
     - name: scripts
       mountPath: /mnt/scripts
     volume
-    command: 
+    command:
     - /mnt/scripts/my-command.sh
 ```
 
@@ -308,4 +308,3 @@ it already exists, nothing happens.
 
 This technique can be used to "short circuit" work when it is not
 necessary to _re-run_.
-
