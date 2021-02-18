@@ -1,0 +1,65 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: jib-gradle-test-pipeline
+spec:
+  workspaces:
+  - name: shared-workspace
+  tasks:
+  - name: fetch-repository
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: shared-workspace
+    params:
+    - name: url
+      value: https://github.com/che-samples/console-java-simple
+    - name: subdirectory
+      value: ""
+    - name: deleteExisting
+      value: "true"
+  - name: jib-gradle
+    taskRef:
+      name: jib-gradle
+    runAfter:
+    - fetch-repository
+    workspaces:
+    - name: source
+      workspace: shared-workspace
+    params:
+    - name: IMAGE
+      value: localhost:5000/tekton-pipelines/console-java-simple
+    - name: INSECUREREGISTRY
+      value: "true"
+  - name: verify-digest
+    runAfter:
+    - jib-gradle
+    params:
+    - name: digest
+      value: $(tasks.jib-gradle.results.IMAGE_DIGEST)
+    taskSpec:
+      params:
+      - name: digest
+      steps:
+      - name: bash
+        image: ubuntu
+        script: |
+          echo $(params.digest)
+          case .$(params.digest) in
+            ".sha"*) exit 0 ;;
+            *)       echo "Digest value is not correct" && exit 1 ;;
+          esac
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: jib-gradle-test-pipeline-run
+spec:
+  pipelineRef:
+    name: jib-gradle-test-pipeline
+  workspaces:
+  - name: shared-workspace
+    persistentVolumeClaim:
+      claimName: jib-gradle-source-pvc

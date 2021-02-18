@@ -1,0 +1,100 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: jib-gradle
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: image-build
+    tekton.dev/displayName: "jib gradle"
+spec:
+  description: >-
+    This Task builds Java/Kotlin/Groovy/Scala source into a container image using Google’s Jib tool.
+
+    Jib works with Gradle and Maven projects, and this template is for Gradle projects.
+
+  params:
+  - name: BUILDER_IMAGE
+    description: The location of the gradle builder image
+    default: gcr.io/cloud-builders/gradle@sha256:96d6343589392afd9eab8c4463ec899b8b1c972e7cd70678a70a4821c16eb4c9 # 5.6.2-jdk-8
+  - name: IMAGE
+    description: Reference of the image gradle will produce
+  - name: DIRECTORY
+    description: The directory containing the app, relative to the source repository root
+    default: .
+  - name: CACHE
+    description: The name of the volume for caching Gradle artifacts, local Maven repository, and base image layers
+    default: empty-dir-volume
+  - name: INSECUREREGISTRY
+    description: Whether to allow insecure registry
+    default: "false"
+
+  workspaces:
+  - name: source
+
+  results:
+  - name: IMAGE_DIGEST
+    description: Digest of the image just built.
+
+  steps:
+  - name: build-and-push
+    image: $(params.BUILDER_IMAGE)
+    workingDir: $(workspaces.source.path)/$(params.DIRECTORY)
+    script: |
+      #!/bin/sh
+      set -o errexit
+
+      # Adds Gradle init script that applies the Jib Gradle plugin.
+      echo "initscript {
+              repositories { maven { url 'https://plugins.gradle.org/m2' } }
+              dependencies { classpath 'gradle.plugin.com.google.cloud.tools:jib-gradle-plugin:+' }
+            }
+            rootProject {
+              afterEvaluate {
+                if (!project.plugins.hasPlugin('com.google.cloud.tools.jib')) {
+                  project.apply plugin: com.google.cloud.tools.jib.gradle.JibPlugin
+                }
+              }
+            }" > $HOME/init-script.gradle
+
+      # Runs the Gradle Jib build.
+      gradle jib \
+        --stacktrace --console=plain \
+        --init-script=$HOME/init-script.gradle \
+        --gradle-user-home=$HOME/.gradle \
+        -Dgradle.user.home=$HOME/.gradle \
+        -Duser.home=$HOME \
+        -Djib.allowInsecureRegistries=$(params.INSECUREREGISTRY) \
+        -Djib.to.image=$(params.IMAGE) \
+        -Djib.outputPaths.digest=$(workspaces.source.path)/$(params.DIRECTORY)/image-digest
+    env:
+    - name: HOME
+      value: /workspace
+    volumeMounts:
+    # empty volume required to make the Gradle home globally writable
+    - name: empty-dir-volume
+      mountPath: /workspace/.gradle
+      subPath: gradle-user-home
+    - name: $(params.CACHE)
+      mountPath: /workspace/.gradle/caches
+      subPath: gradle-caches
+    - name: $(params.CACHE)
+      mountPath: /workspace/.gradle/wrapper
+      subPath: gradle-wrapper
+    - name: $(params.CACHE)
+      mountPath: /workspace/.m2
+      subPath: m2-cache
+    - name: $(params.CACHE)
+      mountPath: /workspace/.cache
+      subPath: jib-cache
+    securityContext:
+      runAsUser: 0
+
+  - name: digest-to-results
+    image: $(params.BUILDER_IMAGE)
+    script: cat $(workspaces.source.path)/$(params.DIRECTORY)/image-digest | tee /tekton/results/IMAGE_DIGEST
+
+  volumes:
+  - name: empty-dir-volume
+    emptyDir: {}
