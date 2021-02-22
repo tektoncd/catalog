@@ -14,6 +14,8 @@ spec:
         - name: base-image
           value: base-image.img
     - name: deploy
+      runAfter:
+        - init
       taskRef:
         name: orka-deploy
       params:
