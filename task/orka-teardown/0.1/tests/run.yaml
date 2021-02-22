@@ -12,6 +12,8 @@ spec:
         - name: base-image
           value: base-image.img
     - name: teardown
+      runAfter:
+        - init
       taskRef:
         name: orka-teardown
 ---
