@@ -1,0 +1,58 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: buildpacks-test-pipeline
+spec:
+  workspaces:
+    - name: source-ws
+    - name: cache-ws
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: source-ws
+      params:
+        - name: url
+          value: https://github.com/buildpacks/samples
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+    - name: buildpacks
+      taskRef:
+        name: buildpacks
+      runAfter:
+        - fetch-repository
+      workspaces:
+        - name: source
+          workspace: source-ws
+        - name: cache
+          workspace: cache-ws
+      params:
+        - name: APP_IMAGE
+          value: localhost:5000/buildpacks-app
+        - name: SOURCE_SUBPATH
+          value: apps/java-maven
+        - name: BUILDER_IMAGE
+          value: cnbs/sample-builder:alpine@sha256:b51367258b3b6fff1fe8f375ecca79dab4339b177efb791e131417a5a4357f42
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: buildpacks-test-pipeline-run
+spec:
+  pipelineRef:
+    name: buildpacks-test-pipeline
+  workspaces:
+    - name: source-ws
+      subPath: source
+      persistentVolumeClaim:
+        claimName: buildpacks-pvc
+    - name: cache-ws
+      subPath: cache
+      persistentVolumeClaim:
+        claimName: buildpacks-pvc
+---
