@@ -1,0 +1,138 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: buildpacks
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/tags: image-build
+    tekton.dev/displayName: "Buildpacks"
+spec:
+  description: >-
+    The Buildpacks pipeline builds source from a Git repository into a container image and pushes it to a registry, using Cloud Native Buildpacks.
+
+  workspaces:
+    - name: source-ws
+      description: Location where source is stored.
+    - name: cache-ws
+      description: Location where cache is stored if CACHE_IMAGE is not provided.
+      optional: true
+
+  params:
+    - name: BUILDER_IMAGE
+      description: The image on which builds will run (must include lifecycle and compatible buildpacks).
+    - name: TRUST_BUILDER
+      description: >-
+        Whether the builder image is trusted.
+        When false, each build phase is executed in isolation and credentials are only shared with trusted images.
+      default: "false"
+    - name: APP_IMAGE
+      description: The name of where to store the app image.
+    - name: SOURCE_URL
+      description: A git repo url where the source code resides.
+    - name: SOURCE_REFERENCE
+      description: The branch, tag or SHA to checkout.
+      default: ""
+    - name: SOURCE_SUBPATH
+      description: A subpath within checked out source where the source to build is located.
+      default: ""
+    - name: ENV_VARS
+      type: array
+      description: Environment variables to set during _build-time_.
+      default: []
+    - name: PROCESS_TYPE
+      description: The default process type to set on the image.
+      default: "web"
+    - name: RUN_IMAGE
+      description: The name of the run image to use (defaults to image specified in builder).
+      default: ""
+    - name: CACHE_IMAGE
+      description: The name of the persistent cache image.
+      default: ""
+    - name: USER_ID
+      description: The user ID of the builder image user.
+      default: "1000"
+    - name: GROUP_ID
+      description: The group ID of the builder image user.
+      default: "1000"
+
+  tasks:
+    - name: fetch-from-git
+      taskRef:
+        name: git-clone
+      params:
+        - name: url
+          value: $(params.SOURCE_URL)
+        - name: revision
+          value: $(params.SOURCE_REFERENCE)
+      workspaces:
+        - name: output
+          workspace: source-ws
+    - name: build-trusted
+      runAfter:
+        - fetch-from-git
+      taskRef:
+        name: buildpacks
+      when:
+        - input: "$(params.TRUST_BUILDER)"
+          operator: in
+          values: ["true", "yes", "TRUE", "True"]
+      workspaces:
+        - name: source
+          workspace: source-ws
+        - name: cache
+          workspace: cache-ws
+      params:
+        - name: BUILDER_IMAGE
+          value: "$(params.BUILDER_IMAGE)"
+        - name: APP_IMAGE
+          value: "$(params.APP_IMAGE)"
+        - name: SOURCE_SUBPATH
+          value: "$(params.SOURCE_SUBPATH)"
+        - name: PROCESS_TYPE
+          value: "$(params.PROCESS_TYPE)"
+        - name: ENV_VARS
+          value: ["$(params.ENV_VARS)"]
+        - name: RUN_IMAGE
+          value: "$(params.RUN_IMAGE)"
+        - name: CACHE_IMAGE
+          value: "$(params.CACHE_IMAGE)"
+        - name: USER_ID
+          value: "$(params.USER_ID)"
+        - name: GROUP_ID
+          value: "$(params.GROUP_ID)"
+    - name: build-untrusted
+      runAfter:
+        - fetch-from-git
+      taskRef:
+        name: buildpacks-phases
+      when:
+        - input: "$(params.TRUST_BUILDER)"
+          operator: notin
+          values: ["true", "yes", "TRUE", "True"]
+      workspaces:
+        - name: source
+          workspace: source-ws
+        - name: cache
+          workspace: cache-ws
+      params:
+        - name: BUILDER_IMAGE
+          value: "$(params.BUILDER_IMAGE)"
+        - name: APP_IMAGE
+          value: "$(params.APP_IMAGE)"
+        - name: SOURCE_SUBPATH
+          value: "$(params.SOURCE_SUBPATH)"
+        - name: ENV_VARS
+          value: ["$(params.ENV_VARS)"]
+        - name: PROCESS_TYPE
+          value: "$(params.PROCESS_TYPE)"
+        - name: RUN_IMAGE
+          value: "$(params.RUN_IMAGE)"
+        - name: CACHE_IMAGE
+          value: "$(params.CACHE_IMAGE)"
+        - name: USER_ID
+          value: "$(params.USER_ID)"
+        - name: GROUP_ID
+          value: "$(params.GROUP_ID)"
