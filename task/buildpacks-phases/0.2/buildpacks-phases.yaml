@@ -1,0 +1,234 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: buildpacks-phases
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/tags: image-build
+    tekton.dev/displayName: "Buildpacks (phases)"
+spec:
+  description: >-
+    The Buildpacks-Phases task builds source into a container image and pushes it to
+    a registry, using Cloud Native Buildpacks. This task separately calls the aspects of the
+    Cloud Native Buildpacks lifecycle, to provide increased security via container isolation.
+
+  workspaces:
+    - name: source
+      description: Directory where application source is located.
+    - name: cache
+      description: Directory where cache is stored (when no cache image is provided).
+      optional: true
+
+  params:
+    - name: APP_IMAGE
+      description: The name of where to store the app image.
+    - name: BUILDER_IMAGE
+      description: The image on which builds will run (must include lifecycle and compatible buildpacks).
+    - name: SOURCE_SUBPATH
+      description: A subpath within the `source` input where the source to build is located.
+      default: ""
+    - name: ENV_VARS
+      type: array
+      description: Environment variables to set during _build-time_.
+      default: []
+    - name: PROCESS_TYPE
+      description: The default process type to set on the image.
+      default: "web"
+    - name: RUN_IMAGE
+      description: Reference to a run image to use.
+      default: ""
+    - name: CACHE_IMAGE
+      description: The name of the persistent app cache image (if no cache workspace is provided).
+      default: ""
+    - name: USER_ID
+      description: The user ID of the builder image user.
+      default: "1000"
+    - name: GROUP_ID
+      description: The group ID of the builder image user.
+      default: "1000"
+    - name: PLATFORM_DIR
+      description: The name of the platform directory.
+      default: empty-dir
+    - name: LIFECYCLE_IMAGE
+      description: The image to use when executing sensitive phases.
+      default: docker.io/buildpacksio/lifecycle:0.10.2@sha256:1bf8d3fc41d2fdf0ee4abdad50038ab8902ef58c74f5bcfc432c26767d889ed0
+
+  results:
+    - name: APP_IMAGE_DIGEST
+      description: The digest of the built `APP_IMAGE`.
+
+  stepTemplate:
+    env:
+      - name: CNB_PLATFORM_API
+        value: "0.4"
+
+  steps:
+    - name: prepare
+      image: docker.io/library/bash:5.1.4@sha256:b208215a4655538be652b2769d82e576bc4d0a2bb132144c060efc5be8c3f5d6
+      args:
+        - "--env-vars"
+        - "$(params.ENV_VARS[*])"
+      script: |
+        #!/usr/bin/env bash
+        set -e
+
+        if [[ "$(workspaces.cache.bound)" == "true" ]]; then
+          echo "> Setting permissions on '$(workspaces.cache.path)'..."
+          chown -R "$(params.USER_ID):$(params.GROUP_ID)" "$(workspaces.cache.path)"
+        fi
+
+        for path in "/tekton/home" "/layers" "$(workspaces.source.path)"; do
+          echo "> Setting permissions on '$path'..."
+          chown -R "$(params.USER_ID):$(params.GROUP_ID)" "$path"
+        done
+
+        echo "> Parsing additional configuration..."
+        parsing_flag=""
+        envs=()
+        for arg in "$@"; do
+            if [[ "$arg" == "--env-vars" ]]; then
+                echo "-> Parsing env variables..."
+                parsing_flag="env-vars"
+            elif [[ "$parsing_flag" == "env-vars" ]]; then
+                envs+=("$arg")
+            fi
+        done
+
+        echo "> Processing any environment variables..."
+        ENV_DIR="/platform/env"
+
+        echo "--> Creating 'env' directory: $ENV_DIR"
+        mkdir -p "$ENV_DIR"
+
+        for env in "${envs[@]}"; do
+            IFS='=' read -r key value string <<< "$env"
+            if [[ "$key" != "" && "$value" != "" ]]; then
+                path="${ENV_DIR}/${key}"
+                echo "--> Writing ${path}..."
+                echo -n "$value" > "$path"
+            fi
+        done
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+        - name: $(params.PLATFORM_DIR)
+          mountPath: /platform
+      securityContext:
+        privileged: true
+
+    # Copy stack.toml so that it will be accessible to the exporter, since the lifecycle image will not contain it.
+    - name: copy-stack-toml
+      image: $(params.BUILDER_IMAGE)
+      imagePullPolicy: Always
+      command: ["/bin/sh"]
+      args:
+        - "-c"
+        - >
+          cp /cnb/stack.toml /layers/
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+
+    - name: detect
+      image: $(params.BUILDER_IMAGE)
+      imagePullPolicy: Always
+      command: ["/cnb/lifecycle/detector"]
+      args:
+        - "-app=$(workspaces.source.path)/$(params.SOURCE_SUBPATH)"
+        - "-group=/layers/group.toml"
+        - "-plan=/layers/plan.toml"
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+        - name: $(params.PLATFORM_DIR)
+          mountPath: /platform
+        - name: empty-dir
+          mountPath: /tekton/home
+
+    - name: analyze
+      image: $(params.LIFECYCLE_IMAGE)
+      imagePullPolicy: Always
+      command: ["/cnb/lifecycle/analyzer"]
+      args:
+        - "-layers=/layers"
+        - "-group=/layers/group.toml"
+        - "-cache-dir=$(workspaces.cache.path)"
+        - "-cache-image=$(params.CACHE_IMAGE)"
+        - "-uid=$(params.USER_ID)"
+        - "-gid=$(params.GROUP_ID)"
+        - "$(params.APP_IMAGE)"
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+
+    - name: restore
+      image: $(params.LIFECYCLE_IMAGE)
+      imagePullPolicy: Always
+      command: ["/cnb/lifecycle/restorer"]
+      args:
+        - "-group=/layers/group.toml"
+        - "-layers=/layers"
+        - "-cache-dir=$(workspaces.cache.path)"
+        - "-cache-image=$(params.CACHE_IMAGE)"
+        - "-uid=$(params.USER_ID)"
+        - "-gid=$(params.GROUP_ID)"
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+
+    - name: build
+      image: $(params.BUILDER_IMAGE)
+      imagePullPolicy: Always
+      command: ["/cnb/lifecycle/builder"]
+      args:
+        - "-app=$(workspaces.source.path)/$(params.SOURCE_SUBPATH)"
+        - "-layers=/layers"
+        - "-group=/layers/group.toml"
+        - "-plan=/layers/plan.toml"
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+        - name: $(params.PLATFORM_DIR)
+          mountPath: /platform
+        - name: empty-dir
+          mountPath: /tekton/home
+
+    - name: export
+      image: $(params.LIFECYCLE_IMAGE)
+      imagePullPolicy: Always
+      command: ["/cnb/lifecycle/exporter"]
+      args:
+        - "-app=$(workspaces.source.path)/$(params.SOURCE_SUBPATH)"
+        - "-layers=/layers"
+        - "-group=/layers/group.toml"
+        - "-cache-dir=$(workspaces.cache.path)"
+        - "-cache-image=$(params.CACHE_IMAGE)"
+        - "-report=/layers/report.toml"
+        - "-process-type=$(params.PROCESS_TYPE)"
+        - "-uid=$(params.USER_ID)"
+        - "-gid=$(params.GROUP_ID)"
+        - "-stack=/layers/stack.toml"
+        - "-run-image=$(params.RUN_IMAGE)"
+        - "$(params.APP_IMAGE)"
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+
+    - name: results
+      image: docker.io/library/bash:5.1.4@sha256:b208215a4655538be652b2769d82e576bc4d0a2bb132144c060efc5be8c3f5d6
+      script: |
+        #!/usr/bin/env bash
+        set -e
+        cat /layers/report.toml | grep "digest" | cut -d'"' -f2 | cut -d'"' -f2 | tr -d '\n' | tee $(results.APP_IMAGE_DIGEST.path)
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+
+  volumes:
+    - name: empty-dir
+      emptyDir: {}
+    - name: layers-dir
+      emptyDir: {}
