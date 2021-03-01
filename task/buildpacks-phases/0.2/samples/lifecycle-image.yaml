@@ -1,0 +1,65 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: lifecycle-image-ws-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: lifecycle-image-pipeline-run
+  labels:
+    app.kubernetes.io/description: A PipelineRun configured to use a specific lifecycle image.
+spec:
+  pipelineSpec:
+    workspaces:
+      - name: source-ws
+      - name: cache-ws
+    tasks:
+      - name: fetch-repository
+        taskRef:
+          name: git-clone
+        workspaces:
+          - name: output
+            workspace: source-ws
+        params:
+          - name: url
+            value: https://github.com/buildpacks/samples
+          - name: subdirectory
+            value: ""
+          - name: deleteExisting
+            value: "true"
+      - name: buildpacks-phases
+        taskRef:
+          name: buildpacks-phases
+        runAfter:
+          - fetch-repository
+        workspaces:
+          - name: source
+            workspace: source-ws
+          - name: cache
+            workspace: cache-ws
+        params:
+          - name: APP_IMAGE
+            value: <IMAGE_NAME>
+          - name: SOURCE_SUBPATH
+            value: apps/java-maven
+          - name: BUILDER_IMAGE
+            value: docker.io/cnbs/sample-builder:alpine@sha256:b51367258b3b6fff1fe8f375ecca79dab4339b177efb791e131417a5a4357f42
+          - name: LIFECYCLE_IMAGE
+            value: docker.io/buildpacksio/lifecycle:0.10.1@sha256:1bf8d3fc41d2fdf0ee4abdad50038ab8902ef58c74f5bcfc432c26767d889ed0
+  workspaces:
+    - name: source-ws
+      subPath: source
+      persistentVolumeClaim:
+        claimName: lifecycle-image-ws-pvc
+    - name: cache-ws
+      subPath: cache
+      persistentVolumeClaim:
+        claimName: lifecycle-image-ws-pvc
