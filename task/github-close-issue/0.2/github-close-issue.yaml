@@ -54,7 +54,7 @@ spec:
               name: $(params.GITHUB_TOKEN_SECRET_NAME)
               key: $(params.GITHUB_TOKEN_SECRET_KEY)
 
-      image: registry.access.redhat.com/ubi8/ubi:latest
+      image: registry.access.redhat.com/ubi8/ubi:8.2
       script: |
         #!/usr/libexec/platform-python
         import json
