@@ -20,6 +20,9 @@ spec:
   - name: builder_image
     description: The location of the docker builder image.
     default: docker.io/library/docker:stable@sha256:18ff92d3d31725b53fa6633d60bed323effb6d5d4588be7b547078d384e0d4bf #tag: stable
+  - name: dind_image
+    description: The location of the docker-in-docker image.
+    default: docker:dind
   - name: dockerfile
     description: Path to the Dockerfile to build.
     default: ./Dockerfile
@@ -81,7 +84,7 @@ spec:
       - mountPath: /certs/client
         name: dind-certs
   sidecars:
-  - image: docker:dind
+  - image: $(params.dind_image)
     name: server
     args:
       - --storage-driver=vfs

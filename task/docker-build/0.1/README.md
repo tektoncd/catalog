@@ -13,8 +13,9 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 ### Parameters
 
 * **image**: The name (reference) of the image to build.
-* **builder_image:**: The name of the image containing the Docker tool. See
-  note below.  (_default:_ docker.io/docker:latest)
+* **builder_image**: The name of the image containing the Docker tool. See
+  note below.  (_default:_ `docker.io/docker:latest`)
+* **dind_image**: The name of the image used by `docker-in-docker` sidecar container (_default:_ `docker:dind`). 
 * **dockerfile**: The path to the `Dockerfile` to execute (_default:_
   `./Dockerfile`)
 * **context**: Path to the directory to use as context (_default:_
