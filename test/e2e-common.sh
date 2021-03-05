@@ -42,19 +42,7 @@ function require_command() {
     fi
 }
 
-require_command python3
-
-## Python Modules
-
-function require_python_module() {
-    if ! ${1} -m pip show ${2} &> /dev/null;then
-        echo "required '${1}' module '${2}' not be found"
-        echo "you can try installing it via '${1} -m pip install ${2}'"
-        exit 1
-    fi
-}
-
-require_python_module python3 pyyaml
+require_command ${KUBECTL_CMD}
 
 source $(dirname $0)/../vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
 
@@ -63,7 +51,11 @@ source $(dirname $0)/../vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
 function add_sidecar_registry() {
     cp ${1} ${TMPF}.read
 
-    cat ${TMPF}.read | python3 -c 'import yaml;f=open(0, encoding="utf-8"); data=yaml.load(f.read(), Loader=yaml.FullLoader);data["spec"]["sidecars"]=[{"image":"registry", "name": "registry"}];print(yaml.dump(data, default_flow_style=False));' > ${TMPF}
+    cat ${TMPF}.read | sed -E 's/spec:/spec:\
+  sidecars:\
+  - image: registry\
+    name: registry/' > ${TMPF}
+
     rm -f ${TMPF}.read
 }
 
