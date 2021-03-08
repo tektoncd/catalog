@@ -1,0 +1,108 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: github-add-gist
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: github
+    tekton.dev/displayName: "upload to gist"
+spec:
+  description: |
+    This task will uploaded the provided file
+    to the GitHub gist.
+  workspaces:
+    - name: input
+      description: |
+        The input workspace which contains the file to be uploaded to gist.
+  params:
+    - name: GITHUB_HOST_URL
+      description: |
+        The GitHub host, adjust this if you run a GitHub enteprise.
+      default: "api.github.com"
+      type: string
+    - name: API_PATH_PREFIX
+      description: |
+        The API path prefix, GitHub Enterprise has a prefix e.g. /api/v3
+      default: ""
+      type: string
+    - name: GITHUB_TOKEN_SECRET_NAME
+      description: |
+        The name of the Kubernetes Secret that contains the GitHub token.
+      type: string
+      default: github
+    - name: GITHUB_TOKEN_SECRET_KEY
+      description: |
+        The key within the Kubernetes Secret that contains the GitHub token.
+      type: string
+      default: token
+    - name: FILE_NAME
+      type: string
+      description: |
+        Name of the file to be uploaded to gist.
+  results:
+    - name: gist_url
+      description: The raw URL of the uploaded gist
+  steps:
+    - name: create-gist
+      workingDir: $(workspaces.input.path)
+      env:
+        - name: GITHUBTOKEN
+          valueFrom:
+            secretKeyRef:
+              name: $(params.GITHUB_TOKEN_SECRET_NAME)
+              key: $(params.GITHUB_TOKEN_SECRET_KEY)
+
+      image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
+      script: |
+        #!/usr/libexec/platform-python
+        import json
+        import os
+        import http.client
+        import urllib.parse
+
+        filename = "$(params.FILE_NAME)"
+        if not os.path.exists(filename):
+          print("File doesn't exists with file name "+filename)
+          os._exit(1)
+
+        contents = open(filename, "r")
+        comment = contents.read()
+
+        data = {
+          "public": "true",
+          "files": {
+            filename: {
+              "content": comment,
+            },
+          },
+        }
+
+        print("Creating a gist with filename: "+filename)
+
+        # This is for our fake github server
+        if "$(params.GITHUB_HOST_URL)".startswith("http://"):
+          conn = http.client.HTTPConnection("$(params.GITHUB_HOST_URL)".replace("http://", ""))
+        else:
+          conn = http.client.HTTPSConnection("$(params.GITHUB_HOST_URL)")
+
+        r = conn.request(
+            "POST",
+            "$(params.API_PATH_PREFIX)" + "/gists",
+            body=json.dumps(data),
+            headers={
+                "User-Agent": "TektonCD, the peaceful cat",
+                "Authorization": "Bearer " + os.environ["GITHUBTOKEN"],
+            })
+        resp = conn.getresponse()
+        if not str(resp.status).startswith("2"):
+            print("Error: %d" % (resp.status))
+            print(resp.read())
+        else:
+          response = resp.read().decode('utf-8')
+          jsonObj = json.loads(response)
+          rawUrl = jsonObj['files'][filename]['raw_url']
+          resultFile = open("$(results.gist_url.path)", "w")
+          resultFile.write(rawUrl)
+          resultFile.close()
