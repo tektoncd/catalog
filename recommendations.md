@@ -97,7 +97,7 @@ beautiful script.
       echo $(params.one)
 ```
 
-If `params.one` happens to contain a quote, then the resultin shell
+If `params.one` happens to contain a quote, then the resulting shell
 script might look like this:
 
 ```
@@ -241,7 +241,7 @@ be the parameters to other tasks.
 
 ## Use composable parameter formats
 
-Especially when passing lists of items betweek tasks (i.e. a list of
+Especially when passing lists of items between tasks (i.e. a list of
 items from one task, designed to be the parameter of another task),
 avoid using structured strings, tab-separated values, or even
 line-separated values.  Such formats are prone to error due to simple
@@ -286,7 +286,7 @@ issues.
 Here, the "foo" and "bar" task results and the "data" parameter of the
 pipeline have been defined to be _of type JSON Stream_, allowing the
 pipeline author to construct the pipeline parameter value directly by
-concatinating the results.  This construct does not fall apart when
+concatenating the results.  This construct does not fall apart when
 the data is on one line or split on multiple lines.
 
 ## Use "level-based" approach to your advantage
