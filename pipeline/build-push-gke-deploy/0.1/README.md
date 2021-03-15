@@ -3,10 +3,22 @@
 
 This Pipeline builds, pushes, and deploys your application to a Google Kubernetes Engine cluster using [`gke-deploy`](https://github.com/GoogleCloudPlatform/cloud-builders/tree/master/gke-deploy).
 
+## Install the task
+
+Both `Kaniko` and `Gke-deploy` tasks have been used from tekton catalog
+
+```
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/kaniko/0.1/kaniko.yaml
+```
+
+```
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/gke-deploy/0.1/gke-deploy.yaml
+```
+
 ## Install the Pipeline
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/build-push-gke-deploy/0.1/build-push-gke-deploy.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/pipeline/build-push-gke-deploy/0.1/build-push-gke-deploy.yaml
 ```
 
 ## Workspaces

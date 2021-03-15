@@ -9,6 +9,7 @@ This guide walks through a detailed example that demonstrates using the `build-p
 1. Follow the instructions [here](https://github.com/tektoncd/pipeline/blob/master/docs/install.md#installing-tekton-pipelines-1) to install Tekton Pipelines onto your cluster.
 
   Alternatively, set the variables below and run the script to automate the above steps.
+
   ```bash
   TEKTON_CLUSTER_NAME=[NAME]
   TEKTON_CLUSTER_LOCATION=[REGION/ZONE]
@@ -46,7 +47,7 @@ This guide walks through a detailed example that demonstrates using the `build-p
 
 ## Install Tekton Pipelines CLI
 
-Install the Tekton Pipelines CLI to view your logs by following the instructions for your machine at https://github.com/tektoncd/cli.
+Install the Tekton Pipelines CLI to view your logs by following the instructions for your machine at <https://github.com/tektoncd/cli>.
 
 ## Set up your repo
 
@@ -108,7 +109,7 @@ Install the Tekton Pipelines CLI to view your logs by following the instructions
 4. Install the `build-push-gke-deploy` Pipeline.
 
   ```bash
-  kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/gke-deploy/build-push-gke-deploy.yaml
+  kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/pipeline/build-push-gke-deploy/0.1/build-push-gke-deploy.yaml
   ```
 
 5. Create the `PipelineRun` config to run your Pipeline.

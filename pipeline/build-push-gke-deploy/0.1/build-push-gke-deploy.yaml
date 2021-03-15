@@ -1,0 +1,77 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-push-gke-deploy
+  labels:
+    app.kubernetes.io/version: '0.1'
+  annotations:
+    tekton.dev/pipelines.minVersion: '0.12.1'
+    tekton.dev/tags: build, push, deploy
+spec:
+  description: >-
+    This Pipeline builds, pushes, and deploys your application to a Google Kubernetes
+    Engine cluster using gke-deploy.
+  workspaces:
+    - name: source
+      description: The workspace containing the source code which is to be build, pushed and deployed
+  params:
+    - name: pathToContext
+      type: string
+      description: The path to the build context relative to your source repo's root. This is used by Kaniko.
+      default: .
+    - name: pathToDockerFile
+      type: string
+      description: The path to the dockerfile to build, relative to the context.
+      default: Dockerfile
+    - name: pathToKubernetesConfigs
+      type: string
+      description: The path to the Kubernetes configs to deploy, relative to your source repo's root.
+    - name: imageUrl
+      type: string
+      description: URL of image repository.
+    - name: imageTag
+      type: string
+      description: Tag to apply to the built image.
+      default: latest
+    - name: clusterName
+      type: string
+      description: Name of target GKE cluster to deploy to.
+    - name: clusterLocation
+      type: string
+      description: Zone/region of target GKE cluster to deploy to.
+    - name: clusterProject
+      type: string
+      description: Project of target GKE cluster to deploy to.
+      default: ''
+  tasks:
+    - name: kaniko
+      taskRef:
+        name: kaniko
+      params:
+        - name: CONTEXT
+          value: '$(params.pathToContext)'
+        - name: IMAGE
+          value: '$(params.imageUrl):$(params.imageTag)'
+      workspaces:
+        - name: source
+          workspace: source
+    - name: gke-deploy
+      taskRef:
+        name: gke-deploy
+      runAfter:
+        - kaniko
+      params:
+        - name: ARGS
+          value:
+            - 'run'
+            - '--image=$(params.imageUrl):$(params.imageTag)'
+            - '--filename=$(workspaces.source.path)/$(params.pathToKubernetesConfigs)'
+            - '--cluster=$(params.clusterName)'
+            - '--location=$(params.clusterLocation)'
+            - '--project=$(params.clusterProject)'
+            - '--output=/var/tmp/gke-deploy'
+
+      workspaces:
+        - name: source
+          workspace: source
