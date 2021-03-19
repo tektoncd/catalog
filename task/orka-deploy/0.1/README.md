@@ -24,7 +24,7 @@ See also: [GCP-MacStadium Site-to-Site VPN](https://docs.macstadium.com/docs/goo
 
 ## Installation
 
-Before you can use this `Task` in Tekton pipelines, you need to install it and the Orka configuration in your Kubernetes cluster. See the `orka-init` documentation [here](https://github.com/tektoncd/catalog/blob/master/task/orka-init/0.1/README.md#installation) for more information on setting up the Orka API configuration.
+Before you can use this `Task` in Tekton pipelines, you need to install it and the Orka configuration in your Kubernetes cluster. See the `orka-init` documentation [here](https://github.com/tektoncd/catalog/blob/main/task/orka-init/0.1/README.md#installation) for more information on setting up the Orka API configuration.
 
 ```sh
 kubectl apply --namespace=<namespace> -f https://raw.githubusercontent.com/tektoncd/catalog/task/orka-deploy/0.1/orka-deploy.yaml
@@ -70,7 +70,7 @@ If using an SSH key to connect to the VM instead of an SSH username and password
 kubectl create secret generic orka-ssh-key --from-file=id_rsa=/path/to/id_rsa --from-literal=username=<username>
 ```
 
-See also: [use-ssh-key.yaml](https://github.com/tektoncd/catalog/blob/master/task/orka-deploy/0.1/samples/use-ssh-key.yaml) example
+See also: [use-ssh-key.yaml](https://github.com/tektoncd/catalog/blob/main/task/orka-deploy/0.1/samples/use-ssh-key.yaml) example
 
 ## Workspaces
 
@@ -102,7 +102,7 @@ See also: [use-ssh-key.yaml](https://github.com/tektoncd/catalog/blob/master/tas
 
 ## Samples
 
-[parallel-deploy.yaml](https://github.com/tektoncd/catalog/blob/master/task/orka-deploy/0.1/samples/parallel-deploy.yaml) is a sample `Pipeline` that uses the `orka-init`, `orka-deploy`, and `orka-teardown` tasks and performs the following operations:
+[parallel-deploy.yaml](https://github.com/tektoncd/catalog/blob/main/task/orka-deploy/0.1/samples/parallel-deploy.yaml) is a sample `Pipeline` that uses the `orka-init`, `orka-deploy`, and `orka-teardown` tasks and performs the following operations:
 1. Sets up an Orka job runner.
 2. Deploys 2 VMs in parallel and executes a different script on each VM.
 3. Cleans up the environment.

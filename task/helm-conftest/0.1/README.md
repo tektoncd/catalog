@@ -8,7 +8,7 @@ your Tekton pipelines. Conftest is a tool for testing configuration files using 
 Conftest also has a Helm plugin, which redners the Helm chart before applying the policy. For that task use:
 
 ```console
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/helm-conftest/0.1/helm-conftest.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/helm-conftest/0.1/helm-conftest.yaml
 ```
 
 ## Helm usage
@@ -44,4 +44,4 @@ spec:
 
 ## Workspaces
 
-* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) containing the source to build.
+* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md) containing the source to build.

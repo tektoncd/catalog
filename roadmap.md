@@ -3,7 +3,7 @@
 This doc describes the roadmap for [the Tekton Catalog](https://github.com/tektoncd/catalog).
 
 The catalog is a key piece of
-[Tekton's mission](https://github.com/tektoncd/community/blob/master/roadmap.md#mission-and-vision).
+[Tekton's mission](https://github.com/tektoncd/community/blob/main/roadmap.md#mission-and-vision).
 In 2019 we got a solid start on a catalog of reusable `Tasks` and in 2020 we want to keep this momentum
 going and make the catalog even more useful by adding:
 

@@ -5,7 +5,7 @@ This is a generic task used to perform kubernetes actions such as `kubectl get d
 ## Install the task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/kubernetes-actions/0.2/kubernetes-actions.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kubernetes-actions/0.2/kubernetes-actions.yaml
 ```
 
 ## Inputs
@@ -23,7 +23,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 
 ## Results
 
-- **output-result**: If you want to emit some result which can be used in decision making. One such case is when using [whenExpressions](https://github.com/tektoncd/pipeline/blob/master/docs/pipelines.md#guard-task-execution-using-whenexpressions).
+- **output-result**: If you want to emit some result which can be used in decision making. One such case is when using [whenExpressions](https://github.com/tektoncd/pipeline/blob/main/docs/pipelines.md#guard-task-execution-using-whenexpressions).
 
 ## Usage
 

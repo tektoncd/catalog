@@ -27,7 +27,7 @@ Refer [this](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/setup-c
 ### Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/github-app-token/0.1/github-app-token.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-app-token/0.1/github-app-token.yaml
 ```
 
 

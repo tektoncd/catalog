@@ -8,12 +8,12 @@ The task provides test execution based on [pytest](https://pypi.org/project/pyte
 
 ### Workspaces
 
-* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) volume containing the python code.
+* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md) volume containing the python code.
 
 ### Install pytest
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/pytest/0.1/pytest.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/pytest/0.1/pytest.yaml
 ```
 
 ## Parameters

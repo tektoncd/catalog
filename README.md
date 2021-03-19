@@ -3,7 +3,7 @@
 **If you want `v1alpha1` resources, you need to go to the
 [`v1alpha1`](https://github.com/tektoncd/catalog/tree/v1alpha1)
 branch. The
-[`master`](https://github.com/tektoncd/catalog/tree/master) branch
+[`main`](https://github.com/tektoncd/catalog/tree/main) branch
 is synced with
 [`v1beta1`](https://github.com/tektoncd/catalog/tree/v1beta1) since
 2020, 19th June.**
@@ -148,7 +148,7 @@ status:
 
 If you want to contribute to this repository, please see our [contributing](./CONTRIBUTING.md) guidelines.
 
-If you are looking for support, enter an [issue](https://github.com/tektoncd/catalog/issues/new) or join our [Slack workspace](https://github.com/tektoncd/community/blob/master/contact.md#slack)
+If you are looking for support, enter an [issue](https://github.com/tektoncd/catalog/issues/new) or join our [Slack workspace](https://github.com/tektoncd/community/blob/main/contact.md#slack)
 
 ## Status of the Project
 

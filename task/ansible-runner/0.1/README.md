@@ -7,7 +7,7 @@ Ansible Runner Task allows running the Ansible Playbooks using the [ansible-runn
 Create the Task and other resources:
 
 ```shell
-kubectl apply --filename https://raw.githubusercontent.com/tektoncd/catalog/master/task/ansible-runner/0.1/ansible-runner.yaml
+kubectl apply --filename https://raw.githubusercontent.com/tektoncd/catalog/main/task/ansible-runner/0.1/ansible-runner.yaml
 ```
 
 Verify the created tasks:
@@ -23,7 +23,7 @@ tkn task ls
 
 ## Workspaces
 
-* **runner-dir**: A [workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) to hold the `private_data_dir` as described in https://ansible-runner.readthedocs.io/en/latest/intro.html#runner-input-directory-hierarchy[Runner Directory]
+* **runner-dir**: A [workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md) to hold the `private_data_dir` as described in https://ansible-runner.readthedocs.io/en/latest/intro.html#runner-input-directory-hierarchy[Runner Directory]
 
 ## Usage
 
@@ -39,8 +39,8 @@ All the examples will be run in namespace called `funstuff`. Create the namespac
 ### Create the PVC and clone example sources
 
 ```shell
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/git-clone/0.1/git-clone.yaml \
-  -f  https://raw.githubusercontent.com/tektoncd/catalog/master/task/ansible-runner/0.1/support/playbooks-pvc.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.1/git-clone.yaml \
+  -f  https://raw.githubusercontent.com/tektoncd/catalog/main/task/ansible-runner/0.1/support/playbooks-pvc.yaml
 ```
 
 Do the git clone of the examples repository:
@@ -59,7 +59,7 @@ tkn task start git-clone \
 As we will do get, list and create on the namespace, lets use a service account that has right RBAC:
 
 ```shell
-kubectl apply -f  https://raw.githubusercontent.com/tektoncd/catalog/master/task/ansible-runner/0.1/support/ansible-deployer.yaml
+kubectl apply -f  https://raw.githubusercontent.com/tektoncd/catalog/main/task/ansible-runner/0.1/support/ansible-deployer.yaml
 ```
 
 ### Run Tasks

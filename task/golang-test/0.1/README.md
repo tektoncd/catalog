@@ -5,7 +5,7 @@ This task is a Golang task to test Go projects.
 ## Install the task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/golang-test/0.1/golang-test.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/golang-test/0.1/golang-test.yaml
 ```
 
 ### Parameters
@@ -21,7 +21,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 
 ### Workspaces
 
-* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) containing the source to build.
+* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md) containing the source to build.
 
 ## Usage
 

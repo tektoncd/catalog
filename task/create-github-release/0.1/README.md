@@ -13,7 +13,7 @@ Task can also be used to upload multiple `assets` including `binaries` of the re
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/create-github-release/0.1/create-github-release.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/create-github-release/0.1/create-github-release.yaml
 ```
 
 ## Parameters
@@ -54,7 +54,7 @@ Release can be created at a particular branch, tag or commit sha, to achieve tha
 required branch, tag or commit sha can be added in the param `commitish`.
 
 Github repository on which release has to be performed must be available in the workspace named `source`. This can be done using 
-[git-clone](https://github.com/tektoncd/catalog/blob/master/task/git-clone/0.1/git-clone.yaml) task as shown [here](../0.1/samples/run.yaml).
+[git-clone](https://github.com/tektoncd/catalog/blob/main/task/git-clone/0.1/git-clone.yaml) task as shown [here](../0.1/samples/run.yaml).
 
 
 To make a release put all the required params, add required secrets and release will be done.

@@ -8,13 +8,13 @@ The following task can help you to deploy an application using the Blue-Green de
 ## Installing the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/blue-green-deploy/0.1/blue-green-deploy.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/blue-green-deploy/0.1/blue-green-deploy.yaml
 ```
 
 ## Installing the ClusterRoleBinding
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/blue-green-deploy/0.1/support/clusterrolebinding.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/blue-green-deploy/0.1/support/clusterrolebinding.yaml
 ```
 
 ## Workspaces
@@ -26,7 +26,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 
 - **SERVICE_NAME**: The service name pointing to the existing deployment. (_Note_: The service name for the new deployment should be same)
 - **NEW_VERSION**: The version of the deployment to be deployed in the green/blue zone
-- **MANIFEST**: The deployment manifest URL file path provided in case the manifest is present on Github. (_Example_: "https://raw.githubusercontent.com/tektoncd/catalog/master/task/blue-green-deploy/0.1/samples/v1-deploy/blue-deployment.yaml")
+- **MANIFEST**: The deployment manifest URL file path provided in case the manifest is present on Github. (_Example_: "https://raw.githubusercontent.com/tektoncd/catalog/main/task/blue-green-deploy/0.1/samples/v1-deploy/blue-deployment.yaml")
 
 # Usage
 
@@ -50,7 +50,7 @@ spec:
     - name: NEW_VERSION
       value: v2
     - name: MANIFEST
-      value: "https://raw.githubusercontent.com/tektoncd/catalog/master/task/blue-green-deploy/0.1/samples/v2-deploy/green-deployment.yaml"
+      value: "https://raw.githubusercontent.com/tektoncd/catalog/main/task/blue-green-deploy/0.1/samples/v2-deploy/green-deployment.yaml"
   workspaces:
     - name: manifest-dir
       emptyDir: {}

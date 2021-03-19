@@ -16,7 +16,7 @@ BentoML now supports the ability to retrieve artifact bundles via its cli. This 
 
 ### Examples
 
-Run `bentoml --help` for BentoML usage. Using the [Tekton CLI](https://github.com/tektoncd/cli/blob/master/docs/cmd/tkn_task_start.md) (`tkn`):
+Run `bentoml --help` for BentoML usage. Using the [Tekton CLI](https://github.com/tektoncd/cli/blob/main/docs/cmd/tkn_task_start.md) (`tkn`):
 
 Use bentoml to retrieve a full ML build environment in the cwd:
 

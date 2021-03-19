@@ -29,7 +29,7 @@ In general, these common tasks provide the following logical steps:
 
 This pipeline and all examples were tested using the following prerequisite software and listed versions:
 
-- [x] [Tekton Pipeline](https://github.com/tektoncd/pipeline/blob/master/docs/install.md#installing-tekton-pipelines) >= v0.12.1 (v1beta1)
+- [x] [Tekton Pipeline](https://github.com/tektoncd/pipeline/blob/main/docs/install.md#installing-tekton-pipelines) >= v0.12.1 (v1beta1)
 - [x] [Kubernetes](https://kubernetes.io/docs/home/#learn-how-to-use-kubernetes) >= v1.15.5
 - [x] [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) >= v1.15.5
 

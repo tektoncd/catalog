@@ -25,7 +25,7 @@ See also: [GCP-MacStadium Site-to-Site VPN](https://docs.macstadium.com/docs/goo
 
 ## Installation
 
-Before you can use this `Task` in Tekton pipelines, you need to install it and the Orka configuration in your Kubernetes cluster. See the `orka-init` documentation [here](https://github.com/tektoncd/catalog/blob/master/task/orka-init/0.1/README.md#installation) for more information on setting up the Orka API configuration.
+Before you can use this `Task` in Tekton pipelines, you need to install it and the Orka configuration in your Kubernetes cluster. See the `orka-init` documentation [here](https://github.com/tektoncd/catalog/blob/main/task/orka-init/0.1/README.md#installation) for more information on setting up the Orka API configuration.
 
 ```sh
 kubectl apply --namespace=<namespace> -f https://raw.githubusercontent.com/tektoncd/catalog/task/orka-teardown/0.1/orka-teardown.yaml
@@ -37,7 +37,7 @@ Omit `--namespace` if installing in the `default` namespace.
 
 To use the `orka-init` and `orka-teardown` tasks, you need to configure a Kubernetes service account, a cluster role, and a cluster role binding.
 
-See the `orka-init` documentation [here](https://github.com/tektoncd/catalog/blob/master/task/orka-init/0.1/README.md#kubernetes-service-account-setup) for more information on setting up a service account.
+See the `orka-init` documentation [here](https://github.com/tektoncd/catalog/blob/main/task/orka-init/0.1/README.md#kubernetes-service-account-setup) for more information on setting up a service account.
 
 ## Parameters
 

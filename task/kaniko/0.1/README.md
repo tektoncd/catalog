@@ -15,7 +15,7 @@ makes it a perfect tool to be part of Tekton.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/kaniko/0.1/kaniko.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kaniko/0.1/kaniko.yaml
 ```
 
 ## Parameters
@@ -29,7 +29,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 
 ## Workspaces
 
-* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) containing the source to build.
+* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md) containing the source to build.
 
 ## Results
 
@@ -43,7 +43,7 @@ have the proper credentials. This is achieved using a `ServiceAccount`.
 
 For an example on how to create such a `ServiceAccount` to push an image to
 DockerHub, see the
-[Authentication](https://github.com/tektoncd/pipeline/blob/master/docs/auth.md#basic-authentication-docker)
+[Authentication](https://github.com/tektoncd/pipeline/blob/main/docs/auth.md#basic-authentication-docker)
 documentation page.
 
 ## Usage

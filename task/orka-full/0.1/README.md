@@ -46,7 +46,7 @@ kubectl apply --namespace=<namespace> -f https://raw.githubusercontent.com/tekto
 Omit `--namespace` if installing in the `default` namespace.
 
 > **TIP:** Did you know you could use a script for easier install?
-> See [SCRIPTS.md](https://github.com/tektoncd/catalog/blob/master/task/orka-full/0.1/SCRIPTS.md#install-the-task)
+> See [SCRIPTS.md](https://github.com/tektoncd/catalog/blob/main/task/orka-full/0.1/SCRIPTS.md#install-the-task)
 
 ## Storing your credentials
 
@@ -88,7 +88,7 @@ Omit `--namespace` if installing in the `default` namespace.
 
 > **TIP:** Did you know you could use a script for easier setup?
 >
-> See [SCRIPTS.md](https://github.com/tektoncd/catalog/blob/master/task/orka-full/0.1/SCRIPTS.md#store-the-orka-environment-credentials)
+> See [SCRIPTS.md](https://github.com/tektoncd/catalog/blob/main/task/orka-full/0.1/SCRIPTS.md#store-the-orka-environment-credentials)
 
 ### Using an SSH key
 
@@ -101,7 +101,7 @@ If using an SSH key to connect to the VM instead of an SSH username and password
 kubectl create secret generic orka-ssh-key --from-file=id_rsa=/path/to/id_rsa --from-literal=username=<username>
 ```
 
-See also: [`use-ssh-key`](https://github.com/tektoncd/catalog/blob/master/task/orka-full/0.1/samples/use-ssh-key.yaml) example
+See also: [`use-ssh-key`](https://github.com/tektoncd/catalog/blob/main/task/orka-full/0.1/samples/use-ssh-key.yaml) example
 
 ## Workspaces
 
@@ -135,9 +135,9 @@ See also: [`use-ssh-key`](https://github.com/tektoncd/catalog/blob/master/task/o
 
 ## Samples
 
-[dump-disk-info.yaml](https://github.com/tektoncd/catalog/blob/master/task/orka-full/0.1/samples/dump-disk-info.yaml) is a sample `TaskRun` that uses the `orka-full` `Task` to create a VM, run a script on it, and then clean up the environment.
+[dump-disk-info.yaml](https://github.com/tektoncd/catalog/blob/main/task/orka-full/0.1/samples/dump-disk-info.yaml) is a sample `TaskRun` that uses the `orka-full` `Task` to create a VM, run a script on it, and then clean up the environment.
 
-[build-audiokit-pipeline.yaml](https://github.com/tektoncd/catalog/blob/master/task/orka-full/0.1/samples/build-audiokit-pipeline.yaml) is a  sample `Pipeline` that uses the `orka-full` `Task` and performs the following operations:
+[build-audiokit-pipeline.yaml](https://github.com/tektoncd/catalog/blob/main/task/orka-full/0.1/samples/build-audiokit-pipeline.yaml) is a  sample `Pipeline` that uses the `orka-full` `Task` and performs the following operations:
 1. Clones a git repository.
 2. Passes it to the Orka build agent.
 3. Stores build artifacts on a persistent volume.

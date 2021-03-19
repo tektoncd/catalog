@@ -13,7 +13,7 @@ Omit `NAMESPACE` if installing in the `default` Kubernetes namespace.
 #### Install the task
 
 ```sh
-curl -LO https://raw.githubusercontent.com/tektoncd/catalog/master/task/orka-full/0.1/install.sh && chmod 755 install.sh
+curl -LO https://raw.githubusercontent.com/tektoncd/catalog/main/task/orka-full/0.1/install.sh && chmod 755 install.sh
 
 NAMESPACE=<namespace> ORKA_API=<endpoint> ./install.sh --apply
 ```
@@ -21,7 +21,7 @@ NAMESPACE=<namespace> ORKA_API=<endpoint> ./install.sh --apply
 #### Store the Orka environment credentials
 
 ```sh
-curl -LO https://raw.githubusercontent.com/tektoncd/catalog/master/task/orka-full/0.1/add-orka-creds.sh && chmod 755 add-orka-creds.sh
+curl -LO https://raw.githubusercontent.com/tektoncd/catalog/main/task/orka-full/0.1/add-orka-creds.sh && chmod 755 add-orka-creds.sh
 
 NAMESPACE=<namespace> EMAIL=<email> PASSWORD=<password> ./add-orka-creds.sh --apply
 ```
@@ -29,7 +29,7 @@ NAMESPACE=<namespace> EMAIL=<email> PASSWORD=<password> ./add-orka-creds.sh --ap
 #### Store the SSH credentials for the base image
 
 ```sh
-curl -LO https://raw.githubusercontent.com/tektoncd/catalog/master/task/orka-full/0.1/add-ssh-creds.sh && chmod 755 add-ssh-creds.sh
+curl -LO https://raw.githubusercontent.com/tektoncd/catalog/main/task/orka-full/0.1/add-ssh-creds.sh && chmod 755 add-ssh-creds.sh
 
 NAMESPACE=<namespace> SSH_USERNAME=<username> SSH_PASSWORD=<password> ./add-ssh-creds.sh --apply
 ```
@@ -41,7 +41,7 @@ Before you can use this `Task` in Tekton pipelines, you need to install it and t
 ### Get install.sh
 
 ```sh
-curl -LO https://raw.githubusercontent.com/tektoncd/catalog/master/task/orka-full/0.1/install.sh && chmod 755 install.sh
+curl -LO https://raw.githubusercontent.com/tektoncd/catalog/main/task/orka-full/0.1/install.sh && chmod 755 install.sh
 ```
 
 ### Default namespace installation
@@ -83,9 +83,9 @@ You need to create Kubernetes secrets to store the Orka user credentials and the
 ### Get the credentials scripts
 
 ```sh
-curl -LO https://raw.githubusercontent.com/tektoncd/catalog/master/task/orka-full/0.1/add-orka-creds.sh && chmod 755 add-orka-creds.sh
+curl -LO https://raw.githubusercontent.com/tektoncd/catalog/main/task/orka-full/0.1/add-orka-creds.sh && chmod 755 add-orka-creds.sh
 
-curl -LO https://raw.githubusercontent.com/tektoncd/catalog/master/task/orka-full/0.1/add-ssh-creds.sh && chmod 755 add-ssh-creds.sh
+curl -LO https://raw.githubusercontent.com/tektoncd/catalog/main/task/orka-full/0.1/add-ssh-creds.sh && chmod 755 add-ssh-creds.sh
 ```
 
 ### Store in the default namespace

@@ -5,7 +5,7 @@
 ## Installing the Task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/goreleaser/0.1/goreleaser.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/goreleaser/0.1/goreleaser.yaml
 ```
 
 ## Parameters

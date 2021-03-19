@@ -7,7 +7,7 @@ It uses [buildah task](../../buildah/README.md) for building the source code and
 
 ## Prerequisites:
 
-1. Latest Tekton Pipelines [install](https://github.com/tektoncd/pipeline/blob/master/docs/install.md)ed.
+1. Latest Tekton Pipelines [install](https://github.com/tektoncd/pipeline/blob/main/docs/install.md)ed.
 2. `kubectl` CLI [install](https://kubernetes.io/docs/tasks/tools/install-kubectl/)ed.
 3. `tkn` CLI [install](https://github.com/tektoncd/cli#installing-tkn)ed.
 4. User account exists at a container registry (e.g. [quay.io](https://quay.io))

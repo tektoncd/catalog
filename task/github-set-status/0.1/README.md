@@ -25,7 +25,7 @@ informations about the CI statuses or a direct link to the full log.
 ### Install the Task
 
 ```shell
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/github-set-status/0.1/github-set-status.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-set-status/0.1/github-set-status.yaml
 ```
 
 ### Parameters

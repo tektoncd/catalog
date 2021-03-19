@@ -23,4 +23,4 @@ requests to the cluster.
 
 ## Usage
 
-See [samples/create-eks-cluster.yaml](https://github.com/tektoncd/catalog/tree/master/task/eks-cluster-create/0.1/samples/create-eks-cluster.yaml) for an example of a TaskRun that creates a EKS cluster and writes the kubeconfig to a PVC.
+See [samples/create-eks-cluster.yaml](https://github.com/tektoncd/catalog/tree/main/task/eks-cluster-create/0.1/samples/create-eks-cluster.yaml) for an example of a TaskRun that creates a EKS cluster and writes the kubeconfig to a PVC.

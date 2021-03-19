@@ -7,7 +7,7 @@ issue.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/github-close-issue/0.2/github-close-issue.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-close-issue/0.2/github-close-issue.yaml
 ```
 
 ## Secrets

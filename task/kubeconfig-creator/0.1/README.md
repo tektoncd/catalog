@@ -1,6 +1,6 @@
 # Kubeconfig Creator Task
 
-This `Task` do a similar job to the [Cluster](https://github.com/tektoncd/pipeline/blob/master/docs/resources.md#cluster-resource)
+This `Task` do a similar job to the [Cluster](https://github.com/tektoncd/pipeline/blob/main/docs/resources.md#cluster-resource)
 `PipelineResource` and
 are intended as its replacement. This is part of our plan to [offer replacement
 `tasks` for Pipeline Resources](https://github.com/tektoncd/catalog/issues/95)
@@ -11,7 +11,7 @@ This task creates a [kubeconfig](https://kubernetes.io/docs/tasks/access-applica
 file that can be used to configure access to the different clusters.
 A common use case for this task is to deploy your `application/function` on different clusters.
 
-The task will use the [kubeconfigwriter](https://github.com/tektoncd/pipeline/blob/master/cmd/kubeconfigwriter/main.go)
+The task will use the [kubeconfigwriter](https://github.com/tektoncd/pipeline/blob/main/cmd/kubeconfigwriter/main.go)
 image and the provided parameters to create a `kubeconfig` file that can be used by other tasks
 in the pipeline to access the target cluster. The kubeconfig will be placed at
 `/workspace/<workspace-name>/kubeconfig`.
@@ -23,7 +23,7 @@ This task provides users variety of ways to authenticate:
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/kubeconfig-creator/0.1/kubeconfig-creator.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kubeconfig-creator/0.1/kubeconfig-creator.yaml
 ```
 
 ## Workspace

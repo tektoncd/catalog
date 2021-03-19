@@ -11,7 +11,7 @@ Follow instructions [here](https://api.slack.com/messaging/webhooks) to generate
 ## Install the Task and create a secret
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/send-to-webhook-slack/0.1/send-to-webhook-slack.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/send-to-webhook-slack/0.1/send-to-webhook-slack.yaml
 ```
 
 Create a secret that has the generated webhook URL

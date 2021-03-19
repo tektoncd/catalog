@@ -9,7 +9,7 @@ See also [`buildpacks-phases`](../buildpacks-phases) for the deconstructed versi
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/buildpacks/0.1/buildpacks.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildpacks/0.1/buildpacks.yaml
 ```
 
 > **NOTE:** This task is currently only compatible with Tekton **v0.11.0** and above, and CNB Platform API 0.3 (lifecycle v0.7.0 and above). For previous Platform API versions, [see below](#previous-platform-api-versions).

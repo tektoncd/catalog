@@ -5,7 +5,7 @@ This Task deploys an application to a Google Kubernetes Engine cluster using [`g
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/gke-deploy/0.1/gke-deploy.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gke-deploy/0.1/gke-deploy.yaml
 ```
 
 ## Parameters
@@ -69,9 +69,9 @@ spec:
 ```
 
 See
-[here](https://github.com/tektoncd/pipeline/blob/master/docs/resources.md#git-resource)
+[here](https://github.com/tektoncd/pipeline/blob/main/docs/resources.md#git-resource)
 for more on how to use the Git Resource.
 
 See
-[here](https://github.com/tektoncd/pipeline/blob/master/docs/auth.md#ssh-authentication-git)
+[here](https://github.com/tektoncd/pipeline/blob/main/docs/auth.md#ssh-authentication-git)
 to learn how to access private Git repositories using Tekton.

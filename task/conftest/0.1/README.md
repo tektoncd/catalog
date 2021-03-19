@@ -8,7 +8,7 @@ your Tekton pipelines. Conftest is a tool for testing configuration files using 
 In order to use Conftest with Tekton you need to first install the task.
 
 ```console
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/conftest/0.1/conftest.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/conftest/0.1/conftest.yaml
 ```
 
 ## Usage
@@ -58,4 +58,4 @@ container step-conftest has failed  : Error
 
 ## Workspaces
 
-* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) containing the source to build.
+* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md) containing the source to build.

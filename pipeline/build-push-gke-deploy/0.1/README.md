@@ -8,17 +8,17 @@ This Pipeline builds, pushes, and deploys your application to a Google Kubernete
 Both `Kaniko` and `Gke-deploy` tasks have been used from tekton catalog
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/kaniko/0.1/kaniko.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kaniko/0.2/kaniko.yaml
 ```
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/gke-deploy/0.1/gke-deploy.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gke-deploy/0.1/gke-deploy.yaml
 ```
 
 ## Install the Pipeline
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/pipeline/build-push-gke-deploy/0.1/build-push-gke-deploy.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/pipeline/build-push-gke-deploy/0.1/build-push-gke-deploy.yaml
 ```
 
 ## Workspaces
@@ -113,11 +113,11 @@ spec:
 ```
 
 See
-[here](https://github.com/tektoncd/pipeline/blob/master/docs/resources.md#git-resource)
+[here](https://github.com/tektoncd/pipeline/blob/main/docs/resources.md#git-resource)
 for more on how to use the Git Resource.
 
 See
-[here](https://github.com/tektoncd/pipeline/blob/master/docs/auth.md#ssh-authentication-git)
+[here](https://github.com/tektoncd/pipeline/blob/main/docs/auth.md#ssh-authentication-git)
 to learn how to access private Git repositories in Tekton.
 
 See

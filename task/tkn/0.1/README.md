@@ -6,7 +6,7 @@ This task performs operations on Tekton resources using
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/tkn/0.1/tkn.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/tkn/0.1/tkn.yaml
 ```
 
 ## Parameters
