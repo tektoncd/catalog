@@ -15,7 +15,7 @@ makes it a perfect tool to be part of Tekton.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/kaniko/0.2/kaniko.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kaniko/0.2/kaniko.yaml
 ```
 
 ## Parameters

@@ -6,7 +6,7 @@ This task performs operations on Tekton resources using
 ## Install the Task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/tkn/0.2/tkn.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/tkn/0.2/tkn.yaml
 ```
 
 ## Parameters
@@ -19,7 +19,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 
 ## Workspaces
 
-- **kubeconfig**: An [optional workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md#using-workspaces-in-tasks) that allows you to provide a `.kube/config` file for `tkn` to access the cluster. The file should be placed at the root of the Workspace with name `kubeconfig`.
+- **kubeconfig**: An [optional workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md#using-workspaces-in-tasks) that allows you to provide a `.kube/config` file for `tkn` to access the cluster. The file should be placed at the root of the Workspace with name `kubeconfig`.
 
 ## Usage
 
@@ -42,7 +42,7 @@ spec:
 
 2. Passing `SCRIPT` and `ARGS` and `WORKSPACE`
 
-   1. Sample secret can be found [here](https://github.com/tektoncd/catalog/tree/master/task/tkn/0.2/samples/secrets.yaml)
+   1. Sample secret can be found [here](https://github.com/tektoncd/catalog/tree/main/task/tkn/0.2/samples/secrets.yaml)
 
    2. Create `TaskRun`
 

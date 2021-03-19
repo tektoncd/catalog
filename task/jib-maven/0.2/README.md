@@ -7,7 +7,7 @@ Jib works with [Maven](https://github.com/GoogleContainerTools/jib/tree/master/j
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/jib-maven/0.2/jib-maven.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/jib-maven/0.2/jib-maven.yaml
 ```
 
 ## Parameters
@@ -20,7 +20,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 
 ## Workspaces
 
-* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) containing the source to build.
+* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md) containing the source to build.
 
 ## Results
 

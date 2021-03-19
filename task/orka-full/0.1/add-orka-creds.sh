@@ -4,7 +4,7 @@ set -e
 
 : ${NAMESPACE:="default"}
 
-BASE_URL="https://raw.githubusercontent.com/tektoncd/catalog/master/task/orka-full/0.1"
+BASE_URL="https://raw.githubusercontent.com/tektoncd/catalog/main/task/orka-full/0.1"
 USAGE=$(cat <<EOF
 Usage:
   NAMESPACE=<namespace> EMAIL=<email> PASSWORD=<password> ./add-orka-creds.sh [-a|-d|--apply|--delete]

@@ -10,7 +10,7 @@ It is implemented using [`boskosctl`](https://github.com/kubernetes-sigs/boskos/
 
 _The Task assumes already have Boskos up and running. To set it up yourself, your
 best bet would be to find an example of it already configured, for example
-[the boskos configuration used for Tekton itself](https://github.com/tektoncd/plumbing/tree/master/boskos)._
+[the boskos configuration used for Tekton itself](https://github.com/tektoncd/plumbing/tree/main/boskos)._
 
 ## ServiceAccount
 

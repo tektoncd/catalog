@@ -39,7 +39,7 @@ This `task` can be used to copy one or more than one images to-and fro various s
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/skopeo-copy/0.1/skopeo-copy.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/skopeo-copy/0.1/skopeo-copy.yaml
 ```
 
 ## Parameters

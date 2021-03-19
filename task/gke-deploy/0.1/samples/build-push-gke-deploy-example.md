@@ -6,7 +6,7 @@ This guide walks through a detailed example that demonstrates using the `build-p
 
 1. Follow the instructions [here](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity#enable_workload_identity_on_a_new_cluster) to create a new GKE cluster with Workload Identity enabled, create a Google service account, and create a Kubernetes service account for your Pipeline that binds to the Google service account.
 
-1. Follow the instructions [here](https://github.com/tektoncd/pipeline/blob/master/docs/install.md#installing-tekton-pipelines-1) to install Tekton Pipelines onto your cluster.
+1. Follow the instructions [here](https://github.com/tektoncd/pipeline/blob/main/docs/install.md#installing-tekton-pipelines-1) to install Tekton Pipelines onto your cluster.
 
   Alternatively, set the variables below and run the script to automate the above steps.
   ```bash
@@ -108,7 +108,7 @@ Install the Tekton Pipelines CLI to view your logs by following the instructions
 4. Install the `build-push-gke-deploy` Pipeline.
 
   ```bash
-  kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/gke-deploy/build-push-gke-deploy.yaml
+  kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/gke-deploy/build-push-gke-deploy.yaml
   ```
 
 5. Create the `PipelineRun` config to run your Pipeline.
@@ -165,7 +165,7 @@ Install the Tekton Pipelines CLI to view your logs by following the instructions
   tkn pipelinerun logs build-push-gke-deploy-run --follow
   ```
 
-  See other ways of logging your Tekton PipelineRun [here](https://github.com/tektoncd/pipeline/blob/master/docs/logs.md).
+  See other ways of logging your Tekton PipelineRun [here](https://github.com/tektoncd/pipeline/blob/main/docs/logs.md).
 
   If your deployment is successful, `gke-deploy` will print a table displaying deployed resources. You can visit the IP address printed on the Service row.
 

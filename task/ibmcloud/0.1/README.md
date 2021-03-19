@@ -5,7 +5,7 @@ This task performs operations on IBM Cloud using the `ibmcloud`
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/ibmcloud/0.1/ibmcloud.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/ibmcloud/0.1/ibmcloud.yaml
 ```
 
 ## Parameters

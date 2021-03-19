@@ -10,7 +10,7 @@ to assemble a container image, then pushes that image to a container registry.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/buildah/0.1/buildah.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildah/0.1/buildah.yaml
 ```
 
 ## Parameters
@@ -33,7 +33,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 
 ## Workspaces
 
-* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) containing the source to build.
+* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md) containing the source to build.
 
 ## Usage
 

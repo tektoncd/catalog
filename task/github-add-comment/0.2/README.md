@@ -6,7 +6,7 @@ issue.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/github-add-comment/0.2/github-add-comment.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-add-comment/0.2/github-add-comment.yaml
 ```
 
 ## Secrets

@@ -12,7 +12,7 @@ registry as long as your IAM principal has access to do so until the token expir
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/aws-ecr-login/0.1/aws-ecr-login.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/aws-ecr-login/0.1/aws-ecr-login.yaml
 ```
 
 ## Parameters

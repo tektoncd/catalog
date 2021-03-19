@@ -7,7 +7,7 @@ The Docker Build task builds source into a container image using [Docker](https:
 ### Install the Docker Build Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/docker-build/0.1/docker-build.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/docker-build/0.1/docker-build.yaml
 ```
 
 ### Parameters
@@ -27,7 +27,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 
 ### Workspaces
 
-* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) volume containing the source to build.
+* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md) volume containing the source to build.
 
 
 ### Usage

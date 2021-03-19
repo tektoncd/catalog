@@ -13,7 +13,7 @@ The app must join the channel before the message posted by this task run. (invit
 ## Install the Task and create a secret
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/send-to-channel-slack/0.1/send-to-channel-slack.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/send-to-channel-slack/0.1/send-to-channel-slack.yaml
 ```
 
 Create a secret that has the OAuth token of the bot app.

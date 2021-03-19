@@ -15,7 +15,7 @@ The Task `eks-cluster-teardown` can be used to teardown an EKS cluster in an AWS
 
 AWS `credentials` and `config` both should be provided in the form of `secret`.
 
-[This](https://github.com/tektoncd/catalog/tree/master/task/eks-cluster-teardown/0.1/samples/secret.yaml) example can be referred to create `aws-credentials`.
+[This](https://github.com/tektoncd/catalog/tree/main/task/eks-cluster-teardown/0.1/samples/secret.yaml) example can be referred to create `aws-credentials`.
 
 Refer [this](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/setup-credentials.html) guide for setting up AWS Credentials and Region.
 
@@ -23,4 +23,4 @@ The AWS user/role should have the [minimum IAM policies](https://eksctl.io/usage
 
 ## Usage
 
-See [samples/teardown-eks-cluster.yaml](https://github.com/tektoncd/catalog/tree/master/task/eks-cluster-teardown/0.1/samples/teardown-eks-cluster.yaml) for an example of a TaskRun that tears down an EKS cluster.
+See [samples/teardown-eks-cluster.yaml](https://github.com/tektoncd/catalog/tree/main/task/eks-cluster-teardown/0.1/samples/teardown-eks-cluster.yaml) for an example of a TaskRun that tears down an EKS cluster.

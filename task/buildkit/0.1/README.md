@@ -63,11 +63,11 @@ task.tekton.dev/buildkit created
 
 ## Workspaces
 
-* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) containing the source to build.
+* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md) containing the source to build.
 
 ## Resources
 
 ### Outputs
 
 * **image**: An `image`-type `PipelineResource` specifying the image that should be built.
-  Currently, generating [`resourceResult`](https://github.com/tektoncd/pipeline/blob/master/docs/resources.md#image-resource) is not supported. ([`buildkit#993`](https://github.com/moby/buildkit/issues/993))
+  Currently, generating [`resourceResult`](https://github.com/tektoncd/pipeline/blob/main/docs/resources.md#image-resource) is not supported. ([`buildkit#993`](https://github.com/moby/buildkit/issues/993))

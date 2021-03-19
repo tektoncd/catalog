@@ -11,7 +11,7 @@ The set of possible scripts can be found in the docs [here](https://github.com/o
 
 ## Install the Task
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/openshift-client-python/0.1/openshift-client-python.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/openshift-client-python/0.1/openshift-client-python.yaml
 ```
 
 ## Parameters

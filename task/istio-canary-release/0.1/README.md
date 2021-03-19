@@ -13,19 +13,19 @@ For more details about canary release please refer [here](https://martinfowler.c
 1. For Application Manifests deployment we can use the existing `kubenetes-actions` task from the catalog
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/kubernetes-actions/0.1/kubernetes-actions.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kubernetes-actions/0.1/kubernetes-actions.yaml
 ```
 
 2. For Istio Services
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/istio-canary-release/0.1/istio-canary-release.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/istio-canary-release/0.1/istio-canary-release.yaml
 ```
 
 ## Installing the ClusterRoleBinding
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/istio-canary-release/0.1/support/clusterrolebinding.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/istio-canary-release/0.1/support/clusterrolebinding.yaml
 ```
 
 ## Workspaces

@@ -1,6 +1,6 @@
 # ###
 # This example relies on the git-clone Task:
-# https://github.com/tektoncd/catalog/tree/master/task/git-clone/0.2
+# https://github.com/tektoncd/catalog/tree/main/task/git-clone/0.2
 #
 # ###
 #
@@ -13,7 +13,7 @@
 #
 # ###
 # Install the git-clone task:
-# kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/git-clone/0.2/git-clone.yaml
+# kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.2/git-clone.yaml
 # ###
 ---
 apiVersion: tekton.dev/v1beta1

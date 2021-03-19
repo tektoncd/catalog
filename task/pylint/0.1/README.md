@@ -8,12 +8,12 @@ The task provides linting based on [pylint](https://pypi.org/project/pylint/) fo
 
 ### Workspaces
 
-* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) volume containing the python code.
+* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md) volume containing the python code.
 
 ### Install pylint
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/pylint/0.1/pylint.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/pylint/0.1/pylint.yaml
 ```
 
 ## Parameters

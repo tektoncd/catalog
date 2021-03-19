@@ -5,7 +5,7 @@ This task can be used to format the python source code using [Black](https://git
 ## Installing the Task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/black/0.1/black.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/black/0.1/black.yaml
 ```
 
 ## Parameters
@@ -21,7 +21,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 1. Create the `git-clone` task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/git-clone/0.1/git-clone.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.1/git-clone.yaml
 ```
 
 2. Create the PVC

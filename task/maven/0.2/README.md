@@ -5,7 +5,7 @@ This Task can be used to run a Maven goals on a simple maven project or on a mul
 ## Install the Task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/maven/0.2/maven.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/maven/0.2/maven.yaml
 ```
 
 ## Parameters

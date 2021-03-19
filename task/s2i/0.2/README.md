@@ -11,7 +11,7 @@ source code.
 ## Install the Task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/s2i/0.2/s2i.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/s2i/0.2/s2i.yaml
 ```
 
 ## Parameters
@@ -25,7 +25,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 
 ## Workspaces
 
-- **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) containing the source to build.
+- **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md) containing the source to build.
 - **sslcertdir**: An [_optional_ Workspace](https://github.com/tektoncd/pipeline/blob/v0.17.0/docs/workspaces.md#optional-workspaces) containing your custom SSL certificates to connect to the registry. Buildah will look for files ending with \*.crt, \*.cert, \*.key into this workspace. See [this sample](./samples/openshift-internal-registry.yaml) for a complete example on how to use it with OpenShift internal registry.
 
 ## Results
@@ -39,7 +39,7 @@ defined as a parameter. In order to properly authenticate to the
 remote container registry, it needs to have the proper
 credentials. The credentials can be provided through a service
 account. See
-[Authentication](https://github.com/tektoncd/pipeline/blob/master/docs/auth.md#basic-authentication-docker)
+[Authentication](https://github.com/tektoncd/pipeline/blob/main/docs/auth.md#basic-authentication-docker)
 for further details.
 
 If you are running on OpenShift, you also need to allow the service

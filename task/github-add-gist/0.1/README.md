@@ -6,7 +6,7 @@ and outputs the raw url as the result.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/github-add-gist/0.1/github-add-gist.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-add-gist/0.1/github-add-gist.yaml
 ```
 
 ## Secrets

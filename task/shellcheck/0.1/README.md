@@ -5,7 +5,7 @@ The following task is used to provide static analysis on YAML files mounted usin
 ## Installing the Task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/shellcheck/0.1/shellcheck.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/shellcheck/0.1/shellcheck.yaml
 ```
 
 ## Parameters
@@ -21,7 +21,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 1. Create the `git-clone` task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/git-clone/0.1/git-clone.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.1/git-clone.yaml
 ```
 
 2. Create the PVC

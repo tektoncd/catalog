@@ -5,7 +5,7 @@ Upload your code coverage to [codecov.io](codecov.io)
 ## Installing the Task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/codecov/0.1/codecov.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/codecov/0.1/codecov.yaml
 ```
 
 ## Parameters

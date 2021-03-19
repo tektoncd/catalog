@@ -470,7 +470,7 @@ error building image: parsing dockerfile: Dockerfile parse error line 43: unknow
 
 #### Configure taskrun.yaml
 
-Now, let's update the OpenWhisk Task parameter ```OW_PROJECT_URL``` to ```https://github.com/tektoncd/catalog/raw/master/openwhisk/runtimes/javascript/examples/04-zip/action.zip```
+Now, let's update the OpenWhisk Task parameter ```OW_PROJECT_URL``` to ```https://github.com/tektoncd/catalog/raw/main/openwhisk/runtimes/javascript/examples/04-zip/action.zip```
 
 <details>
     <summary>taskrun.yaml.tmpl contents</summary>
@@ -530,7 +530,7 @@ spec:
         - name: OW_ACTION_CODE
           value: ""
         - name: OW_PROJECT_URL
-          value: "https://github.com/tektoncd/catalog/raw/master/openwhisk/runtimes/javascript/examples/04-zip/action.zip"
+          value: "https://github.com/tektoncd/catalog/raw/main/openwhisk/runtimes/javascript/examples/04-zip/action.zip"
 ---
 ```
 </details>

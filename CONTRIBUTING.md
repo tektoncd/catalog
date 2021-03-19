@@ -10,7 +10,7 @@ and the individual `CONTRIBUTING.md` files in each respective project.
 [the code of conduct](./code-of-conduct.md).**
 
 PRs are welcome, and will follow
-[the tektoncd pull request process](https://github.com/tektoncd/community/blob/master/process.md#pull-request-process).
+[the tektoncd pull request process](https://github.com/tektoncd/community/blob/main/process.md#pull-request-process).
 
 ## How to Contribute a Task or Pipeline
 
@@ -126,7 +126,7 @@ We have some helper functions you can use from your `hook` scripts :
 What can you run from those scripts is whatever defined in the test-runner
 image, if you need to have another binary available feel free to make a PR to this Dockerfile :
 
-https://github.com/tektoncd/plumbing/blob/master/tekton/images/test-runner/Dockerfile
+https://github.com/tektoncd/plumbing/blob/main/tekton/images/test-runner/Dockerfile
 
 A helper script called [`run-test.sh`](test/run-test.sh) is provider in the
 [test](./test) directory to help the developer running the test locally. Just
@@ -232,5 +232,5 @@ the reviewers and approvers sections.
 
 The top-level [`OWNERS`](OWNERS) file lists the *Trusted
 Collaborators*. The process to [becoming an
-OWNER](https://github.com/tektoncd/community/blob/master/process.md#owners)
+OWNER](https://github.com/tektoncd/community/blob/main/process.md#owners)
 is the same as other Tekton projects.

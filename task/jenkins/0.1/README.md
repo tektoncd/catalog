@@ -7,7 +7,7 @@ More details on Remote Access API can be found [here](https://www.jenkins.io/doc
 ## Install the Task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/jenkins/0.1/jenkins.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/jenkins/0.1/jenkins.yaml
 ```
 
 ## Parameters

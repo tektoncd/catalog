@@ -8,7 +8,7 @@
 
 Install `terraform-cli` task for kubernetes 1.6+:
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/terraform-cli/0.1/terraform-cli.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/terraform-cli/0.1/terraform-cli.yaml
 ```
 This task currently works only on kubernetes 1.6+ support for a task that works on older versions of kubernetes will be added soon.
 
@@ -20,7 +20,7 @@ This task currently works only on kubernetes 1.6+ support for a task that works 
 
 ## Workspaces
 
-* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) containing the terraform HCL or JSON files.
+* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md) containing the terraform HCL or JSON files.
 
 
 ## Terraform-Secret
@@ -56,7 +56,7 @@ kubectl create secret generic terraform-secret --from-literal=OS_USERNAME=my-use
 
 ## ServiceAccount
 
-If you don't specify a service account to be used for running the `TaskRun` or `PipelineRun`, the `default` [service account](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#use-the-default-service-account-to-access-the-api-server). OpenShift by default does not allow the default service account to modify objects in the namespace. Therefore you should either explicitly grant permission to the default service account (by creating rolebindings) or [create a new service account with sufficient privileges](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#service-account-permissions) and specify it on the [`TaskRun`](https://github.com/tektoncd/pipeline/blob/master/docs/taskruns.md#service-account) or [`PipelineRun`](https://github.com/tektoncd/pipeline/blob/master/docs/pipelineruns.md#service-account).
+If you don't specify a service account to be used for running the `TaskRun` or `PipelineRun`, the `default` [service account](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#use-the-default-service-account-to-access-the-api-server). OpenShift by default does not allow the default service account to modify objects in the namespace. Therefore you should either explicitly grant permission to the default service account (by creating rolebindings) or [create a new service account with sufficient privileges](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#service-account-permissions) and specify it on the [`TaskRun`](https://github.com/tektoncd/pipeline/blob/main/docs/taskruns.md#service-account) or [`PipelineRun`](https://github.com/tektoncd/pipeline/blob/main/docs/pipelineruns.md#service-account).
 
 You can do the former via `oc` and running the following command, replacing `<namespace>` with your target namespace:
 ```

@@ -29,7 +29,7 @@ workspace.
 To install the Task:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/pull-request/0.1/pull-request.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/pull-request/0.1/pull-request.yaml
 ```
 
 ## Configuring the Tasks
@@ -190,6 +190,6 @@ kubectl create -f pullrequest/sample/add-comment.yaml
 ## PullRequest Image
 
 This Task was created to have feature parity with
-[the Tekton Pipelines PullRequest PipelineResource](https://github.com/tektoncd/pipeline/blob/master/docs/resources.md#pull-request-resource)
-and uses [the pullrequest-init image](https://github.com/tektoncd/pipeline/tree/master/cmd/pullrequest-init)
+[the Tekton Pipelines PullRequest PipelineResource](https://github.com/tektoncd/pipeline/blob/main/docs/resources.md#pull-request-resource)
+and uses [the pullrequest-init image](https://github.com/tektoncd/pipeline/tree/main/cmd/pullrequest-init)
 which is built and published as part of [Tekton Pipeline releases](https://github.com/tektoncd/pipeline/releases).

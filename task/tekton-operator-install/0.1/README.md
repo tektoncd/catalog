@@ -5,7 +5,7 @@ This task can be used to install Tekton pipelines and also it's components using
 ## Install the Task
 
 ```shell
-kubectl apply --filename https://raw.githubusercontent.com/tektoncd/catalog/master/task/tekton-operator-install/0.1/tekton-operator-install.yaml
+kubectl apply --filename https://raw.githubusercontent.com/tektoncd/catalog/main/task/tekton-operator-install/0.1/tekton-operator-install.yaml
 ```
 
 ## Parameters
@@ -13,7 +13,7 @@ kubectl apply --filename https://raw.githubusercontent.com/tektoncd/catalog/mast
 - **OPERATOR_VERSION**: Tekton Operator release version to be used for installing tekton components. (_Default_ : "latest")
 - **INSTALL_TRIGGERS**: If [Triggers](https://github.com/tektoncd/triggers) needs to be installed. (_Default_ : "false")
 - **INSTALL_DASHBOARD**: If [Tekton Dashboard](https://github.com/tektoncd/dashboard) needs to be installed. (_Default_ : "false")
-- **INSTALL_EXTENSION_WEBHOOKS**: If [Tekton Extension Webhooks](https://github.com/tektoncd/experimental/tree/master/webhooks-extension) needs to be installed. (_Default_ : "false")
+- **INSTALL_EXTENSION_WEBHOOKS**: If [Tekton Extension Webhooks](https://github.com/tektoncd/experimental/tree/main/webhooks-extension) needs to be installed. (_Default_ : "false")
 
 ### Note: The last three parameters accepts value "true"/"false". Default being "false" means we don't want to install that component.
 

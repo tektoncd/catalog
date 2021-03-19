@@ -5,7 +5,7 @@ The following task helps you to run powershell commands.
 ### Install powershell
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/powershell/0.1/powershell.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/powershell/0.1/powershell.yaml
 ```
 
 ## Parameters
