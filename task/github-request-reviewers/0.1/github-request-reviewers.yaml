@@ -1,0 +1,113 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: github-request-reviewers
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/tags: github
+    tekton.dev/displayName: "request github reviewers"
+spec:
+  description: >-
+    This Task will request reviewers for a GitHub PR
+
+    It can take either a list of users or teams or both.
+    Note that, when teams are used, GitHub does not verify
+    if the team (or any of its members) are collaborators on
+    the repo, so a 201 reply may still result in no reviewer
+    added to the PR.
+  workspaces:
+    - name: github
+      description: The workspace that contains the GitHub secret
+  params:
+    - name: GITHUB_HOST_URL
+      description: |
+        The GitHub host, adjust this if you run a GitHub Enteprise.
+      default: "api.github.com"
+      type: string
+
+    - name: API_PATH_PREFIX
+      description: |
+        The API path prefix, GitHub Enterprise has a prefix e.g. /api/v3
+      default: ""
+      type: string
+
+    - name: PACKAGE
+      description: "{owner}/{repo}"
+      type: string
+
+    - name: PULL_REQUEST_NUMBER
+      description: The pull request number
+      type: string
+
+    - name: REVIEWERS
+      description: |
+        Comma separated list of github user slugs.
+      type: string
+      default: ""
+
+    - name: TEAM_REVIEWERS
+      description: |
+        Comma separated list of github team slugs.
+      type: string
+      default: ""
+
+    - name: GITHUB_TOKEN_FILE
+      description: |
+        The file within workspace that contains the GitHub token.
+      type: string
+      default: token
+
+  steps:
+  - name: set-reviewers
+    image: docker.io/library/python:3.9-alpine3.13@sha256:437482dd314471f5f10967f7376489d9e7f67c111850c123cc725a1741b66aac
+    script: |
+      #!/usr/bin/env python
+      import json
+      import http.client
+
+      # Load the GitHub Token
+      github_token = ""
+      with open("$(workspaces.github.path)/$(params.GITHUB_TOKEN_FILE)", "r") as gh:
+        github_token = gh.read()
+
+      # Implement the request reviewers GitHub API
+      # https://docs.github.com/en/rest/reference/pulls#request-reviewers-for-a-pull-request
+      reviewers_url = "{prefix}/repos/{package}/pulls/{pull_number}/requested_reviewers".format(
+        prefix="$(params.API_PATH_PREFIX)", package="$(params.PACKAGE)",
+        pull_number="$(params.PULL_REQUEST_NUMBER)")
+
+      reviewers = "$(params.REVIEWERS)".split(",")
+      team_reviewers = "$(params.TEAM_REVIEWERS)".split(",")
+
+      data = dict()
+      if reviewers:
+        data["reviewers"] = reviewers
+      if team_reviewers:
+        data["team_reviewers"] = team_reviewers
+
+      print("Sending this data to GitHub: ")
+      print(data)
+
+      if "$(params.GITHUB_HOST_URL)".startswith("http://"):
+        conn = http.client.HTTPConnection("$(params.GITHUB_HOST_URL)".replace("http://", ""))
+      else:
+        conn = http.client.HTTPSConnection("$(params.GITHUB_HOST_URL)")
+      r = conn.request(
+          "POST",
+          reviewers_url,
+          body=json.dumps(data),
+          headers={
+              "User-Agent": "TektonCD, the peaceful cat",
+              "Authorization": "Bearer " + github_token,
+              "Accept": "application/vnd.github.v3+json ",
+          })
+      resp = conn.getresponse()
+      if not str(resp.status).startswith("2"):
+          print("Error: %d" % (resp.status))
+          print(resp.read())
+      else:
+        print("Reviewers {}, {} have been requested for PR {} on {}".format(
+          reviewers, team_reviewers, $(params.PULL_REQUEST_NUMBER), "$(params.PACKAGE)"))
