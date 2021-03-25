@@ -1,0 +1,40 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: kind
+spec:
+  pipelineSpec:
+    workspaces:
+      - name: workspace
+    tasks:
+      - name: git
+        taskRef:
+          name: git-clone
+        params:
+          - name: url
+            value: https://github.com/wlynch/tekton-kind.git
+        workspaces:
+          - name: output
+            workspace: workspace
+      - name: kind
+        taskRef:
+          name: kind
+        params:
+          - name: command
+            value: ["$(workspaces.source.path)/test.sh"]
+          - name: image
+            value: gcr.io/tekton-releases/dogfooding/kind-runner@sha256:bfe11e36d3d44ac89e5e9b39382c9b3638f5a3fedc3dc45b54ade8bb0248286d
+        workspaces:
+          - name: source
+            workspace: workspace
+        runAfter:
+          - git
+  workspaces:
+    - name: workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 100M
