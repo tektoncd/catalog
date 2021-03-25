@@ -1,0 +1,74 @@
+# Copyright 2021 The Tekton Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: kind
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/displayName: "kind"
+    tekton.dev/tags: "kind"
+spec:
+  description: >-
+    Sets up and executes commands in KinD (Kubernetes in Docker) environment.
+
+    See https://kind.sigs.k8s.io for more details.
+  params:
+    - name: command
+      type: array
+      description: command to run inside kind environment.
+    - name: image
+      type: string
+      description: Task runtime image. Should typically contain the kind CLI (https://kind.sigs.k8s.io)
+  workspaces:
+    - name: source
+  steps:
+    - image: $(params.image)
+      workingDir: $(workspaces.source.path)
+      name: kind
+      volumeMounts:
+        - mountPath: /var/run/
+          name: dind-socket
+        - mountPath: /lib/modules
+          name: modules
+          readOnly: true
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+      command: ["$(params.command[*])"]
+  sidecars:
+    - image: docker:18.05-dind
+      name: dind
+      securityContext:
+        privileged: true
+      volumeMounts:
+        - mountPath: /var/lib/docker
+          name: dind-storage
+        - mountPath: /var/run/
+          name: dind-socket
+  volumes:
+    - name: dind-storage
+      emptyDir: {}
+    - name: dind-socket
+      emptyDir: {}
+    - name: modules
+      hostPath:
+        path: /lib/modules
+        type: Directory
+    - name: cgroup
+      hostPath:
+        path: /sys/fs/cgroup
+        type: Directory
