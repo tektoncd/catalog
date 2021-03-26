@@ -21,6 +21,10 @@ spec:
           value: "Hello from TektonCD test"
         - name: REQUEST_URL
           value: https://github.com/tektoncd/catalog/issues/1
+        - name: REPLACE
+          value: "true"
+        - name: COMMENT_TAG
+          value: TEST_TAG123
 ---
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
