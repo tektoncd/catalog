@@ -181,38 +181,56 @@ function test_task_creation() {
         # In case of rerun it's fine to ignore this error
         ${KUBECTL_CMD} create namespace ${tns} >/dev/null 2>/dev/null || :
 
-        # Install the task itself first
-        for yaml in ${taskdir}/*.yaml;do
-            started=$(date '+%Hh%M:%S')
-            echo "${started} STARTING: ${testname}/${version} "
-            cp ${yaml} ${TMPF}
-            [[ -f ${taskdir}/tests/pre-apply-task-hook.sh ]] && source ${taskdir}/tests/pre-apply-task-hook.sh
-            function_exists pre-apply-task-hook && pre-apply-task-hook
+        # Install the task itself first. We can only have one YAML file
+        yaml=$(printf  ${taskdir}/*.yaml)
+        started=$(date '+%Hh%M:%S')
+        echo "${started} STARTING: ${testname}/${version} "
+        cp ${yaml} ${TMPF}
+        [[ -f ${taskdir}/tests/pre-apply-task-hook.sh ]] && source ${taskdir}/tests/pre-apply-task-hook.sh
+        function_exists pre-apply-task-hook && pre-apply-task-hook
 
-            [[ -d ${taskdir}/tests/fixtures ]] && {
-                cat <<EOF>>${TMPF}
+        [[ -d ${taskdir}/tests/fixtures ]] && {
+            # Create a configmap to make every file under fixture
+            # available to the sidecar.
+            ${KUBECTL_CMD} -n ${tns} create configmap fixtures --from-file=${taskdir}/tests/fixtures
+            cat <<EOF>>${TMPF}
   sidecars:
   - image: quay.io/chmouel/go-rest-api-test
     name: go-rest-api
+    volumeMounts:
+    - name: fixtures
+      mountPath: /fixtures
     env:
       - name: CONFIG
         value: |
 $(cat ${taskdir}/tests/fixtures/*.yaml|sed 's/^/          /')
 EOF
-            }
+        }
 
-            # Make sure we have deleted the content, this is in case of rerun
-            # and namespace hasn't been cleaned up or there is some Cluster*
-            # stuff, which really should not be allowed.
-            ${KUBECTL_CMD} -n ${tns} delete -f ${TMPF} >/dev/null 2>/dev/null || true
-            ${KUBECTL_CMD} -n ${tns} create -f ${TMPF}
-        done
+        # Make sure we have deleted the content, this is in case of rerun
+        # and namespace hasn't been cleaned up or there is some Cluster*
+        # stuff, which really should not be allowed.
+        ${KUBECTL_CMD} -n ${tns} delete -f ${TMPF} >/dev/null 2>/dev/null || true
+        ${KUBECTL_CMD} -n ${tns} create -f ${TMPF}
 
         # Install resource and run
         for yaml in ${runtest}/*.yaml;do
             cp ${yaml} ${TMPF}
             [[ -f ${taskdir}/tests/pre-apply-taskrun-hook.sh ]] && source ${taskdir}/tests/pre-apply-taskrun-hook.sh
             function_exists pre-apply-taskrun-hook && pre-apply-taskrun-hook
+
+            # If we have fixtures, add a volume to the taskrun to mount
+            # the fixtures configmap. This only works as long as the original
+            # TaskRun does not use podTemplate
+            [[ -d ${taskdir}/tests/fixtures ]] && {
+            cat <<EOF>>${TMPF}
+  podTemplate:
+    volumes:
+      - name: fixtures
+        configMap:
+          name: fixtures
+EOF
+            }
 
             # Make sure we have deleted the content, this is in case of rerun
             # and namespace hasn't been cleaned up or there is some Cluster*
