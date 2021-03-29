@@ -1,0 +1,153 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: github-create-deployment-status
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: github
+    tekton.dev/displayName: "create github deployment status"
+spec:
+  description: >-
+    This Task will create a status for a GitHub deployment.
+
+  params:
+    - name: GITHUB_HOST_URL
+      description: |
+        The GitHub host, adjust this if you run a GitHub enteprise.
+      default: "api.github.com"
+      type: string
+
+    - name: API_PATH_PREFIX
+      description: |
+        The API path prefix, GitHub Enterprise has a prefix e.g. /api/v3
+      default: ""
+      type: string
+
+    - name: REPO_FULL_NAME
+      description: |
+        The GitHub repository full name, i.e: tektoncd/catalog.
+      type: string
+
+    - name: DEPLOYMENT_ID
+      description: |
+        The ID of deployment
+      type: string
+
+    - name: STATE
+      description: |
+        The state of the status. This can be one of "error", "failure",
+        "inactive", "in_progress", "queued", "pending" or "success".
+      type: string
+
+    - name: LOG_URL
+      description: |
+        The full URL of the deployment's output.
+      default: ""
+      type: string
+
+    - name: DESCRIPTION
+      description: |
+        Short description of the status.
+      default: ""
+      type: string
+
+    - name: ENVIRONMENT
+      description: |
+        Name for the target deployment environment (e.g., production, staging).
+      default: ""
+      type: string
+
+    - name: ENVIRONMENT_URL
+      description: |
+        The URL for accessing environment.
+      default: ""
+      type: string
+
+    - name: AUTO_INACTIVE
+      description: |
+        Adds a new inactive status to all prior non-transient,
+        non-production environment deployments with the same repository and
+        environment name as the created status's deployment.
+      default: "true"
+      type: string
+
+    - name: GITHUB_TOKEN_SECRET_NAME
+      description: |
+        The name of the Kubernetes Secret that contains the GitHub token.
+      default: "github"
+      type: string
+
+    - name: GITHUB_TOKEN_SECRET_KEY
+      description: |
+        The key within the Kubernetes Secret that contains the GitHub token.
+      default: "token"
+      type: string
+
+  steps:
+    - name: create-deployment-status
+      env:
+        - name: GITHUBTOKEN
+          valueFrom:
+            secretKeyRef:
+              name: $(params.GITHUB_TOKEN_SECRET_NAME)
+              key: $(params.GITHUB_TOKEN_SECRET_KEY)
+
+      image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
+      script: |
+        #!/usr/libexec/platform-python
+        import http.client
+        import json
+        import os
+        import sys
+
+        deployment_status_url = \
+            "$(params.API_PATH_PREFIX)" + \
+            "/repos/$(params.REPO_FULL_NAME)/deployments" + \
+            "/$(params.DEPLOYMENT_ID)/statuses"
+
+        data = {
+            "state": "$(params.STATE)",
+            "log_url": "$(params.LOG_URL)",
+            "description": "$(params.DESCRIPTION)",
+            "environment_url": "$(params.ENVIRONMENT_URL)",
+            "auto_inactive": json.loads("$(params.AUTO_INACTIVE)"),
+        }
+
+        if "$(params.ENVIRONMENT)" != "":
+            data["environment"] = "$(params.ENVIRONMENT)"
+
+        print("Sending this data to GitHub: ")
+        print(data)
+
+        # This is for our fake github server
+        if "$(params.GITHUB_HOST_URL)".startswith("http://"):
+            conn = http.client.HTTPConnection("$(params.GITHUB_HOST_URL)"
+                                              .replace("http://", ""))
+        else:
+            conn = http.client.HTTPSConnection("$(params.GITHUB_HOST_URL)")
+
+        r = conn.request(
+            "POST",
+            deployment_status_url,
+            body=json.dumps(data),
+            headers={
+                "User-Agent": "TektonCD, the peaceful cat",
+                "Authorization": "Bearer " + os.environ["GITHUBTOKEN"],
+                "Accept": "application/vnd.github.ant-man-preview+json, " +
+                          "application/vnd.github.flash-preview+json"
+            })
+        resp = conn.getresponse()
+
+        if resp.status != 201:
+            print(f'Error: {resp.status}')
+            print(resp.read())
+            sys.exit(1)
+        else:
+            body = json.loads(resp.read().decode())
+            print("GitHub deployment status created for "
+                  "$(params.REPO_FULL_NAME)/$(params.DEPLOYMENT_ID): "
+                  f'id={body["id"]} environment={body["environment"]} '
+                  f'state={body["state"]}')
