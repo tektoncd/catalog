@@ -1,0 +1,183 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: github-create-deployment
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: github
+    tekton.dev/displayName: "create github deployment"
+spec:
+  description: >-
+    This Task will create a GitHub deployment for a repository.
+
+  params:
+    - name: GITHUB_HOST_URL
+      description: |
+        The GitHub host, adjust this if you run a GitHub enterprise.
+      default: "api.github.com"
+      type: string
+
+    - name: API_PATH_PREFIX
+      description: |
+        The API path prefix, GitHub Enterprise has a prefix e.g. /api/v3
+      default: ""
+      type: string
+
+    - name: REPO_FULL_NAME
+      description: |
+        The GitHub repository full name, i.e: tektoncd/catalog.
+      type: string
+
+    - name: REF
+      description: |
+        The ref to deploy. This can be a branch, tag, or SHA.
+      type: string
+
+    - name: TASK
+      description: |
+        Specifies a task to execute (e.g., deploy or deploy:migrations).
+      default: "deploy"
+      type: string
+
+    - name: AUTO_MERGE
+      description: |
+        Attempts to automatically merge the default branch into the
+        requested ref, if it's behind the default branch.
+      default: "true"
+      type: string
+
+    - name: REQUIRED_CONTEXTS
+      description: |
+        The status contexts to verify against commit status checks. To
+        verify all unique contexts before creating a deployment, pass
+        in "*". To bypass checking entirely, pass an empty string.
+      default: "*"
+
+    - name: PAYLOAD
+      description: |
+        JSON payload with extra information about the deployment.
+      default: ""
+      type: string
+
+    - name: ENVIRONMENT
+      description: |
+        Name for the target deployment environment (e.g., production, staging).
+      type: string
+
+    - name: DESCRIPTION
+      description: |
+        Short description of the deployment.
+      default: ""
+      type: string
+
+    - name: GITHUB_TOKEN_SECRET_NAME
+      description: |
+        The name of the Kubernetes Secret that contains the GitHub token.
+      default: "github"
+      type: string
+
+    - name: GITHUB_TOKEN_SECRET_KEY
+      description: |
+        The key within the Kubernetes Secret that contains the GitHub token.
+      default: "token"
+      type: string
+
+  results:
+    - name: ID
+      description: ID of the created deployment.
+
+    - name: URL
+      description: URL of the created deployment.
+
+    - name: STATUSES_URL
+      description: URL of the created deployment status.
+
+  steps:
+    - name: create-deployment
+      env:
+        - name: GITHUBTOKEN
+          valueFrom:
+            secretKeyRef:
+              name: $(params.GITHUB_TOKEN_SECRET_NAME)
+              key: $(params.GITHUB_TOKEN_SECRET_KEY)
+        - name: DEPLOYMENT_ID_PATH
+          value: $(results.ID.path)
+        - name: DEPLOYMENT_URL_PATH
+          value: $(results.URL.path)
+        - name: DEPLOYMENT_STATUSES_URL_PATH
+          value: $(results.STATUSES_URL.path)
+
+      image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
+      script: |
+        #!/usr/libexec/platform-python
+        import http.client
+        import json
+        import os
+        import sys
+
+        deployment_url = "$(params.API_PATH_PREFIX)" + \
+            "/repos/$(params.REPO_FULL_NAME)/deployments"
+
+        if "$(params.REQUIRED_CONTEXTS)" == "*":
+            required_contexts = None
+        elif "$(params.REQUIRED_CONTEXTS)" == "":
+            required_contexts = []
+        else:
+            required_contexts = "$(params.REQUIRED_CONTEXTS)".split(",")
+
+        # payload should either be a JSON object or an empty string
+        if "$(params.PAYLOAD)":
+            payload = json.loads("$(params.PAYLOAD)")
+        else:
+            payload = ""
+
+        data = {
+            "ref": "$(params.REF)",
+            "task": "$(params.TASK)",
+            "auto_merge": json.loads("$(params.AUTO_MERGE)"),
+            "required_contexts": required_contexts,
+            "payload": payload,
+            "environment": "$(params.ENVIRONMENT)",
+            "description": "$(params.DESCRIPTION)",
+        }
+
+        print("Sending this data to GitHub: ")
+        print(data)
+
+        # This is for our fake github server
+        if "$(params.GITHUB_HOST_URL)".startswith("http://"):
+            conn = http.client.HTTPConnection("$(params.GITHUB_HOST_URL)"
+                                              .replace("http://", ""))
+        else:
+            conn = http.client.HTTPSConnection("$(params.GITHUB_HOST_URL)")
+
+        r = conn.request(
+            "POST",
+            deployment_url,
+            body=json.dumps(data),
+            headers={
+                "User-Agent": "TektonCD, the peaceful cat",
+                "Authorization": "Bearer " + os.environ["GITHUBTOKEN"],
+            })
+        resp = conn.getresponse()
+
+        # only look for 201 statuses to signify a deployment was successfully
+        # created, as a merged branch response returns a 202 status but does not
+        # actually create the deployment.
+        # https://developer.github.com/v3/repos/deployments/#merged-branch-response
+        if resp.status != 201:
+            print(f'Error: {resp.status}')
+            print(resp.read())
+            sys.exit(1)
+        else:
+            body = json.loads(resp.read().decode())
+            open(os.environ.get('DEPLOYMENT_ID_PATH'), 'w').write(f'{body["id"]}')
+            open(os.environ.get('DEPLOYMENT_URL_PATH'), 'w').write(body["url"])
+            open(os.environ.get('DEPLOYMENT_STATUSES_URL_PATH'), 'w') \
+                .write(body["statuses_url"])
+            print("GitHub deployment created for $(params.REPO_FULL_NAME): "
+                  f'id={body["id"]} ref={body["ref"]} sha={body["sha"]} '
+                  f'environment={body["environment"]} url={body["url"]}')

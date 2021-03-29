@@ -1,0 +1,33 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: github-create-deployment-test-run
+spec:
+  pipelineSpec:
+    tasks:
+      - name: github
+        taskRef:
+          name: github-create-deployment
+        params:
+          - name: GITHUB_HOST_URL
+            value: http://127.0.0.1:8080
+          - name: REPO_FULL_NAME
+            value: tektoncd/catalog
+          - name: REF
+            value: main
+          - name: ENVIRONMENT
+            value: staging
+      - name: github-enterprise
+        taskRef:
+          name: github-create-deployment
+        params:
+          - name: GITHUB_HOST_URL
+            value: http://127.0.0.1:8080
+          - name: API_PATH_PREFIX
+            value: /api/v3
+          - name: REPO_FULL_NAME
+            value: tektoncd/catalog
+          - name: REF
+            value: main
+          - name: ENVIRONMENT
+            value: staging

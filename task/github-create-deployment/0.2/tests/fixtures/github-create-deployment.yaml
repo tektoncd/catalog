@@ -1,0 +1,32 @@
+---
+headers:
+  method: POST
+  path: /repos/{repo:[^/]+/[^/]+}/deployments
+response:
+  status: 201
+  output: |
+    {
+      "url": "http://localhost:8080/repos/tekton/catalog/deployments/1",
+      "id": 1,
+      "sha": "1a38009d97722101792f041edb96c2ea383ec078",
+      "ref": "main",
+      "environment": "staging",
+      "statuses_url": "http://localhost:8080/repos/tekton/catalog/deployments/1/statuses"
+    }
+  content-type: application/json
+---
+headers:
+  method: POST
+  path: /api/v3/repos/{repo:[^/]+/[^/]+}/deployments
+response:
+  status: 201
+  output: |
+    {
+      "url": "http://localhost:8080/api/v3/repos/tekton/catalog/deployments/1",
+      "id": 1,
+      "sha": "1a38009d97722101792f041edb96c2ea383ec078",
+      "ref": "main",
+      "environment": "staging",
+      "statuses_url": "http://localhost:8080/api/v3/repos/tekton/catalog/deployments/1/statuses"
+    }
+  content-type: application/json
