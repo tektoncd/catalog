@@ -224,6 +224,10 @@ function test_task_creation() {
             # available to the sidecar.
             ${KUBECTL_CMD} -n ${tns} create configmap fixtures --from-file=${taskdir}/tests/fixtures
             cat <<EOF>>${TMPF}
+  volumes:
+  - name: fixtures
+    configMap:
+      name: fixtures
   sidecars:
   - image: quay.io/chmouel/go-rest-api-test
     name: go-rest-api
@@ -248,19 +252,6 @@ EOF
             cp ${yaml} ${TMPF}
             [[ -f ${taskdir}/tests/pre-apply-taskrun-hook.sh ]] && source ${taskdir}/tests/pre-apply-taskrun-hook.sh
             function_exists pre-apply-taskrun-hook && pre-apply-taskrun-hook
-
-            # If we have fixtures, add a volume to the taskrun to mount
-            # the fixtures configmap. This only works as long as the original
-            # TaskRun does not use podTemplate
-            [[ -d ${taskdir}/tests/fixtures ]] && {
-            cat <<EOF>>${TMPF}
-  podTemplate:
-    volumes:
-      - name: fixtures
-        configMap:
-          name: fixtures
-EOF
-            }
 
             # Make sure we have deleted the content, this is in case of rerun
             # and namespace hasn't been cleaned up or there is some Cluster*
