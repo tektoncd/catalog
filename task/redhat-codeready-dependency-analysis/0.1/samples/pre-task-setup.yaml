@@ -1,0 +1,28 @@
+# A Custom task given for demo purpose to download the manifest and install its dependencies.
+apiVersion: tekton.dev/v1beta1
+kind: Task
+
+metadata:
+  name: pre-task-setup
+spec:
+  params:
+    - name: file_url
+    - name: manifest-file-path
+      default: requirements.txt
+    - name: pkg-installation-directory-path
+      default: site-package
+    - name: image
+      default: ghcr.io/fabric8-analytics/crda-python:3.7
+  steps:
+    - name: pre-task-setup
+      image: $(params.image)
+      workingDir: $(workspaces.output.path)
+      script: |
+        #!/bin/sh
+
+        mkdir -p $(params.pkg-installation-directory-path)
+        curl $(params.file_url) --output $(params.manifest-file-path)
+        pip3 install --target=$(params.pkg-installation-directory-path) \
+        -r $(params.manifest-file-path) --upgrade
+  workspaces:
+    - name: output

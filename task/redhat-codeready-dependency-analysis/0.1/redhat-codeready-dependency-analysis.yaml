@@ -1,0 +1,62 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+
+metadata:
+  name: redhat-codeready-dependency-analysis
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.19.0"
+    tekton.dev/tags: Security, Vulnenrability, CVE
+    tekton.dev/displayName: "RedHat CodeReady Dependency Analysis"
+
+spec:
+  description: >-
+    The RedHat CodeReady Dependency Analysis task is an interface between Tekton and Red Hat CodeReady Dependency Analytics platform.
+    It provides vulnerability and compliance analysis for your Python applications dependencies, along with recommendations to address security vulnerabilities and licensing issues.
+
+  workspaces:
+    - name: output
+      description: Volume backing this workspace is used for input/output of the task.
+
+  params:
+    - name: manifest-file-path
+      description: Path of target manifest file to perform analysis.
+      default: requirements.txt
+
+    - name: output-file-path
+      description: Path of the file to save analysis report.
+      default: redhat-codeready-dependency-analysis-report.json
+
+    - name: pkg-installation-directory-path
+      description: Path of a directory in workspace, where dependencies are installed.
+      default: site-package
+
+    - name: image
+      description: Image where CRDA CLI binary and required applications are installed.
+      default: ghcr.io/fabric8-analytics/crda-python:3.7
+
+    - name: CRDA_HOST_URL
+      description: The CRDA host, adjust this if you use an on premise environment.
+      default: ""
+
+  steps:
+    - name: redhat-codeready-dependency-analysis
+      image: $(params.image)
+      workingDir: $(workspaces.output.path)
+      env:
+        - name: CRDA_KEY
+          valueFrom:
+            secretKeyRef:
+              name: crda
+              key: crda-key
+        - name: HOST
+          value: $(params.CRDA_HOST_URL)
+
+      script: |
+        #!/bin/sh
+
+        sh /crda.sh \
+        $(params.manifest-file-path) \
+        $(params.output-file-path) \
+        $(params.pkg-installation-directory-path)

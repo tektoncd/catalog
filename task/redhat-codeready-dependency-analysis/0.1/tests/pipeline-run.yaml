@@ -1,0 +1,129 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: crda
+type: Opaque
+stringData:
+  crda-key: 11111111-2222-3333-4444-555555555555
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: output
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+
+metadata:
+  name: pre-task-setup
+spec:
+  params:
+    - name: manifest-file-path
+      default: requirements.txt
+    - name: pkg-installation-directory-path
+      default: site-package
+    - name: image
+      default: ghcr.io/fabric8-analytics/crda-python:3.7
+  steps:
+    - name: pre-task-setup
+      image: $(params.image)
+      workingDir: $(workspaces.output.path)
+      script: |
+        #!/bin/sh
+
+        mkdir -p $(params.pkg-installation-directory-path)
+        echo "flask==0.11.1" >> $(params.manifest-file-path)
+        pip3 install --target=$(params.pkg-installation-directory-path) \
+        -r $(params.manifest-file-path) --upgrade
+  workspaces:
+    - name: output
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: redhat-codeready-dependency-analysis-pipeline
+
+spec:
+  workspaces:
+    - name: output
+
+  params:
+    - name: pkg-installation-directory-path
+      default: site-package
+    - name: manifest-file-path
+      default: requirements.txt
+    - name: output-file-path
+      default: redhat-codeready-dependency-analysis-report.json
+    - name: image
+      default: ghcr.io/fabric8-analytics/crda-python:3.7
+    - name: CRDA_HOST_URL
+      default: ""
+
+  tasks:
+    - name: pre-task-setup
+      taskRef:
+        name: pre-task-setup
+      workspaces:
+        - name: output
+          workspace: output
+      params:
+        - name: pkg-installation-directory-path
+          value: $(params.pkg-installation-directory-path)
+        - name: manifest-file-path
+          value: $(params.manifest-file-path)
+        - name: image
+          value: $(params.image)
+
+    - name: redhat-codeready-dependency-analysis
+      taskRef:
+        name: redhat-codeready-dependency-analysis
+      runAfter:
+        - pre-task-setup
+      workspaces:
+        - name: output
+          workspace: output
+      params:
+        - name: pkg-installation-directory-path
+          value: $(params.pkg-installation-directory-path)
+        - name: manifest-file-path
+          value: $(params.manifest-file-path)
+        - name: image
+          value: $(params.image)
+        - name: output-file-path
+          value: $(params.output-file-path)
+        - name: CRDA_HOST_URL
+          value: $(params.CRDA_HOST_URL)
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: redhat-codeready-dependency-analysis-pipeline
+spec:
+  pipelineRef:
+    name: redhat-codeready-dependency-analysis-pipeline
+  workspaces:
+    - name: output
+      persistentvolumeclaim:
+        claimName: output
+
+  params:
+    - name: pkg-installation-directory-path
+      value: site-package
+    - name: manifest-file-path
+      value: requirements.txt
+    - name: output-file-path
+      value: redhat-codeready-dependency-analysis-report.json
+    - name: image
+      value: ghcr.io/fabric8-analytics/crda-python:3.7
+    - name: CRDA_HOST_URL
+      value: "http://127.0.0.1:8080"

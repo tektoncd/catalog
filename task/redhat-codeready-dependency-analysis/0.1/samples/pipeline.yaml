@@ -1,0 +1,77 @@
+# End to end pipeline.
+# Make sure Workspace is attached and Secret is created,
+# also configure 'pre-task-setup' and 'post-task-setup' tasks before running the pipeline.
+# refer examples from samples
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: redhat-codeready-dependency-analysis-pipeline
+
+spec:
+  workspaces:
+    - name: output
+
+  params:
+    - name: file_url
+    - name: pkg-installation-directory-path
+      default: site-package
+    - name: manifest-file-path
+      default: requirements.txt
+    - name: output-file-path
+      default: redhat-codeready-dependency-analysis-report.json
+    - name: image
+      default: ghcr.io/fabric8-analytics/crda-python:3.7
+
+# Pipeline steps
+  tasks:
+    # Task to download manifest and install its dependencies.
+    - name: pre-task-setup
+      taskRef:
+        name: pre-task-setup
+      workspaces:
+        - name: output
+          workspace: output
+      params:
+        - name: file_url
+          value: $(params.file_url)
+        - name: pkg-installation-directory-path
+          value: $(params.pkg-installation-directory-path)
+        - name: manifest-file-path
+          value: $(params.manifest-file-path)
+        - name: image
+          value: $(params.image)
+
+    # redhat-codeready-dependency-analysis task
+    - name: redhat-codeready-dependency-analysis
+      taskRef:
+        name: redhat-codeready-dependency-analysis
+      runAfter:
+        - pre-task-setup
+      workspaces:
+        - name: output
+          workspace: output
+      params:
+        - name: pkg-installation-directory-path
+          value: $(params.pkg-installation-directory-path)
+        - name: manifest-file-path
+          value: $(params.manifest-file-path)
+        - name: image
+          value: $(params.image)
+        - name: output-file-path
+          value: $(params.output-file-path)
+
+
+    # Task to view result and make decision about build.
+    - name: post-task-setup
+      taskRef:
+        name: post-task-setup
+      runAfter:
+        - redhat-codeready-dependency-analysis
+      workspaces:
+        - name: output
+          workspace: output
+      params:
+        - name: output-file-path
+          value: $(params.output-file-path)
+        - name: image
+          value: $(params.image)
