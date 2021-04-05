@@ -1,0 +1,32 @@
+# A Custom task given for demo purpose to read the report and make decision about build
+apiVersion: tekton.dev/v1beta1
+kind: Task
+
+metadata:
+  name: post-task-setup
+spec:
+  params:
+    - name: output-file-path
+      default: redhat-codeready-dependency-analysis-report.json
+    - name: image
+      default: ghcr.io/fabric8-analytics/crda-python:3.7
+  steps:
+    - name: post-task-setup
+      image: $(params.image)
+      workingDir: $(workspaces.output.path)
+      script: |
+        #!/bin/sh
+
+        printf "Report file data:\n"
+        jq . $(params.output-file-path)
+
+        value=$(jq .report.total_vulnerabilities  $(params.output-file-path))
+
+        if [ $value -ge  5 ]; then
+          printf "\nBUILD FAILED: Vulnerability count is more than threshold value."
+        else
+          printf "\nBUILD PASSED: Vulnerability count is less than threshold value"
+        fi
+
+  workspaces:
+    - name: output

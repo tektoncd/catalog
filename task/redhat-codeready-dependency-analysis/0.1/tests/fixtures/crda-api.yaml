@@ -1,0 +1,16 @@
+---
+headers:
+  method: POST
+  path: /api/v2/stack-analyses
+response:
+  status: 200
+  content-type: text/json
+  file: /fixtures/crda-post-response.json
+---
+headers:
+  method: GET
+  path: /api/v2/stack-analyses/123456789
+response:
+  status: 200
+  content-type: text/json
+  file: /fixtures/crda-get-response.json
