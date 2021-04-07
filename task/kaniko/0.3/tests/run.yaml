@@ -1,0 +1,71 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: kaniko-test-pipeline
+spec:
+  workspaces:
+  - name: shared-workspace
+  params:
+  - name: image
+    description: reference of the image to build
+  tasks:
+  - name: fetch-repository
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: shared-workspace
+    params:
+    - name: url
+      value: https://github.com/kelseyhightower/nocode
+    - name: subdirectory
+      value: ""
+    - name: deleteExisting
+      value: "true"
+  - name: kaniko
+    taskRef:
+      name: kaniko
+    runAfter:
+    - fetch-repository
+    workspaces:
+    - name: source
+      workspace: shared-workspace
+    params:
+    - name: IMAGE
+      value: $(params.image)
+    - name: EXTRA_ARGS
+      value: "--skip-tls-verify"
+  - name: verify-digest
+    runAfter:
+    - kaniko
+    params:
+    - name: digest
+      value: $(tasks.kaniko.results.IMAGE-DIGEST)
+    taskSpec:
+      params:
+      - name: digest
+      steps:
+      - name: bash
+        image: ubuntu
+        script: |
+          echo $(params.digest)
+          case .$(params.digest) in
+            ".sha"*) exit 0 ;;
+            *)       echo "Digest value is not correct" && exit 1 ;;
+          esac
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: kaniko-test-pipeline-run
+spec:
+  pipelineRef:
+    name: kaniko-test-pipeline
+  params:
+  - name: image
+    value: localhost:5000/kaniko-nocode
+  workspaces:
+  - name: shared-workspace
+    persistentvolumeclaim:
+      claimName: kaniko-source-pvc
