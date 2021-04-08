@@ -1,18 +1,6 @@
 #!/usr/bin/env bash
 
-TMD=$(mktemp -d)
-
-# Generate SSL Certificate
-openssl req -newkey rsa:4096 -nodes -sha256 -keyout "${TMD}"/ca.key -x509 -days 365 \
-        -addext "subjectAltName = DNS:registry" \
-        -out "${TMD}"/ca.crt -subj "/C=FR/ST=IDF/L=Paris/O=Tekton/OU=Catalog/CN=registry"
-
-# Create a configmap from these certs
-kubectl create -n "${tns}" configmap sslcert \
-        --from-file=ca.crt="${TMD}"/ca.crt --from-file=ca.key="${TMD}"/ca.key
-
-# Add a secure internal registry as sidecar
-kubectl create -n "${tns}" -f task/jib-maven/0.3/tests/internal-registry/internal-registry.yaml
+add_sidecar_secure_registry
 
 # Add git-clone
 add_task git-clone latest

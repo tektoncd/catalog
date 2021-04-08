@@ -89,6 +89,24 @@ function add_sidecar_registry() {
     add_sidecars ${1} '{"image":"registry", "name": "registry"}'
 }
 
+# Run a secure registry as a sidecar to allow the tasks to push to this registry using the certs.
+# It will create a configmap `sslcert` with certificate available at key `ca.crt`
+function add_sidecar_secure_registry() {
+    TMD=$(mktemp -d)
+
+    # Generate SSL Certificate
+    openssl req -newkey rsa:4096 -nodes -sha256 -keyout "${TMD}"/ca.key -x509 -days 365 \
+            -addext "subjectAltName = DNS:registry" \
+            -out "${TMD}"/ca.crt -subj "/C=FR/ST=IDF/L=Paris/O=Tekton/OU=Catalog/CN=registry"
+
+    # Create a configmap from these certs
+    kubectl create -n "${tns}" configmap sslcert \
+            --from-file=ca.crt="${TMD}"/ca.crt --from-file=ca.key="${TMD}"/ca.key
+
+    # Add a secure internal registry as sidecar
+    kubectl create -n "${tns}" -f ${taskdir}/tests/internal-registry/internal-registry.yaml
+}
+
 function add_task() {
     local array path_version task
     task=${1}
