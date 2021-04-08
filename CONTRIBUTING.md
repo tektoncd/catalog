@@ -121,6 +121,8 @@ some environment variables to it that would be applied :
 We have some helper functions you can use from your `hook` scripts :
 
 * **add_sidecar_registry**: This will add a registry as a sidecar to allow the builder tasks to upload image directly to this sidecar registry instead of having to rely on external registries.
+* **add_sidecar_secure_registry**: This will run a secure registry as a sidecar to allow the tasks to push to this registry using the certs. It will create
+  a configmap `sslcert` with certificate available at key `ca.crt`
 * **add_task**: Install a task into the testing namespace, the first argument is the name of the task, the second argument is the version of the task. If the version is equal to `latest` it will install the latest version of the task.
 
 What can you run from those scripts is whatever defined in the test-runner
