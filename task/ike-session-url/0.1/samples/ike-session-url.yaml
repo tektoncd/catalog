@@ -1,0 +1,11 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: ike-session-url-run
+spec:
+  serviceAccountName: istio-workspace
+  taskRef:
+    name: ike-session-url
+  params:
+    - name: session
+      value: $(params.git-pr-head-ref)
