@@ -62,7 +62,7 @@ function detect_changed_e2e_test() {
     git --no-pager diff --name-only "${PULL_BASE_SHA}".."${PULL_PULL_SHA}"|grep "test/[^/]*"
 }
 
-[[ ! -z $(detect_changed_e2e_test) ]] && TEST_RUN_ALL_TESTS=1
+[[ -z ${TEST_RUN_ALL_TESTS} ]] && [[ ! -z $(detect_changed_e2e_test) ]] && TEST_RUN_ALL_TESTS=1
 
 function detect_new_changed_tasks() {
     # detect for changes in tests dir of the task
