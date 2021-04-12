@@ -3,7 +3,7 @@ kind: Task
 metadata:
   name: ike-session-url
   labels:
-    app.kubernetes.io/version: 0.1
+    app.kubernetes.io/version: "0.1"
   annotations:
     tekton.dev/displayName: Ike Session URL
     tekton.dev/tags: istio, telepresence

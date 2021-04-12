@@ -3,7 +3,7 @@ kind: Task
 metadata:
   name: ike-create
   labels:
-    app.kubernetes.io/version: 0.1
+    app.kubernetes.io/version: "0.1"
   annotations:
     tekton.dev/displayName: Ike Create
     tekton.dev/tags: istio, telepresence
