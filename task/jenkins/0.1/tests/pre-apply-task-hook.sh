@@ -34,7 +34,7 @@ EOF
 kubectl -n "${tns}" wait --for=condition=available --timeout=600s deployment/jenkins
 kubectl -n "${tns}" expose deployment jenkins --target-port=8080
 
-set +e
+set +ex
 lock=0
 while true;do
     apitoken="$(kubectl -n "${tns}" exec deployment/jenkins -- cat /var/jenkins_home/secrets/initialAdminPassword 2>/dev/null)"
@@ -52,6 +52,7 @@ set -e
 # We need to execute the script on the pods, since it's too painful with direct exec the commands
 cat <<EOF>/tmp/script.sh
 #!/bin/bash
+set +x
 cookiejar=\$(mktemp)
 apitoken=\$(cat /var/jenkins_home/secrets/initialAdminPassword)
 while [[ -z "\${crumb}" ]];do
