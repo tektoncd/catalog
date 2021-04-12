@@ -14,8 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -x
-
 # Configure the number of parallel tests running at the same time, start from 0
 MAX_NUMBERS_OF_PARALLEL_TASKS=4 # => 5
 

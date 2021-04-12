@@ -52,7 +52,6 @@ set -e
 # We need to execute the script on the pods, since it's too painful with direct exec the commands
 cat <<EOF>/tmp/script.sh
 #!/bin/bash
-set -x
 cookiejar=\$(mktemp)
 apitoken=\$(cat /var/jenkins_home/secrets/initialAdminPassword)
 while [[ -z "\${crumb}" ]];do
