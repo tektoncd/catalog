@@ -1,0 +1,69 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: cat-pr-readme
+spec:
+  description: |
+    cat-pr-readme takes a git repository and a PR number and
+    prints the README.md file from that PR.
+  params:
+  - name: repo-url
+    type: string
+    description: The git repository URL to clone from.
+  - name: pr_number
+    type: string
+    description: The PR number to checkout
+  workspaces:
+  - name: shared-data
+    description: |
+      This workspace will receive the cloned git repo and be passed
+      to the next Task for the repo's README.md file to be read.
+  tasks:
+  - name: fetch-repo
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: shared-data
+    params:
+    - name: url
+      value: $(params.repo-url)
+    - name: refspec
+      value: refs/pull/$(params.pr_number)/head
+    - name: revision
+      value: FETCH_HEAD
+  - name: cat-readme
+    runAfter: ["fetch-repo"]  # Wait until the clone is done before reading the readme.
+    workspaces:
+    - name: source
+      workspace: shared-data
+    taskSpec:
+      workspaces:
+      - name: source
+      steps:
+      - image: zshusers/zsh:4.3.15
+        script: |
+          #!/usr/bin/env zsh
+          cat $(workspaces.source.path)/README.md
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: git-clone-checking-out-a-pr
+spec:
+  pipelineRef:
+    name: cat-pr-readme
+  workspaces:
+  - name: shared-data
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+  params:
+  - name: repo-url
+    value: https://github.com/tektoncd/pipeline.git
+  - name: pr_number
+    value: "3872"
