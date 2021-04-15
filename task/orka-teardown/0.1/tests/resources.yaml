@@ -1,3 +1,4 @@
+# Secrets set and used for local test instance.
 ---
 apiVersion: v1
 kind: ConfigMap
