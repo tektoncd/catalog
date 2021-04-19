@@ -48,7 +48,7 @@ spec:
     image: $(params.MAVEN_IMAGE)
     # Make sh evaluate $HOME.
     script: |
-      #!/bin/sh
+      #!/bin/bash
 
       [[ -f  /etc/ssl/certs/$(params.CACERTFILE) ]] && \
       keytool -import -keystore $JAVA_HOME/lib/security/cacerts -storepass "changeit" -file /etc/ssl/certs/$(params.CACERTFILE) -noprompt
