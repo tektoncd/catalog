@@ -235,7 +235,7 @@ Prerequisites:
 
 Usage:
 
-`deploy-release.sh -p project -v version [-b bucket] [-e extra-path] [-f file]`
+`deploy-release.sh -p project -v version [-b bucket] [-e extra-path] [-f file] [-g post-file]`
 
 Where:
 
@@ -248,5 +248,7 @@ Where:
 - `extra-path` is the root path within the bucket where release are stored, empty by default
 
 - `file` is the name of the release file, `release.yaml` by default
+
+- `post-file` is the name of the 2nd release file, none by default, `interceptors.yaml` by default for triggers
 
 To summarize, the deployment job will look for the release file into `<bucket>/<extra-path>/<project>/previous/<version>/<file>`

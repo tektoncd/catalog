@@ -19,7 +19,7 @@
 # called from command line.
 
 # Default GKE version to be used with Tekton Serving
-readonly SERVING_GKE_VERSION=gke-latest
+readonly SERVING_GKE_VERSION=gke-channel-regular
 readonly SERVING_GKE_IMAGE=cos
 
 # Conveniently set GOPATH if unset
