@@ -1,5 +1,4 @@
 ---
-# Dummy secret used for tests.
 kind: Secret
 apiVersion: v1
 metadata:
