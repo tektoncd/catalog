@@ -1,0 +1,159 @@
+# TODO: Submit this in catalog upstream
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: github-app-token
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: github
+    tekton.dev/displayName: "github app token"
+spec:
+  description: >-
+    Retrive a user token from a GitHub application
+
+    This task will get a user token for an installation_id for a GitHub application.
+    This could be then reuse to do user operations.
+
+  workspaces:
+    - name: secrets
+
+  results:
+    - name: token
+      description: The user token to use.
+
+  params:
+    - name: installation_id
+      description: The installation id for the GitHub application to request a token for.
+      type: string
+
+    - name: application_id
+      description: The application id for the GitHub application to request a token for.
+      type: string
+      default: ""
+
+    - name: private_key_path
+      description: The key path inside the secret workspace
+      type: string
+      default: "private.key"
+
+    - name: application_id_path
+      description: The path for the application id inside the secret workspace
+      type: string
+      default: "application_id"
+
+    - name: token_expiration_minutes
+      description: Token expiration time in minutes
+      type: string
+      default: "10"
+
+  steps:
+    - name: get-token
+      image: quay.io/chmouel/github-app-token@sha256:bc45937ae588df876555ebb56c36350ed74592c7f55f2df255cabef39c926a88
+      env:
+        - name: GITHUBAPP_KEY_PATH
+          value: $(workspaces.secrets.path)/$(params.private_key_path)
+        - name: GITHUBAPP_APP_ID_PATH
+          value: $(workspaces.secrets.path)/$(params.application_id_path)
+        - name: GITHUBAPP_APP_ID
+          value: $(params.application_id)
+        - name: GITHUBAPP_INSTALLATION_ID
+          value: $(params.installation_id)
+        - name: GITHUBAPP_TOKEN_EXPIRATION_MINUTES
+          value: $(params.token_expiration_minutes)
+        - name: GITHUBAPP_RESULT_PATH
+          value: $(results.token.path)
+      script: |
+        #!/usr/bin/env python3
+        import json
+        import os
+        import time
+
+        import requests
+        from jwcrypto import jwk, jwt
+
+        EXPIRE_MINUTES_AS_SECONDS = int(os.environ.get('GITHUBAPP_TOKEN_EXPIRATION_MINUTES', 10)) * 60
+        # TODO support github enteprise
+        GITHUB_API_URL = "https://api.github.com"
+
+
+        class GitHub():
+            token = None
+
+            def __init__(self, private_key, app_id=None, installation_id=None):
+                if not isinstance(private_key, bytes):
+                    raise ValueError(f'"{private_key}" parameter must be byte-string')
+                self._private_key = private_key
+                self.app_id = app_id
+                self.token = self._get_token(installation_id)
+
+            def _load_private_key(self, pem_key_bytes):
+                return jwk.JWK.from_pem(pem_key_bytes)
+
+            def _app_token(self, expire_in=EXPIRE_MINUTES_AS_SECONDS):
+                key = self._load_private_key(self._private_key)
+                now = int(time.time())
+                token = jwt.JWT(
+                    header={"alg": "RS256"},
+                    claims={
+                        "iat": now,
+                        "exp": now + expire_in,
+                        "iss": self.app_id
+                    },
+                    algs=["RS256"],
+                )
+                token.make_signed_token(key)
+                return token.serialize()
+
+            def _get_token(self, installation_id=None):
+                app_token = self._app_token()
+                if not installation_id:
+                    return app_token
+
+                req = self._request(
+                    "POST",
+                    f"/app/installations/{installation_id}/access_tokens",
+                    headers={
+                        "Authorization": f"Bearer {app_token}",
+                        "Accept": "application/vnd.github.machine-man-preview+json"
+                    })
+
+                ret = req.json()
+                if 'token' not in ret:
+                    raise Exception("Authentication errors")
+
+                return ret['token']
+
+            def _request(self, method, url, headers={}, data={}):
+                if self.token and 'Authorization' not in headers:
+                    headers.update({"Authorization": "Bearer " + self.token})
+                if not url.startswith("http"):
+                    url = f"{GITHUB_API_URL}{url}"
+                return requests.request(method,
+                                        url,
+                                        headers=headers,
+                                        data=json.dumps(data))
+
+
+        def main():
+            with open(os.environ['GITHUBAPP_KEY_PATH'], 'rb') as key_file:
+                key = key_file.read()
+
+            if os.path.exists(os.environ['GITHUBAPP_APP_ID_PATH']):
+                app_id = open(os.environ['GITHUBAPP_APP_ID_PATH']).read()
+            elif os.environ.get('GITHUBAPP_APP_ID'):
+                app_id = os.environ['GITHUBAPP_APP_ID']
+            else:
+                raise Exception("application id is not set")
+
+            print(f"Getting user token for application_id: {app_id}")
+            github_app = GitHub(
+                key,
+                app_id=app_id,
+                installation_id=os.environ.get('GITHUBAPP_INSTALLATION_ID'))
+            open(os.environ.get('GITHUBAPP_RESULT_PATH'), 'w').write(github_app.token)
+
+        if __name__ == '__main__':
+            main()
