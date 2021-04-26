@@ -27,8 +27,7 @@ spec:
     - name: oc
       image: quay.io/openshift/origin-cli:4.9
       script: |
-        STATE=`oc get session $(params.session) --namespace $(params.namespace) -o json`
-        if [[ $? -ne 0 ]]; then
+        if ! STATE=$(oc get session $(params.session) --namespace $(params.namespace) -o json); then
           error=$?
           echo $STATE
           exit $error

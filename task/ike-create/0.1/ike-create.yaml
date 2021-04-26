@@ -37,10 +37,10 @@ spec:
     - name: ike
       image: quay.io/maistra/istio-workspace:v0.1.0
       script: |
-        test ! -z "$(params.route)" && export ROUTE="--route $(params.route)"
+        test ! -z "$(params.route)" && ROUTE="--route $(params.route)"
+        export ROUTE
 
-        STATE=`ike create --session $(params.session) $ROUTE --deployment $(params.target) --namespace $(params.namespace) --image $(params.image) --json`
-        if [[ $? -ne 0 ]]; then
+        if ! STATE=$(ike create --session $(params.session) $ROUTE --deployment $(params.target) --namespace $(params.namespace) --image $(params.image) --json); then
           error=$?
           echo $STATE
           exit $error
