@@ -1,0 +1,62 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: write-file-pipeline
+spec:
+  workspaces:
+    - name: shared-workspace
+  tasks:
+    - name: output-credentials
+      taskRef:
+        name: write-file
+        kind: Task
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: path
+          value: ./config/login.ini
+        - name: permissions
+          value: "0400"
+        - name: contents
+          value: |
+            [credentials]
+            user = ze-user
+            password = $(context.pipelineRun.uid)
+    - name: verify
+      runAfter: [output-credentials]
+      params:
+        - name: uid
+          value: $(context.pipelineRun.uid)
+      taskSpec:
+        params:
+          - name: uid
+        steps:
+          - name: check-output
+            image: alpine:3.10
+            workingDir: $(workspaces.output.path)
+            script: |
+              #!/bin/sh
+              grep $(params.uid) ./config/login.ini
+        workspaces:
+          - name: output
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: write-file-pipeline-run
+spec:
+  pipelineRef:
+    name: write-file-pipeline
+  workspaces:
+    - name: shared-workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 500Mi

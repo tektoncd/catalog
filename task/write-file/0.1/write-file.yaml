@@ -1,0 +1,50 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: write-file
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: tools
+    tekton.dev/displayName: Write a file
+spec:
+  description: >-
+    Write a file to a workspace
+
+    This task can be used to write a file onto the output workspace.
+    Use parameter expansion to insert variable content into the written
+    file. It can also set specific permissions on the file.
+  params:
+    - name: path
+      type: string
+      description: >
+        Relative path to create within the workspace. Directories will
+        be created as necessary.
+    - name: contents
+      type: string
+      description: >
+        Contents of the file to create. Note that octal numbers
+        need quoting in YAML.
+    - name: permissions
+      type: string
+      default: "0755"
+      description: >
+        chmod-style permission string to apply to the file. Note that
+        permissions will not be applied to created directories.
+  workspaces:
+    - name: output
+      description: Workspace onto which the file is written.
+  steps:
+    - name: write-file
+      image: docker.io/library/alpine:3.10
+      workingDir: $(workspaces.output.path)
+      script: |
+        #!/bin/sh
+        set -e
+        DIRNAME=$(dirname "$(params.path)")
+        mkdir -p "$DIRNAME"
+        cat <<EOF > "./$(params.path)"
+        $(params.contents)
+        EOF
+        chmod "$(params.permissions)" "$(params.path)"
