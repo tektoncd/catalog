@@ -61,6 +61,13 @@ On the catalog, this means that you should, where possible:
         privileged: true
   ```
 
+## Be as portable and compatible as possible
+
+Make use of recent Kubernetes and Tekton features only when a user
+will expect it from the task's purpose. Your task may be of great use
+to users that have good reason not to upgrade right now. Your task
+should include the `tekton.dev/pipelines.minVersion`.
+
 ## Remember that there are other languages than sh and bash
 
 Yes, sh and bash are DSLs for running processes, but sometimes there
