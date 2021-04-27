@@ -26,12 +26,12 @@ spec:
       description: >
         Contents of the file to create. Note that octal numbers
         need quoting in YAML.
-    - name: permissions
+    - name: mode
       type: string
       default: "0755"
       description: >
         chmod-style permission string to apply to the file. Note that
-        permissions will not be applied to created directories.
+        mode will not be applied to created directories.
   workspaces:
     - name: output
       description: Workspace onto which the file is written.
@@ -39,12 +39,17 @@ spec:
     - name: write-file
       image: docker.io/library/alpine:3.10
       workingDir: $(workspaces.output.path)
+      env:
+        - name: PARAM_PATH
+          value: $(params.path)
+        - name: PARAM_MODE
+          value: $(params.mode)
+        - name: PARAM_CONTENTS
+          value: $(params.contents)
       script: |
         #!/bin/sh
-        set -e
-        DIRNAME=$(dirname "$(params.path)")
+        set -eu
+        DIRNAME=$(dirname "${PARAM_PATH}")
         mkdir -p "$DIRNAME"
-        cat <<EOF > "./$(params.path)"
-        $(params.contents)
-        EOF
-        chmod "$(params.permissions)" "$(params.path)"
+        printf '%s' "${PARAM_CONTENTS}" > "./${PARAM_PATH}"
+        chmod "${PARAM_MODE}" "./${PARAM_PATH}"

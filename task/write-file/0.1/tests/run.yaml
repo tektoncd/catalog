@@ -16,8 +16,8 @@ spec:
       params:
         - name: path
           value: ./config/login.ini
-        - name: permissions
-          value: "0400"
+        - name: mode
+          value: "1234"
         - name: contents
           value: |
             [credentials]
@@ -38,6 +38,7 @@ spec:
             script: |
               #!/bin/sh
               grep $(params.uid) ./config/login.ini
+              ls -l ./config/login.ini | grep -- '--w--wxr-T'
         workspaces:
           - name: output
       workspaces:
