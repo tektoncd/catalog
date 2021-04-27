@@ -74,8 +74,33 @@ spec:
   steps:
     - name: clone
       image: $(params.gitInitImage)
+      env:
+      - name: PARAM_URL
+        value: $(params.url)
+      - name: PARAM_REVISION
+        value: $(params.revision)
+      - name: PARAM_REFSPEC
+        value: $(params.refspec)
+      - name: PARAM_SUBMODULES
+        value: $(params.submodules)
+      - name: PARAM_DEPTH
+        value: $(params.depth)
+      - name: PARAM_SSL_VERIFY
+        value: $(params.sslVerify)
+      - name: PARAM_SUBDIRECTORY
+        value: $(params.subdirectory)
+      - name: PARAM_DELETE_EXISTING
+        value: $(params.deleteExisting)
+      - name: PARAM_HTTP_PROXY
+        value: $(params.httpProxy)
+      - name: PARAM_HTTPS_PROXY
+        value: $(params.httpsProxy)
+      - name: PARAM_NO_PROXY
+        value: $(params.noProxy)
+      - name: WORKSPACE_OUTPUT_PATH
+        value: $(workspaces.output.path)
       script: |
-        CHECKOUT_DIR="$(workspaces.output.path)/$(params.subdirectory)"
+        CHECKOUT_DIR="${WORKSPACE_OUTPUT_PATH}/${PARAM_SUBDIRECTORY}"
 
         cleandir() {
           # Delete any existing contents of the repo directory if it exists.
@@ -92,22 +117,22 @@ spec:
           fi
         }
 
-        if [[ "$(params.deleteExisting)" == "true" ]] ; then
+        if [[ "${PARAM_DELETE_EXISTING}" == "true" ]] ; then
           cleandir
         fi
 
-        test -z "$(params.httpProxy)" || export HTTP_PROXY=$(params.httpProxy)
-        test -z "$(params.httpsProxy)" || export HTTPS_PROXY=$(params.httpsProxy)
-        test -z "$(params.noProxy)" || export NO_PROXY=$(params.noProxy)
+        test -z "${PARAM_HTTP_PROXY}" || export HTTP_PROXY="${PARAM_HTTP_PROXY}"
+        test -z "${PARAM_HTTPS_PROXY}" || export HTTPS_PROXY="${PARAM_HTTPS_PROXY}"
+        test -z "${PARAM_NO_PROXY}" || export NO_PROXY="${PARAM_NO_PROXY}"
 
         /ko-app/git-init \
-          -url "$(params.url)" \
-          -revision "$(params.revision)" \
-          -refspec "$(params.refspec)" \
+          -url "${PARAM_URL}" \
+          -revision "${PARAM_REVISION}" \
+          -refspec "${PARAM_REFSPEC}" \
           -path "$CHECKOUT_DIR" \
-          -sslVerify="$(params.sslVerify)" \
-          -submodules="$(params.submodules)" \
-          -depth "$(params.depth)"
+          -sslVerify="${PARAM_SSL_VERIFY}" \
+          -submodules="${PARAM_SUBMODULES}" \
+          -depth "${PARAM_DEPTH}"
         cd "$CHECKOUT_DIR"
         RESULT_SHA="$(git rev-parse HEAD | tr -d '\n')"
         EXIT_CODE="$?"
