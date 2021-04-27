@@ -72,8 +72,6 @@ spec:
     - name: $(params.CACHE)
       mountPath: /workspace/.cache
       subPath: jib-cache
-    securityContext:
-      privileged: true
 
   - name: digest-to-results
     image: $(params.MAVEN_IMAGE)
