@@ -13,8 +13,8 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/wr
 ## Parameters
 
 - **path**: Relative path to create within the workspace. Directories will be created as necessary. 
-- **permissions**: Contents of the file to create. Note that octal numbers need quoting in YAML.
-- **contents**: chmod-style permission string to apply to the file. Note that permissions will not be applied to created directories.
+- **mode**: chmod-style mode string to apply to the file. Note that mode will not be applied to created directories.
+- **contents**: Contents of the file to create. Note that octal numbers need quoting in YAML.
 
 ## Usage
 
@@ -31,7 +31,7 @@ This example task generates a random password from the pipeline run's unique id.
   params:
     - name: path
       value: ./config/login.ini
-    - name: permissions
+    - name: mode
       value: "0400"
     - name: contents
       value: |
