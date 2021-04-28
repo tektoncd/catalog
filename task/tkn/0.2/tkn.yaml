@@ -23,7 +23,7 @@ spec:
   params:
     - name: TKN_IMAGE
       description: tkn CLI container image to run this task
-      default: gcr.io/tekton-releases/dogfooding/tkn@sha256:f79c0a56d561b1ae98afca545d0feaf2759f5c486ef891a79f23dc2451167dad
+      default: gcr.io/tekton-releases/dogfooding/tkn@sha256:f69a02ef099d8915e9e4ea1b74e43b7a9309fc97cf23cb457ebf191e73491677
     - name: SCRIPT
       description: tkn CLI script to execute
       type: string
