@@ -36,7 +36,7 @@ stringData:
 
 Example kubectl command
 ```
-kubectl apply -f server-secret.yam
+kubectl apply -f server-secret.yaml
 ```
 
 ## Parameters
