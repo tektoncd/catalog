@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/version: "0.1"
   annotations:
     tekton.dev/pipelines.minVersion: "0.12.1"
-    tekton.dev/tags: tools
+    tekton.dev/tags: generic
     tekton.dev/displayName: Write a file
 spec:
   description: >-
