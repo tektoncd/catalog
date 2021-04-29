@@ -37,7 +37,7 @@ spec:
       description: Workspace onto which the file is written.
   steps:
     - name: write-file
-      image: docker.io/library/alpine:3.10
+      image: docker.io/library/alpine:3.12@sha256:36553b10a4947067b9fbb7d532951066293a68eae893beba1d9235f7d11a20ad
       workingDir: $(workspaces.output.path)
       env:
         - name: PARAM_PATH
