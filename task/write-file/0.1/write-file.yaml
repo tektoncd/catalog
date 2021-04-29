@@ -24,14 +24,14 @@ spec:
     - name: contents
       type: string
       description: >
-        Contents of the file to create. Note that octal numbers
-        need quoting in YAML.
+        Contents of the file to create.
     - name: mode
       type: string
       default: "0755"
       description: >
         chmod-style permission string to apply to the file. Note that
-        mode will not be applied to created directories.
+        octal numbers need quoting in YAML. Mode will not be applied
+        to created directories.
   workspaces:
     - name: output
       description: Workspace onto which the file is written.
