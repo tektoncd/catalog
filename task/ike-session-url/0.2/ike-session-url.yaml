@@ -1,0 +1,35 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: ike-session-url
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/displayName: Ike Session URL
+    tekton.dev/tags: istio, telepresence
+    tekton.dev/pipelines.minVersion: 0.16.0
+spec:
+  description: >-
+    `ike-session-url` is a convenient way to get a hold of the exposed URL
+    for the a given `session`.
+  params:
+    - name: namespace
+      type: string
+      description: Which namespace to target
+      default: $(context.taskRun.namespace)
+    - name: session
+      type: string
+      description: What to call the session
+  results:
+    - name: url
+      description: The URL of the new route
+  steps:
+    - name: oc
+      image: quay.io/openshift/origin-cli:4.9
+      script: |
+        if ! STATE=$(oc get session $(params.session) --namespace $(params.namespace) -o json); then
+          error=$?
+          echo $STATE
+          exit $error
+        fi
+        echo "$STATE" | grep \"hosts\": | cut -d \" -f 4 | uniq | tr -d '\n' > /tekton/results/url
