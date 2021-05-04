@@ -60,11 +60,17 @@ spec:
           value: $(params.PATH)
         - name: TAG
           value: $(params.TAG)
+        - name: DOCKER_CONFIG_PATH
+          value: $(workspaces.dockerconfig.path)
       script: |
         #!/usr/bin/env sh
         set -e -o pipefail
         TARGET="${REGISTRY}"
         [ "${REGISTRY_PATH}" != "" ] && TARGET="${TARGET}/${REGISTRY_PATH}"
+        # If a dockerconfig workspace was provided, set DOCKER_CONFIG to point to it
+        if [ -d "$DOCKER_CONFIG_PATH" ]; then
+            export DOCKER_CONFIG="${DOCKER_CONFIG_PATH}"
+        fi
         find task -type f -mindepth 3 -maxdepth 3 -name '*.yaml' -o -name '*.yml'| while read -r task_version_dir; do
           FOLDER=$(dirname "$task_version_dir")
           VERSION=$(basename "$FOLDER")
