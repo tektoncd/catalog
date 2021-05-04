@@ -62,10 +62,10 @@ spec:
           value: $(params.TAG)
       script: |
         #!/usr/bin/env sh
-        set -e
+        set -e -o pipefail
         TARGET="${REGISTRY}"
         [ "${REGISTRY_PATH}" != "" ] && TARGET="${TARGET}/${REGISTRY_PATH}"
-        find task -type f -mindepth 3 -maxdepth 3 -name '*.yaml' -o '*.yml'| while read -r task_version_dir; do
+        find task -type f -mindepth 3 -maxdepth 3 -name '*.yaml' -o -name '*.yml'| while read -r task_version_dir; do
           FOLDER=$(dirname "$task_version_dir")
           VERSION=$(basename "$FOLDER")
           TASK=$(basename "$(dirname "$FOLDER")")
