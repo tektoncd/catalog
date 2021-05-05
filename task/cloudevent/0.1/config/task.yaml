@@ -35,8 +35,8 @@ spec:
     image: github.com/knative/eventing/cmd/sendevent
     command: ["sendevent"]
     args:
-      - "--event-id=$(inputs.params.eventID)"
-      - "--event-type=$(inputs.params.eventType)"
-      - "--source=$(inputs.params.source)"
-      - "--data=$(inputs.params.data)"
-      - "$(inputs.params.sink)"
+      - "--event-id=$(params.eventID)"
+      - "--event-type=$(params.eventType)"
+      - "--source=$(params.source)"
+      - "--data=$(params.data)"
+      - "$(params.sink)"

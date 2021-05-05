@@ -34,8 +34,8 @@ spec:
     image: docker.io/iancoffey/sendevent-89c3de01c503ceb66b676a3e41c265ed@sha256:fc39998cba7ad8e54323b948b56b11b0b235996069349fb74776865fedf182a5
     command: ["sendevent"]
     args:
-    - "--event-id=$(inputs.params.eventID)"
-    - "--event-type=$(inputs.params.eventType)"
-    - "--source=$(inputs.params.source)"
-    - "--data=$(inputs.params.data)"
-    - "$(inputs.params.sink)"
+    - "--event-id=$(params.eventID)"
+    - "--event-type=$(params.eventType)"
+    - "--source=$(params.source)"
+    - "--data=$(params.data)"
+    - "$(params.sink)"
