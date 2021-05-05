@@ -144,6 +144,31 @@ status:
 ...
 ```
 
+### Using `Task`s through Bundles
+
+[Tekton Bundles](https://tekton.dev/docs/pipelines/pipelines/#tekton-bundles) are an alpha feature of Tekton pipelines that allows storing `Tasks` as bundles in a container registry, instead of as custom resources in etcd in a Kubernetes cluster.
+With Tekton Bundles are enabled, it is possible to reference any task in the catalog without installing it first.
+Tasks are available at [`gcr.io/tekton-releases/catalog/upstream/<task-name>:<task-version>`](https://console.cloud.google.com/gcr/images/tekton-releases/GLOBAL/catalog/upstream?gcrImageListsize=100).
+For example:
+
+```
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: example-run
+spec:
+  taskRef:
+    name: golang-build
+    bundle: gcr.io/tekton-releases/catalog/upstream/goland-build:0.1
+  params:
+  - name: package
+    value: github.com/tektoncd/pipeline
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
+```
+
 ## Contributing and Support
 
 If you want to contribute to this repository, please see our [contributing](./CONTRIBUTING.md) guidelines.
