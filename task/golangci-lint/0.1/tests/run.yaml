@@ -15,7 +15,7 @@ spec:
           workspace: shared-workspace
       params:
         - name: url
-          value: https://github.com/tektoncd/pipeline
+          value: https://github.com/tektoncd/catalog
         - name: subdirectory
           value: ""
         - name: deleteExisting
@@ -30,7 +30,9 @@ spec:
           workspace: shared-workspace
       params:
         - name: package
-          value: github.com/tektoncd/pipeline
+          value: github.com/tektoncd/catalog
+        - name: flags
+          value: --disable-all --enable=errcheck
 
 ---
 apiVersion: tekton.dev/v1beta1
