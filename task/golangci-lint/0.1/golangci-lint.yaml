@@ -23,7 +23,7 @@ spec:
     default: --verbose
   - name: version
     description: golangci-lint version to use
-    default: "v1.21.0"
+    default: "v1.39"
   - name: GOOS
     description: "running operating system target"
     default: linux
