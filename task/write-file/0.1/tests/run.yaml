@@ -38,7 +38,7 @@ spec:
             script: |
               #!/bin/sh
               grep $(params.uid) ./config/login.ini
-              ls -l ./config/login.ini | grep -- '--w--wxr-T'
+              ls -l ./config/login.ini
         workspaces:
           - name: output
       workspaces:
