@@ -12,7 +12,7 @@ metadata:
     tekton.dev/displayName: "github app token"
 spec:
   description: >-
-    Retrive a user token from a GitHub application
+    Retrieve a user token from a GitHub application
 
     This task will get a user token for an installation_id for a GitHub application.
     This could be then reuse to do user operations.
@@ -49,6 +49,11 @@ spec:
       type: string
       default: "10"
 
+    - name: github_api_url
+      description: GitHUB API URL endpoint
+      type: string
+      default: "https://api.github.com"
+
   steps:
     - name: get-token
       image: quay.io/chmouel/github-app-token@sha256:bc45937ae588df876555ebb56c36350ed74592c7f55f2df255cabef39c926a88
@@ -65,6 +70,8 @@ spec:
           value: $(params.token_expiration_minutes)
         - name: GITHUBAPP_RESULT_PATH
           value: $(results.token.path)
+        - name: GITHUB_API_URL
+          value: $(params.github_api_url)
       script: |
         #!/usr/bin/env python3
         import json
@@ -76,7 +83,7 @@ spec:
 
         EXPIRE_MINUTES_AS_SECONDS = int(os.environ.get('GITHUBAPP_TOKEN_EXPIRATION_MINUTES', 10)) * 60
         # TODO support github enteprise
-        GITHUB_API_URL = "https://api.github.com"
+        GITHUB_API_URL = os.environ.get('GITHUB_API_URL')
 
 
         class GitHub():
@@ -122,7 +129,7 @@ spec:
 
                 ret = req.json()
                 if 'token' not in ret:
-                    raise Exception("Authentication errors")
+                    raise Exception(f"Authentication errors: {ret}")
 
                 return ret['token']
 
@@ -135,7 +142,6 @@ spec:
                                         url,
                                         headers=headers,
                                         data=json.dumps(data))
-
 
         def main():
             with open(os.environ['GITHUBAPP_KEY_PATH'], 'rb') as key_file:
