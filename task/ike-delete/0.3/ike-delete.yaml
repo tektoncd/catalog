@@ -28,4 +28,3 @@ spec:
       image: quay.io/maistra/istio-workspace:v0.3.0
       script: |
         ike delete --session "$(params.session)" --deployment "$(params.target)" --namespace "$(params.namespace)"
-        
