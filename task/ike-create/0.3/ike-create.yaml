@@ -37,12 +37,10 @@ spec:
     - name: ike
       image: quay.io/maistra/istio-workspace:v0.3.0
       script: |
-        test ! -z "$(params.route)" && ROUTE="--route $(params.route)"
-        export ROUTE
-
-        if ! STATE=$(ike create --session "$(params.session)" $ROUTE --deployment "$(params.target)" --namespace "$(params.namespace)" --image "$(params.image)" --json); then
-          error=$?
-          echo "$STATE"
-          exit $error
+        STATE=$(ike create --session "$(params.session)" $(test ! -z "$(params.route)" && echo "--route $(params.route)" || true) --deployment "$(params.target)" --namespace "$(params.namespace)" --image "$(params.image)" --json)
+        exit_code=$?
+        if [[ $exit_code -ne 0 ]]; then
+          echo "${STATE}"
+          exit $exit_code
         fi
-        echo "$STATE" | grep \"hosts\": | cut -d \" -f 4 | tr -d '\n' > /tekton/results/url
+        echo "${STATE}" | grep \"hosts\": | cut -d \" -f 4 | tr -d '\n' > /tekton/results/url
