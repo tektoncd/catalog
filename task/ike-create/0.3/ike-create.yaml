@@ -40,7 +40,7 @@ spec:
         test ! -z "$(params.route)" && ROUTE="--route $(params.route)"
         export ROUTE
 
-        if ! STATE=$(ike create --session "$(params.session)" "$ROUTE" --deployment "$(params.target)" --namespace "$(params.namespace)" --image "$(params.image)" --json); then
+        if ! STATE=$(ike create --session "$(params.session)" $ROUTE --deployment "$(params.target)" --namespace "$(params.namespace)" --image "$(params.image)" --json); then
           error=$?
           echo "$STATE"
           exit $error
