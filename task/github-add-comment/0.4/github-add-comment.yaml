@@ -106,7 +106,7 @@ spec:
         api_url = "{base}/repos/{package}/issues/{id}".format(
           base="", package="/".join(split_url[1:3]), id=split_url[-1])
 
-        commentParamValue = "$(params.COMMENT_OR_FILE)"
+        commentParamValue = """$(params.COMMENT_OR_FILE)"""
 
         # check if workspace is bound and parameter passed is a filename or not
         if "$(workspaces.comment-file.bound)" == "true" and os.path.exists(commentParamValue):
