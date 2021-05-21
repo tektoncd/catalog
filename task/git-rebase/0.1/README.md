@@ -41,7 +41,7 @@ This task needs authentication to git in order to push after the rebase.
 This can be done via `secrets` and `service account`. Refer [this](../0.1/samples/git-rebase)
 example to create secret and service account for the git authentication.
 
-[Git Rebase](../0.1/samples/git-rebase) pipeline has two tasks, one to clone a
+[Git Rebase](../0.1/samples/run.yaml) pipeline has two tasks, one to clone a
 git repository in the provided workspace and other to perform rebase operation.
 Here, [git-clone](../../git-clone/0.1/git-clone.yaml) task is used to clone the repository.
 
@@ -52,7 +52,7 @@ to perform the rebase operation.
 Remote name, Remote URL and Branch name needs to provided in the input
 to set the remote in order to perfrom push and pull operations.
 
-[Git Rebase](../0.1/samples/git-rebase/run.yaml) pipeline can be referred to
+[Git Rebase](../0.1/samples/run.yaml) pipeline can be referred to
 create a `pipeline` and `pipelinerun`.
 
 **NOTE**

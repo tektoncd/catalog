@@ -4,7 +4,7 @@ SonarQube™ is the leading tool for continuously inspecting the Code Quality an
 
 The following task can be used to perform static analysis on the source code provided the SonarQube server is hosted.
 
-For creating your own `sonar-project.properties` please follow the guide [here](https://docs.sonarqube.org/latest/analysis/analysis-parameters/). Sample properties file can be found [here](./examples/sonar-project.properties)
+For creating your own `sonar-project.properties` please follow the guide [here](https://docs.sonarqube.org/latest/analysis/analysis-parameters/). Sample properties file can be found [here](./samples/sonar-project.properties)
 
 ## Install the Task
 

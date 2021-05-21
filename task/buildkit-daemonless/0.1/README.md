@@ -2,7 +2,7 @@
 
 This Task builds source into a container image using [Moby BuildKit](https://github.com/moby/buildkit).
 
-This `buildkit-daemonless` Task is similar to [`buildkit`](../buildkit) but does not need creating `Secret`, `Deployment`, and `Service` resources for setting up the `buildkitd` daemon cluster.
+This `buildkit-daemonless` Task is similar to [`buildkit`](../../buildkit) but does not need creating `Secret`, `Deployment`, and `Service` resources for setting up the `buildkitd` daemon cluster.
 
 |                  | `buildkit`     | `buildkit-daemonless`|
 |------------------|----------------|----------------------|

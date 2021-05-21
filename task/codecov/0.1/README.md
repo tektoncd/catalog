@@ -1,6 +1,6 @@
 # Codecov
 
-Upload your code coverage to [codecov.io](codecov.io)
+Upload your code coverage to [codecov.io](https://codecov.io)
 
 ## Installing the Task
 
@@ -17,7 +17,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/co
 ## Usage
 
 Generate the code coverage file for your project inside your workspace, see here
-for the [codecov.io](codecov.io) documentation:
+for the [codecov.io](https://codecov.io) documentation:
 
 https://docs.codecov.io/docs/supported-languages
 

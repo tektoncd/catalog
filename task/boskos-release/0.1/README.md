@@ -2,7 +2,7 @@
 
 The `boskos-release` Task can be used to release cloud projects
 which were obtained from a pool with [Boskos](https://github.com/kubernetes-sigs/boskos#boskos)
-via [`boskos-acquire`](../boskos-acquire).
+via [`boskos-acquire`](../../boskos-acquire).
 
 It will mark the resource as `dirty` so that Boskos will clear any obtained resources.
 
@@ -27,5 +27,5 @@ serviceAccount that has the ability to delete `pods` (see [service-account.yaml]
 ## Usage
 
 See [samples/pipelinerun.yaml](samples/pipelinerun.yaml) for an example of a Pipeline that obtains
-a resource using [`boskos-acquire`](../boskos-acquire), then waits (this is when you would do whatever
+a resource using [`boskos-acquire`](../../boskos-acquire), then waits (this is when you would do whatever
 you need to do with the resource), and finally releases it with `boskos-release`.
