@@ -2,7 +2,7 @@
 
 This Task builds source into a container image using [Moby BuildKit](https://github.com/moby/buildkit).
 
-See also [`buildkit-daemonless`](../buildkit-daemonless) for the daemonless version of this task.
+See also [`buildkit-daemonless`](../../buildkit-daemonless) for the daemonless version of this task.
 
 ## Install
 

@@ -31,7 +31,7 @@ Command that needs to be run can be passed as a script to the task.
 
 This task needs authentication to git in order to push after the git operation.
 This can be done via `secrets` and `service account`.
-Refer [this](../git/examples/git-cli)
+Refer [this](./samples/secret.yaml)
 example to create secret and service account for the git authentication.
 
 After creating the task, you should now be able to execute `git` commands by
@@ -47,7 +47,7 @@ specifying the command you would like to run as the `GIT_SCRIPT` param.
         git remote add origin https://github.com/kelseyhightower/nocode
         git pull origin master
 ```
-[Git Pipeline](../0.1/samples/git-cli/pipeline.yaml) can be referred to use
+[Git Pipeline](../0.1/samples/pipeline.yaml) can be referred to use
 this task in the pipeline.
 
 **NOTE**

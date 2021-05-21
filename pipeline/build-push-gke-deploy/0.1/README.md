@@ -56,7 +56,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/pipelin
 ### Authorizing the Pipeline
 
 See [Authorizing `gcloud`
-commands](../../gcloud/0.1/README.md#authorizing-gcloud-commands) for authorizing the
+commands](../../build-push-gke-deploy/0.1/README.md#authorizing-gcloud-commands) for authorizing the
 `build-push-gke-deploy` Pipeline using a Google IAM Service Account (the instructions will
 describe authorizing `gcloud`, but the steps are the same).
 

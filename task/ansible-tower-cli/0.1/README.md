@@ -1,7 +1,7 @@
 
 ## Ansible Tower CLI Task
 
-[Ansible Tower](https://ansible.com/tower) (formerly ‘AWX’) is a web-based solution that makes Ansible even more easy to use for IT teams of all kinds, It provides the `tower-cli`([Tower-CLI]([https://docs.ansible.com/ansible-tower/latest/html/towerapi/tower_cli.html](https://docs.ansible.com/ansible-tower/latest/html/towerapi/tower_cli.html))) command line tool that simplifies the tasks of starting jobs, workflow jobs, manage users, projects etc.
+[Ansible Tower](https://ansible.com/tower) (formerly ‘AWX’) is a web-based solution that makes Ansible even more easy to use for IT teams of all kinds, It provides the `tower-cli`([Tower-CLI](https://docs.ansible.com/ansible-tower/latest/html/towerapi/tower_cli.html)) command line tool that simplifies the tasks of starting jobs, workflow jobs, manage users, projects etc.
 
 ## Install the Task
 

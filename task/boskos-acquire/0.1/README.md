@@ -4,7 +4,7 @@ The `boskos-acquire` Task can be used to acquire cloud projects from a pool with
 [Boskos](https://github.com/kubernetes-sigs/boskos#boskos), by invoking `boskosctl`.
 
 To release projects obtained with `boskos-acquire` can be released with
-[`boskos-release`](../boskos-release).
+[`boskos-release`](../../boskos-release).
 
 It is implemented using [`boskosctl`](https://github.com/kubernetes-sigs/boskos/tree/master/cmd/boskosctl).
 
@@ -33,7 +33,7 @@ with `pods` (see [service-account.yaml](samples/service-account.yaml) for an exa
 
 See [samples/pipelinerun.yaml](samples/pipelinerun.yaml) for an example of a Pipeline that obtains
 a resource using Boskos, then waits (this is when you would do whatever you need to do with the resource),
-and finally releases it with [`boskos-release`](../boskos-release).
+and finally releases it with [`boskos-release`](../../boskos-release).
 
 Boskos doesn't do anything to provide you with the credentials you need to interact with the resource you
 have leased. Setting up and managing these credentials is outside the scope of Boskos's responsibilities.

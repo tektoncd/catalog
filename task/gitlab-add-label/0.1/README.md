@@ -6,8 +6,8 @@ A collection of tasks to help working with the [GitLab API](https://docs.gitlab.
 
 Most tasks would expect to have a secret set in the kubernetes secret `gitlab`
 with a GitLab token in the key `token`.
-Check [this](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html) 
-to get personal access token for `Gitlab`. 
+Check [this](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html)
+to get personal access token for `Gitlab`.
 You can easily create it on the command line with `kubectl` like this :
 
 ```
@@ -28,7 +28,7 @@ stringData:
 
 ## Add labels to the GitLab issue or Merge Request
 
-[This task](../gitlab/add-labels.yaml) can be used to add labels to the gitlab `issue` or `merge request` (pull request).
+[This task](../../gitlab-add-label/0.1/gitlab-add-label.yaml) can be used to add labels to the gitlab `issue` or `merge request` (pull request).
 
 
 ### Install the Task
@@ -74,7 +74,7 @@ spec:
     - name: REQUEST_URL
       value: https://gitlab.com/Divyanshu42/aws-cli/-/issues/1  # or https://gitlab.com/Divyanshu42/aws-cli/-/merge_requests/1
     - name: LABELS
-      value: 
+      value:
         - bug
         - kind/feature
 ```
