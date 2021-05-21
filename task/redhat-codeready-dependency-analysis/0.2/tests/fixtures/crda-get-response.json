@@ -1,0 +1,3488 @@
+{
+"analyzed_dependencies": [
+{
+"dependencies": [
+{
+"dependencies": null,
+"name": "six",
+"version": "1.15.0"
+}
+],
+"ecosystem": "pypi",
+"github": {
+"contributors": "3",
+"dependent_projects": "-1",
+"dependent_repos": "-1",
+"first_release_date": null,
+"forks_count": "2",
+"issues": {
+"month": {
+"closed": 0,
+"opened": 0
+},
+"year": {
+"closed": 0,
+"opened": 0
+}
+},
+"latest_release_duration": "2017-06-01 07:34:46",
+"open_issues_count": "0",
+"pull_requests": {
+"month": {
+"closed": 0,
+"opened": 0
+},
+"year": {
+"closed": 0,
+"opened": 0
+}
+},
+"size": "N/A",
+"stargazers_count": "0",
+"total_releases": "-1",
+"used_by": [],
+"watchers": "1"
+},
+"latest_version": "0.8.1",
+"licenses": [
+"BSD"
+],
+"name": "anymarkup-core",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "0.8.1",
+"url": "https://snyk.io/vuln/pip:anymarkup-core",
+"version": "0.8.1",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [
+{
+"dependencies": null,
+"name": "pyyaml",
+"version": "5.3.1"
+},
+{
+"dependencies": null,
+"name": "configobj",
+"version": "5.0.6"
+},
+{
+"dependencies": null,
+"name": "click",
+"version": "7.1.2"
+},
+{
+"dependencies": null,
+"name": "toml",
+"version": "0.10.2"
+},
+{
+"dependencies": null,
+"name": "six",
+"version": "1.15.0"
+},
+{
+"dependencies": null,
+"name": "anymarkup-core",
+"version": "0.8.1"
+},
+{
+"dependencies": null,
+"name": "json5",
+"version": "0.9.5"
+},
+{
+"dependencies": null,
+"name": "xmltodict",
+"version": "0.12.0"
+}
+],
+"ecosystem": "pypi",
+"github": {
+"contributors": "2",
+"dependent_projects": "0",
+"dependent_repos": "20",
+"first_release_date": null,
+"forks_count": "4",
+"issues": {
+"month": {
+"closed": 0,
+"opened": 0
+},
+"year": {
+"closed": 0,
+"opened": 1
+}
+},
+"latest_release_duration": "2016-05-07 14:16:51",
+"open_issues_count": "3",
+"pull_requests": {
+"month": {
+"closed": 0,
+"opened": 0
+},
+"year": {
+"closed": 0,
+"opened": 0
+}
+},
+"size": "N/A",
+"stargazers_count": "24",
+"total_releases": "12",
+"used_by": [],
+"watchers": "3"
+},
+"latest_version": "0.8.1",
+"licenses": [
+"BSD"
+],
+"name": "anymarkup",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "0.8.1",
+"url": "https://snyk.io/vuln/pip:anymarkup",
+"version": "0.8.1",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [],
+"ecosystem": "pypi",
+"github": {
+"contributors": "71",
+"dependent_projects": "5",
+"dependent_repos": "4924",
+"first_release_date": null,
+"forks_count": "152",
+"issues": {
+"month": {
+"closed": 1,
+"opened": 1
+},
+"year": {
+"closed": 4,
+"opened": 12
+}
+},
+"latest_release_duration": "2019-02-04 06:00:53",
+"open_issues_count": "64",
+"pull_requests": {
+"month": {
+"closed": 1,
+"opened": 1
+},
+"year": {
+"closed": 8,
+"opened": 7
+}
+},
+"size": "N/A",
+"stargazers_count": "318",
+"total_releases": "73",
+"used_by": [
+{
+"name": "DataSploit/datasploit",
+"stars": "1163"
+},
+{
+"name": "DataSploit/datasploit",
+"stars": "1254"
+},
+{
+"name": "KristianOellegaard/django-health-check",
+"stars": "137"
+},
+{
+"name": "KristianOellegaard/django-health-check",
+"stars": "140"
+},
+{
+"name": "celery/celery",
+"stars": "7016"
+},
+{
+"name": "celery/celery",
+"stars": "7278"
+},
+{
+"name": "mozilla/http-observatory",
+"stars": "1066"
+},
+{
+"name": "mozilla/http-observatory",
+"stars": "1071"
+},
+{
+"name": "mozilla/ichnaea",
+"stars": "282"
+},
+{
+"name": "mozilla/ichnaea",
+"stars": "284"
+},
+{
+"name": "mozilla/kitsune",
+"stars": "380"
+},
+{
+"name": "mozilla/kitsune",
+"stars": "381"
+},
+{
+"name": "mozilla/kuma",
+"stars": "1007"
+},
+{
+"name": "mozilla/kuma",
+"stars": "1022"
+},
+{
+"name": "mozilla/treeherder",
+"stars": "87"
+},
+{
+"name": "mozilla/treeherder",
+"stars": "89"
+},
+{
+"name": "mozilla/zamboni",
+"stars": "475"
+},
+{
+"name": "pypa/warehouse",
+"stars": "1023"
+},
+{
+"name": "pypa/warehouse",
+"stars": "1038"
+}
+],
+"watchers": "33"
+},
+"latest_version": "3.6.4.0",
+"licenses": [
+"BSD"
+],
+"name": "billiard",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "3.6.3.0",
+"url": "https://snyk.io/vuln/pip:billiard",
+"version": "3.6.3.0",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [],
+"ecosystem": "pypi",
+"github": {
+"contributors": "260",
+"dependent_projects": "4023",
+"dependent_repos": "54731",
+"first_release_date": null,
+"forks_count": "1065",
+"issues": {
+"month": {
+"closed": 24,
+"opened": 15
+},
+"year": {
+"closed": 271,
+"opened": 160
+}
+},
+"latest_release_duration": "2020-04-27 20:22:42",
+"open_issues_count": "49",
+"pull_requests": {
+"month": {
+"closed": 21,
+"opened": 21
+},
+"year": {
+"closed": 196,
+"opened": 164
+}
+},
+"size": "N/A",
+"stargazers_count": "10649",
+"total_releases": "38",
+"used_by": [
+{
+"name": "DenisCarriere/geocoder",
+"stars": "656"
+},
+{
+"name": "DenisCarriere/geocoder",
+"stars": "657"
+},
+{
+"name": "DenisCarriere/geocoder",
+"stars": "658"
+},
+{
+"name": "DenisCarriere/geocoder",
+"stars": "661"
+},
+{
+"name": "HypothesisWorks/hypothesis-python",
+"stars": "1973"
+},
+{
+"name": "HypothesisWorks/hypothesis-python",
+"stars": "1986"
+},
+{
+"name": "HypothesisWorks/hypothesis-python",
+"stars": "1988"
+},
+{
+"name": "HypothesisWorks/hypothesis-python",
+"stars": "1989"
+},
+{
+"name": "HypothesisWorks/hypothesis-python",
+"stars": "1998"
+},
+{
+"name": "HypothesisWorks/hypothesis-python",
+"stars": "2222"
+},
+{
+"name": "apache/incubator-gobblin",
+"stars": "1092"
+},
+{
+"name": "apiaryio/dredd",
+"stars": "1705"
+},
+{
+"name": "apiaryio/dredd",
+"stars": "1742"
+},
+{
+"name": "apiaryio/dredd",
+"stars": "1743"
+},
+{
+"name": "apiaryio/dredd",
+"stars": "1747"
+},
+{
+"name": "blaze/odo",
+"stars": "624"
+},
+{
+"name": "kennethreitz/httpbin",
+"stars": "4990"
+},
+{
+"name": "kimmobrunfeldt/progressbar.js",
+"stars": "5579"
+},
+{
+"name": "kimmobrunfeldt/progressbar.js",
+"stars": "5595"
+},
+{
+"name": "kimmobrunfeldt/progressbar.js",
+"stars": "5599"
+},
+{
+"name": "kimmobrunfeldt/progressbar.js",
+"stars": "5601"
+},
+{
+"name": "kimmobrunfeldt/progressbar.js",
+"stars": "5604"
+},
+{
+"name": "kimmobrunfeldt/progressbar.js",
+"stars": "5687"
+},
+{
+"name": "metacloud/molecule",
+"stars": "641"
+},
+{
+"name": "metacloud/molecule",
+"stars": "643"
+},
+{
+"name": "metacloud/molecule",
+"stars": "652"
+},
+{
+"name": "metacloud/molecule",
+"stars": "763"
+},
+{
+"name": "nvie/rq",
+"stars": "3897"
+},
+{
+"name": "nvie/rq",
+"stars": "3966"
+},
+{
+"name": "nvie/rq",
+"stars": "3967"
+},
+{
+"name": "nvie/rq",
+"stars": "3968"
+},
+{
+"name": "nvie/rq",
+"stars": "3971"
+},
+{
+"name": "nvie/rq",
+"stars": "4100"
+},
+{
+"name": "pallets/click",
+"stars": "4477"
+},
+{
+"name": "pallets/click",
+"stars": "4509"
+},
+{
+"name": "pallets/click",
+"stars": "4511"
+},
+{
+"name": "pallets/click",
+"stars": "4515"
+},
+{
+"name": "pallets/click",
+"stars": "4516"
+},
+{
+"name": "pallets/click",
+"stars": "4635"
+},
+{
+"name": "pallets/flask",
+"stars": "27711"
+},
+{
+"name": "pallets/flask",
+"stars": "27904"
+},
+{
+"name": "pallets/flask",
+"stars": "27939"
+},
+{
+"name": "pallets/flask",
+"stars": "27952"
+},
+{
+"name": "pallets/flask",
+"stars": "27980"
+},
+{
+"name": "pallets/flask",
+"stars": "28796"
+},
+{
+"name": "pyca/cryptography",
+"stars": "1538"
+},
+{
+"name": "pyca/cryptography",
+"stars": "1590"
+},
+{
+"name": "pyca/cryptography",
+"stars": "1591"
+},
+{
+"name": "pyca/cryptography",
+"stars": "1592"
+},
+{
+"name": "pyca/cryptography",
+"stars": "1720"
+},
+{
+"name": "quantopian/zipline",
+"stars": "5147"
+},
+{
+"name": "quantopian/zipline",
+"stars": "5171"
+},
+{
+"name": "quantopian/zipline",
+"stars": "5176"
+},
+{
+"name": "quantopian/zipline",
+"stars": "5178"
+},
+{
+"name": "quantopian/zipline",
+"stars": "5183"
+},
+{
+"name": "quantopian/zipline",
+"stars": "5373"
+}
+],
+"watchers": "186"
+},
+"latest_version": "7.1.2",
+"licenses": [
+"BSD-3-Clause"
+],
+"name": "click",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "7.1.2",
+"url": "https://snyk.io/vuln/pip:click",
+"version": "7.1.2",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [],
+"ecosystem": "pypi",
+"github": {
+"contributors": "2",
+"dependent_projects": "0",
+"dependent_repos": "72",
+"first_release_date": null,
+"forks_count": "23",
+"issues": {
+"month": {
+"closed": -1,
+"opened": -1
+},
+"year": {
+"closed": -1,
+"opened": -1
+}
+},
+"latest_release_duration": "2012-11-14 08:58:30",
+"open_issues_count": "14",
+"pull_requests": {
+"month": {
+"closed": -1,
+"opened": -1
+},
+"year": {
+"closed": -1,
+"opened": -1
+}
+},
+"size": "N/A",
+"stargazers_count": "49",
+"total_releases": "1",
+"used_by": [],
+"watchers": "9"
+},
+"latest_version": "1.0",
+"licenses": [
+"BSD"
+],
+"name": "codegen",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "",
+"url": "https://snyk.io/vuln/pip:codegen",
+"version": "1.0",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [
+{
+"dependencies": null,
+"name": "six",
+"version": "1.15.0"
+}
+],
+"ecosystem": "pypi",
+"github": {
+"contributors": "15",
+"dependent_projects": "11",
+"dependent_repos": "2605",
+"first_release_date": null,
+"forks_count": "41",
+"issues": {
+"month": {
+"closed": -1,
+"opened": -1
+},
+"year": {
+"closed": -1,
+"opened": -1
+}
+},
+"latest_release_duration": "2014-08-26 01:16:32",
+"open_issues_count": "57",
+"pull_requests": {
+"month": {
+"closed": -1,
+"opened": -1
+},
+"year": {
+"closed": -1,
+"opened": -1
+}
+},
+"size": "N/A",
+"stargazers_count": "174",
+"total_releases": "16",
+"used_by": [
+{
+"name": "BrightcoveOS/Diamond",
+"stars": "1253"
+},
+{
+"name": "MycroftAI/mycroft-core",
+"stars": "1157"
+},
+{
+"name": "MycroftAI/mycroft-core",
+"stars": "1267"
+},
+{
+"name": "SiCKRAGETV/SiCKRAGE",
+"stars": "1483"
+},
+{
+"name": "SiCKRAGETV/SiCKRAGE",
+"stars": "1487"
+},
+{
+"name": "byt3bl33d3r/MITMf",
+"stars": "1823"
+},
+{
+"name": "byt3bl33d3r/MITMf",
+"stars": "1848"
+},
+{
+"name": "ceph/ceph",
+"stars": "3201"
+},
+{
+"name": "ceph/ceph",
+"stars": "3258"
+},
+{
+"name": "certbot/certbot",
+"stars": "18914"
+},
+{
+"name": "certbot/certbot",
+"stars": "19066"
+},
+{
+"name": "datafolklabs/cement",
+"stars": "603"
+},
+{
+"name": "datafolklabs/cement",
+"stars": "604"
+},
+{
+"name": "donnemartin/saws",
+"stars": "3254"
+},
+{
+"name": "donnemartin/saws",
+"stars": "3267"
+},
+{
+"name": "major/supernova",
+"stars": "90"
+},
+{
+"name": "python-diamond/Diamond",
+"stars": "1002"
+},
+{
+"name": "python-diamond/Diamond",
+"stars": "991"
+}
+],
+"watchers": "14"
+},
+"latest_version": "5.0.6",
+"licenses": [
+"UNKNOWN"
+],
+"name": "configobj",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "",
+"url": "https://snyk.io/vuln/pip:configobj",
+"version": "5.0.6",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [],
+"ecosystem": "pypi",
+"github": {
+"contributors": "6",
+"dependent_projects": "0",
+"dependent_repos": "4",
+"first_release_date": null,
+"forks_count": "14",
+"issues": {
+"month": {
+"closed": -1,
+"opened": -1
+},
+"year": {
+"closed": -1,
+"opened": -1
+}
+},
+"latest_release_duration": "2013-11-10 00:00:32",
+"open_issues_count": "5",
+"pull_requests": {
+"month": {
+"closed": -1,
+"opened": -1
+},
+"year": {
+"closed": -1,
+"opened": -1
+}
+},
+"size": "N/A",
+"stargazers_count": "55",
+"total_releases": "6",
+"used_by": [],
+"watchers": "5"
+},
+"latest_version": "-1",
+"licenses": [
+"BSD"
+],
+"name": "git2json",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "",
+"url": "https://snyk.io/vuln/pip:git2json",
+"version": "0.2.3",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [
+{
+"dependencies": null,
+"name": "smmap",
+"version": "3.0.4"
+}
+],
+"ecosystem": "pypi",
+"github": {
+"contributors": "20",
+"dependent_projects": "8",
+"dependent_repos": "718",
+"first_release_date": null,
+"forks_count": "51",
+"issues": {
+"month": {
+"closed": 3,
+"opened": 1
+},
+"year": {
+"closed": 4,
+"opened": 3
+}
+},
+"latest_release_duration": "2020-04-11 06:41:02",
+"open_issues_count": "5",
+"pull_requests": {
+"month": {
+"closed": 1,
+"opened": 1
+},
+"year": {
+"closed": 4,
+"opened": 4
+}
+},
+"size": "N/A",
+"stargazers_count": "121",
+"total_releases": "15",
+"used_by": [],
+"watchers": "16"
+},
+"latest_version": "4.0.7",
+"licenses": [
+"BSD License"
+],
+"name": "gitdb",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "4.0.5",
+"url": "https://snyk.io/vuln/pip:gitdb",
+"version": "4.0.5",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [],
+"ecosystem": "pypi",
+"github": {
+"contributors": "16",
+"dependent_projects": "1",
+"dependent_repos": "13941",
+"first_release_date": null,
+"forks_count": "58",
+"issues": {
+"month": {
+"closed": 0,
+"opened": 0
+},
+"year": {
+"closed": 3,
+"opened": 4
+}
+},
+"latest_release_duration": "2018-06-11 02:52:19",
+"open_issues_count": "4",
+"pull_requests": {
+"month": {
+"closed": 0,
+"opened": 0
+},
+"year": {
+"closed": 11,
+"opened": 11
+}
+},
+"size": "N/A",
+"stargazers_count": "140",
+"total_releases": "18",
+"used_by": [
+{
+"name": "Azure/azure-cli",
+"stars": "458"
+},
+{
+"name": "Azure/azure-cli",
+"stars": "474"
+},
+{
+"name": "DenisCarriere/geocoder",
+"stars": "685"
+},
+{
+"name": "HypothesisWorks/hypothesis-python",
+"stars": "1973"
+},
+{
+"name": "HypothesisWorks/hypothesis-python",
+"stars": "1988"
+},
+{
+"name": "HypothesisWorks/hypothesis-python",
+"stars": "2222"
+},
+{
+"name": "Kinto/kinto",
+"stars": "3172"
+},
+{
+"name": "Kinto/kinto",
+"stars": "3184"
+},
+{
+"name": "Kinto/kinto",
+"stars": "3275"
+},
+{
+"name": "Koed00/django-q",
+"stars": "549"
+},
+{
+"name": "blaze/odo",
+"stars": "624"
+},
+{
+"name": "blaze/odo",
+"stars": "628"
+},
+{
+"name": "blaze/odo",
+"stars": "691"
+},
+{
+"name": "certbot/certbot",
+"stars": "19007"
+},
+{
+"name": "certbot/certbot",
+"stars": "19081"
+},
+{
+"name": "certbot/certbot",
+"stars": "19660"
+},
+{
+"name": "istresearch/scrapy-cluster",
+"stars": "342"
+},
+{
+"name": "istresearch/scrapy-cluster",
+"stars": "367"
+},
+{
+"name": "istresearch/scrapy-cluster",
+"stars": "386"
+},
+{
+"name": "kennethreitz/pipenv",
+"stars": "3561"
+},
+{
+"name": "kennethreitz/pipenv",
+"stars": "3577"
+},
+{
+"name": "kennethreitz/pipenv",
+"stars": "4867"
+},
+{
+"name": "pyca/cryptography",
+"stars": "1720"
+},
+{
+"name": "python-bonobo/bonobo",
+"stars": "480"
+},
+{
+"name": "python-bonobo/bonobo",
+"stars": "482"
+},
+{
+"name": "sunscrapers/djoser",
+"stars": "855"
+},
+{
+"name": "swapagarwal/JARVIS-on-Messenger",
+"stars": "431"
+},
+{
+"name": "swapagarwal/JARVIS-on-Messenger",
+"stars": "435"
+},
+{
+"name": "zulip/zulip",
+"stars": "4803"
+},
+{
+"name": "zulip/zulip",
+"stars": "4829"
+}
+],
+"watchers": "12"
+},
+"latest_version": "3.1",
+"licenses": [],
+"name": "idna",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "2.8",
+"url": "https://snyk.io/vuln/pip:idna",
+"version": "2.10",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [],
+"ecosystem": "pypi",
+"github": {
+"contributors": "19",
+"dependent_projects": "31",
+"dependent_repos": "4089",
+"first_release_date": null,
+"forks_count": "136",
+"issues": {
+"month": {
+"closed": 0,
+"opened": 1
+},
+"year": {
+"closed": 6,
+"opened": 15
+}
+},
+"latest_release_duration": "2019-02-24 23:13:07",
+"open_issues_count": "48",
+"pull_requests": {
+"month": {
+"closed": 0,
+"opened": 1
+},
+"year": {
+"closed": 1,
+"opened": 3
+}
+},
+"size": "N/A",
+"stargazers_count": "1301",
+"total_releases": "22",
+"used_by": [
+{
+"name": "Azure/azure-cli",
+"stars": "458"
+},
+{
+"name": "Azure/azure-cli",
+"stars": "472"
+},
+{
+"name": "Azure/azure-cli",
+"stars": "474"
+},
+{
+"name": "Azure/azure-cli",
+"stars": "476"
+},
+{
+"name": "Azure/azure-cli",
+"stars": "543"
+},
+{
+"name": "ClusterHQ/flocker",
+"stars": "2801"
+},
+{
+"name": "ClusterHQ/flocker",
+"stars": "2812"
+},
+{
+"name": "ClusterHQ/flocker",
+"stars": "2813"
+},
+{
+"name": "ClusterHQ/flocker",
+"stars": "2887"
+},
+{
+"name": "Koed00/django-q",
+"stars": "493"
+},
+{
+"name": "Koed00/django-q",
+"stars": "497"
+},
+{
+"name": "Koed00/django-q",
+"stars": "498"
+},
+{
+"name": "Koed00/django-q",
+"stars": "499"
+},
+{
+"name": "Koed00/django-q",
+"stars": "549"
+},
+{
+"name": "Miserlou/Zappa",
+"stars": "4292"
+},
+{
+"name": "Miserlou/Zappa",
+"stars": "4427"
+},
+{
+"name": "Miserlou/Zappa",
+"stars": "4433"
+},
+{
+"name": "Miserlou/Zappa",
+"stars": "4436"
+},
+{
+"name": "Miserlou/Zappa",
+"stars": "4444"
+},
+{
+"name": "Miserlou/Zappa",
+"stars": "4976"
+},
+{
+"name": "Miserlou/django-zappa",
+"stars": "500"
+},
+{
+"name": "blaze/odo",
+"stars": "624"
+},
+{
+"name": "blaze/odo",
+"stars": "628"
+},
+{
+"name": "blaze/odo",
+"stars": "691"
+},
+{
+"name": "capitalone/cloud-custodian",
+"stars": "1020"
+},
+{
+"name": "capitalone/cloud-custodian",
+"stars": "860"
+},
+{
+"name": "capitalone/cloud-custodian",
+"stars": "879"
+},
+{
+"name": "capitalone/cloud-custodian",
+"stars": "887"
+},
+{
+"name": "jorgebastida/awslogs",
+"stars": "1145"
+},
+{
+"name": "jorgebastida/awslogs",
+"stars": "1147"
+},
+{
+"name": "jorgebastida/awslogs",
+"stars": "1149"
+},
+{
+"name": "jorgebastida/awslogs",
+"stars": "1208"
+},
+{
+"name": "nficano/python-lambda",
+"stars": "440"
+},
+{
+"name": "nficano/python-lambda",
+"stars": "448"
+},
+{
+"name": "nficano/python-lambda",
+"stars": "449"
+},
+{
+"name": "nficano/python-lambda",
+"stars": "502"
+},
+{
+"name": "nprapps/app-template",
+"stars": "1140"
+},
+{
+"name": "nprapps/app-template",
+"stars": "1141"
+},
+{
+"name": "scrapy/scrapy",
+"stars": "20504"
+},
+{
+"name": "scrapy/scrapy",
+"stars": "20651"
+},
+{
+"name": "scrapy/scrapy",
+"stars": "20679"
+},
+{
+"name": "scrapy/scrapy",
+"stars": "20691"
+},
+{
+"name": "scrapy/scrapy",
+"stars": "20712"
+},
+{
+"name": "scrapy/scrapy",
+"stars": "23056"
+}
+],
+"watchers": "31"
+},
+"latest_version": "0.10.0",
+"licenses": [
+"MIT"
+],
+"name": "jmespath",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "0.10.0",
+"url": "https://snyk.io/vuln/pip:jmespath",
+"version": "0.10.0",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [],
+"ecosystem": "pypi",
+"github": {
+"contributors": "-1",
+"dependent_projects": "0",
+"dependent_repos": "18",
+"first_release_date": null,
+"forks_count": "-1",
+"issues": {
+"month": {
+"closed": -1,
+"opened": -1
+},
+"year": {
+"closed": -1,
+"opened": -1
+}
+},
+"latest_release_duration": "2016-05-11 18:26:39",
+"open_issues_count": "-1",
+"pull_requests": {
+"month": {
+"closed": -1,
+"opened": -1
+},
+"year": {
+"closed": -1,
+"opened": -1
+}
+},
+"size": "N/A",
+"stargazers_count": "-1",
+"total_releases": "20",
+"used_by": [],
+"watchers": "-1"
+},
+"latest_version": "0.2.4",
+"licenses": [
+"BSD"
+],
+"name": "jsl",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "",
+"url": "https://snyk.io/vuln/pip:jsl",
+"version": "0.2.4",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [],
+"ecosystem": "pypi",
+"github": {
+"contributors": "7",
+"dependent_projects": "0",
+"dependent_repos": "24",
+"first_release_date": null,
+"forks_count": "20",
+"issues": {
+"month": {
+"closed": 0,
+"opened": 0
+},
+"year": {
+"closed": 2,
+"opened": 3
+}
+},
+"latest_release_duration": "2018-05-23 00:02:05",
+"open_issues_count": "3",
+"pull_requests": {
+"month": {
+"closed": 0,
+"opened": 0
+},
+"year": {
+"closed": 3,
+"opened": 1
+}
+},
+"size": "N/A",
+"stargazers_count": "68",
+"total_releases": "16",
+"used_by": [
+{
+"name": "SaketJNU/fabric8-analytics-tagger",
+"stars": "1"
+},
+{
+"name": "algorithm-ninja/rws",
+"stars": "0"
+},
+{
+"name": "bkabrda/anymarkup-core",
+"stars": "0"
+},
+{
+"name": "bkabrda/anymarkup",
+"stars": "8"
+},
+{
+"name": "fabric8-analytics/fabric8-analytics-worker",
+"stars": "4"
+},
+{
+"name": "jpopelka/fabric8-analytics-worker",
+"stars": "0"
+},
+{
+"name": "miteshvp/fabric8-analytics-worker",
+"stars": "0"
+},
+{
+"name": "msrb/worker-1",
+"stars": "0"
+},
+{
+"name": "yassu/MyClock",
+"stars": "1"
+}
+],
+"watchers": "10"
+},
+"latest_version": "0.9.5",
+"licenses": [
+"Apache"
+],
+"name": "json5",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "0.9.5",
+"url": "https://snyk.io/vuln/pip:json5",
+"version": "0.9.5",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [
+{
+"dependencies": null,
+"name": "importlib-metadata",
+"version": "3.1.1"
+},
+{
+"dependencies": null,
+"name": "pyrsistent",
+"version": "0.17.3"
+},
+{
+"dependencies": null,
+"name": "attrs",
+"version": "20.3.0"
+},
+{
+"dependencies": null,
+"name": "six",
+"version": "1.15.0"
+},
+{
+"dependencies": null,
+"name": "zipp",
+"version": "3.4.0"
+},
+{
+"dependencies": null,
+"name": "setuptools",
+"version": "51.3.3"
+}
+],
+"ecosystem": "pypi",
+"github": {
+"contributors": "72",
+"dependent_projects": "737",
+"dependent_repos": "15530",
+"first_release_date": null,
+"forks_count": "457",
+"issues": {
+"month": {
+"closed": 6,
+"opened": 7
+},
+"year": {
+"closed": 67,
+"opened": 82
+}
+},
+"latest_release_duration": "2019-11-18 12:57:08",
+"open_issues_count": "66",
+"pull_requests": {
+"month": {
+"closed": 4,
+"opened": 5
+},
+"year": {
+"closed": 43,
+"opened": 37
+}
+},
+"size": "N/A",
+"stargazers_count": "3186",
+"total_releases": "35",
+"used_by": [
+{
+"name": "Kinto/kinto",
+"stars": "3171"
+},
+{
+"name": "Kinto/kinto",
+"stars": "3183"
+},
+{
+"name": "Kinto/kinto",
+"stars": "3276"
+},
+{
+"name": "behave/behave",
+"stars": "1039"
+},
+{
+"name": "behave/behave",
+"stars": "929"
+},
+{
+"name": "behave/behave",
+"stars": "934"
+},
+{
+"name": "bigchaindb/bigchaindb",
+"stars": "1258"
+},
+{
+"name": "bigchaindb/bigchaindb",
+"stars": "1308"
+},
+{
+"name": "bigchaindb/bigchaindb",
+"stars": "1550"
+},
+{
+"name": "chocoteam/choco-solver",
+"stars": "225"
+},
+{
+"name": "chocoteam/choco-solver",
+"stars": "227"
+},
+{
+"name": "chocoteam/choco-solver",
+"stars": "249"
+},
+{
+"name": "docker/compose",
+"stars": "10727"
+},
+{
+"name": "docker/compose",
+"stars": "9609"
+},
+{
+"name": "docker/compose",
+"stars": "9687"
+},
+{
+"name": "google/certificate-transparency",
+"stars": "402"
+},
+{
+"name": "google/certificate-transparency",
+"stars": "408"
+},
+{
+"name": "google/certificate-transparency",
+"stars": "415"
+},
+{
+"name": "jazzband/pip-tools",
+"stars": "2180"
+},
+{
+"name": "jazzband/pip-tools",
+"stars": "2202"
+},
+{
+"name": "jazzband/pip-tools",
+"stars": "2271"
+},
+{
+"name": "pydata/patsy",
+"stars": "368"
+},
+{
+"name": "pydata/patsy",
+"stars": "370"
+},
+{
+"name": "pydata/patsy",
+"stars": "392"
+},
+{
+"name": "rochacbruno/flasgger",
+"stars": "402"
+},
+{
+"name": "rochacbruno/flasgger",
+"stars": "442"
+},
+{
+"name": "rochacbruno/flasgger",
+"stars": "470"
+},
+{
+"name": "zalando/connexion",
+"stars": "824"
+},
+{
+"name": "zalando/connexion",
+"stars": "837"
+},
+{
+"name": "zalando/connexion",
+"stars": "930"
+}
+],
+"watchers": "60"
+},
+"latest_version": "3.2.0",
+"licenses": [],
+"name": "jsonschema",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "3.2.0",
+"url": "https://snyk.io/vuln/pip:jsonschema",
+"version": "3.2.0",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [],
+"ecosystem": "pypi",
+"github": {
+"contributors": "-1",
+"dependent_projects": "2",
+"dependent_repos": "531",
+"first_release_date": null,
+"forks_count": "-1",
+"issues": {
+"month": {
+"closed": -1,
+"opened": -1
+},
+"year": {
+"closed": -1,
+"opened": -1
+}
+},
+"latest_release_duration": "2017-06-24 19:54:54",
+"open_issues_count": "-1",
+"pull_requests": {
+"month": {
+"closed": -1,
+"opened": -1
+},
+"year": {
+"closed": -1,
+"opened": -1
+}
+},
+"size": "N/A",
+"stargazers_count": "-1",
+"total_releases": "4",
+"used_by": [],
+"watchers": "-1"
+},
+"latest_version": "0.3.5",
+"licenses": [
+"Copyright (C) 2010-2017 by Vinay Sajip. All Rights Reserved. See LICENSE.txt for license."
+],
+"name": "logutils",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "",
+"url": "https://snyk.io/vuln/pip:logutils",
+"version": "0.3.5",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [
+{
+"dependencies": null,
+"name": "six",
+"version": "1.15.0"
+}
+],
+"ecosystem": "pypi",
+"github": {
+"contributors": "-1",
+"dependent_projects": "1820",
+"dependent_repos": "58314",
+"first_release_date": null,
+"forks_count": "-1",
+"issues": {
+"month": {
+"closed": -1,
+"opened": -1
+},
+"year": {
+"closed": -1,
+"opened": -1
+}
+},
+"latest_release_duration": "2019-11-03 05:42:01",
+"open_issues_count": "-1",
+"pull_requests": {
+"month": {
+"closed": -1,
+"opened": -1
+},
+"year": {
+"closed": -1,
+"opened": -1
+}
+},
+"size": "N/A",
+"stargazers_count": "-1",
+"total_releases": "23",
+"used_by": [
+{
+"name": "Miserlou/Zappa",
+"stars": "4433"
+},
+{
+"name": "Miserlou/Zappa",
+"stars": "4977"
+},
+{
+"name": "boto/botocore",
+"stars": "359"
+},
+{
+"name": "boto/botocore",
+"stars": "379"
+},
+{
+"name": "codelucas/newspaper",
+"stars": "4820"
+},
+{
+"name": "collective/icalendar",
+"stars": "425"
+},
+{
+"name": "collective/icalendar",
+"stars": "437"
+},
+{
+"name": "crsmithdev/arrow",
+"stars": "4293"
+},
+{
+"name": "crsmithdev/arrow",
+"stars": "4375"
+},
+{
+"name": "influxdata/influxdb-python",
+"stars": "583"
+},
+{
+"name": "influxdata/influxdb-python",
+"stars": "605"
+},
+{
+"name": "joke2k/faker",
+"stars": "4881"
+},
+{
+"name": "joke2k/faker",
+"stars": "5132"
+},
+{
+"name": "kennethreitz/httpbin",
+"stars": "4994"
+},
+{
+"name": "marshmallow-code/marshmallow",
+"stars": "1728"
+},
+{
+"name": "marshmallow-code/marshmallow",
+"stars": "1997"
+},
+{
+"name": "pandas-dev/pandas",
+"stars": "10308"
+},
+{
+"name": "pandas-dev/pandas",
+"stars": "11237"
+},
+{
+"name": "schematics/schematics",
+"stars": "1786"
+},
+{
+"name": "schematics/schematics",
+"stars": "1826"
+}
+],
+"watchers": "-1"
+},
+"latest_version": "2.8.1",
+"licenses": [
+"Dual License"
+],
+"name": "python-dateutil",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "2.8.1",
+"url": "https://snyk.io/vuln/pip:python-dateutil",
+"version": "2.8.1",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [],
+"ecosystem": "pypi",
+"github": {
+"contributors": "35",
+"dependent_projects": "3183",
+"dependent_repos": "56690",
+"first_release_date": null,
+"forks_count": "319",
+"issues": {
+"month": {
+"closed": 1,
+"opened": 7
+},
+"year": {
+"closed": 52,
+"opened": 75
+}
+},
+"latest_release_duration": "2019-12-02 21:35:31",
+"open_issues_count": "191",
+"pull_requests": {
+"month": {
+"closed": 1,
+"opened": 2
+},
+"year": {
+"closed": 26,
+"opened": 43
+}
+},
+"size": "N/A",
+"stargazers_count": "1446",
+"total_releases": "21",
+"used_by": [],
+"watchers": "48"
+},
+"latest_version": "5.4.1",
+"licenses": [],
+"name": "pyyaml",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "5.3.1",
+"url": "https://snyk.io/vuln/pip:pyyaml",
+"version": "5.3.1",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [
+{
+"dependencies": null,
+"name": "colorama",
+"version": "0.4.4"
+},
+{
+"dependencies": null,
+"name": "logutils",
+"version": "0.3.5"
+}
+],
+"ecosystem": "pypi",
+"github": {
+"contributors": "5",
+"dependent_projects": "-1",
+"dependent_repos": "-1",
+"first_release_date": null,
+"forks_count": "13",
+"issues": {
+"month": {
+"closed": -1,
+"opened": -1
+},
+"year": {
+"closed": -1,
+"opened": -1
+}
+},
+"latest_release_duration": "2017-06-01 07:34:46",
+"open_issues_count": "6",
+"pull_requests": {
+"month": {
+"closed": -1,
+"opened": -1
+},
+"year": {
+"closed": -1,
+"opened": -1
+}
+},
+"size": "N/A",
+"stargazers_count": "66",
+"total_releases": "-1",
+"used_by": [],
+"watchers": "2"
+},
+"latest_version": "2.2.2",
+"licenses": [
+"LICENSE.txt"
+],
+"name": "rainbow-logging-handler",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "",
+"url": "https://snyk.io/vuln/pip:rainbow-logging-handler",
+"version": "2.2.2",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [],
+"ecosystem": "pypi",
+"github": {
+"contributors": "275",
+"dependent_projects": "39",
+"dependent_repos": "5256",
+"first_release_date": null,
+"forks_count": "800",
+"issues": {
+"month": {
+"closed": 1,
+"opened": 0
+},
+"year": {
+"closed": 8,
+"opened": 6
+}
+},
+"latest_release_duration": "2018-12-19 11:55:45",
+"open_issues_count": "247",
+"pull_requests": {
+"month": {
+"closed": 0,
+"opened": 0
+},
+"year": {
+"closed": 3,
+"opened": 1
+}
+},
+"size": "N/A",
+"stargazers_count": "1682",
+"total_releases": "188",
+"used_by": [
+{
+"name": "GNS3/gns3-gui",
+"stars": "505"
+},
+{
+"name": "GNS3/gns3-gui",
+"stars": "509"
+},
+{
+"name": "Kinto/kinto",
+"stars": "3172"
+},
+{
+"name": "Kinto/kinto",
+"stars": "3184"
+},
+{
+"name": "PokemonGoF/PokemonGo-Bot",
+"stars": "3687"
+},
+{
+"name": "PokemonGoF/PokemonGo-Bot",
+"stars": "3757"
+},
+{
+"name": "allegro/tipboard",
+"stars": "577"
+},
+{
+"name": "allegro/tipboard",
+"stars": "578"
+},
+{
+"name": "brutasse/graphite-api",
+"stars": "454"
+},
+{
+"name": "getredash/redash",
+"stars": "6908"
+},
+{
+"name": "getredash/redash",
+"stars": "6989"
+},
+{
+"name": "getsentry/sentry",
+"stars": "13167"
+},
+{
+"name": "getsentry/sentry",
+"stars": "13248"
+},
+{
+"name": "taigaio/taiga-back",
+"stars": "3561"
+},
+{
+"name": "taigaio/taiga-back",
+"stars": "3626"
+},
+{
+"name": "tendenci/tendenci",
+"stars": "260"
+},
+{
+"name": "tendenci/tendenci",
+"stars": "261"
+},
+{
+"name": "zalando-stups/senza",
+"stars": "81"
+},
+{
+"name": "zalando-stups/senza",
+"stars": "83"
+}
+],
+"watchers": "164"
+},
+"latest_version": "6.10.0",
+"licenses": [
+"BSD"
+],
+"name": "raven",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "6.10.0",
+"url": "https://snyk.io/vuln/pip:raven",
+"version": "6.10.0",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [
+{
+"dependencies": null,
+"name": "certifi",
+"version": "2020.12.5"
+},
+{
+"dependencies": null,
+"name": "idna",
+"version": "2.10"
+},
+{
+"dependencies": null,
+"name": "requests",
+"version": "2.25.1"
+},
+{
+"dependencies": null,
+"name": "urllib3",
+"version": "1.26.2"
+},
+{
+"dependencies": null,
+"name": "chardet",
+"version": "4.0.0"
+}
+],
+"ecosystem": "pypi",
+"github": {
+"contributors": "19",
+"dependent_projects": "46",
+"dependent_repos": "781",
+"first_release_date": null,
+"forks_count": "136",
+"issues": {
+"month": {
+"closed": 0,
+"opened": 1
+},
+"year": {
+"closed": 3,
+"opened": 8
+}
+},
+"latest_release_duration": "2018-12-02 22:51:31",
+"open_issues_count": "18",
+"pull_requests": {
+"month": {
+"closed": 0,
+"opened": 0
+},
+"year": {
+"closed": 4,
+"opened": 4
+}
+},
+"size": "N/A",
+"stargazers_count": "1747",
+"total_releases": "9",
+"used_by": [
+{
+"name": "Murodese/pynab",
+"stars": "172"
+},
+{
+"name": "MycroftAI/mycroft-core",
+"stars": "1233"
+},
+{
+"name": "MycroftAI/mycroft-core",
+"stars": "1277"
+},
+{
+"name": "MycroftAI/mycroft-core",
+"stars": "1333"
+},
+{
+"name": "TechEmpower/FrameworkBenchmarks",
+"stars": "2735"
+},
+{
+"name": "TechEmpower/FrameworkBenchmarks",
+"stars": "2748"
+},
+{
+"name": "TechEmpower/FrameworkBenchmarks",
+"stars": "2749"
+},
+{
+"name": "datasift/datasift-python",
+"stars": "47"
+},
+{
+"name": "davidblaisonneau-orange/foreman",
+"stars": "5"
+},
+{
+"name": "mozilla/MozDef",
+"stars": "1335"
+},
+{
+"name": "mozilla/MozDef",
+"stars": "1337"
+},
+{
+"name": "mozilla/MozDef",
+"stars": "1339"
+},
+{
+"name": "mozilla/libmozdata",
+"stars": "4"
+},
+{
+"name": "openstack/poppy",
+"stars": "64"
+},
+{
+"name": "quantopian/zipline",
+"stars": "5147"
+},
+{
+"name": "quantopian/zipline",
+"stars": "5178"
+},
+{
+"name": "quantopian/zipline",
+"stars": "5184"
+},
+{
+"name": "sesh/piprot",
+"stars": "340"
+},
+{
+"name": "sesh/piprot",
+"stars": "342"
+},
+{
+"name": "sesh/piprot",
+"stars": "343"
+}
+],
+"watchers": "41"
+},
+"latest_version": "1.0.0",
+"licenses": [
+"Apache License v2"
+],
+"name": "requests-futures",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "",
+"url": "https://snyk.io/vuln/pip:requests-futures",
+"version": "1.0.0",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [
+{
+"dependencies": null,
+"name": "botocore",
+"version": "1.19.26"
+},
+{
+"dependencies": null,
+"name": "python-dateutil",
+"version": "2.8.1"
+},
+{
+"dependencies": null,
+"name": "urllib3",
+"version": "1.26.2"
+},
+{
+"dependencies": null,
+"name": "jmespath",
+"version": "0.10.0"
+},
+{
+"dependencies": null,
+"name": "six",
+"version": "1.15.0"
+}
+],
+"ecosystem": "pypi",
+"github": {
+"contributors": "18",
+"dependent_projects": "4",
+"dependent_repos": "1568",
+"first_release_date": null,
+"forks_count": "75",
+"issues": {
+"month": {
+"closed": 2,
+"opened": 1
+},
+"year": {
+"closed": 3,
+"opened": 5
+}
+},
+"latest_release_duration": "2018-02-15 00:25:05",
+"open_issues_count": "40",
+"pull_requests": {
+"month": {
+"closed": 10,
+"opened": 8
+},
+"year": {
+"closed": 20,
+"opened": 23
+}
+},
+"size": "N/A",
+"stargazers_count": "112",
+"total_releases": "15",
+"used_by": [
+{
+"name": "Koed00/django-q",
+"stars": "493"
+},
+{
+"name": "Koed00/django-q",
+"stars": "499"
+},
+{
+"name": "Koed00/django-q",
+"stars": "549"
+},
+{
+"name": "NerdWalletOSS/dynamorm",
+"stars": "11"
+},
+{
+"name": "NerdWalletOSS/dynamorm",
+"stars": "9"
+},
+{
+"name": "UrbanCCD-UChicago/plenario",
+"stars": "119"
+},
+{
+"name": "UrbanCCD-UChicago/plenario",
+"stars": "121"
+},
+{
+"name": "blaze/odo",
+"stars": "624"
+},
+{
+"name": "blaze/odo",
+"stars": "628"
+},
+{
+"name": "blaze/odo",
+"stars": "691"
+},
+{
+"name": "capitalone/cloud-custodian",
+"stars": "1021"
+},
+{
+"name": "capitalone/cloud-custodian",
+"stars": "860"
+},
+{
+"name": "capitalone/cloud-custodian",
+"stars": "879"
+},
+{
+"name": "github/octodns",
+"stars": "729"
+},
+{
+"name": "github/octodns",
+"stars": "743"
+},
+{
+"name": "github/octodns",
+"stars": "797"
+},
+{
+"name": "mapproxy/mapproxy",
+"stars": "160"
+},
+{
+"name": "mapproxy/mapproxy",
+"stars": "167"
+},
+{
+"name": "matthisk/django-jchart",
+"stars": "73"
+},
+{
+"name": "matthisk/django-jchart",
+"stars": "76"
+},
+{
+"name": "mozilla/mozillians",
+"stars": "194"
+},
+{
+"name": "mozilla/mozillians",
+"stars": "203"
+},
+{
+"name": "pypa/warehouse",
+"stars": "1023"
+},
+{
+"name": "pypa/warehouse",
+"stars": "1038"
+},
+{
+"name": "pypa/warehouse",
+"stars": "1229"
+}
+],
+"watchers": "17"
+},
+"latest_version": "0.3.7",
+"licenses": [],
+"name": "s3transfer",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "0.3.3",
+"url": "https://snyk.io/vuln/pip:s3transfer",
+"version": "0.3.3",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [
+{
+"dependencies": null,
+"name": "pyrsistent",
+"version": "0.17.3"
+},
+{
+"dependencies": null,
+"name": "logutils",
+"version": "0.3.5"
+},
+{
+"dependencies": null,
+"name": "amqp",
+"version": "5.0.2"
+},
+{
+"dependencies": null,
+"name": "wcwidth",
+"version": "0.2.5"
+},
+{
+"dependencies": null,
+"name": "graphviz",
+"version": "0.15"
+},
+{
+"dependencies": null,
+"name": "codegen",
+"version": "1.0"
+},
+{
+"dependencies": null,
+"name": "pyyaml",
+"version": "5.3.1"
+},
+{
+"dependencies": null,
+"name": "click-repl",
+"version": "0.1.6"
+},
+{
+"dependencies": null,
+"name": "vine",
+"version": "5.0.0"
+},
+{
+"dependencies": null,
+"name": "pytz",
+"version": "2020.4"
+},
+{
+"dependencies": null,
+"name": "colorama",
+"version": "0.4.4"
+},
+{
+"dependencies": null,
+"name": "attrs",
+"version": "20.3.0"
+},
+{
+"dependencies": null,
+"name": "six",
+"version": "1.15.0"
+},
+{
+"dependencies": null,
+"name": "importlib-metadata",
+"version": "3.1.1"
+},
+{
+"dependencies": null,
+"name": "click",
+"version": "7.1.2"
+},
+{
+"dependencies": null,
+"name": "billiard",
+"version": "3.6.3.0"
+},
+{
+"dependencies": null,
+"name": "rainbow-logging-handler",
+"version": "2.2.2"
+},
+{
+"dependencies": null,
+"name": "prompt-toolkit",
+"version": "3.0.8"
+},
+{
+"dependencies": null,
+"name": "kombu",
+"version": "5.0.2"
+},
+{
+"dependencies": null,
+"name": "jsonschema",
+"version": "3.2.0"
+},
+{
+"dependencies": null,
+"name": "click-didyoumean",
+"version": "0.0.3"
+},
+{
+"dependencies": null,
+"name": "zipp",
+"version": "3.4.0"
+},
+{
+"dependencies": null,
+"name": "setuptools",
+"version": "51.3.3"
+}
+],
+"ecosystem": "pypi",
+"github": {
+"contributors": "2",
+"dependent_projects": "0",
+"dependent_repos": "12",
+"first_release_date": null,
+"forks_count": "25",
+"issues": {
+"month": {
+"closed": 0,
+"opened": 0
+},
+"year": {
+"closed": 0,
+"opened": 2
+}
+},
+"latest_release_duration": "2018-08-01 21:43:01",
+"open_issues_count": "17",
+"pull_requests": {
+"month": {
+"closed": 0,
+"opened": 0
+},
+"year": {
+"closed": 0,
+"opened": 0
+}
+},
+"size": "N/A",
+"stargazers_count": "239",
+"total_releases": "14",
+"used_by": [],
+"watchers": "21"
+},
+"latest_version": "1.1.0",
+"licenses": [
+"BSD"
+],
+"name": "selinon",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "",
+"url": "https://snyk.io/vuln/pip:selinon",
+"version": "1.0.0",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [],
+"ecosystem": "pypi",
+"github": {
+"contributors": "13",
+"dependent_projects": "-1",
+"dependent_repos": "-1",
+"first_release_date": null,
+"forks_count": "55",
+"issues": {
+"month": {
+"closed": 0,
+"opened": 1
+},
+"year": {
+"closed": 4,
+"opened": 9
+}
+},
+"latest_release_duration": "2017-06-01 07:34:46",
+"open_issues_count": "34",
+"pull_requests": {
+"month": {
+"closed": 3,
+"opened": 2
+},
+"year": {
+"closed": 3,
+"opened": 6
+}
+},
+"size": "N/A",
+"stargazers_count": "199",
+"total_releases": "-1",
+"used_by": [],
+"watchers": "8"
+},
+"latest_version": "2.8.5",
+"licenses": [],
+"name": "semantic-version",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "",
+"url": "https://snyk.io/vuln/pip:semantic-version",
+"version": "2.8.5",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [],
+"ecosystem": "pypi",
+"github": {
+"contributors": "52",
+"dependent_projects": "1230",
+"dependent_repos": "91223",
+"first_release_date": null,
+"forks_count": "197",
+"issues": {
+"month": {
+"closed": 1,
+"opened": 1
+},
+"year": {
+"closed": 7,
+"opened": 15
+}
+},
+"latest_release_duration": "2018-12-10 00:59:57",
+"open_issues_count": "108",
+"pull_requests": {
+"month": {
+"closed": 1,
+"opened": 1
+},
+"year": {
+"closed": 9,
+"opened": 10
+}
+},
+"size": "N/A",
+"stargazers_count": "753",
+"total_releases": "24",
+"used_by": [
+{
+"name": "apache/thrift",
+"stars": "3809"
+},
+{
+"name": "apache/thrift",
+"stars": "3927"
+},
+{
+"name": "beautify-web/js-beautify",
+"stars": "4754"
+},
+{
+"name": "beautify-web/js-beautify",
+"stars": "5073"
+},
+{
+"name": "dateutil/dateutil",
+"stars": "406"
+},
+{
+"name": "dateutil/dateutil",
+"stars": "435"
+},
+{
+"name": "django-extensions/django-extensions",
+"stars": "3201"
+},
+{
+"name": "django-extensions/django-extensions",
+"stars": "3351"
+},
+{
+"name": "fchollet/keras",
+"stars": "17741"
+},
+{
+"name": "fchollet/keras",
+"stars": "19604"
+},
+{
+"name": "google/protobuf",
+"stars": "18568"
+},
+{
+"name": "google/protobuf",
+"stars": "20646"
+},
+{
+"name": "grpc/grpc",
+"stars": "10545"
+},
+{
+"name": "grpc/grpc",
+"stars": "11847"
+},
+{
+"name": "pyca/pyopenssl",
+"stars": "435"
+},
+{
+"name": "pyca/pyopenssl",
+"stars": "463"
+},
+{
+"name": "python-pillow/Pillow",
+"stars": "3742"
+},
+{
+"name": "python-pillow/Pillow",
+"stars": "4047"
+},
+{
+"name": "testing-cabal/mock",
+"stars": "245"
+},
+{
+"name": "testing-cabal/mock",
+"stars": "278"
+}
+],
+"watchers": "23"
+},
+"latest_version": "1.15.0",
+"licenses": [],
+"name": "six",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "1.15.0",
+"url": "https://snyk.io/vuln/pip:six",
+"version": "1.15.0",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [],
+"ecosystem": "pypi",
+"github": {
+"contributors": "13",
+"dependent_projects": "3",
+"dependent_repos": "612",
+"first_release_date": null,
+"forks_count": "18",
+"issues": {
+"month": {
+"closed": 0,
+"opened": 0
+},
+"year": {
+"closed": 1,
+"opened": 0
+}
+},
+"latest_release_duration": "2020-05-05 03:40:43",
+"open_issues_count": "4",
+"pull_requests": {
+"month": {
+"closed": 0,
+"opened": 0
+},
+"year": {
+"closed": 0,
+"opened": 0
+}
+},
+"size": "N/A",
+"stargazers_count": "49",
+"total_releases": "11",
+"used_by": [],
+"watchers": "14"
+},
+"latest_version": "4.0.0",
+"licenses": [
+"BSD"
+],
+"name": "smmap",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "4.0.0",
+"url": "https://snyk.io/vuln/pip:smmap",
+"version": "3.0.4",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [],
+"ecosystem": "pypi",
+"github": {
+"contributors": "-1",
+"dependent_projects": "378",
+"dependent_repos": "67722",
+"first_release_date": null,
+"forks_count": "-1",
+"issues": {
+"month": {
+"closed": -1,
+"opened": -1
+},
+"year": {
+"closed": -1,
+"opened": -1
+}
+},
+"latest_release_duration": "2020-03-31 18:03:34",
+"open_issues_count": "-1",
+"pull_requests": {
+"month": {
+"closed": -1,
+"opened": -1
+},
+"year": {
+"closed": -1,
+"opened": -1
+}
+},
+"size": "N/A",
+"stargazers_count": "-1",
+"total_releases": "67",
+"used_by": [],
+"watchers": "-1"
+},
+"latest_version": "1.0.1",
+"licenses": [],
+"name": "werkzeug",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "1.0.1",
+"url": "https://snyk.io/vuln/pip:werkzeug",
+"version": "1.0.1",
+"vulnerable_dependencies": []
+},
+{
+"dependencies": [],
+"ecosystem": "pypi",
+"github": {
+"contributors": "28",
+"dependent_projects": "79",
+"dependent_repos": "3311",
+"first_release_date": null,
+"forks_count": "320",
+"issues": {
+"month": {
+"closed": -1,
+"opened": -1
+},
+"year": {
+"closed": -1,
+"opened": -1
+}
+},
+"latest_release_duration": "2019-02-11 07:00:26",
+"open_issues_count": "27",
+"pull_requests": {
+"month": {
+"closed": -1,
+"opened": -1
+},
+"year": {
+"closed": -1,
+"opened": -1
+}
+},
+"size": "N/A",
+"stargazers_count": "3316",
+"total_releases": "27",
+"used_by": [
+{
+"name": "SoCo/SoCo",
+"stars": "712"
+},
+{
+"name": "SoCo/SoCo",
+"stars": "717"
+},
+{
+"name": "SoCo/SoCo",
+"stars": "718"
+},
+{
+"name": "SoCo/SoCo",
+"stars": "772"
+},
+{
+"name": "VoltDB/voltdb",
+"stars": "1047"
+},
+{
+"name": "VoltDB/voltdb",
+"stars": "980"
+},
+{
+"name": "VoltDB/voltdb",
+"stars": "983"
+},
+{
+"name": "VoltDB/voltdb",
+"stars": "984"
+},
+{
+"name": "diyan/pywinrm",
+"stars": "375"
+},
+{
+"name": "diyan/pywinrm",
+"stars": "376"
+},
+{
+"name": "diyan/pywinrm",
+"stars": "392"
+},
+{
+"name": "doraemonext/wechat-python-sdk",
+"stars": "1323"
+},
+{
+"name": "edx/edx-platform",
+"stars": "3189"
+},
+{
+"name": "edx/edx-platform",
+"stars": "3194"
+},
+{
+"name": "edx/edx-platform",
+"stars": "3195"
+},
+{
+"name": "edx/edx-platform",
+"stars": "3342"
+},
+{
+"name": "home-assistant/home-assistant",
+"stars": "7400"
+},
+{
+"name": "home-assistant/home-assistant",
+"stars": "7581"
+},
+{
+"name": "home-assistant/home-assistant",
+"stars": "7671"
+},
+{
+"name": "home-assistant/home-assistant",
+"stars": "7683"
+},
+{
+"name": "home-assistant/home-assistant",
+"stars": "8837"
+},
+{
+"name": "jazzband/pip-tools",
+"stars": "2186"
+},
+{
+"name": "jazzband/pip-tools",
+"stars": "2202"
+},
+{
+"name": "jazzband/pip-tools",
+"stars": "2204"
+},
+{
+"name": "jazzband/pip-tools",
+"stars": "2205"
+},
+{
+"name": "jazzband/pip-tools",
+"stars": "2271"
+},
+{
+"name": "localstack/localstack",
+"stars": "8114"
+},
+{
+"name": "localstack/localstack",
+"stars": "8130"
+},
+{
+"name": "localstack/localstack",
+"stars": "8137"
+},
+{
+"name": "localstack/localstack",
+"stars": "8775"
+},
+{
+"name": "messense/wechatpy",
+"stars": "59"
+},
+{
+"name": "messense/wechatpy",
+"stars": "60"
+},
+{
+"name": "messense/wechatpy",
+"stars": "62"
+},
+{
+"name": "spulec/moto",
+"stars": "1169"
+},
+{
+"name": "spulec/moto",
+"stars": "1196"
+},
+{
+"name": "spulec/moto",
+"stars": "1197"
+},
+{
+"name": "spulec/moto",
+"stars": "1200"
+},
+{
+"name": "spulec/moto",
+"stars": "1339"
+},
+{
+"name": "whtsky/WeRoBot",
+"stars": "1776"
+},
+{
+"name": "whtsky/WeRoBot",
+"stars": "1865"
+},
+{
+"name": "whtsky/WeRoBot",
+"stars": "1866"
+},
+{
+"name": "whtsky/WeRoBot",
+"stars": "1870"
+},
+{
+"name": "whtsky/WeRoBot",
+"stars": "1936"
+}
+],
+"watchers": "108"
+},
+"latest_version": "0.12.0",
+"licenses": [
+"MIT"
+],
+"name": "xmltodict",
+"private_vulnerabilities": [],
+"public_vulnerabilities": [],
+"recommended_version": "",
+"url": "https://snyk.io/vuln/pip:xmltodict",
+"version": "0.12.0",
+"vulnerable_dependencies": []
+}
+],
+"ecosystem": "pypi",
+"ended_at": "2021-04-15T06:52:24.991042",
+"external_request_id": "123456789",
+"license_analysis": {
+"conflict_packages": [],
+"current_stack_license": null,
+"distinct_licenses": [
+"BSD",
+"UNKNOWN",
+"MIT",
+"BSD-3-Clause",
+"Copyright (C) 2010-2017 by Vinay Sajip. All Rights Reserved. See LICENSE.txt for license.",
+"LICENSE.txt",
+"BSD License",
+"Dual License",
+"Apache",
+"Apache License v2"
+],
+"outlier_packages": [],
+"reason": "Cannot calculate stack license due to unknown dependencies or license not supported.",
+"recommended_licenses": null,
+"status": "Failure",
+"unknown_licenses": {
+"component_conflict": [],
+"unknown": []
+}
+},
+"manifest_file_path": "/tmp/",
+"manifest_name": "pylist.json",
+"recommendation": {
+"companion": [
+{
+"cooccurrence_count": 0,
+"cooccurrence_probability": 89.84381,
+"dependencies": null,
+"ecosystem": "pypi",
+"github": {
+"contributors": "-1",
+"dependent_projects": "84",
+"dependent_repos": "36578",
+"first_release_date": null,
+"forks_count": "-1",
+"issues": {
+"month": {
+"closed": -1,
+"opened": -1
+},
+"year": {
+"closed": -1,
+"opened": -1
+}
+},
+"latest_release_duration": "2015-06-02 09:12:36",
+"open_issues_count": "-1",
+"pull_requests": {
+"month": {
+"closed": -1,
+"opened": -1
+},
+"year": {
+"closed": -1,
+"opened": -1
+}
+},
+"size": "N/A",
+"stargazers_count": "-1",
+"total_releases": "14",
+"used_by": [
+{
+"name": "boto/boto3",
+"stars": "2350"
+},
+{
+"name": "boto/boto",
+"stars": "5934"
+},
+{
+"name": "crsmithdev/arrow",
+"stars": "4293"
+},
+{
+"name": "fabric/fabric",
+"stars": "8679"
+},
+{
+"name": "flask-restful/flask-restful",
+"stars": "2834"
+},
+{
+"name": "gitpython-developers/GitPython",
+"stars": "1406"
+},
+{
+"name": "maxcountryman/flask-login",
+"stars": "1465"
+},
+{
+"name": "python-pillow/Pillow",
+"stars": "3750"
+},
+{
+"name": "scikit-learn/scikit-learn",
+"stars": "20053"
+},
+{
+"name": "tmm1/pygments.rb",
+"stars": "523"
+}
+],
+"watchers": "-1"
+},
+"latest_version": "1.3.7",
+"licenses": [],
+"name": "nose",
+"topic_list": [],
+"url": "https://snyk.io/vuln/pip:nose",
+"version": "1.3.7"
+},
+{
+"cooccurrence_count": 0,
+"cooccurrence_probability": 77.08194,
+"dependencies": null,
+"ecosystem": "pypi",
+"github": {
+"contributors": "30",
+"dependent_projects": "406",
+"dependent_repos": "48447",
+"first_release_date": null,
+"forks_count": "84",
+"issues": {
+"month": {
+"closed": -1,
+"opened": -1
+},
+"year": {
+"closed": -1,
+"opened": -1
+}
+},
+"latest_release_duration": "2020-03-11 17:28:56",
+"open_issues_count": "2",
+"pull_requests": {
+"month": {
+"closed": -1,
+"opened": -1
+},
+"year": {
+"closed": -1,
+"opened": -1
+}
+},
+"size": "N/A",
+"stargazers_count": "405",
+"total_releases": "33",
+"used_by": [
+{
+"name": "boto/boto3",
+"stars": "2350"
+},
+{
+"name": "boto/boto3",
+"stars": "2355"
+},
+{
+"name": "boto/boto3",
+"stars": "2357"
+},
+{
+"name": "boto/boto",
+"stars": "5925"
+},
+{
+"name": "boto/boto",
+"stars": "5932"
+},
+{
+"name": "boto/boto",
+"stars": "5934"
+},
+{
+"name": "boto/boto",
+"stars": "5935"
+},
+{
+"name": "certbot/certbot",
+"stars": "19007"
+},
+{
+"name": "certbot/certbot",
+"stars": "19066"
+},
+{
+"name": "certbot/certbot",
+"stars": "19081"
+},
+{
+"name": "certbot/certbot",
+"stars": "19193"
+},
+{
+"name": "certbot/certbot",
+"stars": "19195"
+},
+{
+"name": "docker/docker-py",
+"stars": "2289"
+},
+{
+"name": "docker/docker-py",
+"stars": "2305"
+},
+{
+"name": "flask-restful/flask-restful",
+"stars": "2811"
+},
+{
+"name": "flask-restful/flask-restful",
+"stars": "2831"
+},
+{
+"name": "flask-restful/flask-restful",
+"stars": "2834"
+},
+{
+"name": "flask-restful/flask-restful",
+"stars": "2838"
+},
+{
+"name": "gitpython-developers/GitPython",
+"stars": "1397"
+},
+{
+"name": "gitpython-developers/GitPython",
+"stars": "1402"
+},
+{
+"name": "gitpython-developers/GitPython",
+"stars": "1406"
+},
+{
+"name": "gitpython-developers/GitPython",
+"stars": "1408"
+},
+{
+"name": "matplotlib/matplotlib",
+"stars": "5418"
+},
+{
+"name": "matplotlib/matplotlib",
+"stars": "5452"
+},
+{
+"name": "matplotlib/matplotlib",
+"stars": "5461"
+},
+{
+"name": "matplotlib/matplotlib",
+"stars": "5467"
+},
+{
+"name": "matplotlib/matplotlib",
+"stars": "5470"
+},
+{
+"name": "maxcountryman/flask-login",
+"stars": "1393"
+},
+{
+"name": "nvie/rq",
+"stars": "3897"
+},
+{
+"name": "nvie/rq",
+"stars": "3966"
+},
+{
+"name": "nvie/rq",
+"stars": "3968"
+},
+{
+"name": "nvie/rq",
+"stars": "3971"
+},
+{
+"name": "nvie/rq",
+"stars": "3973"
+},
+{
+"name": "pandas-dev/pandas",
+"stars": "10220"
+},
+{
+"name": "pandas-dev/pandas",
+"stars": "10292"
+},
+{
+"name": "pandas-dev/pandas",
+"stars": "10312"
+},
+{
+"name": "pandas-dev/pandas",
+"stars": "10322"
+},
+{
+"name": "pandas-dev/pandas",
+"stars": "10324"
+},
+{
+"name": "pypa/setuptools",
+"stars": "310"
+},
+{
+"name": "pypa/setuptools",
+"stars": "313"
+},
+{
+"name": "pypa/setuptools",
+"stars": "316"
+},
+{
+"name": "tartley/colorama",
+"stars": "808"
+},
+{
+"name": "tartley/colorama",
+"stars": "812"
+},
+{
+"name": "tartley/colorama",
+"stars": "813"
+}
+],
+"watchers": "17"
+},
+"latest_version": "4.0.2",
+"licenses": [],
+"name": "mock",
+"topic_list": [],
+"url": "https://snyk.io/vuln/pip:mock",
+"version": "4.0.2"
+},
+{
+"cooccurrence_count": 0,
+"cooccurrence_probability": 62.388527,
+"dependencies": null,
+"ecosystem": "pypi",
+"github": {
+"contributors": "-1",
+"dependent_projects": "230",
+"dependent_repos": "46964",
+"first_release_date": null,
+"forks_count": "-1",
+"issues": {
+"month": {
+"closed": -1,
+"opened": -1
+},
+"year": {
+"closed": -1,
+"opened": -1
+}
+},
+"latest_release_duration": "2019-06-02 12:13:25",
+"open_issues_count": "-1",
+"pull_requests": {
+"month": {
+"closed": -1,
+"opened": -1
+},
+"year": {
+"closed": -1,
+"opened": -1
+}
+},
+"size": "N/A",
+"stargazers_count": "-1",
+"total_releases": "112",
+"used_by": [],
+"watchers": "-1"
+},
+"latest_version": "2.1.2",
+"licenses": [],
+"name": "sphinx",
+"topic_list": [],
+"url": "https://snyk.io/vuln/pip:sphinx",
+"version": "2.1.2"
+},
+{
+"cooccurrence_count": 0,
+"cooccurrence_probability": 56.481255,
+"dependencies": null,
+"ecosystem": "pypi",
+"github": {
+"contributors": "86",
+"dependent_projects": "244",
+"dependent_repos": "50171",
+"first_release_date": null,
+"forks_count": "202",
+"issues": {
+"month": {
+"closed": 7,
+"opened": 7
+},
+"year": {
+"closed": 79,
+"opened": 104
+}
+},
+"latest_release_duration": "2020-04-12 21:57:15",
+"open_issues_count": "229",
+"pull_requests": {
+"month": {
+"closed": 1,
+"opened": 1
+},
+"year": {
+"closed": 63,
+"opened": 68
+}
+},
+"size": "N/A",
+"stargazers_count": "1557",
+"total_releases": "77",
+"used_by": [
+{
+"name": "aio-libs/aiohttp",
+"stars": "3440"
+},
+{
+"name": "aio-libs/aiohttp",
+"stars": "3532"
+},
+{
+"name": "amoffat/sh",
+"stars": "4027"
+},
+{
+"name": "boto/boto",
+"stars": "5925"
+},
+{
+"name": "boto/boto",
+"stars": "5935"
+},
+{
+"name": "gitpython-developers/GitPython",
+"stars": "1399"
+},
+{
+"name": "gitpython-developers/GitPython",
+"stars": "1408"
+},
+{
+"name": "grpc/grpc",
+"stars": "10502"
+},
+{
+"name": "grpc/grpc",
+"stars": "10611"
+},
+{
+"name": "jazzband/django-debug-toolbar",
+"stars": "4217"
+},
+{
+"name": "jazzband/django-debug-toolbar",
+"stars": "4225"
+},
+{
+"name": "maxcountryman/flask-login",
+"stars": "1394"
+},
+{
+"name": "nose-devs/nose",
+"stars": "1092"
+},
+{
+"name": "nose-devs/nose",
+"stars": "1095"
+},
+{
+"name": "pyca/cryptography",
+"stars": "1576"
+},
+{
+"name": "pyca/cryptography",
+"stars": "1592"
+},
+{
+"name": "python-pillow/Pillow",
+"stars": "3735"
+},
+{
+"name": "python-pillow/Pillow",
+"stars": "3755"
+},
+{
+"name": "tmm1/pygments.rb",
+"stars": "522"
+},
+{
+"name": "tmm1/pygments.rb",
+"stars": "523"
+}
+],
+"watchers": "24"
+},
+"latest_version": "5.5",
+"licenses": [],
+"name": "coverage",
+"topic_list": [],
+"url": "https://snyk.io/vuln/pip:coverage",
+"version": "5.1"
+}
+],
+"manifest_file_path": "/tmp/",
+"usage_outliers": []
+},
+"registration_link": "https://snyk.io/login",
+"registration_status": "FREETIER",
+"started_at": "2021-04-15T06:52:24.111191",
+"unknown_dependencies": [],
+"uuid": null,
+"version": "v2"
+}
