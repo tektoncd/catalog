@@ -37,9 +37,14 @@ spec:
     - name: ike
       image: quay.io/maistra/istio-workspace:v0.3.0
       script: |
-        STATE=$(ike create --session "$(params.session)" $(test ! -z "$(params.route)" && echo "--route $(params.route)" || true) --deployment "$(params.target)" --namespace "$(params.namespace)" --image "$(params.image)" --json)
+        ike_create_cmd="ike create --session $(params.session) --deployment $(params.target) --namespace $(params.namespace) --image $(params.image) --json"
+        if [ -n "$(params.route)" ]; then
+          ike_create_cmd="${ike_create_cmd} --route $(params.route)"
+        fi
+
+        STATE=$(bash -c "${ike_create_cmd}")
         exit_code=$?
-        if [[ $exit_code -ne 0 ]]; then
+        if [ $exit_code -ne 0 ]; then
           echo "${STATE}"
           exit $exit_code
         fi
