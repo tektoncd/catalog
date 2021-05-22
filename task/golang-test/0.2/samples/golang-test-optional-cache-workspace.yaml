@@ -1,0 +1,75 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: golang-cache
+spec:
+  resources:
+    requests:
+      storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: test-git-clone
+spec:
+  params:
+    - name: repo_url
+    - name: revision
+  workspaces:
+  - name: source
+  - name: cache
+  tasks:
+    - name: fetch
+      taskRef:
+        name: git-clone
+      params:
+        - name: url
+          value: $(params.repo_url)
+        - name: revision
+          value: $(params.revision)
+      workspaces:
+      - name: output
+        workspace: source
+    - name: test
+      runAfter: [fetch]
+      taskRef:
+        name: golang-test
+      params:
+        - name: package
+          value: "."
+        - name: flags
+          value: "-race -cover -v"
+      workspaces:
+        - name: source
+          workspace: source
+        - name: cache
+          workspace: cache
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: test-git-clone-pr
+spec:
+  pipelineRef:
+    name: test-git-clone
+  params:
+    - name: repo_url
+      value: https://github.com/chmouel/go-simple-uploader
+    - name: revision
+      value: master
+  workspaces:
+  - name: source
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+  - name: cache
+    persistentVolumeClaim:
+      claimName: golang-cache
