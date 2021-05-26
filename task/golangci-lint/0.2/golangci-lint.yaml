@@ -1,0 +1,68 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: golangci-lint
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: lint
+    tekton.dev/displayName: "golangci lint"
+spec:
+  description: >-
+    This Task is Golang task to validate Go projects.
+
+  params:
+  - name: package
+    description: base package (and its children) under validation
+  - name: context
+    description: path to the directory to use as context.
+    default: "."
+  - name: flags
+    description: flags to use for the test command
+    default: --verbose
+  - name: version
+    description: golangci-lint version to use
+    default: "v1.39"
+  - name: GOOS
+    description: "running operating system target"
+    default: linux
+  - name: GOARCH
+    description: "running architecture target"
+    default: amd64
+  - name: GO111MODULE
+    description: "value of module support"
+    default: auto
+  - name: GOCACHE
+    description: "Go caching directory path"
+    default: ""
+  - name: GOMODCACHE
+    description: "Go mod caching directory path"
+    default: ""
+  - name: GOLANGCI_LINT_CACHE
+    description: "golangci-lint cache path"
+    default: ""
+  workspaces:
+  - name: source
+    mountPath: /workspace/src/$(params.package)
+  steps:
+  - name: lint
+    image: docker.io/golangci/golangci-lint:$(params.version)
+    workingDir: $(workspaces.source.path)/$(params.context)
+    script: |
+      golangci-lint run $(params.flags)
+    env:
+    - name: GOPATH
+      value: /workspace
+    - name: GOOS
+      value: "$(params.GOOS)"
+    - name: GOARCH
+      value: "$(params.GOARCH)"
+    - name: GO111MODULE
+      value: "$(params.GO111MODULE)"
+    - name: GOCACHE
+      value: "$(params.GOCACHE)"
+    - name: GOMODCACHE
+      value: "$(params.GOMODCACHE)"
+    - name: GOLANGCI_LINT_CACHE
+      value: "$(params.GOLANGCI_LINT_CACHE)"
