@@ -1,16 +1,36 @@
----
-name: Issue Template
-about: Template for both bug reports and feature requests
----
-
-# Expected Behavior
-
-# Actual Behavior
-
-# Steps to Reproduce the Problem
-
-1.
-2.
-3.
-
-# Additional Info
+name: Bug Report
+description: File a bug report
+labels: "bug"
+body:
+- type: markdown
+  attributes:
+    value: Before raising an issue, please search for existing issues to avoid creating duplicates. For questions and support please use the [community forum](https://github.com/tektoncd/catalog/discussions).
+- type: textarea
+  id: bug-description
+  attributes:
+    label: Bug description
+    description: Summarize the bug encountered concisely
+  validations:
+    required: true
+- type: textarea
+  id: steps-to-reproduce
+  attributes:
+    label: Steps to reproduce
+    description: Describe the steps to reproduce the issue
+  validations:
+    required: true
+- type: textarea
+  id: expected-behavior
+  attributes:
+    label: Expected behavior
+    description: Describe what you should see instead
+- type: textarea
+  id: example-repository
+  attributes:
+    label: Example repository
+    description: If possible, please create an [minimal, reproducible example](https://stackoverflow.com/help/minimal-reproducible-example) of the bug and link it here in the bug report
+- type: textarea
+  id: anything-else
+  attributes:
+    label: Anything else?
+    description: Let us know if you have any additional feedback!
