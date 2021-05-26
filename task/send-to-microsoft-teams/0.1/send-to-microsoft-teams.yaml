@@ -1,0 +1,42 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: send-to-microsoft-teams
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: messaging
+    tekton.dev/displayName: "Send message to Microsoft Teams Channel"
+spec:
+  description: >-
+    These tasks post a simple message to a Microsoft Teams Channel.
+
+    This task uses the Incoming Webhook functionality of Microsoft Teams
+
+  params:
+  - name: webhook-url-secret
+    type: string
+    description: Name of the secret with incoming webhook URL
+  - name: webhook-url-secret-key
+    type: string
+    description: Key in the secret
+  - name: message
+    type: string
+    description: The message to notify about
+  steps:
+  - name: post
+    image: docker.io/curlimages/curl:7.68.0@sha256:99a8e9629b3ae26efb977e1a98f4786d6bd730c5ab4dea64632e297d7c3e7151 #tag: 7.68.0
+    script: |
+      #!/usr/bin/env sh
+      MESSAGE=$(echo "${MESSAGE}" | sed -e 's/\"/\\\\"/g')
+      JSON="{\"text\": \"${MESSAGE}\" }"
+      curl -X POST -H 'Content-Type: application/json' -d "${JSON}" "${WEBHOOK_URL}"
+    env:
+    - name: WEBHOOK_URL
+      valueFrom:
+        secretKeyRef:
+          name: $(params.webhook-url-secret)
+          key: $(params.webhook-url-secret-key)
+    - name: MESSAGE
+      value: $(params.message)
