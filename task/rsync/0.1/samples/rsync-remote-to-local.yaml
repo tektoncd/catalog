@@ -1,0 +1,58 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: rsync-remote-to-local-by-ssh
+spec:
+  pipelineSpec:
+    workspaces:
+      - name: workspace
+      - name: ssh-creds
+    tasks:
+      - name: rsync-files
+        taskRef:
+          name: rsync
+        params:
+          - name: direction
+            value: "remote-to-local"
+          - name: local-path
+            value: "."
+          - name: remote-ip
+            value: "0.0.0.0"
+          - name: remote-username
+            value: "root"
+          - name: remote-path
+            value: "/root"
+        workspaces:
+          - name: source
+            workspace: workspace
+          - name: ssh-directory
+            workspace: ssh-creds
+      - name: verify
+        taskSpec:
+          workspaces:
+            - name: source
+          steps:
+            - name: shell
+              image: alpine
+              workingDir: $(workspaces.source.path)
+              script: |
+                #!/bin/sh
+                pwd
+                ls -al
+        workspaces:
+          - name: source
+            workspace: workspace
+        runAfter:
+          - rsync-files
+  workspaces:
+    - name: workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 100M
+    - name: ssh-creds
+      secret:
+        secretName: rsync-ssh-credentials
