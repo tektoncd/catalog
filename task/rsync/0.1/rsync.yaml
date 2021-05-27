@@ -1,0 +1,57 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: rsync
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/tags: rsync, files sync
+    tekton.dev/categories: CLI
+    tekton.dev/displayName: "rsync"
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le,linux/arm64"
+spec:
+  description: >-
+        This task can be used to synchronize local and remote files.
+  workspaces:
+    - name: source
+      description: The directory you want to sync.
+    - name: ssh-directory
+      optional: true
+      description: ssh directory with private key, known_hosts, config.
+  params:
+    - name: direction
+      type: string
+      default: "local-to-remote"
+    - name: local-path
+      type: string
+      default: "./"
+    - name: remote-path
+      type: string
+      default: "~/"
+    - name: remote-ip
+      type: string
+      default: "0.0.0.0"
+    - name: remote-username
+      type: string
+      default: "root"
+  steps:
+    - name: rsync
+      image: docker.io/shaowenchen/rsync-sshpass:v1@sha256:934985f9a955f416c7378e22d847ac1320fcae1495ee70ad53c9f9fc08b99323
+      env:
+      - name: SSH_DIRECTORY_PATH
+        value: $(workspaces.ssh-directory.path)
+      workingDir: $(workspaces.source.path)
+      script: |
+          cp -R "${SSH_DIRECTORY_PATH}" "$HOME"/.ssh
+          chmod 700 "$HOME"/.ssh
+          chmod -R 400 "$HOME"/.ssh/*
+
+          if [ "$(params.direction)" = "remote-to-local" ] ; then
+            echo "remote to local"
+            rsync -ratlzv -e "ssh -o StrictHostKeyChecking=no -i $HOME/.ssh/id_rsa" "$(params.remote-username)"@"$(params.remote-ip)":"$(params.remote-path)"/ "$(params.local-path)"
+          else
+            echo "local to remote"
+            rsync -ratlzv -e "ssh -o StrictHostKeyChecking=no -i $HOME/.ssh/id_rsa" "$(params.local-path)" "$(params.remote-username)"@"$(params.remote-ip)":"$(params.remote-path)"/
+          fi
