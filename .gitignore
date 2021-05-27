@@ -1,0 +1,11 @@
+# Emacs garbage
+*~
+
+# VSCode config
+.vscode
+
+# JetBrains IDE config
+.idea
+
+# Python
+*.pyc
