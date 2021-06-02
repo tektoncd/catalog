@@ -37,6 +37,10 @@ kubectl apply -f webhook-secret.yaml
 
 * **message**: Plain text message to be posted in the slack channel
 
+* **bot-name**: The name of the bot to use. Defaults to `Tekton Bot`.
+
+* **icon-emoji**: The emoji to use for the bot. For example you could import a tekton emoji and use `:tekton:` over here.
+
 ## Usage
 
 This TaskRun runs the Task to post a message to the channel that the webhook URL is associated with.
