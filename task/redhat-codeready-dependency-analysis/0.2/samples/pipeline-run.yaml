@@ -27,7 +27,7 @@ spec:
       value: crda-report.json
 
     - name: image
-      value: quay.io/ksoneji/crda:maven
+      value: quay.io/ksoneji/crda:python
     
     - name: total-vulnerabilities
       value: "3"

@@ -21,7 +21,7 @@ spec:
 
   params:
     - name: language
-      description: String value to donate a language; 1 = Golang, 2 = NPM, 3 = Python, 4 = Java.
+      description: String to specify the language/ecosystem.
 
     - name: manifest-file-path
       description: Path of target manifest file to perform analysis.
@@ -53,11 +53,6 @@ spec:
             secretKeyRef:
               name: crda
               key: crda-key
-        - name: AUTH_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: token
-              key: auth-token
         - name: HOST
           value: $(params.CRDA_HOST_URL)
         - name: CONSENT_TELEMETRY
@@ -68,19 +63,18 @@ spec:
 
         mkdir -p $HOME/.crda
         touch $HOME/.crda/config.yaml
-        echo auth_token: ${AUTH_TOKEN} >> $HOME/.crda/config.yaml
         echo crda_key: ${CRDA_KEY} >> $HOME/.crda/config.yaml
         echo host: ${HOST} >> $HOME/.crda/config.yaml
 
         #setting path to dependency directory
         printf "Setting the paths\n"
-        if [ $(params.language) == "2" ]
+        if [ $(params.language) == "NPM" ]
         then
           export NPM_PATH=$(params.pkg-installation-directory-path):`npm root -g`
-        elif [ $(params.language) == "3" ]
+        elif [ $(params.language) == "PYTHON" ]
         then
           export PYTHONPATH=$(params.pkg-installation-directory-path)
-        elif [ $(params.language) == "4" ]
+        elif [ $(params.language) == "JAVA" ]
         then
           export MAVEN_HOME=$(params.pkg-installation-directory-path)
         fi

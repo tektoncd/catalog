@@ -14,7 +14,7 @@ spec:
   # Task parameters take values from global parameters  
   params:
     - name: language
-      description: String value to donate a language; 1 = Golang, 2 = NPM, 3 = Python, 4 = Java.
+      description: String to specify the language/ecosystem.
 
     - name: manifest-file-path
       description: Path of target manifest file to perform analysis.
@@ -37,11 +37,11 @@ spec:
         #Based on the ecosystem install dependencies
         printf "Installing dependencies...\n"
 
-        if [ $(params.language) == "1" ]
+        if [ $(params.language) == "GOLANG" ]
         then
           go mod vendor
 
-        elif [ $(params.language) == "2" ]
+        elif [ $(params.language) == "NPM" ]
         then
           mv $(params.manifest-file-path) $(params.pkg-installation-directory-path)
           cd $(params.pkg-installation-directory-path)
@@ -51,7 +51,7 @@ spec:
           cd ..
           mv $(params.pkg-installation-directory-path)/$(params.manifest-file-path) .
 
-        elif [ $(params.language) == "3" ]
+        elif [ $(params.language) == "PYTHON" ]
         then
           pip3 install --target=$(params.pkg-installation-directory-path) \
           -r $(params.manifest-file-path) --upgrade
