@@ -1,10 +1,10 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  name: crda-pipeline-run
+  name: redhat-codeready-dependency-analysis-pipeline-run
 spec:
   pipelineRef:
-    name: crda-pipeline
+    name: redhat-codeready-dependency-analysis-pipeline
   workspaces:
     - name: output
       persistentvolumeclaim:
@@ -23,7 +23,7 @@ spec:
     - name: pkg-installation-directory-path
       value: dependency-directory
 
-    - name: report-file-path
+    - name: output-file-path
       value: crda-report.json
 
     - name: image

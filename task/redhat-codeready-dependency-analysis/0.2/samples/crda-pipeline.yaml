@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: crda-pipeline
+  name: redhat-codeready-dependency-analysis-pipeline
 
 spec:
   workspaces:
@@ -16,7 +16,7 @@ spec:
 
     - name: pkg-installation-directory-path
 
-    - name: report-file-path
+    - name: output-file-path
       
     - name: image
 
@@ -84,8 +84,8 @@ spec:
         - name: image
           value: $(params.image)
           
-        - name: report-file-path
-          value: $(params.report-file-path)
+        - name: output-file-path
+          value: $(params.output-file-path)
 
     - name: post-task-setup
       taskRef:
@@ -111,8 +111,8 @@ spec:
         - name: low-vulnerabilities
           value: $(params.low-vulnerabilities)
 
-        - name: report-file-path
-          value: $(params.report-file-path)
+        - name: output-file-path
+          value: $(params.output-file-path)
         
         - name: image
           value: $(params.image)

@@ -33,7 +33,7 @@ spec:
       description: Maximum number of low vulnerabilities allowed.
       default: "2"
     
-    - name: report-file-path
+    - name: output-file-path
       description: Path of the file to save analysis report.
     
     - name: image
@@ -47,18 +47,18 @@ spec:
       script: |
         #!/bin/sh
 
-        exit_code=$(jq .exit_code $(params.report-file-path))
+        exit_code=$(jq .exit_code $(params.output-file-path))
         echo $exit_code
 
         if [ $exit_code == "1" ]
         then
           printf "\nCRDA Test failed, please perform the test again\n"
         else
-          total_vulnerabilities=$(jq .report.total_vulnerabilities $(params.report-file-path))
-          critical_vulnerabilities=$(jq .report.critical_vulnerabilities $(params.report-file-path))
-          high_vulnerabilities=$(jq .report.high_vulnerabilities $(params.report-file-path))
-          medium_vulnerabilities=$(jq .report.medium_vulnerabilities $(params.report-file-path))
-          low_vulnerabilities=$(jq .report.low_vulnerabilities $(params.report-file-path))
+          total_vulnerabilities=$(jq .report.total_vulnerabilities $(params.output-file-path))
+          critical_vulnerabilities=$(jq .report.critical_vulnerabilities $(params.output-file-path))
+          high_vulnerabilities=$(jq .report.high_vulnerabilities $(params.output-file-path))
+          medium_vulnerabilities=$(jq .report.medium_vulnerabilities $(params.output-file-path))
+          low_vulnerabilities=$(jq .report.low_vulnerabilities $(params.output-file-path))
 
           if [ $total_vulnerabilities -gt  `expr $(params.total-vulnerabilities) + 0` ]
           then

@@ -4,7 +4,7 @@ kind: Task
 metadata:
   name: redhat-codeready-dependency-analysis
   labels:
-    app.kubernetes.io/version: "0.1"
+    app.kubernetes.io/version: "0.2"
   annotations:
     tekton.dev/pipelines.minVersion: "0.19.0"
     tekton.dev/tags: Security, Vulnenrability, CVE
