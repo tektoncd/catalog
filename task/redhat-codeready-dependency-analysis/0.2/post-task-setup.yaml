@@ -1,0 +1,87 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+
+metadata:
+  name: post-task-setup
+
+spec:
+  description: >-
+    This is the task for checking if all the vulnerabilities are within limits; if not then break the build.
+  workspaces:
+    - name: output
+      description: Volume of Workspace where all reports and dependencies are installed.
+    
+  # Task parameters take values from global parameters  
+  params:
+    - name: total-vulnerabilities
+      description: Maximum number of vulnerabilities allowed.
+      default: "3"
+
+    - name: critical-vulnerabilities
+      description: Maximum number of critical vulnerabilities allowed.
+      default: "0"
+    
+    - name: high-vulnerabilities
+      description: Maximum number of high vulnerabilities allowed.
+      default: "0"
+    
+    - name: medium-vulnerabilities
+      description: Maximum number of medium vulnerabilities allowed.
+      default: "1"
+    
+    - name: low-vulnerabilities
+      description: Maximum number of low vulnerabilities allowed.
+      default: "2"
+    
+    - name: report-file-path
+      description: Path of the file to save analysis report.
+    
+    - name: image
+      
+
+  # Task definition
+  steps:
+    - name: check-vulnerabilities
+      image: $(params.image)
+      workingDir: $(workspaces.output.path)
+      script: |
+        #!/bin/sh
+
+        exit_code=$(jq .exit_code $(params.report-file-path))
+        echo $exit_code
+
+        if [ $exit_code == "1" ]
+        then
+          printf "\nCRDA Test failed, please perform the test again\n"
+        else
+          total_vulnerabilities=$(jq .report.total_vulnerabilities $(params.report-file-path))
+          critical_vulnerabilities=$(jq .report.critical_vulnerabilities $(params.report-file-path))
+          high_vulnerabilities=$(jq .report.high_vulnerabilities $(params.report-file-path))
+          medium_vulnerabilities=$(jq .report.medium_vulnerabilities $(params.report-file-path))
+          low_vulnerabilities=$(jq .report.low_vulnerabilities $(params.report-file-path))
+
+          if [ $total_vulnerabilities -gt  `expr $(params.total-vulnerabilities) + 0` ]
+          then
+            printf "\nBUILD FAILED: Total vulnerabilities count is more than threshold value\n"
+          fi
+
+          if [ $critical_vulnerabilities -gt  `expr $(params.critical-vulnerabilities) + 0` ]
+          then
+            printf "\nBUILD FAILED: Critical vulnerabilities count is more than threshold value\n"
+          fi
+
+          if [ $high_vulnerabilities -gt  `expr $(params.high-vulnerabilities) + 0` ]
+          then
+            printf "\nBUILD FAILED: High vulnerabilities count is more than threshold value\n"
+          fi
+
+          if [ $medium_vulnerabilities -gt  `expr $(params.medium-vulnerabilities) + 0` ]
+          then
+            printf "\nBUILD FAILED: Medium vulnerabilities count is more than threshold value\n"
+          fi
+
+          if [ $low_vulnerabilities -gt  `expr $(params.low-vulnerabilities) + 0` ]
+          then
+            printf "\nBUILD FAILED: Low vulnerabilities count is more than threshold value\n"
+          fi
+        fi

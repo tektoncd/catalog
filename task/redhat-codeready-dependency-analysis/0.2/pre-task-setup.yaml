@@ -1,0 +1,63 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+
+metadata:
+  name: pre-task-setup
+
+spec:
+  description: >-
+    This is the task for installing the packages/dependencies depending on the ecosystem.
+  workspaces:
+    - name: output
+      description: Volume backing this workspace is used for input/output of the task.
+    
+  # Task parameters take values from global parameters  
+  params:
+    - name: language
+      description: String value to donate a language; 1 = Golang, 2 = NPM, 3 = Python, 4 = Java.
+
+    - name: manifest-file-path
+      description: Path of target manifest file to perform analysis.
+
+    - name: pkg-installation-directory-path
+      description: Path of a directory in workspace, where dependencies are installed.
+
+    - name: image
+      description: Image where CRDA CLI binary and required applications are installed.
+      
+
+  # Task definition
+  steps:
+    - name: setup-env
+      image: $(params.image)
+      workingDir: $(workspaces.output.path)
+      script: |
+        #!/bin/sh
+
+        #Based on the ecosystem install dependencies
+        printf "Installing dependencies...\n"
+
+        if [ $(params.language) == "1" ]
+        then
+          go mod vendor
+
+        elif [ $(params.language) == "2" ]
+        then
+          mv $(params.manifest-file-path) $(params.pkg-installation-directory-path)
+          cd $(params.pkg-installation-directory-path)
+
+          npm install
+
+          cd ..
+          mv $(params.pkg-installation-directory-path)/$(params.manifest-file-path) .
+
+        elif [ $(params.language) == "3" ]
+        then
+          pip3 install --target=$(params.pkg-installation-directory-path) \
+          -r $(params.manifest-file-path) --upgrade
+
+        else
+          mvn dependency:copy-dependencies -DoutputDirectory=$(params.pkg-installation-directory-path)
+        fi
+
+        printf "Successfully installed dependencies\n"

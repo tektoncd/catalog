@@ -1,0 +1,118 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: crda-pipeline
+
+spec:
+  workspaces:
+    - name: output
+
+  params:
+    - name: repository
+
+    - name: language
+
+    - name: manifest-file-path
+
+    - name: pkg-installation-directory-path
+
+    - name: report-file-path
+      
+    - name: image
+
+    - name: total-vulnerabilities
+
+    - name: critical-vulnerabilities
+    
+    - name: high-vulnerabilities
+    
+    - name: medium-vulnerabilities
+    
+    - name: low-vulnerabilities
+
+  tasks:
+    - name: clone-git-repo
+      workspaces:
+      - name: output
+        workspace: output
+      taskRef:
+        name: git-clone
+      params:
+        - name: url
+          value: $(params.repository)
+        - name: deleteExisting
+          value: "true"
+    - name: pre-task-setup
+      taskRef:
+        name: pre-task-setup
+      runAfter:
+        - clone-git-repo
+      workspaces:
+        - name: output
+          workspace: output
+      params:
+        - name: language
+          value: $(params.language)
+
+        - name: pkg-installation-directory-path
+          value: $(params.pkg-installation-directory-path)
+
+        - name: manifest-file-path
+          value: $(params.manifest-file-path)
+
+        - name: image
+          value: $(params.image)
+
+    - name: redhat-codeready-dependency-analysis
+      taskRef:
+        name: redhat-codeready-dependency-analysis
+      runAfter:
+        - pre-task-setup
+      workspaces:
+        - name: output
+          workspace: output
+      params:
+        - name: language
+          value: $(params.language)
+
+        - name: pkg-installation-directory-path
+          value: $(params.pkg-installation-directory-path)
+
+        - name: manifest-file-path
+          value: $(params.manifest-file-path)
+
+        - name: image
+          value: $(params.image)
+          
+        - name: report-file-path
+          value: $(params.report-file-path)
+
+    - name: post-task-setup
+      taskRef:
+        name: post-task-setup
+      runAfter:
+        - redhat-codeready-dependency-analysis
+      workspaces:
+        - name: output
+          workspace: output
+      params:   
+        - name: total-vulnerabilities
+          value: $(params.total-vulnerabilities)
+
+        - name: critical-vulnerabilities
+          value: $(params.critical-vulnerabilities)
+        
+        - name: high-vulnerabilities
+          value: $(params.high-vulnerabilities)
+        
+        - name: medium-vulnerabilities
+          value: $(params.medium-vulnerabilities)
+        
+        - name: low-vulnerabilities
+          value: $(params.low-vulnerabilities)
+
+        - name: report-file-path
+          value: $(params.report-file-path)
+        
+        - name: image
+          value: $(params.image)

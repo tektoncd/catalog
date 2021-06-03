@@ -1,0 +1,129 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+
+metadata:
+  name: redhat-codeready-dependency-analysis
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.19.0"
+    tekton.dev/tags: Security, Vulnenrability, CVE
+    tekton.dev/displayName: "RedHat CodeReady Dependency Analysis"
+
+spec:
+  description: >-
+    The RedHat CodeReady Dependency Analysis task is an interface between Tekton and Red Hat CodeReady Dependency Analytics platform.
+    It provides vulnerability and compliance analysis for your Python applications dependencies, along with recommendations to address security vulnerabilities and licensing issues.
+
+  workspaces:
+    - name: output
+      description: Volume backing this workspace is used for input/output of the task.
+
+  params:
+    - name: language
+      description: String value to donate a language; 1 = Golang, 2 = NPM, 3 = Python, 4 = Java.
+
+    - name: manifest-file-path
+      description: Path of target manifest file to perform analysis.
+      default: requirements.txt
+
+    - name: output-file-path
+      description: Path of the file to save analysis report.
+      default: redhat-codeready-dependency-analysis-report.json
+
+    - name: pkg-installation-directory-path
+      description: Path of a directory in workspace, where dependencies are installed.
+      default: site-package
+
+    - name: image
+      description: Image where CRDA CLI binary and required applications are installed.
+      default: quay.io/ksoneji/crda:python
+
+    - name: CRDA_HOST_URL
+      description: The CRDA host, adjust this if you use an on premise environment.
+      default: ""
+
+  steps:
+    - name: redhat-codeready-dependency-analysis
+      image: $(params.image)
+      workingDir: $(workspaces.output.path)
+      env:
+        - name: CRDA_KEY
+          valueFrom:
+            secretKeyRef:
+              name: crda
+              key: crda-key
+        - name: AUTH_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: token
+              key: auth-token
+        - name: HOST
+          value: $(params.CRDA_HOST_URL)
+        - name: CONSENT_TELEMETRY
+          value: "false"
+
+      script: |
+        #!/bin/sh
+
+        mkdir -p $HOME/.crda
+        touch $HOME/.crda/config.yaml
+        echo auth_token: ${AUTH_TOKEN} >> $HOME/.crda/config.yaml
+        echo crda_key: ${CRDA_KEY} >> $HOME/.crda/config.yaml
+        echo host: ${HOST} >> $HOME/.crda/config.yaml
+
+        #setting path to dependency directory
+        printf "Setting the paths\n"
+        if [ $(params.language) == "2" ]
+        then
+          export NPM_PATH=$(params.pkg-installation-directory-path):`npm root -g`
+        elif [ $(params.language) == "3" ]
+        then
+          export PYTHONPATH=$(params.pkg-installation-directory-path)
+        elif [ $(params.language) == "4" ]
+        then
+          export MAVEN_HOME=$(params.pkg-installation-directory-path)
+        fi
+
+        printf "Path set successfully\n"
+
+        printf "\nGenerating report\n"
+        #Getting the report using the CRDA
+        report=$(crda analyse $(params.manifest-file-path) -j)
+        exit_code=$?
+
+        #Save exit code to check in next stage if task completed successfully or not
+        #In case of failure
+        if [ $exit_code == 1 ]
+        then
+          printf "CRDA failed, saving the exit code...\n"
+          jq -n {} | \
+          jq --arg exit_code "$exit_code" '. + {exit_code: $exit_code}' > \
+          $(params.output-file-path)
+        #Save the report and exit Code
+        else
+          # In case of success print details from report into console
+          printf "RedHat CodeReady Dependency Analysis task is being executed.\n"
+          printf "=%.0s" {1..50}
+          printf "\nRedHat CodeReady Dependency Analysis Report\n"
+          printf "=%.0s" {1..50}
+          printf "\n"
+          printf "Total Scanned Dependencies            :  %s \n" $(jq -r .total_scanned_dependencies <<< $report)
+          printf "Total Scanned Transitive Dependencies :  %s \n" $(jq -r .total_scanned_transitives <<< $report)
+          printf "Total Vulnerabilities                 :  %s \n" $(jq -r .total_vulnerabilities <<< $report)
+          printf "Direct Vulnerable Dependencies        :  %s \n" $(jq -r .direct_vulnerable_dependencies <<< $report)
+          printf "Publicly Available Vulnerabilities    :  %s \n" $(jq -r .publicly_available_vulnerabilities <<< $report)
+          printf "Vulnerabilities Unique to Snyk        :  %s \n" $(jq -r .vulnerabilities_unique_to_synk <<< $report)
+          printf "Critical Vulnerabilities              :  %s \n" $(jq -r .critical_vulnerabilities <<< $report)
+          printf "High Vulnerabilities                  :  %s \n" $(jq -r .high_vulnerabilities <<< $report)
+          printf "Medium Vulnerabilities                :  %s \n" $(jq -r .medium_vulnerabilities <<< $report)
+          printf "Low Vulnerabilities                   :  %s \n" $(jq -r .low_vulnerabilities <<< $report)
+          printf "=%.0s" {1..50}
+          printf "\n\nOpen this link to see detailed report:\n%s \n\n" $(jq -r .report_link <<< $report)
+          printf "Report generated successfully, saving the report and exit code...\n"
+          jq -n {} | \
+          jq --argjson report "$report" '. + {report: $report}' | \
+          jq --arg exit_code "$exit_code" '. + {exit_code: $exit_code}' > \
+          $(params.output-file-path)
+        fi
+        printf "Successfully saved the report and exit code\n"

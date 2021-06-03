@@ -1,0 +1,45 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: crda-pipeline-run
+spec:
+  pipelineRef:
+    name: crda-pipeline
+  workspaces:
+    - name: output
+      persistentvolumeclaim:
+        claimName: output
+
+  params:
+    - name: repository
+      value: {{REPO_URL}} #URL OF THE REPOSITORY
+
+    - name: language
+      value: {{LANGUAGE}} #STRING VALUE DEPENDING ON THE ECOSYSTEM
+
+    - name: manifest-file-path
+      value: {{MANIFEST_FILE_PATH}} #PATH OF THE MANIFEST FILE
+
+    - name: pkg-installation-directory-path
+      value: dependency-directory
+
+    - name: report-file-path
+      value: crda-report.json
+
+    - name: image
+      value: quay.io/ksoneji/crda:maven
+    
+    - name: total-vulnerabilities
+      value: "3"
+
+    - name: critical-vulnerabilities
+      value: "0"
+    
+    - name: high-vulnerabilities
+      value: "0"
+    
+    - name: medium-vulnerabilities
+      value: "2"
+
+    - name: low-vulnerabilities
+      value: "3"
