@@ -64,19 +64,6 @@ spec:
       script: |
         #!/bin/sh
 
-        #setting path to dependency directory
-        printf "Setting the paths\n"
-        if [ $(params.language) == "NPM" ]
-        then
-          export NPM_PATH=$(params.pkg-installation-directory-path):`npm root -g`
-        elif [ $(params.language) == "PYTHON" ]
-        then
-          export PYTHONPATH=$(params.pkg-installation-directory-path)
-        elif [ $(params.language) == "JAVA" ]
-        then
-          export MAVEN_HOME=$(params.pkg-installation-directory-path)
-        fi
-
         sh /crda.sh \
         "$(params.manifest-file-path)" \
         "$(params.output-file-path)" \
