@@ -14,7 +14,7 @@ This task reflects [Dependency Analytics VS Code plugin](https://marketplace.vis
 #### 1. Creation of Workspace
 Workspace is used as a common filesystem between tasks and used for inputs and outputs of task, in workspace dependencies are installed for further usage while running the task.
 
-This [sample](../0.2/samples/workspace.yaml) can be referred to create a workspace.<br />
+This [sample](../0.3/samples/workspace.yaml) can be referred to create a workspace.<br />
 
 #### 2. Manifest File
 This task scans manifest file (ex. requirements.txt, requirements-dev.txt etc.) for collecting a list of dependencies, hence prior to this task, target manifest file must be placed by user into workspace. 
@@ -39,7 +39,7 @@ Users need to store the value of `crda_key` into a `Secret` to run the task.
 Second secret required is `consent_telemetry`. To improve CRDA platform and provide a better user experience, this task collects anonymous usage data, but only after user's approval. 
 Please go thorough our [privacy statement](https://developers.redhat.com/article/tool-data-collection) to learn more about it. To opt-in for data collection users need to set `consent_telemetry=true` else set `consent_telemetry=false` to opt-out.
 <br />
-This [sample](../0.2/samples/secret.yaml) can be referred to create a secret file, replace `{{ CRDA_USER_KEY }}` with the generated CRDA key before running.
+This [sample](../0.3/samples/secret.yaml) can be referred to create a secret file, replace `{{ CRDA_USER_KEY }}` with the generated CRDA key before running.
 <br />
 Following command can be used to create workspace from the file.
 
@@ -109,7 +109,7 @@ The link to detailed report will take users to a browser window having similar f
 
 ## Install the CodeReady Dependency Analysis Task
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/redhat-codeready-dependency-analysis/0.2/redhat-codeready-dependency-analysis.yaml -n <NAMESPACE>
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/redhat-codeready-dependency-analysis/0.3/redhat-codeready-dependency-analysis.yaml -n <NAMESPACE>
 ```
 ## Install Git Clone Task
 ```
@@ -122,5 +122,5 @@ This task expects a secret named `crda` to exist with a valid CRDA user key in `
 
 The following PipelineRun and TaskRun demonstrate usage of the  Task. Please configure required components like workspace, secrets, tasks from YAMLs from `samples` directory:
 
-- [Usage of redhat-codeready-dependency-analysis task in an end to end pipeline. (configure secret, workspace, git-clone, pre-task-setup, post-task-setup and pipeline from YAML provided in samples)](../0.2/samples/pipeline-run.yaml)
-- [Running stand alone redhat-codeready-dependency-analysis task, assuming manifest file is already placed in workspace and dependencies are installed in a directory of workspace.](../0.2/samples/task-run.yaml)
+- [Usage of redhat-codeready-dependency-analysis task in an end to end pipeline. (configure secret, workspace, git-clone, pre-task-setup, post-task-setup and pipeline from YAML provided in samples)](../0.3/samples/pipeline-run.yaml)
+- [Running stand alone redhat-codeready-dependency-analysis task, assuming manifest file is already placed in workspace and dependencies are installed in a directory of workspace.](../0.3/samples/task-run.yaml)
