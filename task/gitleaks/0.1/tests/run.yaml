@@ -1,0 +1,308 @@
+---
+# Using Default rulesets and considering repository as git repository
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: gitleaks-pipeline-1
+spec:
+  workspaces:
+  - name: workspace
+  tasks:
+  - name: clone-git-repo
+    workspaces:
+    - name: output
+      workspace: workspace
+    taskRef:
+      name: git-clone
+    params:
+      - name: url
+        value: https://github.com/urvashigupta7/chatapp.git
+      - name: deleteExisting
+        value: "true"
+      - name: subdirectory
+        value: chatapp
+  - name: secret-detection
+    runAfter:
+    - clone-git-repo
+    taskRef:
+      name: gitleaks
+    workspaces:
+      - name: source
+        workspace: workspace
+    params:
+    - name: repo_path
+      value: chatapp
+    - name: output_format
+      value: json
+    - name: report_output_path
+      value: report.json
+    - name: args
+      value: ["--verbose"]
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: gitleaks-pipelinerun-1
+spec:
+  pipelineRef:
+    name: gitleaks-pipeline-1
+  workspaces:
+    - name: workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 200Mi
+
+---
+
+# Using Default rulesets and considering repository as plain repository
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: gitleaks-pipeline-2
+spec:
+  workspaces:
+  - name: workspace
+  tasks:
+  - name: clone-git-repo
+    workspaces:
+    - name: output
+      workspace: workspace
+    taskRef:
+      name: git-clone
+    params:
+      - name: url
+        value: https://github.com/urvashigupta7/chatapp.git
+      - name: deleteExisting
+        value: "true"
+      - name: subdirectory
+        value: chatapp
+  - name: secret-detection
+    runAfter:
+    - clone-git-repo
+    taskRef:
+      name: gitleaks
+    workspaces:
+      - name: source
+        workspace: workspace
+    params:
+    - name: repo_path
+      value: chatapp
+    - name: output_format
+      value: json
+    - name: report_output_path
+      value: report.json
+    - name: args
+      value: ["--verbose", "--no-git"]
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: gitleaks-pipelinerun-2
+spec:
+  pipelineRef:
+    name: gitleaks-pipeline-2
+  workspaces:
+  - name: workspace
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 200Mi
+
+---
+
+# Using custom rulesets and considering repository as git repository (depth=1)
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: gitleaks-pipeline-3
+spec:
+  workspaces:
+  - name: workspace
+  tasks:
+  - name: clone-git-repo
+    workspaces:
+    - name: output
+      workspace: workspace
+    taskRef:
+      name: git-clone
+    params:
+      - name: url
+        value: https://github.com/urvashigupta7/chatapp.git
+      - name: deleteExisting
+        value: "true"
+      - name: subdirectory
+        value: chatapp
+  - name: secret-detection
+    runAfter:
+    - clone-git-repo
+    taskRef:
+      name: gitleaks
+    workspaces:
+      - name: source
+        workspace: workspace
+    params:
+    - name: repo_path
+      value: chatapp
+    - name: config_file_url
+      value: https://raw.githubusercontent.com/urvashigupta7/secret_detection/master/gitleaks.toml
+    - name: config_file_path
+      value: gitleaks.toml
+    - name: output_format
+      value: json
+    - name: report_output_path
+      value: report.json
+    - name: args
+      value: ["--verbose"]
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: gitleaks-pipelinerun-3
+spec:
+  pipelineRef:
+    name: gitleaks-pipeline-3
+  workspaces:
+  - name: workspace
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 200Mi
+
+---
+
+# Using custom rulesets and considering repository as git repository (depth>1)
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: gitleaks-pipeline-4
+spec:
+  workspaces:
+  - name: workspace
+  tasks:
+  - name: clone-git-repo
+    workspaces:
+    - name: output
+      workspace: workspace
+    taskRef:
+      name: git-clone
+    params:
+      - name: url
+        value: https://github.com/urvashigupta7/chatapp.git
+      - name: deleteExisting
+        value: "true"
+      - name: subdirectory
+        value: chatapp
+      - name: depth
+        value: "6"
+  - name: secret-detection
+    runAfter:
+    - clone-git-repo
+    taskRef:
+      name: gitleaks
+    workspaces:
+      - name: source
+        workspace: workspace
+    params:
+    - name: repo_path
+      value: chatapp
+    - name: config_file_url
+      value: https://raw.githubusercontent.com/urvashigupta7/secret_detection/master/gitleaks.toml
+    - name: config_file_path
+      value: gitleaks.toml
+    - name: output_format
+      value: json
+    - name: report_output_path
+      value: report.json
+    - name: args
+      value: ["--verbose", "--depth=6"]
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: gitleaks-pipelinerun-4
+spec:
+  pipelineRef:
+    name: gitleaks-pipeline-4
+  workspaces:
+  - name: workspace
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 200Mi
+
+---
+
+# Using custom rulesets and considering repository as plain repository
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: gitleaks-pipeline-5
+spec:
+  workspaces:
+  - name: workspace
+  tasks:
+  - name: clone-git-repo
+    workspaces:
+    - name: output
+      workspace: workspace
+    taskRef:
+      name: git-clone
+    params:
+      - name: url
+        value: https://github.com/urvashigupta7/chatapp.git
+      - name: deleteExisting
+        value: "true"
+      - name: subdirectory
+        value: chatapp
+  - name: secret-detection
+    runAfter:
+    - clone-git-repo
+    taskRef:
+      name: gitleaks
+    workspaces:
+      - name: source
+        workspace: workspace
+    params:
+    - name: repo_path
+      value: chatapp
+    - name: config_file_url
+      value: https://raw.githubusercontent.com/urvashigupta7/secret_detection/master/gitleaks.toml
+    - name: config_file_path
+      value: gitleaks.toml
+    - name: output_format
+      value: json
+    - name: report_output_path
+      value: report.json
+    - name: args
+      value: ["--verbose", "--no-git"]
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: gitleaks-pipelinerun-5
+spec:
+  pipelineRef:
+    name: gitleaks-pipeline-5
+  workspaces:
+  - name: workspace
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 200Mi
