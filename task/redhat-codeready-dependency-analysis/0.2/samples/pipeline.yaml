@@ -31,6 +31,7 @@ spec:
     - name: low-vulnerabilities
 
   tasks:
+    # Task to clone the repository
     - name: clone-git-repo
       workspaces:
       - name: output
@@ -42,6 +43,7 @@ spec:
           value: $(params.repository)
         - name: deleteExisting
           value: "true"
+    # Task to download manifest and install its dependencies.
     - name: pre-task-setup
       taskRef:
         name: pre-task-setup
@@ -63,6 +65,7 @@ spec:
         - name: image
           value: $(params.image)
 
+    # redhat-codeready-dependency-analysis task
     - name: redhat-codeready-dependency-analysis
       taskRef:
         name: redhat-codeready-dependency-analysis
@@ -87,6 +90,7 @@ spec:
         - name: output-file-path
           value: $(params.output-file-path)
 
+    # Task to view result and make decision about build.
     - name: post-task-setup
       taskRef:
         name: post-task-setup

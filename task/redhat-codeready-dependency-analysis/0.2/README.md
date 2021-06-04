@@ -25,6 +25,8 @@ Users need to install dependencies from manifest into a directory of workspace.
 Location of installation directory in workspace is required as parameter in the task.
 
 #### 4. Adding Secret
+This task requires two secrets, `crda_key` and `consent_telemetry` to be added in environment.
+
 To authenticate a user this task uses CRDA user key. 
 This key should be saved in secrets, but before that users need to generate it.<br />
 This is a one time activity to perform. 
@@ -33,6 +35,9 @@ Here are the steps to generate a CRDA user key.<br />
 1. Install CRDA CLI from [here](https://github.com/fabric8-analytics/cli-tools/releases).
 2. Run `crda auth` command, and it will assign user a unique id, which can be found in `~/.crda/config.yaml`. 
 Users need to store the value of `crda_key` into a `Secret` to run the task.
+
+Second secret required is `consent_telemetry`. To improve CRDA platform and provide a better user experience, this task collects anonymous usage data, but only after user's approval. 
+Please go thorough our [privacy statement](https://developers.redhat.com/article/tool-data-collection) to learn more about it. To opt-in for data collection users need to set `consent_telemetry=true` else set `consent_telemetry=false` to opt-out.
 <br />
 This [sample](../0.2/samples/secret.yaml) can be referred to create a secret file, replace `{{ CRDA_USER_KEY }}` with the generated CRDA key before running.
 <br />

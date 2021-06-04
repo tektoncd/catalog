@@ -10,24 +10,25 @@ spec:
       persistentvolumeclaim:
         claimName: output
 
+# Change the repository, language and manifest-file-path according to the git repository and ecosystem
   params:
     - name: repository
-      value: {{REPO_URL}} #URL OF THE REPOSITORY
+      value: {{REPO_URL}} # Replace it with url of the repository to be scanned
 
     - name: language
-      value: {{LANGUAGE}} #STRING VALUE DEPENDING ON THE ECOSYSTEM
+      value: {{LANGUAGE}} # Replace it with the language/ecosystem used
 
     - name: manifest-file-path
-      value: {{MANIFEST_FILE_PATH}} #PATH OF THE MANIFEST FILE
+      value: {{MANIFEST_FILE_PATH}} # Replace it with the path of the manifest to be scanned
 
     - name: pkg-installation-directory-path
       value: dependency-directory
 
     - name: output-file-path
-      value: crda-report.json
+      value: redhat-codeready-dependency-analysis-report.json
 
     - name: image
-      value: quay.io/ksoneji/crda:python
+      value: {{IMAGE_URL}} # Replace it with the url of the image to be used according to ecosystem
     
     - name: total-vulnerabilities
       value: "3"
