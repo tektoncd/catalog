@@ -1,0 +1,78 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: gitleaks
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.19.0"
+    tekton.dev/tags: Security, Secrets
+    tekton.dev/displayName: "Gitleaks"
+spec:
+  description: >-
+    This task makes it possible to use Gitleaks within your Tekton pipelines.
+
+    Gitleaks is a SAST tool for detecting hardcoded secrets like passwords, api keys, and tokens in git repos.
+    It is an easy-to-use, all-in-one solution for finding secrets, past or present, in your code.
+  workspaces:
+    - name: source
+      description: A workspace that contains fetched git repo.
+  params:
+    - name: repo_path
+      type: string
+      description: path to the repo to be scanned.
+    - name: config_file_url
+      type: string
+      description: url from where the config file would be fetched.
+      default: ""
+    - name: config_file_path
+      type: string
+      description: path to config file.
+      default: ""
+    - name: output_format
+      type: string
+      description: format in which report will be generated. (json|csv|sarif) (default:"json")
+      default: "json"
+    - name: report_output_path
+      type: string
+      description: path of file to save analysis report
+    - name: args
+      type: array
+      description: "args"
+      default: []
+  steps:
+    - name: fetch-config-file
+      image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
+      workingDir: $(workspaces.source.path)
+      script: |
+         #!/usr/bin/env bash
+
+         if [ -n "$(params.config_file_url)" ]
+         then
+          curl "$(params.config_file_url)" --output "$(params.config_file_path)"
+          echo "Fetched the config file from given ($(params.config_file_url)) URL and successfully saved at $(workspaces.source.path)/$(params.config_file_path)"
+         else
+          echo "No config file url was set"
+         fi
+
+    - name: detect-secret
+      image: docker.io/zricethezav/gitleaks:v7.5.0@sha256:55b2e1831c7395f17e9da3649924736b396b25be69efdc7a0137073fe0b0f456
+      workingDir: $(workspaces.source.path)
+      script: |
+         #!/bin/bash
+
+         gitleaks --path="$(params.repo_path)" --config-path="$(params.config_file_path)"  \
+         --format="$(params.output_format)" --report="$(params.report_output_path)" "$@"
+
+         EXIT_CODE="$?"
+         if [ "$EXIT_CODE" -eq 0 ]
+         then
+          echo "No leaks found"
+          exit $EXIT_CODE
+         else
+          echo "============= Leaks found in code. Check generated report at $(params.report_output_path) ==============="
+          exit $EXIT_CODE
+         fi
+
+      args:
+      - $(params.args)
