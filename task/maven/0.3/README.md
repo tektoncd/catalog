@@ -22,11 +22,11 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/ma
 - **PROXY_PORT**: Port number on which the proxy port listens (to be inserted into ~/.m2/settings.xml)
 - **PROXY_PROTOCOL**: http or https protocol whichever is applicable (to be inserted into ~/.m2/settings.xml)
 - **CONTEXT_DIR**: The context directory within the repository for sources on which we want to execute maven goals. (_Default_: ".")
-- **CACHE**: The name of the volume for caching Maven artifacts (_default_: `empty-dir-volume`)
 
 ## Workspaces
 
 - **source**: `PersistentVolumeClaim`-type so that volume can be shared among `git-clone` and `maven` task
+- **cache**: Directory where maven artifact cache are stored.
 
 ```yaml
 apiVersion: v1
@@ -248,33 +248,4 @@ spec:
     - name: shared-workspace
       persistentvolumeclaim:
         claimName: maven-source-pvc
-```
-
----
-
-### Using Cache for Maven Repository:
-
-```yaml
-apiVersion: tekton.dev/v1beta1
-kind: TaskRun
-metadata:
-  name: maven-with-cache
-spec:
-  taskRef:
-    name: maven
-  podTemplate:
-    volumes:
-    - name: cache
-      persistentVolumeClaim:
-        claimName: cache
-  params:
-  - name: CACHE
-    value: cache
-  workspaces:
-  - name: source
-    persistentVolumeClaim:
-      claimName: source
-  - name: maven-settings
-    secret:
-      secretName: maven-settings
 ```

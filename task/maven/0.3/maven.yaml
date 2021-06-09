@@ -10,6 +10,7 @@ metadata:
 spec:
   description: >-
     This Task can be used to run a Maven build.
+
   workspaces:
   - name: source
     description: The workspace consisting of maven project.
@@ -17,6 +18,9 @@ spec:
     description: >-
       The workspace consisting of the custom maven settings
       provided by the user.
+  - name: cache
+    description: Directory where maven artifact cache are stored.
+
   params:
   - name: MAVEN_IMAGE
     type: string
@@ -69,9 +73,6 @@ spec:
       The context directory within the repository for sources on
       which we want to execute maven goals.
     default: "."
-  - name: CACHE
-    description: The name of the volume for caching Maven artifacts and base image layers
-    default: empty-dir-volume
   steps:
   - name: mvn-settings
     image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
@@ -139,19 +140,14 @@ spec:
         </mirror>"
         sed -i "s|<!-- ### mirrors from ENV ### -->|$xml|" $(workspaces.maven-settings.path)/settings.xml
       fi
+
   - name: mvn-goals
     image: $(params.MAVEN_IMAGE)
     workingDir: $(workspaces.source.path)/$(params.CONTEXT_DIR)
-    command: 
+    command:
     - /usr/bin/mvn
     args:
     - -s
     - $(workspaces.maven-settings.path)/settings.xml
-    - -Dmaven.repo.local=/cache/repository
+    - -Dmaven.repo.local=$(workspaces.cache.path)
     - $(params.GOALS)
-    volumeMounts:
-    - name: $(params.CACHE)
-      mountPath: /cache
-  volumes:
-  - name: empty-dir-volume
-    emptyDir: {}
