@@ -1,0 +1,82 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: jib-maven
+  labels:
+    app.kubernetes.io/version: "0.4"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/tags: image-build
+    tekton.dev/displayName: "jib maven"
+spec:
+  description: >-
+    This Task builds Java/Kotlin/Groovy/Scala source into a container image using Google's Jib tool.
+
+    Jib works with Maven and Gradle projects, and this template is for Maven projects.
+
+  params:
+  - name: IMAGE
+    description: Name of the image to build
+  - name: MAVEN_IMAGE
+    type: string
+    description: Maven base image
+    default: gcr.io/cloud-builders/mvn@sha256:57523fc43394d6d9d2414ee8d1c85ed7a13460cbb268c3cd16d28cfb3859e641 #tag: latest
+  - name: DIRECTORY
+    description: The directory containing the app, relative to the source repository root
+    default: .
+  - name: CACHE
+    description: The name of the volume for caching Maven artifacts and base image layers
+    default: empty-dir-volume
+  - name: INSECUREREGISTRY
+    description: Whether to allow insecure registry
+    default: "false"
+  - name: CACERTFILE
+    description: CA cert file name for insecure registry service
+    default: "service-ca.crt"
+  workspaces:
+  - name: source
+  - name: sslcertdir
+    optional: true
+    mountPath: /tekton-custom-certs
+
+  results:
+  - name: IMAGE_DIGEST
+    description: Digest of the image just built.
+
+  steps:
+  - name: build-and-push
+    image: $(params.MAVEN_IMAGE)
+    # Make sh evaluate $HOME.
+    script: |
+      #!/bin/bash
+
+      [[ -f  /tekton-custom-certs/$(params.CACERTFILE) ]] && \
+      keytool -import -keystore $JAVA_HOME/lib/security/cacerts -storepass "changeit" -file /tekton-custom-certs/$(params.CACERTFILE) -noprompt
+
+      mvn -B \
+        -Duser.home=$HOME \
+        -Djib.allowInsecureRegistries=$(params.INSECUREREGISTRY) \
+        -Djib.to.image=$(params.IMAGE) \
+        compile \
+        com.google.cloud.tools:jib-maven-plugin:build
+    workingDir: $(workspaces.source.path)/$(params.DIRECTORY)
+    env:
+    - name: HOME
+      value: /workspace
+    - name: "DOCKER_CONFIG"
+      value: $(credentials.path)/.docker/
+    volumeMounts:
+    - name: $(params.CACHE)
+      mountPath: /workspace/.m2
+      subPath: m2-cache
+    - name: $(params.CACHE)
+      mountPath: /workspace/.cache
+      subPath: jib-cache
+
+  - name: digest-to-results
+    image: $(params.MAVEN_IMAGE)
+    script: cat $(workspaces.source.path)/target/jib-image.digest | tee /tekton/results/IMAGE_DIGEST
+
+  volumes:
+  - name: empty-dir-volume
+    emptyDir: {}
