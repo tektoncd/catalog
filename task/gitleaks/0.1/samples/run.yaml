@@ -32,7 +32,7 @@ spec:
     - name: repo_path
       value: contest-arena
     - name: config_file_url
-      value: https://raw.githubusercontent.com/urvashigupta7/secret_detection/master/gitleaks.toml
+      value: https://raw.githubusercontent.com/tektoncd/catalog/main/task/gitleaks/0.1/samples/gitleaks.toml
     - name: config_file_path
       value: gitleaks.toml
     - name: output_format
