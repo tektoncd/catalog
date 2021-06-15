@@ -1,0 +1,68 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: yq-pipeline
+spec:
+  params:
+  - name: new-image-sha
+    description: example of a value to use
+    default: "123"
+  workspaces:
+    - name: source
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: source
+      params:
+        - name: url
+          value: https://github.com/GijsvanDulmen/yq-task-test
+        - name: revision
+          value: "main"
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+    - name: yq-replace
+      taskRef:
+        name: yq
+      runAfter:
+        - fetch-repository
+      workspaces:
+        - name: source
+          workspace: source
+      params:
+        - name: file
+          value: "./helm/values.yaml"
+        - name: expression
+          value: '.image="$(params.new-image-sha)"'
+  finally:
+    - name: display-results
+      workspaces:
+        - name: source
+          workspace: source
+      taskSpec:
+        workspaces:
+        - name: source
+        steps:
+          - name: print
+            image: docker.io/library/bash:5.1.4@sha256:b208215a4655538be652b2769d82e576bc4d0a2bb132144c060efc5be8c3f5d6
+            script: |
+              #!/usr/bin/env bash
+              set -e
+              cat $(workspaces.source.path)/helm/values.yaml
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: yq-pipeline-run
+spec:
+  pipelineRef:
+    name: yq-pipeline
+  workspaces:
+    - name: source
+      persistentvolumeclaim:
+        claimName: yq-pvc
