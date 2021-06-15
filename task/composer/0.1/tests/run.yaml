@@ -1,0 +1,48 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: composer-test-pipeline
+spec:
+  workspaces:
+    - name: shared-workspace
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: https://github.com/drupal/drupal
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+    - name: install-dependencies
+      taskRef:
+        name: composer
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: ARGS
+          value:
+            - install
+            - --no-progress
+      runAfter:
+        - fetch-repository
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: composer-test-pipeline-run
+spec:
+  pipelineRef:
+    name: composer-test-pipeline
+  workspaces:
+    - name: shared-workspace
+      persistentvolumeclaim:
+        claimName: composer-source-pvc
