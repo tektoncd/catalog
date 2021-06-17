@@ -1,0 +1,53 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: kubelinter-pipeline
+spec:
+  params:
+    - name: repository
+      type: string
+  workspaces:
+  - name: workspace
+  tasks:
+  - name: clone-git-repo
+    workspaces:
+    - name: output
+      workspace: workspace
+    taskRef:
+      name: git-clone
+    params:
+      - name: url
+        value: $(params.repository)
+      - name: deleteExisting
+        value: "true"
+  - name: kube-linter
+    runAfter:
+    - clone-git-repo
+    taskRef:
+      name: kube-linter
+    workspaces:
+      - name: source
+        workspace: workspace
+    params:
+      - name: manifest
+        value: k8
+      - name: default_option
+        value: do-not-auto-add-defaults
+      - name: includelist
+        value: "no-extensions-v1beta,default-service-account,no-readiness-probe"
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: kubelinter-pipelinerun
+spec:
+  pipelineRef:
+    name: kubelinter-pipeline
+  params:
+  - name: repository
+    value: https://github.com/urvashigupta7/Go-Server
+  workspaces:
+  - name: workspace
+    persistentvolumeclaim:
+      claimName: pvc
