@@ -1,0 +1,36 @@
+checks:
+  addAllBuiltIn: true
+  exclude:
+  - dangling-service
+  - default-service-account
+  - deprecated-service-account-field
+  - env-var-secret
+  - mismatching-selector
+  - no-anti-affinity
+  - no-extensions-v1beta
+  - no-liveness-probe
+  - no-read-only-root-fs
+  - no-readiness-probe
+  - non-existent-service-account
+  - privileged-container
+  - required-annotation-email
+  - required-label-owner
+  - run-as-non-root
+  - ssh-port
+  - unset-cpu-requirements
+  - unset-memory-requirements
+  - writable-host-mount
+customChecks:
+  - name: required-annotation-responsible
+    template: required-annotation
+    params:
+      key: kube-linter/demo
+    remediation: please add the "kube-linter/demo" annotation to the deployment
+  - name: required-label-release
+    template: required-label
+    params:
+      key: team
+    remediation: please add a team label to the service
+    scope:
+      objectKinds:
+        - Service

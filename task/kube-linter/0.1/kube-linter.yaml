@@ -1,0 +1,88 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: kube-linter
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: Kubernetes, Misconfiguration
+    tekton.dev/displayName: "Kube-Linter"
+spec:
+  description: >-
+    This task makes it possible to use kube-linter within Tekton Pipeline.
+
+    The KubeLinter tool by StackRox is an open-source command-line interface to identify misconfigurations in Kubernetes objects.
+    KubeLinter offers the ability to integrate checks on Kubernetes YAML files and Helm charts before deployment into a Kubernetes cluster.
+    With 31 standard built-in checks and the room to configure your own, you get immediate feedback about misconfigurations and Kubernetes security violations.
+  workspaces:
+    - name: source
+      description: A workspace that contains fetched git repo.
+  params:
+    - name: config_file_url
+      type: string
+      description: url from where the config file would be fetched.
+      default: ""
+    - name: config_file_path
+      type: string
+      description: path to config file.
+      default: ""
+    - name: manifest
+      type: string
+      description: path to manifest files or manifest directory to be checked.
+      default: "."
+    - name: includelist
+      type: string
+      description: "A string with comma separated checks to be included"
+      default: ""
+    - name: excludelist
+      type: string
+      description: "A string with comma separated checks to be excluded"
+      default: ""
+    - name: default_option
+      type: string
+      description: "provides two options (adding all built-in checks or disabling all default checks): add-all-built-in and/do-not-auto-add-defaults"
+      default: ""
+    - name: output_format
+      type: string
+      description: format in which report will be generated. (json|sarif) (default:"json")
+      default: json
+    - name: args
+      type: array
+      description: "args"
+      default: []
+  steps:
+    - name: fetch-config-file
+      image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
+      workingDir: $(workspaces.source.path)
+      script: |
+         #!/usr/bin/env bash
+         set -e
+
+         if [ -n "$(params.config_file_url)" ]
+         then
+          curl "$(params.config_file_url)" --output "$(params.config_file_path)"
+          echo "Fetched the config file from given ($(params.config_file_url)) URL and successfully saved at $(workspaces.source.path)/$(params.config_file_path)"
+         else
+          echo "No config file url was set"
+         fi
+
+    - name: lint-yaml
+      image: docker.io/stackrox/kube-linter:0.2.2-2-g7d10a69154-alpine@sha256:e520e9d8d3a2dfa611914836536545b135845e7bda9f1df34b060e116232dbf0
+      workingDir: $(workspaces.source.path)
+      script: |
+        mv ../../kube-linter ../../bin;
+
+        if [ -n "$(params.config_file_path)" ]
+        then
+          kube-linter lint  "$(params.manifest)" --config "$(params.config_file_path)" --format "$(params.output_format)" "$@"
+        else
+          if [ -n "$(params.default_option)" ]
+          then
+            kube-linter lint "$(params.manifest)" --"$(params.default_option)" --include "$(params.includelist)" --exclude "$(params.excludelist)" --format "$(params.output_format)" "$@"
+          else
+            kube-linter lint "$(params.manifest)" --include "$(params.includelist)" --exclude "$(params.excludelist)" --format "$(params.output_format)" "$@"
+          fi
+        fi
+      args:
+      - $(params.args)
