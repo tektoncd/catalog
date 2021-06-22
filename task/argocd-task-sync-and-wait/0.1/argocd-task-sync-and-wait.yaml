@@ -35,14 +35,8 @@ spec:
     - name: login
       image: docker.io/argoproj/argocd:$(params.argocd-version)
       script: |
-        if [ -z $ARGOCD_AUTH_TOKEN ]; then
-          yes | argocd login $ARGOCD_SERVER --username=$ARGOCD_USERNAME --password=$ARGOCD_PASSWORD;
+        if [ -z "$ARGOCD_AUTH_TOKEN" ]; then
+          yes | argocd login "$ARGOCD_SERVER" --username="$ARGOCD_USERNAME" --password="$ARGOCD_PASSWORD";
         fi
-    - name: sync
-      image: docker.io/argoproj/argocd:$(params.argocd-version)
-      script: |
-        argocd app sync $(params.application-name) --revision $(params.revision) $(params.flags)
-    - name: wait
-      image: docker.io/argoproj/argocd:$(params.argocd-version)
-      script: |
-        argocd app wait $(params.application-name) --health $(params.flags)
+        argocd app sync "$(params.application-name)" --revision "$(params.revision)" "$(params.flags)"
+        argocd app wait "$(params.application-name)" --health "$(params.flags)"
