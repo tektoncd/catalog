@@ -39,6 +39,7 @@ as well as
 * **httpProxy**: git HTTP proxy server for non-SSL requests
 * **httpsProxy**: git HTTPS proxy server for SSL requests
 * **noProxy**: git no proxy - opt out of proxying HTTP/HTTPS requests
+* **userHome**: The user's home directory. Set this explicitly if you are running the image as a non-root user. (_default_: "/tekton/home")
 
 ### Results
 
