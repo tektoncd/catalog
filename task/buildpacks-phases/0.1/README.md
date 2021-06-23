@@ -34,6 +34,8 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/bu
 
 * **`SOURCE_SUBPATH`**: A subpath within the `source` input where the source to build is located. (_default:_ `""`)
 
+* **`USER_HOME`**: Absolute path to the user's home directory. (_default:_ `/tekton/home`)
+
 ### Outputs
 
 * **`image`**: An `image`-type `PipelineResource` specifying the image that should
