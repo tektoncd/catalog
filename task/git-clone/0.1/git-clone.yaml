@@ -68,9 +68,19 @@ spec:
       description: The image used where the git-init binary is.
       default: "gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.15.2"
       type: string
+    - name: userHome
+      description: |
+        Absolute path to the user's home directory. Set this explicitly if you are running the image as a non-root user or have overridden
+        the gitInitImage param with an image containing custom user configuration.
+      type: string
+      default: "/tekton/home"
   results:
     - name: commit
       description: The precise commit SHA that was fetched by this Task
+  stepTemplate:
+    env:
+      - name: HOME
+        value: "$(params.userHome)"
   steps:
     - name: clone
       image: $(params.gitInitImage)
