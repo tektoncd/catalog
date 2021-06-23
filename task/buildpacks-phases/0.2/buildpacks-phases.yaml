@@ -55,6 +55,9 @@ spec:
     - name: LIFECYCLE_IMAGE
       description: The image to use when executing sensitive phases.
       default: docker.io/buildpacksio/lifecycle:0.10.2@sha256:1bf8d3fc41d2fdf0ee4abdad50038ab8902ef58c74f5bcfc432c26767d889ed0
+    - name: USER_HOME
+      description: Absolute path to the user's home directory.
+      default: /tekton/home
 
   results:
     - name: APP_IMAGE_DIGEST
@@ -64,6 +67,8 @@ spec:
     env:
       - name: CNB_PLATFORM_API
         value: "0.4"
+      - name: HOME
+        value: $(params.USER_HOME)
 
   steps:
     - name: prepare

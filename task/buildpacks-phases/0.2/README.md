@@ -40,6 +40,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
  - **`GROUP_ID`**: The group ID of the builder image user. _(optional, default: "1000")_
  - **`PLATFORM_DIR`**: The name of the platform directory. _(optional, default: "empty-dir")_
  - **`LIFECYCLE_IMAGE`**: The image to use when executing sensitive phases. _(optional, default: "docker.io/buildpacksio/lifecycle:0.10.2@sha256:1bf8d3fc41d2fdf0ee4abdad50038ab8902ef58c74f5bcfc432c26767d889ed0")_
+ - **`USER_HOME`**: Absolute path to the user's home directory. (_default:_ `/tekton/home`)
 
 ## Builders
 

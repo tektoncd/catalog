@@ -42,6 +42,9 @@ spec:
     - name: SOURCE_SUBPATH
       description: A subpath within the `source` input where the source to build is located.
       default: ""
+    - name: USER_HOME
+      description: Absolute path to the user's home directory.
+      default: /tekton/home
 
   resources:
     outputs:
@@ -55,6 +58,8 @@ spec:
     env:
       - name: CNB_PLATFORM_API
         value: "0.3"
+      - name: HOME
+        value: $(params.USER_HOME)
 
   steps:
     # Ensure the builder's user has read/write permissions for needed directories.
