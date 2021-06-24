@@ -100,7 +100,7 @@ spec:
       script: |
         #!/usr/libexec/platform-python
 
-        """This script will send the message towards Slack"""
+        """This script will set the CI status on GitHub PR"""
 
         import json
         import os
