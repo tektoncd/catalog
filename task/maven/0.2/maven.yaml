@@ -72,7 +72,7 @@ spec:
       default: "."
   steps:
     - name: mvn-settings
-      image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
+      image: registry.access.redhat.com/ubi8/ubi-minimal:8.4
       script: |
         #!/usr/bin/env bash
 

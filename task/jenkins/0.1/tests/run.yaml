@@ -43,7 +43,7 @@ spec:
           - name: source
           steps:
           - name: check-it-baby
-            image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
+            image: registry.access.redhat.com/ubi8/ubi-minimal:8.4
             script: |
                 ls $(workspaces.source.path)
                 grep "Hello World" $(workspaces.source.path)/output.log
