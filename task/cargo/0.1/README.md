@@ -9,12 +9,15 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/ca
 ## Parameters
 * **COMMAND**
   * **description**: The cargo command to be executed. e.g. `build`
+  * **type**: string
   * **default**: `build`
 * **COMPILE_FLAGS** 
   * **description**: The flags passed to the command. e.g. `--release`
+  * **type**: array
   * **default**: `[]`
 * **CARGO_IMAGE** 
   * **description**: The image to use. e.g. `docker.io/rust:1.52`
+  * **type**: string
   * **default**: `docker.io/rust@sha256:ea81624bfff9a2d46fc181532acdeafda3cf8c31d25536d443ef902d4894f72a`
 
 ## Workspaces
