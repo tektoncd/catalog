@@ -3,7 +3,7 @@ kind: Task
 metadata:
   name: cargo
   labels:
-    app.kubernets.io/version: "0.1"
+    app.kubernetes.io/version: "0.1"
   annotations:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: "build-tool, rust"
