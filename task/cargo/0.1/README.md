@@ -25,7 +25,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/ca
   * **description**: Workspace containing the source code and cargo.toml
 
 ## Example usage
-The following pipeline downloads a project from git using the git-clone task, and builds the project with release flag.
+The following pipeline clones a project from git using the git-clone task, and builds cloned sources with release flag.
 
 1. Pipeline:
 ```yaml
