@@ -1,0 +1,36 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: cargo
+  labels:
+    app.kubernets.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: "build-tool, rust"
+    tekton.dev/displayName: "Cargo"
+spec:
+  description: >-
+    This task can be used to execute cargo commands for rust projects.
+  workspaces:
+    - name: source
+      description: The workspace that contains your cargo.toml and rust code. This will be the working directory.
+  params:
+    - name: COMMAND
+      type: string
+      description: The cargo command that gets executed. Passed before compile flags. Results in 'cargo $COMMAND' being executed.
+      default: build
+    - name: COMPILE_FLAGS
+      type: array
+      description: Compilation flags passed to cargo. Results in 'cargo $COMMAND $COMPILE_FLAG1 $COMPILE_FLAG2 $COMPILE_FLAG3...' being executed.
+      default: []
+    - name: CARGO_IMAGE
+      type: string
+      description: The image that contains cargo. Defaults to the official rust image on the docker hub, docker.io/rust. When using a custom image, make sure cargo is on the path.
+      default: docker.io/rust@sha256:ea81624bfff9a2d46fc181532acdeafda3cf8c31d25536d443ef902d4894f72a
+  steps:
+    - name: cargo-command
+      image: $(params.CARGO_IMAGE)
+      workingDir: $(workspaces.source.path)
+      command: [cargo]
+      args: ["$(params.COMMAND)", "$(params.COMPILE_FLAGS[*])"]
+
