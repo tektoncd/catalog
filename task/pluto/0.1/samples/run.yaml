@@ -1,0 +1,45 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: pluto-pipeline
+spec:
+  workspaces:
+  - name: workspace
+  tasks:
+  - name: clone-git-repo
+    workspaces:
+    - name: output
+      workspace: workspace
+    taskRef:
+      name: git-clone
+    params:
+      - name: url
+        value: https://github.com/urvashigupta7/Go-Server
+      - name: deleteExisting
+        value: "true"
+  - name: pluto
+    runAfter:
+    - clone-git-repo
+    taskRef:
+      name: pluto
+    workspaces:
+      - name: source
+        workspace: workspace
+    params:
+      - name: manifest
+        value: k8
+      - name: output_format
+        value: json
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: pluto-pipelinerun
+spec:
+  pipelineRef:
+    name: pluto-pipeline
+  workspaces:
+  - name: workspace
+    persistentvolumeclaim:
+      claimName: pvc
