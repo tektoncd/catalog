@@ -5,7 +5,7 @@ metadata:
 spec:
   workspaces:
     - name: source
-      description: The workspace that contains your cargo.toml and rust code. 
+      description: The workspace that contains your cargo.toml and rust code.
   params:
     - name: GIT_URI
       type: string
@@ -43,14 +43,14 @@ spec:
   pipelineRef:
     name: cargo-test-pipeline
   workspaces:
-  - name: source
-    volumeClaimTemplate:
-      spec:
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: 128Mi
+    - name: source
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 128Mi
   params:
     - name: GIT_URI
       value: https://github.com/robertlemmens/rust-hello-world.git
@@ -63,17 +63,17 @@ spec:
   pipelineRef:
     name: cargo-test-pipeline
   workspaces:
-  - name: source
-    volumeClaimTemplate:
-      spec:
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: 128Mi
+    - name: source
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 128Mi
   params:
     - name: GIT_URI
       value: https://github.com/robertlemmens/rust-hello-world.git
     - name: COMPILE_FLAGS
-      value: 
+      value:
         - "--release"
