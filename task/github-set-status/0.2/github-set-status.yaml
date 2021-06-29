@@ -87,14 +87,16 @@ spec:
     type: string
     default: Bearer
 
+  volumes:
+    - name: githubtoken
+      secret:
+        secretName: $(params.GITHUB_TOKEN_SECRET_NAME)
+
   steps:
     - name: set-status
-      env:
-        - name: GITHUBTOKEN
-          valueFrom:
-            secretKeyRef:
-              name: $(params.GITHUB_TOKEN_SECRET_NAME)
-              key: $(params.GITHUB_TOKEN_SECRET_KEY)
+      volumeMounts:
+        - name: githubtoken
+          mountPath: /etc/github-set-status
 
       image: registry.access.redhat.com/ubi8/python-38:1-34.1599745032
       script: |
@@ -103,8 +105,9 @@ spec:
         """This script will set the CI status on GitHub PR"""
 
         import json
-        import os
         import http.client
+
+        github_token = open("/etc/github-set-status/$(params.GITHUB_TOKEN_SECRET_KEY)", "r").read()
 
         status_url = "$(params.API_PATH_PREFIX)" + "/repos/$(params.REPO_FULL_NAME)/" + \
             "statuses/$(params.SHA)"
@@ -118,7 +121,7 @@ spec:
         print("Sending this data to GitHub: ")
         print(data)
 
-        authHeader = "$(params.AUTH_TYPE) " + os.environ["GITHUBTOKEN"]
+        authHeader = "$(params.AUTH_TYPE) " + github_token
 
         conn = http.client.HTTPSConnection("$(params.GITHUB_HOST_URL)")
         conn.request(
