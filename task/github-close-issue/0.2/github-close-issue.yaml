@@ -6,6 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/version: "0.2"
   annotations:
+    tekton.dev/categories: Git
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: github
     tekton.dev/displayName: "close github issue"

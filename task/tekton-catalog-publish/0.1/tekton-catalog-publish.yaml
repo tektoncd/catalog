@@ -6,6 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/version: "0.1"
   annotations:
+    tekton.dev/categories: Publishing
     tekton.dev/pipelines.minVersion: "0.17.0"
     tekton.dev/tags: catalog, bundles
     tekton.dev/displayName: "Publish a Tekton Catalog"
