@@ -6,6 +6,7 @@ metadata:
     app.kubernetes.io/version: "0.1"
   annotations:
     tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Automation, Continuous Integration
     tekton.dev/tags: jenkins, build
     tekton.dev/displayName: "trigger jenkins job"
 spec:

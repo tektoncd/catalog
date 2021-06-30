@@ -6,6 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/version: "0.1"
   annotations:
+    tekton.dev/categories: Image Build, Security
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: image-build
     tekton.dev/displayName: "buildpacks-phases"

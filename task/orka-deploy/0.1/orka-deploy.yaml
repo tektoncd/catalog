@@ -6,6 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/version: "0.1"
   annotations:
+    tekton.dev/categories: Deployment
     tekton.dev/pipelines.minVersion: "0.16.0"
     tekton.dev/tags: "orka, macstadium, deploy, build"
     tekton.dev/displayName: "MacStadium Orka Deploy"
