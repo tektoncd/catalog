@@ -52,17 +52,18 @@ _See [our project roadmap](roadmap.md)._
   ```yaml
 
    labels:
-      app.kubernetes.io/version: "0.1"            👈 Version of the resource
+      app.kubernetes.io/version: "0.1"                 👈 Version of the resource
 
     annotations:
-      tekton.dev/pipelines.minVersion: "0.12.1"   👈 Min Version of pipeline resource is compatible
-      tekton.dev/tags: "ansible, cli"             👈 Comma separated list of tags
-      tekton.dev/displayName: "Ansible Tower Cli" 👈 displayName can be optional
+      tekton.dev/pipelines.minVersion: "0.12.1"        👈 Min Version of pipeline resource is compatible
+      tekton.dev/tags: "ansible, cli"                  👈 Comma separated list of tags
+      tekton.dev/displayName: "Ansible Tower Cli"      👈 displayName can be optional
+      tekton.dev/platforms: "linux/amd64,linux/s390x"  👈 Comma separated list of platforms, can be optional
 
   spec:
     description: |-
       ansible-tower-cli task simplifies
-      workflow, jobs, manage users...             👈 Summary
+      workflow, jobs, manage users...                  👈 Summary
 
       Ansible Tower (formerly ‘AWX’) is a ...
 
