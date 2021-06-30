@@ -1,4 +1,51 @@
 apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: verifier
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+spec:
+  description: >-
+    This task verifies the output of the Cargo task test for debug builds
+  workspaces:
+    - name: source
+      description: The workspace that contains your cargo.toml and rust code.
+  params:
+    - name: RELEASE
+      type: string
+  steps:
+    - name: verify
+      image: docker.io/bash@sha256:e4eee5f7b9a7a4a81dbc2c785c0d530ee41410e6aa1372497d44385e250ea3f4
+      workingDir: $(workspaces.source.path)
+      env:
+        - name: RELEASE
+          value: $(params.RELEASE)
+      script: |
+        #!/usr/bin/env bash
+        if [ "$RELEASE" == "true" ]
+        then
+          if [[ -f "target/release/hello_world" ]]
+          then
+            echo "Success!"
+          else
+            echo "Test failed!"
+            echo "Expected to find compiled binary 'target/release/hello_world'"
+            exit 1
+          fi
+        else
+          if [[ -f "target/debug/hello_world" ]]
+          then
+            echo "Success!"
+          else
+            echo "Test failed!"
+            echo "Expected to find compiled binary 'target/debug/hello_world'"
+            exit 1
+          fi
+        fi
+---
+apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: cargo-test-pipeline
@@ -13,6 +60,9 @@ spec:
     - name: COMPILE_FLAGS
       type: array
       default: []
+    - name: RELEASE_TEST
+      type: string
+      default: "false"
   tasks:
     - name: git-clone
       taskRef:
@@ -31,6 +81,17 @@ spec:
           value: ['$(params.COMPILE_FLAGS[*])']
       runAfter:
         - git-clone
+      workspaces:
+        - name: source
+          workspace: source
+    - name: verify-test
+      taskref:
+        name: verifier
+      runAfter:
+        - cargo-build
+      params:
+        - name: RELEASE
+          value: $(params.RELEASE_TEST)
       workspaces:
         - name: source
           workspace: source
@@ -77,3 +138,5 @@ spec:
     - name: COMPILE_FLAGS
       value:
         - "--release"
+    - name: RELEASE_TEST
+      value: "true"
