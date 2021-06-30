@@ -29,7 +29,7 @@ spec:
       description: The path to the source code
       default: "."
     - name: REQUIREMENTS_FILE
-      description: The name of the requirements file inside the source location
+      description: The name of the requirements file inside the source location, with fallback to the requirements file in the root location
       default: "requirements.txt"
   steps:
     - name: unit-test
@@ -37,13 +37,19 @@ spec:
       workingDir: $(workspaces.source.path)
       script: |
         export PATH=$PATH:$HOME/.local/bin
-        if [ -n "$(inputs.params.REQUIREMENTS_FILE)" ] && [ -e "$(inputs.params.REQUIREMENTS_FILE)" ];then
-          pip install -r $(inputs.params.SOURCE_PATH)/$(inputs.params.REQUIREMENTS_FILE)
+
+        if [ -e "$(inputs.params.SOURCE_PATH)"/"$(inputs.params.REQUIREMENTS_FILE)" ];
+        then
+          pip install -r "$(inputs.params.SOURCE_PATH)"/"$(inputs.params.REQUIREMENTS_FILE)"
           pip show pytest || {
-            echo "###\nWarning: Pytest is missing in your requirements\n###";
+            printf "###\nWarning: Pytest is missing in your test requirements file\n###";
             pip install pytest
           }
         else
+          if [ -e "$(inputs.params.REQUIREMENTS_FILE)" ];
+          then
+            pip install -r "$(inputs.params.REQUIREMENTS_FILE)"
+          fi
           pip install pytest
         fi
-        pytest $(inputs.params.ARGS) $(inputs.params.SOURCE_PATH)
+        pytest "$(inputs.params.ARGS)" "$(inputs.params.SOURCE_PATH)"
