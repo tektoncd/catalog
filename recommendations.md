@@ -315,3 +315,20 @@ it already exists, nothing happens.
 
 This technique can be used to "short circuit" work when it is not
 necessary to _re-run_.
+
+## Provide "tekton.dev/platforms" annotation
+
+`tekton.dev/platforms` annotation indicates on which platforms (for
+instance, "linux/amd64,linux/arm64" or "windows/amd64") resource can
+be run.
+The most reliable option to verify the platform list is to run the
+e2e tests provided with the resource. Minimal requirement is to use
+the container image, which has support for corresponding platform.
+
+Add `Platforms` section into the README.md of the corresponding resource.
+If running of the resource on specific platform requires to use another
+image or do other customization, it should be also mentioned in the section.
+
+If you don't know, which platforms to specify, good start is to use
+"linux/amd64", as it is most popular platform and most likely the tests,
+you've done, were on top of it.
