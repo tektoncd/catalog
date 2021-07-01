@@ -77,14 +77,18 @@ spec:
     - name: URL
       description: URL of the created deployment.
 
+  volumes:
+  - name: githubtoken
+    secret:
+      secretName: $(params.GITHUB_TOKEN_SECRET_NAME)
+
   steps:
     - name: open-pr
+      volumeMounts:
+        - name: githubtoken
+          readOnly: true
+          mountPath: /etc/github-open-pr
       env:
-        - name: GITHUBTOKEN
-          valueFrom:
-            secretKeyRef:
-              name: $(params.GITHUB_TOKEN_SECRET_NAME)
-              key: $(params.GITHUB_TOKEN_SECRET_KEY)
         - name: PULLREQUEST_NUMBER_PATH
           value: $(results.NUMBER.path)
         - name: PULLREQUEST_URL_PATH
@@ -100,6 +104,8 @@ spec:
         import os
         import http.client
 
+        github_token = open("/etc/github-open-pr/$(params.GITHUB_TOKEN_SECRET_KEY)", "r").read()
+
         open_pr_url = "$(params.API_PATH_PREFIX)" + "/repos/$(params.REPO_FULL_NAME)/pulls"
 
         data = {
@@ -111,7 +117,7 @@ spec:
         print("Sending this data to GitHub: ")
         print(data)
 
-        authHeader = "$(params.AUTH_TYPE) " + os.environ["GITHUBTOKEN"]
+        authHeader = "$(params.AUTH_TYPE) " + github_token
 
         # This is for our fake github server
         if "$(params.GITHUB_HOST_URL)".startswith("http://"):
