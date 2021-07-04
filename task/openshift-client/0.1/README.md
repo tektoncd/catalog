@@ -22,7 +22,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/op
 
 ### Inputs
 
-* **cluster**: a `cluster`-type `PipelineResource` specifying the target OpenShift cluster to execute the commands against it
+* **source**: a `git`-type `PipelineResource` which holds the files that needs to be applied on the cluster. (_Optional_)
 
 ## ServiceAccount
 
