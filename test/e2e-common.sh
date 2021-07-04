@@ -241,11 +241,19 @@ function test_task_creation() {
             # Create a configmap to make every file under fixture
             # available to the sidecar.
             ${KUBECTL_CMD} -n ${tns} create configmap fixtures --from-file=${taskdir}/tests/fixtures
-            cat <<EOF>>${TMPF}
+            # The task may already have a volumes section and in that case, we
+            # need to append fixtures volume.
+            if [[ -n $(grep "^[[:space:]]\{2,\}volumes:$" ${TMPF}) ]]; then
+              sed -i "s/^[[:space:]]\{2,\}volumes:$/  volumes:\\n    - name: fixtures\\n      configMap:\\n        name: fixtures/g" ${TMPF} 
+            else
+              cat <<EOF >>${TMPF}
   volumes:
   - name: fixtures
     configMap:
       name: fixtures
+EOF
+            fi
+            cat <<EOF >>${TMPF}
   sidecars:
   - image: quay.io/chmouel/go-rest-api-test
     name: go-rest-api
