@@ -1,0 +1,52 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: openshift-client
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/tags: cli
+    tekton.dev/displayName: "openshift client"
+spec:
+  workspaces:
+    - name: manifest-dir
+      optional: true
+      description: >-
+        The workspace which contains kubernetes manifests which we want to apply on the cluster.
+    - name: kubeconfig-dir
+      optional: true
+      description: >-
+        The workspace which contains the the kubeconfig file if in case we want to run the oc command on another cluster.
+  description: >-
+    This task runs commands against the cluster provided by user
+    and if not provided then where the Task is being executed.
+
+    OpenShift is a Kubernetes distribution from Red Hat which provides oc,
+    the OpenShift CLI that complements kubectl for simplifying deployment
+    and configuration applications on OpenShift.
+
+  params:
+    - name: SCRIPT
+      description: The OpenShift CLI arguments to run
+      type: string
+      default: "oc help"
+    - name: VERSION
+      description: The OpenShift Version to use
+      type: string
+      default: "4.7"
+  steps:
+    - name: oc
+      image: quay.io/openshift/origin-cli:$(params.VERSION)
+      script: |
+        #!/usr/bin/env bash
+
+        [[ "$(workspaces.manifest-dir.bound)" == "true" ]] && \
+        cd $(workspaces.manifest-dir.path)
+
+        [[ "$(workspaces.kubeconfig-dir.bound)" == "true" ]] && \
+        [[ -f $(workspaces.kubeconfig-dir.path)/kubeconfig ]] && \
+        export KUBECONFIG=$(workspaces.kubeconfig-dir.path)/kubeconfig
+
+        $(params.SCRIPT)
