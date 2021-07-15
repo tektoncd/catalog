@@ -244,7 +244,8 @@ function test_task_creation() {
             # The task may already have a volumes section and in that case, we
             # need to append fixtures volume.
             if [[ -n $(grep "^[[:space:]]\{2,\}volumes:$" ${TMPF}) ]]; then
-              sed -i "s/^[[:space:]]\{2,\}volumes:$/  volumes:\\n    - name: fixtures\\n      configMap:\\n        name: fixtures/g" ${TMPF} 
+              sed -i "s/^[[:space:]]\{2,\}volumes:$/  volumes:\\n    - name: fixtures\\n      configMap:\\n        name: fixtures/g" ${TMPF}
+              cat ${TMPF}
             else
               cat <<EOF >>${TMPF}
   volumes:
