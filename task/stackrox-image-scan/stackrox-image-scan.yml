@@ -1,0 +1,45 @@
+apiVersion: tekton.dev/v1beta1
+kind: ClusterTask
+metadata:
+  name: stackrox-image-scan
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/tags: security
+    tekton.dev/displayName: "Scan an image with StackRox/RHACS"
+spec:
+  params:
+    - name: rox_central_endpoint
+      type: string
+      description: Secret containing the address:port tuple for StackRox Central (example - rox.stackrox.io:443)
+    - name: rox_api_token
+      type: string
+      description: Secret containing the StackRox API token with CI permissions
+    - name: image
+      type: string
+      description: Full name of image to scan (example -- gcr.io/rox/sample:5.0-rc1)
+    - name: output_format
+      type: string
+      description:  Output format (json | csv | pretty)
+      default: json
+  steps:
+    - name: rox-image-scan
+      image: centos:8
+      env:
+        - name: ROX_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: $(params.rox_api_token)
+              key: rox_api_token
+        - name: ROX_CENTRAL_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name: $(params.rox_central_endpoint)
+              key: rox_central_endpoint
+      script: |
+        #!/usr/bin/env bash
+        set +x
+        export NO_COLOR="True"
+        curl -k -L -H "Authorization: Bearer $ROX_API_TOKEN" https://$ROX_CENTRAL_ENDPOINT/api/cli/download/roxctl-linux --output ./roxctl  > /dev/null; echo "Getting roxctl" 
+        chmod +x ./roxctl > /dev/null
+        ./roxctl image scan --insecure-skip-tls-verify -e $ROX_CENTRAL_ENDPOINT --image $(params.image) --format $(params.output_format) 
