@@ -1,0 +1,70 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: golang-fuzz
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: fuzz
+    tekton.dev/displayName: "golang fuzz"
+spec:
+  description: >-
+    This Task is Golang task to fuzz Go projects.
+  params:
+    - name: package
+      description: package (and its children) to fuzz
+    - name: target
+      description: fuzz target
+    - name: context
+      description: path to the directory to use as context
+      default: "."
+    - name: version
+      description: golang version to use for fuzzing
+      default: "latest"
+    - name: flags
+      description: flags to use for the test command
+      default: ""
+    - name: GOOS
+      description: running program's operating system target
+      default: "linux"
+    - name: GOARCH
+      description: running program's architecture target
+      default: "amd64"
+    - name: GO111MODULE
+      description: value of module support
+      default: "auto"
+  workspaces:
+    - name: source
+  steps:
+    - name: fuzz
+      image: docker.io/library/golang:$(params.version)
+      env:
+        - name: PACKAGE
+          value: $(params.package)
+        - name: TARGET
+          value: $(params.target)
+        - name: CONTEXT
+          value: $(params.context)
+        - name: VERSION
+          value: $(params.version)
+        - name: FLAGS
+          value: $(params.flags)
+        - name: WORKSPACE_SOURCE_PATH
+          value: $(workspaces.source.path)
+        - name: GOPATH
+          value: /workspace
+        - name: GOOS
+          value: $(params.GOOS)
+        - name: GOARCH
+          value: $(params.GOARCH)
+        - name: GO111MODULE
+          value: $(params.GO111MODULE)
+      script: |
+        SRC_PATH="$GOPATH/src/${PACKAGE}"
+        mkdir -p "$SRC_PATH"
+        cp -R "${WORKSPACE_SOURCE_PATH}"/* "$SRC_PATH"
+        cd "$SRC_PATH" || exit
+        go get golang.org/dl/gotip
+        "${GOPATH}"/bin/gotip download dev.fuzz
+        "${GOPATH}"/bin/gotip test -fuzz="${TARGET}" ${FLAGS}
