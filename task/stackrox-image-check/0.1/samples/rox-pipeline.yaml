@@ -12,9 +12,9 @@ spec:
       description: |
         Full name of image to scan (example -- gcr.io/rox/sample:5.0-rc1)
   tasks:
-    - name: image-scan
+    - name: image-check
       taskRef:
-        name: rox-image-scan
+        name: rox-image-check
         kind: ClusterTask
       params:
         - name: image
@@ -23,5 +23,3 @@ spec:
           value: roxsecrets
         - name: rox_central_endpoint
           value: roxsecrets
-        - name: output_format
-          value: pretty
