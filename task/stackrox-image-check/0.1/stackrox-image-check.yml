@@ -3,13 +3,25 @@ apiVersion: tekton.dev/v1beta1
 kind: ClusterTask
 metadata:
   name: rox-image-check
-  namespace: pipeline-demo
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/tags: security
+    tekton.dev/displayName: "Policy check an image with StackRox/RHACS"
+    tekton.dev/platforms: "linux/amd64"
 spec:
+  description: >-
+    Policy check an image with StackRox/RHACS
+
+    This tasks allows you to check an image against build-time policies
+    and apply enforcement to fail builds.  It's a companion to the
+    stackrox-image-scan task, which returns full vulnerability scan
+    results for an image.
   params:
     - name: rox_central_endpoint
       type: string
       description: |
-        Secret containing the address:port tuple for StackRox Centra)
+        Secret containing the address:port tuple for StackRox Central)
         (example - rox.stackrox.io:443)
     - name: rox_api_token
       type: string

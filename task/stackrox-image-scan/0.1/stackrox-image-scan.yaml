@@ -8,7 +8,14 @@ metadata:
   annotations:
     tekton.dev/tags: security
     tekton.dev/displayName: "Scan an image with StackRox/RHACS"
+    tekton.dev/platforms: "linux/amd64"
 spec:
+  description: >-
+    Scan an image with StackRox/RHACS
+
+    This tasks allows you to return full vulnerability scan results for an image
+    in JSON, CSV, or Pretty format.  It's a companion to the stackrox-image-check task,
+    which checks an image against build-time policies.
   params:
     - name: rox_central_endpoint
       type: string
