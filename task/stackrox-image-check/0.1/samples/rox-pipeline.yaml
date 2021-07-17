@@ -14,7 +14,7 @@ spec:
   tasks:
     - name: image-check
       taskRef:
-        name: rox-image-check
+        name: stackrox-image-check
         kind: ClusterTask
       params:
         - name: image
