@@ -4,7 +4,7 @@ This tasks allows you to return full vulnerability scan results for an image in 
 
 ## Prerequisites
 
-This task requires an active installation of Red Hat Advanced Cluster Security (RHACS) or StackRox.  It also requires configuration of secrets for the Central endpoint and an API token with at least CI privileges.  `samples\rox-secrets.yaml` shows how to create the appropriate secrets.
+This task requires an active installation of [Red Hat Advanced Cluster Security (RHACS)](https://www.redhat.com/en/resources/advanced-cluster-security-for-kubernetes-datasheet) or [StackRox](https://www.stackrox.io/).  It also requires configuration of secrets for the Central endpoint and an API token with at least CI privileges.  `samples\rox-secrets.yaml` shows how to create the appropriate secrets.
 
 ## Install the Task
 
@@ -26,16 +26,16 @@ StackRox/RHACS scans images that have been pushed to a registry.  This enables s
 `samples\rox-pipeline.yaml` is a sample pipeline that takes the image to scan as a parameter.  Calling the task directly looks like this:
 
   tasks:
-  - name: image-scan
-    taskRef:
-      name: rox-image-scan
-      kind: ClusterTask
-    params:
-    - name: image
-      value: docker.io/stackrox/kube-linter:0.2.2
-    - name: rox_api_token
-      value: roxsecrets
-    - name: rox_central_endpoint
-      value: roxsecrets
-    - name: output_format
-      value: pretty
+    - name: image-scan
+        taskRef:
+        name: rox-image-scan
+        kind: ClusterTask
+        params:
+            - name: image
+            value: docker.io/stackrox/kube-linter:0.2.2
+            - name: rox_api_token
+            value: roxsecrets
+            - name: rox_central_endpoint
+            value: roxsecrets
+            - name: output_format
+            value: pretty

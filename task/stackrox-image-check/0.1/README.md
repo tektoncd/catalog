@@ -1,10 +1,10 @@
 # StackRox/Red Hat Advanced Cluster Security Image Scan Task
 
-This tasks allows you to return full vulnerability scan results for an image in JSON, CSV, or Pretty format.  It's a companion to the stackrox-image-check task, which checks an image against build-time policies.
+This tasks allows you to check an image against build-time policies and apply enforcement to fail builds.  It's a companion to the stackrox-image-scan task, which returns full vulnerability scan results for an image.
 
 ## Prerequisites
 
-This task requires an active installation of Red Hat Advanced Cluster Security (RHACS) or StackRox.  It also requires configuration of secrets for the Central endpoint and an API token with at least CI privileges.  `samples\rox-secrets.yaml` shows how to create the appropriate secrets.
+This task requires an active installation of [Red Hat Advanced Cluster Security (RHACS)](https://www.redhat.com/en/resources/advanced-cluster-security-for-kubernetes-datasheet) or [StackRox](https://www.stackrox.io/).  It also requires configuration of secrets for the Central endpoint and an API token with at least CI privileges.  `samples\rox-secrets.yaml` shows how to create the appropriate secrets.
 
 ## Install the Task
 
@@ -17,7 +17,6 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/st
 - **rox_central_endpoint**: Secret containing the address:port tuple for StackRox Central (example - rox.stackrox.io:443)
 - **name: rox_api_token**: Secret containing the StackRox API token with CI permissions
 - **image**: Full name of image to scan (example -- gcr.io/rox/sample:5.0-rc1)
-- **output_format**:  Output format (json | csv | pretty).  This parameter is optional -- if omitted, the default format it JSON.
 
 ## Usage
 
@@ -26,16 +25,16 @@ StackRox/RHACS scans images that have been pushed to a registry.  This enables s
 `samples\rox-pipeline.yaml` is a sample pipeline that takes the image to scan as a parameter.  Calling the task directly looks like this:
 
   tasks:
-  - name: image-scan
-    taskRef:
-      name: rox-image-scan
-      kind: ClusterTask
-    params:
-    - name: image
-      value: docker.io/stackrox/kube-linter:0.2.2
-    - name: rox_api_token
-      value: roxsecrets
-    - name: rox_central_endpoint
-      value: roxsecrets
-    - name: output_format
-      value: pretty
+    - name: image-check
+      taskRef:
+        name: rox-image-check
+        kind: ClusterTask
+      params:
+        - name: image
+          value:  docker.io/stackrox/kube-linter:0.2.2
+        - name: rox_api_token
+          value: roxsecrets
+        - name: rox_central_endpoint
+          value: roxsecrets
+
+If the image fails one or more enforced policies, this task will return a failure, causing the build to fail.
