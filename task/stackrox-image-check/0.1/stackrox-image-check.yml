@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: ClusterTask
 metadata:
-  name: rox-image-check
+  name: stackrox-image-check
   labels:
     app.kubernetes.io/version: "0.1"
   annotations:
