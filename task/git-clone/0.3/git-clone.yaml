@@ -6,6 +6,7 @@ metadata:
     app.kubernetes.io/version: "0.3"
   annotations:
     tekton.dev/pipelines.minVersion: "0.21.0"
+    tekton.dev/categories: Git
     tekton.dev/tags: git
     tekton.dev/displayName: "git clone"
 spec:

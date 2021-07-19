@@ -6,6 +6,7 @@ metadata:
     app.kubernetes.io/version: "0.4"
   annotations:
     tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/categories: Image Build
     tekton.dev/tags: image-build
     tekton.dev/displayName: "Build and upload container image using Kaniko"
 spec:

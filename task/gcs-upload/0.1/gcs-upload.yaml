@@ -6,6 +6,7 @@ metadata:
     app.kubernetes.io/version: "0.1"
   annotations:
     tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Cloud, Storage
     tekton.dev/tags: cloud, gcs
     tekton.dev/displayName: "Upload to GCS"
 spec:

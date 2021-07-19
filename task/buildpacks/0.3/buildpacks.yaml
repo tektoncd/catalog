@@ -6,6 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/version: "0.3"
   annotations:
+    tekton.dev/categories: Image Build
     tekton.dev/pipelines.minVersion: "0.17.0"
     tekton.dev/tags: image-build
     tekton.dev/displayName: "Buildpacks"

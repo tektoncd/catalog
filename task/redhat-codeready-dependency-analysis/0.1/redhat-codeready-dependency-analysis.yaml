@@ -6,6 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/version: "0.1"
   annotations:
+    tekton.dev/categories: Security
     tekton.dev/pipelines.minVersion: "0.19.0"
     tekton.dev/tags: Security, Vulnenrability, CVE
     tekton.dev/displayName: "RedHat CodeReady Dependency Analysis"

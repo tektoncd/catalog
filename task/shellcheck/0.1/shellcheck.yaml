@@ -6,6 +6,7 @@ metadata:
     app.kubernetes.io/version: "0.1"
   annotations:
     tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Code Quality
     tekton.dev/tags: linter
     tekton.dev/displayName: "Shellcheck"
 spec:
