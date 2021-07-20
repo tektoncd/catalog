@@ -25,6 +25,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/he
 
 * **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md) containing the helm chart.
 
+#### Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x`, `linux/arm64` and `linux/ppc64le` platforms.
+
 ## Usage
 
 ### PipelineRun
