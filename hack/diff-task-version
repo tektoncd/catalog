@@ -1,0 +1,114 @@
+#!/usr/bin/env bash
+# Chmouel Boudjnah <chmouel@chmouel.com>
+#
+# Using github.com/cli/cli it takes a PR URL as first argument and check
+# it out.
+# 
+# It will then detect automatically the old and new version and post a
+# comment to the PR with the diff and copy it in your clipboard (with
+# xclip on Linux and pbcopy on OSX)
+
+
+set -euf
+
+cd "$GOPATH/src/github.com/tektoncd/catalog"
+
+# by default autodetect, set it up here if you like
+upstream=
+
+# Wether to delete the checkout branch, set it to yes or use the -d option
+deletecheckout=
+
+# Wether to create a issue comment on PR
+nocreatepr=
+
+currentbranch=$(git symbolic-ref -q HEAD);currentbranch=${currentbranch#refs/heads/}
+
+if git --no-pager remote |grep -q upstream;then
+    upstream=upstream
+elif [[ -z ${upstream} ]];then
+    upstream=origin
+fi
+
+type -p gh >/dev/null 2>/dev/null || {
+    echo "we need https://github.com/cli/cli installed"
+    exit 1
+}
+
+while getopts "dn" o; do
+    case "${o}" in
+        n)
+            nocreatepr=yes
+            ;;
+        d)
+            deletecheckout="yes"
+            ;;
+        *)
+            echo "Invalid option: ${OPTARG}"; exit 1;
+            ;;
+    esac
+done
+shift $((OPTIND-1))
+
+
+PR=${1}
+
+[[ ${PR} != *tektoncd/catalog/pull* ]] && {
+    echo "i need the first argument to be a tekton/catalog PR, ie.: https://github.com/tektoncd/catalog/pull/1"
+    exit 1
+}
+
+
+gh pr checkout "${PR}" 
+
+newbranch=$(git symbolic-ref -q HEAD);newbranch=${newbranch#refs/heads/}
+
+changed_task_version=$(git diff-tree --no-commit-id --name-only -r \
+                           $(git rev-parse --abbrev-ref HEAD)|grep '^task/'| \
+                           sed 's,\([^/]*/[^/]*/[^/]*\).*,\1,'|sort -u)
+
+if [[ -z ${changed_task_version} ]];then
+    echo "Not a commit with a change in task"
+    exit 0
+fi
+
+check_if_task_version_on_main=$(git ls-tree -r ${upstream}/main --name-only ${changed_task_version} || true)
+if [[ -n ${check_if_task_version_on_main} ]];then
+    echo "Not a new version, since '${changed_task_version}' is already in main"
+    exit 0
+fi
+
+if [[ $(basename ${changed_task_version})  == 0.1 ]];then
+    echo "New task 0.1, skipping the diff"
+    exit
+fi
+
+task_name=$(basename $(dirname ${changed_task_version}))
+task_version=$(basename ${changed_task_version})
+
+# previous_task_version=$(ls task/${task_name}|sort -ur|grep '^[0-9]*\.[0-9]*'|grep -v ${task_version} | head -1)
+previous_task_version=$(find task/${task_name} -maxdepth 1 -regex '.*/[0-9]\.[0-9]$' \! -name "${task_version}" -printf "%f\n"|sort -run|head -1)
+
+difffilename=/tmp/catalog-review-${task_name}-${task_version}.diff
+
+copier="/usr/bin/env true"
+type -p xclip >/dev/null 2>/dev/null && copier="xclip -i -selection clipboard"
+type -p pbcopy >/dev/null 2>/dev/null && copier=pbcopy
+
+(
+    echo "<details><summary>Diff between version ${previous_task_version} and ${task_version}</summary>"
+    echo
+    echo "\`\`\`diff"
+    diff -urN task/${task_name}/${previous_task_version} task/${task_name}/${task_version} 
+    echo "\`\`\`"
+    echo
+    echo "</details>"
+)| tee ${difffilename} | ${copier}
+
+echo "Paste copied in your clipboard"
+[[ -z ${nocreatepr}]] && gh pr comment -F ${difffilename}
+    
+if [[ -n ${deletecheckout} && ${newbranch} != ${currentbranch} ]];then
+    git checkout ${currentbranch}
+    git branch -D ${newbranch}
+fi
