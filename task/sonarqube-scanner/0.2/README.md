@@ -4,12 +4,12 @@ SonarQube™ is the leading tool for continuously inspecting the Code Quality an
 
 The following task can be used to perform static analysis on the source code provided the SonarQube server is hosted.
 
-For creating your own `sonar-project.properties` please follow the guide [here](https://docs.sonarqube.org/latest/analysis/analysis-parameters/). Sample properties file can be found [here](./samples/sonar-project.properties)
+For creating your own `sonar-project.properties` please follow the guide [here](https://docs.sonarqube.org/latest/analysis/analysis-parameters/). Sample properties file can be found [here](./examples/sonar-project.properties)
 
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/sonarqube-scanner/0.1/sonarqube-scanner.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/sonarqube-scanner/0.2/sonarqube-scanner.yaml
 ```
 
 ## Pre-requisite
@@ -29,7 +29,7 @@ https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/git/git-clone.yaml
 
 ## Workspaces
 
-- **source-dir**: `PersistentVolumeClaim`-type so that volume can be shared among git-clone and sonarqube task. Sample PVC can be found [here](../0.1/samples/pvc.yaml)
+- **source-dir**: `PersistentVolumeClaim`-type so that volume can be shared among git-clone and sonarqube task. Sample PVC can be found [here](../0.2/samples/pvc.yaml)
 - **sonar-settings**: To mount the `sonar-project.properties` via the `ConfigMap`. (_Default_ : `emptyDir:{}`)
 
   To mount via the `ConfigMap`:
@@ -37,7 +37,22 @@ https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/git/git-clone.yaml
   ```
   kubectl create configmap sonar-properties --from-file="sonar-project.properties"
   ```
-  
+- **sonar-secret**
+  To create secret for sonar login
+  ```bash
+  kubectl create secret generic sonar-login --from-literal=token=$TOKEN
+  ```
+- **sonar-ca-certs**
+Example secret
+```yaml
+apiVersion: v1
+data:
+  cert.cer: ""# cert in base64 format
+kind: Secret
+metadata:
+  name: sonar-certificate-crt
+type: Opaque
+```
 
 ## Running SonarQube Server locally using Docker
 
@@ -58,9 +73,9 @@ Sample IPAddress we will obtain using above command is like http://172.17.0.2:90
 ## Usage
 
 1. `sonar-project.properties` present in Github Repository. For example :- following [repo](https://github.com/vinamra28/sonartest) contains the properties file and Sonar Host URL needs to be updated via the `params`.
-   The sample run for this scenario can be found [here](../0.1/samples/run.yaml)
+   The sample run for this scenario can be found [here](../0.2/samples/run.yaml).
 
-2. In case when no `sonar-project.properties` file is present then above two parameters are mandatory to create a `sonar-project.properties` file with the required fields or the file can be mounted via the `ConfigMap`.
+2. In case when no `sonar-project.properties` file is present then above two parameters are mandatory to create a `sonar-project.properties` file with the required fields, or the file can be mounted via the `ConfigMap`.
 
 ```yaml
 ---
@@ -115,4 +130,51 @@ spec:
         claimName: sonar-source-pvc
     - name: sonar-settings
       emptyDir: {}
+```
+
+### Custom CA certs and Sonar login
+
+```yaml
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: sonarqube-pipeline
+spec:
+  workspaces:
+    # Other workspaces...
+    - name: sonar-ca-certs
+    - name: sonar-secret
+  tasks:
+    # Other tasks...
+    - name: code-analysis
+      taskRef:
+        name: sonarqube-scanner
+      params:
+        - name: SONAR_HOST_URL
+          value: http://172.17.0.2:9000
+        - name: SONAR_PROJECT_KEY
+          value: testapp
+      workspaces:
+        # Other workspaces...
+        - name: sonar-ca-certs
+          workspace: sonar-ca-certs
+        - name: sonar-secret
+          workspace: sonar-secret
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: sonarqube-run
+spec:
+  pipelineRef:
+    name: sonarqube-pipeline
+  workspaces:
+    # ... other workspaces
+    - name: sonar-ca-certs
+      secret:
+        secretName: sonar-certificate-crt
+    - name: sonar-secret
+      secret:
+        secretName: sonar-login
 ```
