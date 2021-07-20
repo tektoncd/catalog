@@ -1,0 +1,13 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: ike-delete-run
+spec:
+  serviceAccountName: istio-workspace
+  taskRef:
+    name: ike-delete
+  params:
+    - name: target
+      value: ratings-v1
+    - name: session
+      value: $(params.git-pr-head-ref)
