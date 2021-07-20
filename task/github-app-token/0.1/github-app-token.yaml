@@ -65,7 +65,12 @@ spec:
         from jwcrypto import jwk, jwt
 
         EXPIRE_MINUTES_AS_SECONDS = int(os.environ.get('GITHUBAPP_TOKEN_EXPIRATION_MINUTES', 10)) * 60
-        # TODO support github enteprise
+
+        # GitHub Enterprise User
+        # HOST_URL = ""
+        # GITHUB_API_URL = f"{HOST_URL}/api/v3"
+
+        # GitHub User
         GITHUB_API_URL = "https://api.github.com"
 
 
