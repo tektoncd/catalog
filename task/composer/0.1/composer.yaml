@@ -1,0 +1,42 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: composer
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: build-tool
+    tekton.dev/displayName: "composer"
+spec:
+  description: >-
+    This task can be used to install composer packages on a project.
+
+    This task can be used to install composer packages on a project
+    where a composer.json file is present.
+  workspaces:
+    - name: source
+  params:
+    - name: PATH_CONTEXT
+      type: string
+      default: "."
+      description: The path where composer.json of the project is defined.
+    - name: IMAGE
+      type: string
+      default: "composer:latest"
+      description: "The composer image you want to use."
+    - name: ARGS
+      type: array
+      default: ["install"]
+      description: The command to execute
+  steps:
+    - name: composer-install
+      image: $(params.IMAGE)
+      command:
+        - "composer"
+      args:
+        - $(params.ARGS)
+      workingDir: $(workspaces.source.path)/$(params.PATH_CONTEXT)
+      env:
+        - name: CI
+          value: "true"
