@@ -1,0 +1,29 @@
+# PipelineRun for starting pipeline
+# Make sure Workspace is attached and Secret is created,
+# also configure 'pre-task-setup' and 'post-task-setup' tasks before running the pipeline.
+# refer examples from samples
+
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: redhat-codeready-dependency-analysis-pipeline
+spec:
+  pipelineRef:
+    name: redhat-codeready-dependency-analysis-pipeline
+  workspaces:
+    - name: output
+      persistentvolumeclaim:
+        claimName: output
+
+# Change link to git_url and manifest-file-name according to target repository
+  params:
+    - name: file_url
+      value: {{MANIFEST_FILE_URL}} # Replace it with URL of manifest file to be scanned for demo.
+    - name: pkg-installation-directory-path
+      value: site-package
+    - name: manifest-file-path
+      value: requirements.txt
+    - name: output-file-path
+      value: redhat-codeready-dependency-analysis-report.json
+    - name: image
+      value: ghcr.io/fabric8-analytics/crda-python:3.7

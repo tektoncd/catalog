@@ -1,0 +1,24 @@
+# Stand alone redhat-codeready-dependency-analysis task run
+# Make sure manifest file is in place and dependencies are already installed inwo workspace.
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: redhat-codeready-dependency-analysis-task
+spec:
+  taskRef:
+    name: redhat-codeready-dependency-analysis
+
+  workspaces:
+    - name: output
+      persistentvolumeclaim:
+        claimName: output
+
+  params:
+    - name: manifest-file-path
+      value: requirements.txt
+    - name: output-file-path
+      value: redhat-codeready-dependency-analysis-report.json
+    - name: pkg-installation-directory-path
+      value: site-package
+    - name: image
+      value: ghcr.io/fabric8-analytics/crda-python:3.7
