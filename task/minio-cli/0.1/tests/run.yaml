@@ -1,0 +1,16 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: run-minio-cli
+spec:
+  params:
+  - name: server-url
+    value: "https://play.min.io"
+  - name: server-alias
+    value: "mco"
+  - name: key-tokens
+    value: "key-tokens"
+  - name: cli-command
+    value: "ls"
+  taskRef:
+    name: minio-cli
