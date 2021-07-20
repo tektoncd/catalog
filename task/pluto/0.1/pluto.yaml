@@ -1,0 +1,53 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: pluto
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: Deprecation, Kubernetes, APIVersions
+    tekton.dev/displayName: "Pluto"
+spec:
+  description: >-
+    This task makes it possible to use Pluto within your Tekton pipelines.
+    Pluto is a tool by Fairwinds to help users find deprecated and removed Kubernetes apiVersions.
+  workspaces:
+    - name: source
+      description: A workspace that contains fetched git repo.
+  params:
+    - name: manifest
+      type: string
+      description: path to manifest file or manifest directory
+      default: "."
+    - name: output_format
+      type: string
+      description: format in which report will be generated. (normal|wide|custom|json|yaml|markdown) (default "normal")
+      default: "normal"
+    - name: args
+      type: array
+      description: args
+      default: []
+  steps:
+    - name: dep-version
+      image: quay.io/fairwinds/pluto:v4.2@sha256:f2e0a0f617a3bd5627dc08fa8f52465d29f86fcca138bb9d57aebef49343c883
+      workingDir: $(workspaces.source.path)
+      script: |
+        if [ -d "$(params.manifest)" ]
+        then
+          RESULT=$(/pluto detect-files -d "$(params.manifest)" -o "$(params.output_format)" "$@")
+        else
+          RESULT=$(/pluto detect "$(params.manifest)" -o "$(params.output_format)" "$@")
+        fi
+
+        EXIT_CODE="$?"
+        if [ "$EXIT_CODE" -eq 0 ]
+        then
+          echo "No deprecated or removed API versions found"
+          exit $EXIT_CODE
+        else
+          echo "$RESULT"
+          exit $EXIT_CODE
+        fi
+      args:
+        - $(params.args)
