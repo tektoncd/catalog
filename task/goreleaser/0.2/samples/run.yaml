@@ -1,0 +1,72 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: gorelease-pipeline
+spec:
+  workspaces:
+    - name: shared-workspace
+  params:
+    - name: url
+      description: git url to clone
+    - name: revision
+      description: revision branch to checkout
+    - name: package
+      description: package to release
+      default: github.com/tektoncd/cli
+    - name: github-token-secret
+      description: name of the secret holding the github-token
+      default: bot-token-github
+    - name: github-token-secret-key
+      description: name of the key for the secret holding the github-token
+      default: bot-token
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: $(params.url)
+        - name: revision
+          value: $(params.revision)
+        - name: deleteExisting
+          value: "true"
+    - name: release
+      runAfter:
+        - fetch-repository
+      taskRef:
+        name: goreleaser
+      params:
+        - name: package
+          value: $(params.package)
+        - name: github-token-secret
+          value: $(params.github-token-secret)
+        - name: github-token-secret-key
+          value: $(params.github-token-secret-key)
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: gorelease-pipeline-run
+spec:
+  pipelineRef:
+    name: gorelease-pipeline
+  workspaces:
+    - name: shared-workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 500Mi
+  params:
+    - name: revision
+      value: "v1.1.1"
+    - name: url
+      value: https://github.com/tektoncd/cli
