@@ -40,6 +40,12 @@ spec:
       storage: 500Mi
 ```
 
+## Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x` and `linux/ppc64le` platforms.
+
+For `linux/s390x` and `linux/ppc64le` platforms specify **MAVEN_IMAGE** parameter with `maven:3.6.3-adoptopenjdk-11` value in TaskRun or PipelineRun.
+
 ## Usage
 
 This Pipeline and PipelineRun runs a Maven build on a particular module in a multi-module maven project
