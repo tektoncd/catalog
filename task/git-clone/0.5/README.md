@@ -22,6 +22,12 @@ clone takes place. This behaviour can be disabled by setting the
   minimum this should include a private key but can also include other common
   files from `.ssh` including `config` and `known_hosts`. It is **strongly**
   recommended that this workspace be bound to a Kubernetes `Secret`.
+
+* **ssl-ca-directory**: An optional workspace to provide custom CA certificates.
+  Like the /etc/ssl/certs path this directory can have any pem or cert files,
+  this uses libcurl ssl capath directive. See this SO answer here
+  https://stackoverflow.com/a/9880236 on how it works.
+
 * **basic-auth**: An optional workspace containing `.gitconfig` and
   `.git-credentials` files. This allows username/password/access token to be
   provided for basic auth.
@@ -50,7 +56,7 @@ clone takes place. This behaviour can be disabled by setting the
 * **httpsProxy**: HTTPS proxy server for SSL requests. (_default_: "")
 * **noProxy**: Opt out of proxying HTTP/HTTPS requests. (_default_: "")
 * **verbose**: Log the commands that are executed during `git-clone`'s operation. (_default_: true)
-* **sparseCheckoutDirectories**: which directories to match or exclude when performing a sparse checkout (_default_: "")
+* **sparseCheckoutDirectories**: Which directories to match or exclude when performing a sparse checkout (_default_: "")
 * **gitInitImage**: The image providing the git-init binary that this Task runs. (_default_: "gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:TODO")
 * **userHome**: The user's home directory. Set this explicitly if you are running the image as a non-root user. (_default_: "/tekton/home")
 

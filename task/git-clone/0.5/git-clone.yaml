@@ -3,7 +3,7 @@ kind: Task
 metadata:
   name: git-clone
   labels:
-    app.kubernetes.io/version: "0.4"
+    app.kubernetes.io/version: "0.5"
   annotations:
     tekton.dev/pipelines.minVersion: "0.21.0"
     tekton.dev/categories: Git
@@ -39,6 +39,11 @@ spec:
         other files in this Workspace are ignored. It is strongly recommended
         to use ssh-directory over basic-auth whenever possible and to bind a
         Secret to this Workspace over other volume types.
+    - name: ssl-ca-directory
+      optional: true
+      description: |
+        A workspace containing CA certificates, this will be used by Git to
+        verify the peer with when fetching or pushing over HTTPS.
   params:
     - name: url
       description: Repository URL to clone from.
@@ -149,6 +154,10 @@ spec:
         value: $(workspaces.basic-auth.bound)
       - name: WORKSPACE_BASIC_AUTH_DIRECTORY_PATH
         value: $(workspaces.basic-auth.path)
+      - name: WORKSPACE_SSL_CA_DIRECTORY_BOUND
+        value: $(workspaces.ssl-ca-directory.bound)
+      - name: WORKSPACE_SSL_CA_DIRECTORY_PATH
+        value: $(workspaces.ssl-ca-directory.path)
       script: |
         #!/usr/bin/env sh
         set -eu
@@ -156,6 +165,7 @@ spec:
         if [ "${PARAM_VERBOSE}" = "true" ] ; then
           set -x
         fi
+
 
         if [ "${WORKSPACE_BASIC_AUTH_DIRECTORY_BOUND}" = "true" ] ; then
           cp "${WORKSPACE_BASIC_AUTH_DIRECTORY_PATH}/.git-credentials" "${PARAM_USER_HOME}/.git-credentials"
@@ -170,6 +180,9 @@ spec:
           chmod -R 400 "${PARAM_USER_HOME}"/.ssh/*
         fi
 
+        if [ "${WORKSPACE_SSL_CA_DIRECTORY_BOUND}" = "true" ] ; then
+           export GIT_SSL_CAPATH="${WORKSPACE_SSL_CA_DIRECTORY_PATH}"
+        fi
         CHECKOUT_DIR="${WORKSPACE_OUTPUT_PATH}/${PARAM_SUBDIRECTORY}"
 
         cleandir() {

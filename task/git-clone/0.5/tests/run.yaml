@@ -80,6 +80,22 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
+  name: git-clone-run-ssl-cadirectory-empty
+spec:
+  workspaces:
+    - name: output
+      emptyDir: {}
+    - name: ssl-ca-directory
+      emptyDir: {}
+  taskRef:
+    name: git-clone
+  params:
+    - name: url
+      value: https://github.com/kelseyhightower/nocode
+---
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
   name: git-clone-run-subdirectory
 spec:
   workspaces:
