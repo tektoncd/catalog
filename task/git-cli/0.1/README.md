@@ -27,6 +27,10 @@ Command that needs to be run can be passed as a script to the task.
 
 * **commit**: The precise commit SHA after git operation is performed.
 
+### Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x` and `linux/ppc64le` platforms.
+
 ### Usage
 
 This task needs authentication to git in order to push after the git operation.
