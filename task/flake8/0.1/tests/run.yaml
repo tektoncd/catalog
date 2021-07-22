@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flake8-example-dir
+data:
+  requirements.txt: |
+    flake8==3.9.2
+  example.py: |
+    def test_add(a, b):
+        # unused_var = 12  # Uncomment this line to make it fail
+        return a + b
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: flake8-task-pipeline-run
+spec:
+  pipelineSpec:
+    workspaces:
+      - name: shared-workspace
+    tasks:
+      - name: flake8
+        taskRef:
+          name: flake8
+        params:
+          - name: path
+            value: example.py
+          - name: args
+            value: ["--verbose"]
+        workspaces:
+          - name: source
+            workspace: shared-workspace
+  workspaces:
+    - name: shared-workspace
+      configmap:
+        name: flake8-example-dir
