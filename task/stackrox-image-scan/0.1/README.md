@@ -15,7 +15,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/st
 ## Parameters
 
 - **rox_central_endpoint**: Secret containing the address:port tuple for StackRox Central (example - rox.stackrox.io:443)
-- **name: rox_api_token**: Secret containing the StackRox API token with CI permissions
+- **rox_api_token**: Secret containing the StackRox API token with CI permissions
 - **image**: Full name of image to scan (example -- gcr.io/rox/sample:5.0-rc1)
 - **output_format**:  Output format (json | csv | pretty).  This parameter is optional -- if omitted, the default format it JSON.
 
