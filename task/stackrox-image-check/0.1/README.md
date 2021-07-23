@@ -24,6 +24,7 @@ StackRox/RHACS scans images that have been pushed to a registry.  This enables s
 
 `samples\rox-pipeline.yaml` is a sample pipeline that takes the image to scan as a parameter.  Calling the task directly looks like this:
 
+```yaml
   tasks:
     - name: image-check
       taskRef:
@@ -36,5 +37,6 @@ StackRox/RHACS scans images that have been pushed to a registry.  This enables s
           value: roxsecrets
         - name: rox_central_endpoint
           value: roxsecrets
+```
 
 If the image fails one or more enforced policies, this task will return a failure, causing the build to fail.
