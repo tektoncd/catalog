@@ -1,0 +1,42 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: black
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Code Quality
+    tekton.dev/tags: formatter, python, black
+    tekton.dev/displayName: "Python Black"
+spec:
+  description: >-
+    This task can be used to format Python code
+  workspaces:
+    - name: shared-workspace
+      description: >-
+        The workspace containing python source code which we want to format.
+  params:
+    - name: image
+      description: The container image to use black in
+      default: docker.io/cytopia/black:latest-0.2@sha256:2ec766f1c7e42e6b59c0873ce066fa0a2aa2bf8a80dbc1c40f1566bb539303e0
+    - name: requirements_file
+      description: The name of the requirements file inside the source location
+      default: requirements.txt
+    - name: args
+      type: array
+      description: extra args that needs to be appended
+      default: ["--help"]
+  steps:
+    - name: format-python-code
+      image: $(params.image)
+      workingDir: $(workspaces.shared-workspace.path)
+      script: |
+        export HOME=/tmp/python
+        export PATH=$PATH:/tmp/python/.local/bin
+        if [ -n "$(params.requirements_file)" ] && [ -e "$(params.requirements_file)" ];then
+            python -mpip install --user -r $(params.requirements_file)
+        fi
+        black $@
+      args:
+        - $(params.args)
