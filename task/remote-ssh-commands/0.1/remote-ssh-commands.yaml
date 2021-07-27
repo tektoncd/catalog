@@ -42,7 +42,7 @@ spec:
   steps:
     - name: ssh
       image: docker.io/appleboy/drone-ssh:1.6.1@sha256:8252f5232316d832e14f259ed7b217d8d5f620d4668419d88ed47e1a48c0896a #tag: 1.6.1
-      workingDir: $(workspaces.creds.path)
+      workingDir: $(workspaces.credentials.path)
       script: |
 
         export script="$(params.SSH_SCRIPT)"
