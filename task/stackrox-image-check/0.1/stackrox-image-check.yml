@@ -9,6 +9,7 @@ metadata:
     tekton.dev/tags: security
     tekton.dev/displayName: "Policy check an image with StackRox/RHACS"
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/pipelines.minVersion: "0.18.0"
 spec:
   description: >-
     Policy check an image with StackRox/RHACS
@@ -57,11 +58,11 @@ spec:
         #!/usr/bin/env bash
         set +x
         curl -s -k -L -H "Authorization: Bearer $ROX_API_TOKEN" \
-          https://$ROX_CENTRAL_ENDPOINT/api/cli/download/roxctl-linux \
+          "https://$ROX_CENTRAL_ENDPOINT/api/cli/download/roxctl-linux" \
           --output ./roxctl  \
           > /dev/null
         chmod +x ./roxctl  > /dev/null
         ./roxctl image check \
           $( [ "$(params.insecure-skip-tls-verify)" = "true" ] && \
           echo -n "--insecure-skip-tls-verify") \
-          -e $ROX_CENTRAL_ENDPOINT --image $(params.image)
+          -e "$ROX_CENTRAL_ENDPOINT" --image "$(params.image)"
