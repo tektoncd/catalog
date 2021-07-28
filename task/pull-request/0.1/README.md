@@ -130,6 +130,10 @@ in a vendor agnostic way [with these keys](https://github.com/jenkins-x/go-scm/b
 
 _See [pr-example/comments](../0.1/pr-example/comments) for examples of GitHub comments._
 
+## Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x` and `linux/ppc64le` platforms.
+
 ## Usage
 
 ### Permissions

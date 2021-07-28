@@ -6,9 +6,11 @@ metadata:
   labels:
     app.kubernetes.io/version: "0.1"
   annotations:
+    tekton.dev/categories: Git
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: git
     tekton.dev/displayName: "git cli"
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
 spec:
   description: >-
     This task can be used to perform git operations.

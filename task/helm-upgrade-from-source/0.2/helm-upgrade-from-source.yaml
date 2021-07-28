@@ -6,7 +6,9 @@ metadata:
     app.kubernetes.io/version: "0.2"
   annotations:
     tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Deployment
     tekton.dev/tags: helm
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le,linux/arm64"
 spec:
   description: >-
     These tasks will install / upgrade a helm chart into your Kubernetes /
@@ -32,7 +34,7 @@ spec:
       default: "values.yaml"
     - name: helm_image
       description: "helm image to be used"
-      default: "docker.io/lachlanevenson/k8s-helm:v3.3.4@sha256:e1816be207efbd342cba9d3d32202e237e3de20af350617f8507dc033ea66803" #tag: v3.3.4
+      default: "docker.io/lachlanevenson/k8s-helm@sha256:5c792f29950b388de24e7448d378881f68b3df73a7b30769a6aa861061fd08ae" #tag: v3.6.0
   workspaces:
     - name: source
   steps:

@@ -6,6 +6,7 @@ metadata:
     app.kubernetes.io/version: "0.2"
   annotations:
     tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/categories: Kubernetes
     tekton.dev/tags: CLI, kubectl
     tekton.dev/displayName: "kubernetes actions"
 spec:
