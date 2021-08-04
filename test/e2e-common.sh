@@ -33,6 +33,15 @@ if [ "${BASH_VERSINFO:-0}" -lt 4 ];then
     exit 1
 fi
 
+# Default registry image value to use in this script
+REGISTRY_IMAGE="registry"
+
+# Do the tasks modifications if special PLATFORM value is specified. By default nothing happens.
+if [[ -n ${PLATFORM} ]] && [[ -f "$(dirname $0)/$(echo ${PLATFORM}| tr / -).sh" ]]; then
+        # Load script specific to platform. File name should follow the pattern "os-arch.sh", for instance "linux-s390x.sh".
+        source $(dirname $0)/$(echo ${PLATFORM}| tr / -).sh
+fi
+
 ## Commands
 
 function require_command() {
@@ -86,7 +95,7 @@ print(yaml.dump(data, default_flow_style=False))
 # Add an internal registry as sidecar to a task so we can upload it directly
 # from our tests withouth having to go to an external registry.
 function add_sidecar_registry() {
-    add_sidecars ${1} '{"image":"registry", "name": "registry"}'
+    add_sidecars ${1} "{'image':${REGISTRY_IMAGE}, 'name': 'registry'}"
 }
 
 # Run a secure registry as a sidecar to allow the tasks to push to this registry using the certs.
@@ -166,6 +175,10 @@ function test_yaml_can_install() {
         for ignore in ${TEST_YAML_IGNORES};do
             [[ ${ignore} == "${testname}" ]] && skipit=True
         done
+
+        # In case if PLATFORM env variable is specified, do the tests only for matching tasks
+        [[ -n ${PLATFORM} ]] && [[ $(grep "tekton.dev/platforms" ${runtest} 2>/dev/null) != *"${PLATFORM}"* ]]  && skipit=True
+
         [[ -n ${skipit} ]] && break
         echo "Checking ${testname}"
         ${KUBECTL_CMD} -n ${ns} apply -f <(sed "s/namespace:.*/namespace: task-ns/" "${runtest}")
@@ -224,7 +237,10 @@ function test_task_creation() {
 
         cat ${taskdir}/*.yaml | grep 'tekton.dev/deprecated: \"true\"' && skipit=True
 
-        [[ -n ${skipit} ]] && continue
+        # In case if PLATFORM env variable is specified, do the tests only for matching tasks
+	[[ -n ${PLATFORM} ]] && [[ $(grep "tekton.dev/platforms" ${taskdir}/*.yaml 2>/dev/null) != *"${PLATFORM}"* ]] && skipit=True
+
+	[[ -n ${skipit} ]] && continue
 
         # In case of rerun it's fine to ignore this error
         ${KUBECTL_CMD} create namespace ${tns} >/dev/null 2>/dev/null || :
