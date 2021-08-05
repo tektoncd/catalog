@@ -1,0 +1,51 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: ike-create
+  labels:
+    app.kubernetes.io/version: "0.4"
+  annotations:
+    tekton.dev/displayName: Ike Create
+    tekton.dev/tags: istio, telepresence
+    tekton.dev/pipelines.minVersion: 0.16.0
+spec:
+  description: >-
+    `ike-create` creates a new `session` object for `istio-workspace` and will
+    provide a private route in the cluster for the given target.
+  params:
+    - name: namespace
+      type: string
+      description: Which namespace to target
+      default: $(context.taskRun.namespace)
+    - name: target
+      type: string
+      description: What deployment to target
+    - name: session
+      type: string
+      description: What to call the session
+    - name: route
+      type: string
+      description: How to route
+      default: ""
+    - name: image
+      type: string
+      description: The image to use for the route
+  results:
+    - name: url
+      description: The URL of the new route
+  steps:
+    - name: ike
+      image: quay.io/maistra/istio-workspace:v0.4.0
+      script: |
+        ike_create_cmd="ike create --session $(params.session) --deployment $(params.target) --namespace $(params.namespace) --image $(params.image) --json"
+        if [ -n "$(params.route)" ]; then
+          ike_create_cmd="${ike_create_cmd} --route $(params.route)"
+        fi
+
+        STATE=$(bash -c "${ike_create_cmd}")
+        exit_code=$?
+        if [ $exit_code -ne 0 ]; then
+          echo "${STATE}"
+          exit $exit_code
+        fi
+        echo "${STATE}" | grep \" | cut -d \" -f 2 | uniq | tr -d '\n' > /tekton/results/url
