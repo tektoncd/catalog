@@ -30,6 +30,12 @@ spec:
     - name: user-home
       description: Absolute path to the user's home directory.
       default: /tekton/home
+    - name: ansible-nocolor
+      description: >-
+        Sets the value of the ANSIBLE_NOCOLOR environment
+        variable.  Defaults to `true` as color control
+        codes don't properly render in many cases.
+      default: 'true'
   stepTemplate:
     env:
       - name: HOME
@@ -59,6 +65,9 @@ spec:
     - name: run-playbook
       image: docker.io/ansible/ansible-runner:1.4.6@sha256:bd09ef403f2f90f2c6bd133d7533e939058903f69223c5f12557a49e3aed14bb #tag: 1.4.6
       command: ['entrypoint']
+      env:
+        - name: ANSIBLE_NOCOLOR
+          value: $(params.ansible-nocolor)
       args:
         - ansible-runner
         - run
