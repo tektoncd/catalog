@@ -21,6 +21,7 @@ tkn task ls
 * **project-dir**: The ansible-runner private data dir
 * **args:**: The array of arguments to pass to the runner command (_default:_ --help)
 * **user-home**: Absolute path to the user's home directory. (_default:_ /tekton/home)
+* **ansible-nocolor**: Sets the ANSIBLE_NOCOLOR environment variable. (_default:_ true)
 
 ## Workspaces
 
