@@ -7,7 +7,7 @@ Ansible Runner Task allows running the Ansible Playbooks using the [ansible-runn
 Create the Task and other resources:
 
 ```shell
-kubectl apply --filename https://raw.githubusercontent.com/tektoncd/catalog/main/task/ansible-runner/0.1/ansible-runner.yaml
+kubectl apply --filename https://raw.githubusercontent.com/tektoncd/catalog/main/task/ansible-runner/0.2/ansible-runner.yaml
 ```
 
 Verify the created tasks:
@@ -41,7 +41,7 @@ All the examples will be run in namespace called `funstuff`. Create the namespac
 
 ```shell
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.1/git-clone.yaml \
-  -f  https://raw.githubusercontent.com/tektoncd/catalog/main/task/ansible-runner/0.1/support/playbooks-pvc.yaml
+  -f  https://raw.githubusercontent.com/tektoncd/catalog/main/task/ansible-runner/0.2/support/playbooks-pvc.yaml
 ```
 
 Do the git clone of the examples repository:
@@ -60,7 +60,7 @@ tkn task start git-clone \
 As we will do get, list and create on the namespace, lets use a service account that has right RBAC:
 
 ```shell
-kubectl apply -f  https://raw.githubusercontent.com/tektoncd/catalog/main/task/ansible-runner/0.1/support/ansible-deployer.yaml
+kubectl apply -f  https://raw.githubusercontent.com/tektoncd/catalog/main/task/ansible-runner/0.2/support/ansible-deployer.yaml
 ```
 
 ### Run Tasks
@@ -71,7 +71,7 @@ List the pods of `kube-system` namespace:
  tkn task start ansible-runner \
    --serviceaccount ansible-deployer-account \
    --param=project-dir=kubernetes \
-   --param=args=-p, list-pods.yml \
+   --param=args='-p list-pods.yml' \
    --workspace=name=runner-dir,claimName=ansible-playbooks \
    --showlog
 ```
@@ -84,7 +84,7 @@ Create a deployment in  `funstuff` namespace:
  tkn task start ansible-runner \
    --serviceaccount ansible-deployer-account \
    --param=project-dir=kubernetes \
-   --param=args=-p create-deployment.yml \
+   --param=args='-p create-deployment.yml' \
    --workspace=name=runner-dir,claimName=ansible-playbooks \
    --showlog
 ```
