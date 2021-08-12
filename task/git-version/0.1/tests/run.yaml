@@ -1,0 +1,69 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: git-version-test
+spec:
+  workspaces:
+    - name: shared-workspace
+  tasks:
+    - name: git-fetch-all
+      taskRef:
+        name: git-cli
+      params:
+      # we need all branches available for git-version
+      - name: GIT_SCRIPT
+        value: |
+          rm -r ./*
+          git clone https://github.com/GijsvanDulmen/git-version-test.git .
+          git fetch --all
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: input
+          workspace: shared-workspace
+    - name: git-version
+      params:
+        - name: branch
+          value: develop
+      runAfter:
+        - git-fetch-all
+      taskRef:
+        name: git-version
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+    - name: check-results-of-git-version
+      runAfter:
+        - git-version
+      params:
+      - name: gitVersion
+        value: $(tasks.git-version.results.gitVersion)
+      - name: packageVersion
+        value: $(tasks.git-version.results.packageVersion)
+      taskSpec:
+        params:
+        - name: gitVersion
+        - name: packageVersion
+        steps:
+          - name: test-git-version
+            image: ubuntu
+            script: |
+              #!/usr/bin/env bash
+              echo $(params.gitVersion)
+              echo $(params.packageVersion)
+
+              [[ "$(params.gitVersion)" == "0.1.0-alpha.0" ]] && exit 0 || exit 1
+              [[ "$(params.packageVersion)" == "0.1.0-alpha.0" ]] && exit 0 || exit 1
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: git-version-test-run
+spec:
+  pipelineRef:
+    name: git-version-test
+  workspaces:
+    - name: shared-workspace
+      persistentvolumeclaim:
+        claimName: git-version-pvc

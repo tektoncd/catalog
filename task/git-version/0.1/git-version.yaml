@@ -1,0 +1,51 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: git-version
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.0"
+    tekton.dev/displayName: "git version"
+    tekton.dev/categories: Git
+    tekton.dev/tags: git
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
+spec:
+  description: >-
+    This task can be used to create a version from git history
+  params:
+    - description: branch to checkout to create a version for e.g. "develop"
+      name: branch
+      type: string
+  results:
+    - description: The calculated git version you could use for git tagging e.g. "0.1.0-tektonize.1-188"
+      name: gitVersion
+    - description: A normalized version for use in container images e.g. "0.1.0-tektonize.1-188"
+      name: packageVersion
+  steps:
+    - image: mcr.microsoft.com/dotnet/sdk:3.1-focal@sha256:1d31e2582f69920c3a6ea9498bb7da285baffbca7ea84d90d9e5b545604cc92d
+      name: set-git-version
+      workingDir: $(workspaces.source.path)
+      securityContext:
+        runAsUser: 0
+      env:
+        - name: PARAM_BRANCH
+          value: $(params.branch)
+      script: |
+        #!/usr/bin/env bash
+        export PATH="$PATH:/tekton/home/.dotnet/tools"
+        dotnet tool install GitVersion.Tool --version 5.5.0 --tool-path "/tekton/home/.dotnet/tools"
+
+        git checkout "${PARAM_BRANCH}"
+
+        export GITVERSION=$(dotnet gitversion /showvariable FullSemVer)
+        echo -n "${GITVERSION}" | tee $(results.gitVersion.path)
+
+        # normalize a bit because
+        # image tags can only contain `abcdefghijklmnopqrstuvwxyz0123456789_-.ABCDEFGHIJKLMNOPQRSTUVWXYZ`
+        export PACKAGEVERSION=$(echo -n $GITVERSION | sed 's/[^-._0-9A-Za-z]/-/g')
+        echo -n "${PACKAGEVERSION}" | tee $(results.packageVersion.path)
+  workspaces:
+    - name: source
+      description: A workspace that contains the fetched git repository to create a version for.
