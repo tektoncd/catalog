@@ -6,6 +6,7 @@ metadata:
     app.kubernetes.io/version: "0.2"
   annotations:
     tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/categories: CLI
     tekton.dev/tags: cli
     tekton.dev/displayName: "aws cli"
 spec:

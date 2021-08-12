@@ -1,0 +1,60 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: golang-fuzz-pipeline
+spec:
+  params:
+    - name: package
+      type: string
+      default: "github.com/jerop/fuzzton"
+    - name: target
+      type: string
+      default: "FuzzIsSSTP"
+    - name: flags
+      type: string
+      default: "-fuzztime 100x"
+  workspaces:
+    - name: workarea
+      description: The workspace where the repo will be cloned
+  results:
+    - name: commit-sha
+      description: the sha of the commit that was used
+      value: $(tasks.clone.results.commit)
+  tasks:
+    - name: clone
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: workarea
+          subpath: git
+      params:
+        - name: url
+          value: https://$(params.package)
+    - name: fuzz
+      runAfter: [clone]
+      taskRef:
+        name: golang-fuzz
+      params:
+        - name: package
+          value: $(params.package)
+        - name: target
+          value: $(params.target)
+        - name: flags
+          value: $(params.flags)
+      workspaces:
+        - name: source
+          workspace: workarea
+          subpath: git
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: golang-fuzz-pipeline-run
+spec:
+  pipelineRef:
+    name: golang-fuzz-pipeline
+  workspaces:
+    - name: workarea
+      persistentvolumeclaim:
+        claimName: golang-source-pvc

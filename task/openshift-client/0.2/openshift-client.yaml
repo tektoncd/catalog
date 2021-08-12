@@ -6,6 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/version: "0.2"
   annotations:
+    tekton.dev/categories: Openshift
     tekton.dev/pipelines.minVersion: "0.17.0"
     tekton.dev/tags: cli
     tekton.dev/displayName: "openshift client"

@@ -6,6 +6,7 @@ metadata:
     app.kubernetes.io/version: "0.1"
   annotations:
     tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Developer Tools
     tekton.dev/tags: ssh, ssh remote
     tekton.dev/displayName: "ssh remote commands"
 spec:
@@ -41,7 +42,7 @@ spec:
   steps:
     - name: ssh
       image: docker.io/appleboy/drone-ssh:1.6.1@sha256:8252f5232316d832e14f259ed7b217d8d5f620d4668419d88ed47e1a48c0896a #tag: 1.6.1
-      workingDir: $(workspaces.creds.path)
+      workingDir: $(workspaces.credentials.path)
       script: |
 
         export script="$(params.SSH_SCRIPT)"

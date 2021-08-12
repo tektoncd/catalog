@@ -23,6 +23,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/he
 - **overwrite_values**: The values to be overwritten (*default: ""*)
 - **helm_image**: The helm image which should be used (default: lachlanevenson/k8s-helm:v3.5.0)
 
+#### Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x`, `linux/arm64` and `linux/ppc64le` platforms.
+
 ## Usage
 
 ### PipelineRun
