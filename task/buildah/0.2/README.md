@@ -36,6 +36,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/bu
 * **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md) containing the source to build.
 * **sslcertdir**: An [*optional* Workspace](https://github.com/tektoncd/pipeline/blob/v0.17.0/docs/workspaces.md#optional-workspaces) containing your custom SSL certificates to connect to the registry. Buildah will look for files ending with *.crt, *.cert, *.key into this workspace. See [this sample](./samples/openshift-internal-registry.yaml) for a complete example on how to use it with OpenShift internal registry.
 
+## Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x`, `linux/arm64` and `linux/ppc64le` platforms.
+
 ## Usage
 
 This TaskRun runs the Task to fetch a Git repo, and build and push a container

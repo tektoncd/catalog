@@ -60,6 +60,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/sk
 
   [This](../0.1/samples/quay-secret.yaml) example can help to use secrets for providing credentials of image registries.
 
+## Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x`, `linux/arm64` and `linux/ppc64le` platforms.
+
 ## Usage
 
 This task will use the `Service Account` with access to the secrets containing source and destination image registry credentials, this will authorize it to the respective image registries. 
