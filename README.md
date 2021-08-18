@@ -56,6 +56,7 @@ _See [our project roadmap](roadmap.md)._
 
     annotations:
       tekton.dev/pipelines.minVersion: "0.12.1"        👈 Min Version of pipeline resource is compatible
+      tekton.dev/categories: CLI		        👈 Comma separated list of categories
       tekton.dev/tags: "ansible, cli"                  👈 Comma separated list of tags
       tekton.dev/displayName: "Ansible Tower Cli"      👈 displayName can be optional
       tekton.dev/platforms: "linux/amd64,linux/s390x"  👈 Comma separated list of platforms, can be optional
@@ -68,6 +69,8 @@ _See [our project roadmap](roadmap.md)._
       Ansible Tower (formerly ‘AWX’) is a ...
 
   ```
+
+**Note** : Categories are a generalized list and are maintained by Hub. To add new categories, please follow the procedure mentioned [here](https://github.com/tektoncd/hub/blob/main/docs/ADD_NEW_CATEGORY.md).
 
 ## `Task` Kinds
 
