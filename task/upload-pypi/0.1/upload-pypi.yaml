@@ -22,6 +22,18 @@ spec:
     description: The repository (package index) to upload the package to.
     default: "https://upload.pypi.org/legacy/"
     type: string
+  - name: SECRET_NAME
+    description: Name of the secret containing the username & password used to upload the package.
+    default: "pypi-secret"
+    type: string
+  - name: SECRET_USERNAME_KEY
+    description: Name of the secret key containing the username.
+    default: "username"
+    type: string
+  - name: SECRET_PASSWORD_KEY
+    description: Name of the secret key containing the password.
+    default: "password"
+    type: string    
 
   workspaces:
   - name: source
@@ -42,13 +54,13 @@ spec:
     - name: TWINE_USERNAME
       valueFrom:
         secretKeyRef:
-          name: pypi-secret
-          key: username
+          name: $(params.SECRET_NAME)
+          key: $(params.SECRET_USERNAME_KEY)
     - name: TWINE_PASSWORD
       valueFrom:
         secretKeyRef:
-          name: pypi-secret
-          key: password
+          name: $(params.SECRET_NAME)
+          key: $(params.SECRET_PASSWORD_KEY)
     script: |
       twine upload --disable-progress-bar dist/*
       # Now write out all our results, stripping newlines.
