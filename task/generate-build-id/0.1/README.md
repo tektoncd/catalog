@@ -74,7 +74,7 @@ spec:
           value: "$(tasks.get-build-id.results.build-id)"
 ```
 As can be seen from the example the first task generates the build id while the second task consumes the generated build id.
-In the task to generate the build id, we override the default value of `base-version` using the value of the `service-version` pipeline parameter that has currentluy been set to a default value of 3.1.1.
+In the task to generate the build id, we override the default value of `base-version` using the value of the `service-version` pipeline parameter that has currently been set to a default value of 3.1.1.
 In the task to build the service api, we then pass the generated build from the first task as its input param called `build-id`.
 For the sake of completeness, here is what the task to build the service api (`build-service-api.yaml`) looks like:
 
