@@ -1,0 +1,39 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: gradle
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Build Tools
+    tekton.dev/tags: build-tool
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
+spec:
+  description: >-
+    This Task can be used to run a Gradle build.
+
+  workspaces:
+    - name: source
+      description: The workspace consisting of the gradle project.
+  params:
+    - name: GRADLE_IMAGE
+      description: Gradle base image.
+      type: string
+      default: gradle:6.9.0-jdk8
+    - name: PROJECT_DIR
+      description: The directory containing build.gradle
+      type: string
+      default: "."
+    - name: TASKS
+      description: 'The gradle tasks to run (default: build)'
+      type: string
+      default: build
+  steps:
+    - name: gradle-tasks
+      image: $(params.GRADLE_IMAGE)
+      workingDir: $(workspaces.source.path)/$(params.PROJECT_DIR)
+      command:
+        - gradle
+      args: 
+        - $(params.TASKS)
