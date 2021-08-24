@@ -21,7 +21,7 @@ spec:
     - name: deleteExisting
       value: "true"
   - name: upload-pypi-run
-    params: 
+    params:
     - name: TWINE_REPOSITORY_URL
       value: 'http://localhost:8080/'
     taskRef:

@@ -33,7 +33,7 @@ spec:
   - name: SECRET_PASSWORD_KEY
     description: Name of the secret key containing the password.
     default: "password"
-    type: string    
+    type: string
   - name: PREBUILD_SCRIPT
     description: Script to execute prior to running setup.py.
     type: string
