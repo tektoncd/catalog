@@ -25,6 +25,13 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/go
 
 * **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md) containing the source to build.
 
+## Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x` and `linux/ppc64le` platforms.
+
+Specify value for `GOARCH` parameter according to the desired target architecture.
+Do not use `-race` flag in `flags` parameter for `linux/s390x` platform.
+
 ## Usage
 
 This TaskRun runs the Task to run unit-tests on

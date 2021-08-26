@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Testing
     tekton.dev/tags: fuzz
     tekton.dev/displayName: "golang fuzz"
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
 spec:
   description: >-
     This Task is Golang task to fuzz Go projects.
