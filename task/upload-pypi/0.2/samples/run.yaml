@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pypi-secret
+type: kubernetes.io/basic-auth
+stringData:
+  username: foo
+  password: bar
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: shared-task-storage
+spec:
+  resources:
+    requests:
+      storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: publish-package-pipeline
+spec:
+  workspaces:
+  - name: shared-workspace
+  tasks:
+  - name: fetch-repository
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: shared-workspace
+    params:
+    - name: url
+      value: https://github.com/pypa/twine.git
+    - name: subdirectory
+      value: ""
+    - name: deleteExisting
+      value: "true"
+
+  - name: upload-pypi-run
+    taskRef:
+      name: upload-pypi
+    workspaces:
+    - name: source
+      workspace: shared-workspace
+    runAfter:
+    - fetch-repository
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: publish-package-pipeline-run
+spec:
+  podTemplate:
+    securityContext:
+      runAsNonRoot: false
+      runAsUser: 0
+  pipelineRef:
+    name: publish-package-pipeline
+  workspaces:
+  - name: shared-workspace
+    persistentVolumeClaim:
+      claimName: shared-task-storage
