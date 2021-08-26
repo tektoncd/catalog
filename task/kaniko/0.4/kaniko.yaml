@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Image Build
     tekton.dev/tags: image-build
     tekton.dev/displayName: "Build and upload container image using Kaniko"
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
 spec:
   description: >-
     This Task builds source into a container image using Google's kaniko tool.
@@ -33,6 +34,9 @@ spec:
   - name: BUILDER_IMAGE
     description: The image on which builds will run (default is v1.5.1)
     default: gcr.io/kaniko-project/executor:v1.5.1@sha256:c6166717f7fe0b7da44908c986137ecfeab21f31ec3992f6e128fff8a94be8a5
+  - name: JQ_IMAGE
+    description: The image to parse digest after the image build.
+    default: docker.io/stedolan/jq@sha256:a61ed0bca213081b64be94c5e1b402ea58bc549f457c2682a86704dd55231e09
   workspaces:
   - name: source
     description: Holds the context and docker file
@@ -61,7 +65,7 @@ spec:
       runAsUser: 0
   - name: write-digest
     workingDir: $(workspaces.source.path)
-    image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/imagedigestexporter:v0.16.2
+    image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/imagedigestexporter:v0.18.0
     # output of imagedigestexport [{"key":"digest","value":"sha256:eed29..660","resourceRef":{"name":"myrepo/myimage"}}]
     command: ["/ko-app/imagedigestexporter"]
     args:
@@ -71,6 +75,6 @@ spec:
       runAsUser: 0
   - name: digest-to-results
     workingDir: $(workspaces.source.path)
-    image: docker.io/stedolan/jq@sha256:a61ed0bca213081b64be94c5e1b402ea58bc549f457c2682a86704dd55231e09
+    image: $(params.JQ_IMAGE)
     script: |
       cat $(params.CONTEXT)/image-digested | jq '.[0].value' -rj | tee /tekton/results/IMAGE-DIGEST
