@@ -32,6 +32,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/ka
 * **CONTEXT**: The build context used by Kaniko (_default:_ `./`)
 * **EXTRA_ARGS**: Additional args to pass to the Kaniko executor.
 * **BUILDER_IMAGE**: The Kaniko executor image to use (_default:_ `gcr.io/kaniko-project/executor:v1.5.1`)
+* **JQ_IMAGE**: The image to parse digest after the image build (_default:_ `docker.io/stedolan/jq:latest`)
 
 ## Workspaces
 
@@ -51,6 +52,15 @@ the docker `config.json`.
 
 When using a workspace, the workspace shall be bound to a secret that embeds the
 configuration file in a key called `config.json`.
+
+## Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x` and `linux/ppc64le` platforms.
+
+For `linux/s390x` platform specify `BUILDER_IMAGE` parameter with `gcr.io/kaniko-project/executor:s390x-9ed158c1f63a059cde4fd5f8b95af51d452d9aa7`
+value and `JQ_IMAGE` parameter with `ibmcom/jq-s390x:latest` value  in TaskRun or PipelineRun.
+
+For `linux/ppc64le` platform specify `JQ_IMAGE` parameter with `ibmcom/jq-ppc64le:latest` value  in TaskRun or PipelineRun.
 
 ## Usage
 
