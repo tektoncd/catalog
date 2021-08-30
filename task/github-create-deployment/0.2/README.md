@@ -47,6 +47,10 @@ Token must have `repo_deployment` scope to create deployments. See GitHub's docu
 - **URL**: URL of the created deployment.
 - **STATUSES_URL**: URL of the created deployment status.
 
+### Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x` and `linux/ppc64le` platforms.
+
 ## Usage
 
 This TaskRun creates a GitHub deployment for the given repository.
