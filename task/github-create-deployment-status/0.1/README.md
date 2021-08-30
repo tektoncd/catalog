@@ -41,6 +41,10 @@ Token must have `repo_deployment` scope to create deployment status. See GitHub'
   contains the GitHub token. (_default:_ `github`).
 - **GITHUB_TOKEN_SECRET_KEY**: The key within the Kubernetes Secret that contains the GitHub token. (_default:_ `token`).
 
+### Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x` and `linux/ppc64le` platforms.
+
 ## Usage
 
 This TaskRun creates a status for the given GitHub deployment.
