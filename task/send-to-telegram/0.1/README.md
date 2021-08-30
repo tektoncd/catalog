@@ -38,6 +38,10 @@ kubectl apply -f telegram-bot-token-secret.yaml
 
 * **chat-id**: The ID of the chat to send the message towards. See telegram documentation to get the correct ID.
 
+## Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x` and `linux/ppc64le` platforms.
+
 ## Usage
 
 This TaskRun runs the Task to post a message to the the chat channel.

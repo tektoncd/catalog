@@ -41,6 +41,10 @@ kubectl apply -f webhook-secret.yaml
 
 * **icon-emoji**: The emoji to use for the bot. For example you could import a tekton emoji and use `:tekton:` over here.
 
+## Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x` and `linux/ppc64le` platforms.
+
 ## Usage
 
 This TaskRun runs the Task to post a message to the channel that the webhook URL is associated with.
