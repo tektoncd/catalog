@@ -15,7 +15,7 @@ kind: PipelineRun
 metadata:
   name: results-pipeline-run
   labels:
-    app.kubernetes.io/description: A PipelineRun configured to demonstrate usage of task results.
+    app.kubernetes.io/description: "A PipelineRun configured to demonstrate usage of task results."
 spec:
   pipelineSpec:
     workspaces:
