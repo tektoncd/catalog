@@ -39,6 +39,10 @@ See GitHub's documentation on [Understanding scopes for OAuth Apps](https://deve
 
 - **input**: The input workspace which contains the file to be uploaded to gist.
 
+### Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x` and `linux/ppc64le` platforms.
+
 ## Usage
 
 The following example will take a file from ConfigMap and

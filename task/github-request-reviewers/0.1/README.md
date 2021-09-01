@@ -42,6 +42,10 @@ for more details.
 
 - **github**: The workspace that contains the github token
 
+### Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x` and `linux/ppc64le` platforms.
+
 ## Usage
 
 This TaskRun requests both users and teams as reviewers:
