@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Messaging
     tekton.dev/tags: messaging
     tekton.dev/displayName: "Send message to Slack Channel"
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
 spec:
   description: >-
     These tasks post a simple message to a slack channel.
@@ -32,7 +33,7 @@ spec:
     default: ':robot_face:'
   steps:
   - name: post
-    image: docker.io/curlimages/curl:7.68.0@sha256:99a8e9629b3ae26efb977e1a98f4786d6bd730c5ab4dea64632e297d7c3e7151 #tag: 7.68.0
+    image: docker.io/curlimages/curl:7.70.0@sha256:031df77a11e5edded840bc761a845eab6e3c2edee22669fb8ad6d59484b6a1c4 #tag: 7.70.0
     script: |
       #!/usr/bin/env sh
       MESSAGE=$(echo "${MESSAGE}" | sed -e 's/\"/\\\\"/g')

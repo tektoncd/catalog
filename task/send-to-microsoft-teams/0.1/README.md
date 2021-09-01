@@ -33,6 +33,10 @@ stringData:
 
 * **message**: Plain text message to be posted in the chat.
 
+## Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x` and `linux/ppc64le` platforms.
+
 ## Usage
 
 This TaskRun runs the Task to post a message to the the teams channel.

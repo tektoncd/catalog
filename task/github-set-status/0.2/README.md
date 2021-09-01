@@ -51,6 +51,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gi
 * **GITHUB_TOKEN_SECRET_KEY** \[optional\]: The key within the kubernetes secret that
   contains the GitHub token. Default value: `token`
 
+### Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x` and `linux/ppc64le` platforms.
+
 ## Usage for Bearer authentication
 
 This TaskRun sets a commit on GitHub to `pending` getting tested by the CI.

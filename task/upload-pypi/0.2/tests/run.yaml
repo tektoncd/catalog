@@ -1,0 +1,45 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: upload-pypi-test-pipeline
+spec:
+  workspaces:
+  - name: shared-workspace
+  tasks:
+  - name: fetch-repository
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: shared-workspace
+    params:
+    - name: url
+      value: 'https://github.com/pypa/sampleproject'
+    - name: subdirectory
+      value: ""
+    - name: deleteExisting
+      value: "true"
+  - name: upload-pypi-run
+    params:
+    - name: TWINE_REPOSITORY_URL
+      value: 'http://localhost:8080/'
+    taskRef:
+      name: upload-pypi
+    workspaces:
+    - name: source
+      workspace: shared-workspace
+    runAfter:
+    - fetch-repository
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: upload-pypi-test-pipeline-run
+spec:
+  pipelineRef:
+    name: upload-pypi-test-pipeline
+  workspaces:
+  - name: shared-workspace
+    persistentvolumeclaim:
+      claimName: upload-pypi-source-pvc

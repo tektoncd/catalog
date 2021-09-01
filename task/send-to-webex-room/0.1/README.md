@@ -38,6 +38,10 @@ kubectl apply -f webex-token-secret.yaml
 
 * **room-id**: The ID of the room to send the message. See [official documentation](https://developer.webex.com/docs/api/v1/rooms/list-rooms) or [medium article](https://medium.com/@ObjectIsAdvantag/everything-you-always-wanted-to-know-about-the-spark-room-id-june16-550a0e65c59d) for help to find your ID.
 
+## Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x` and `linux/ppc64le` platforms.
+
 ## Usage
 
 Example Tekton CLI command
