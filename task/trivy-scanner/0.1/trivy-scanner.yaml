@@ -34,7 +34,6 @@ spec:
       workingDir: $(workspaces.manifest-dir.path)
       script: |
         #!/usr/bin/env sh
-          trivy_args=$*
           cmd="trivy $* $(params.IMAGE_PATH)"
           echo "Running trivy task with command below"
           echo "$cmd"
