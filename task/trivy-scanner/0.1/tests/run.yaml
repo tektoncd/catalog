@@ -1,0 +1,41 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: pipeline-trivy-test
+spec:
+  workspaces:
+    - name: pipeline-pvc
+      optional: false
+  description: Test Pipeline for Trivy
+  tasks:
+    - name: trivy-scan-local-image
+      taskRef:
+        name: trivy-scanner
+        kind: Task
+      params:
+        - name: IMAGE_PATH
+          value: "docker.io/alpine:3.13"
+        - name: ARGS
+          value:
+            - "image"
+            - "--exit-code"
+            - "0"
+      workspaces:
+        - name: manifest-dir
+          workspace: pipeline-pvc
+
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: pipelinerun-trivy-test
+spec:
+  pipelineRef:
+    name: pipeline-trivy-test
+  timeout: 1h0m0s
+  workspaces:
+    - name: pipeline-pvc
+      persistentVolumeClaim:
+        claimName: pvc-trivy-test
