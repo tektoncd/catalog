@@ -1,3 +1,4 @@
+---
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
@@ -11,8 +12,9 @@ metadata:
     tekton.dev/displayName: "trivy scanner"
 spec:
   description: >-
-    Trivy is a simple and comprehensive scanner for vulnerabilities in container images, 
-    file systems, and Git repositories, as well as for configuration issues.
+    Trivy is a simple and comprehensive scanner for
+    vulnerabilities in container images,file systems
+    ,and Git repositories, as well as for configuration issues.
 
     This task can be used to scan for vulnenrabilities on the source code
     in stand alone mode.
@@ -20,7 +22,7 @@ spec:
     - name: manifest-dir
   params:
     - name: ARGS
-      description: The Arguments to be passed to Trivy command. Remember of doing an image scan on path add --input.
+      description: The Arguments to be passed to Trivy command.
       type: array
     - name: TRIVY_IMAGE
       default: docker.io/aquasec/trivy@sha256:dea76d4b50c75125cada676a87ac23de2b7ba4374752c6f908253c3b839201d9
