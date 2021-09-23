@@ -1,0 +1,19 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: git-cli-run
+spec:
+  taskRef:
+    name: git-cli
+  workspaces:
+    - name: source
+      emptyDir: {}
+    - name: input
+      emptyDir: {}
+  params:
+    - name: GIT_SCRIPT
+      value: |
+        git init
+        git remote add origin https://github.com/kelseyhightower/nocode
+        git pull origin master
