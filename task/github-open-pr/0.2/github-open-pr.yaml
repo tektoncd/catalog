@@ -1,0 +1,154 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: github-open-pr
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/categories: Git
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: github
+    tekton.dev/displayName: "open github pull request"
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
+spec:
+  description: >-
+    This task will open a PR on Github based on several parameters.
+    This could be useful in GitOps repositories for example.
+
+  params:
+  - name: GITHUB_HOST_URL
+    description: |
+      The GitHub host, adjust this if you run a GitHub enteprise.
+    default: "api.github.com"
+    type: string
+
+  - name: API_PATH_PREFIX
+    description: |
+      The API path prefix, GitHub Enterprise has a prefix e.g. /api/v3
+    default: ""
+    type: string
+
+  - name: REPO_FULL_NAME
+    description: |
+      The GitHub repository full name, e.g.: tektoncd/catalog
+    type: string
+
+  - name: GITHUB_TOKEN_SECRET_NAME
+    description: |
+      The name of the kubernetes secret that contains the GitHub token, default: github
+    type: string
+    default: github
+
+  - name: GITHUB_TOKEN_SECRET_KEY
+    description: |
+      The key within the kubernetes secret that contains the GitHub token, default: token
+    type: string
+    default: token
+
+  - name: AUTH_TYPE
+    description: |
+      The type of authentication to use. You could use the less secure "Basic" for example
+    type: string
+    default: Bearer
+
+  - name: HEAD
+    description: |
+      The name of the branch where your changes are implemented.
+    type: string
+
+  - name: BASE
+    description: |
+      The name of the branch you want the changes pulled into.
+    type: string
+
+  - name: BODY
+    description: |
+      The body description of the pull request.
+    type: string
+
+  - name: TITLE
+    description: |
+      The title of the pull request.
+    type: string
+
+  results:
+    - name: NUMBER
+      description: Number of the created pull request.
+
+    - name: URL
+      description: URL of the created pull request.
+
+  volumes:
+  - name: githubtoken
+    secret:
+      secretName: $(params.GITHUB_TOKEN_SECRET_NAME)
+
+  steps:
+    - name: open-pr
+      volumeMounts:
+        - name: githubtoken
+          readOnly: true
+          mountPath: /etc/github-open-pr
+      env:
+        - name: PULLREQUEST_NUMBER_PATH
+          value: $(results.NUMBER.path)
+        - name: PULLREQUEST_URL_PATH
+          value: $(results.URL.path)
+
+      image: registry.access.redhat.com/ubi8/python-38:1-34.1599745032
+      script: |
+        #!/usr/libexec/platform-python
+
+        """This script will open a PR on Github"""
+
+        import json
+        import os
+        import sys
+        import http.client
+
+        github_token = open("/etc/github-open-pr/$(params.GITHUB_TOKEN_SECRET_KEY)", "r").read()
+
+        open_pr_url = "$(params.API_PATH_PREFIX)" + "/repos/$(params.REPO_FULL_NAME)/pulls"
+
+        data = {
+            "head": "$(params.HEAD)",
+            "base": "$(params.BASE)",
+            "title": "$(params.TITLE)",
+            "body": "$(params.BODY)"
+        }
+        print("Sending this data to GitHub: ")
+        print(data)
+
+        authHeader = "$(params.AUTH_TYPE) " + github_token
+
+        # This is for our fake github server
+        if "$(params.GITHUB_HOST_URL)".startswith("http://"):
+            conn = http.client.HTTPConnection("$(params.GITHUB_HOST_URL)"
+                                              .replace("http://", ""))
+        else:
+            conn = http.client.HTTPSConnection("$(params.GITHUB_HOST_URL)")
+
+        conn.request(
+            "POST",
+            open_pr_url,
+            body=json.dumps(data),
+            headers={
+                "User-Agent": "TektonCD, the peaceful cat",
+                "Authorization": authHeader,
+                "Accept": "application/vnd.github.v3+json ",
+            })
+        resp = conn.getresponse()
+        if not str(resp.status).startswith("2"):
+            print("Error: %d" % (resp.status))
+            print(resp.read())
+            sys.exit(1)
+        else:
+            # https://docs.github.com/en/rest/reference/pulls#create-a-pull-request
+            body = json.loads(resp.read().decode())
+
+            open(os.environ.get('PULLREQUEST_NUMBER_PATH'), 'w').write(f'{body["number"]}')
+            open(os.environ.get('PULLREQUEST_URL_PATH'), 'w').write(body["html_url"])
+
+            print("GitHub pull request created for $(params.REPO_FULL_NAME): "
+                  f'number={body["number"]} url={body["html_url"]}')
