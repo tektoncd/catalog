@@ -30,5 +30,8 @@ spec:
       script: |
         for var in "$@"
         do
-            /usr/bin/yq eval -i "$(params.expression)" "$var"
+            for file in $var
+            do
+              /usr/bin/yq eval -i "$(params.expression)" "$file"
+            done
         done
