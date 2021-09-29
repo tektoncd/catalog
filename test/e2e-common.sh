@@ -256,7 +256,7 @@ EOF
             fi
             cat <<EOF >>${TMPF}
   sidecars:
-  - image: quay.io/chmouel/go-rest-api-test
+  - image: gcr.io/tekton-releases/dogfooding/go-rest-api-test:latest
     name: go-rest-api
     volumeMounts:
     - name: fixtures
