@@ -46,7 +46,7 @@ spec:
       default: ""
     - name: output_format
       type: string
-      description: format in which report will be generated. (json|sarif) (default:"json")
+      description: format in which report will be generated. (json|sarif|plain) (default:"json")
       default: json
     - name: args
       type: array

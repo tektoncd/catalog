@@ -23,7 +23,7 @@ https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.3/git-c
 * **includelist** : checks to be included.
 * **excludelist** : checks to be excluded.
 * **default_option** : provides two options (adding all built-in checks or disabling all default checks): add-all-built-in and/do-not-auto-add-defaults.
-* **output_format** : format in which report will be generated. (json|sarif) (default: `json`)
+* **output_format** : format in which report will be generated. (json|sarif|plain) (default: `json`)
 * **args** : args. (default: `[]`)
 
 > _Note_ :  If you want to create your own custom checks using templates and built-in checks, you can create a config file containing all the checks. An example config file can be seen [here](https://raw.githubusercontent.com/tektoncd/catalog/main/task/kube-linter/0.1/samples/config_sample2.yaml). Otherwise, you can provide a string with comma-separated built-in checks to be included or excluded in `includelist` and `exludelist` param.
