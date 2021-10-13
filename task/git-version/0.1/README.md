@@ -28,4 +28,4 @@ Git clone with a depth of "0" is therefore needed.
 
 ## Platforms
 
-The Task can be run on `linux/amd64`, `linux/s390x` and `linux/ppc64le` platforms.
+The Task can be run on `linux/amd64` platform.

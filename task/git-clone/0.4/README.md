@@ -59,6 +59,10 @@ clone takes place. This behaviour can be disabled by setting the
 * **commit**: The precise commit SHA that was fetched by this Task
 * **url**: The precise URL that was fetched by this Task
 
+## Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x`, `linux/arm64`, and `linux/ppc64le` platforms.
+
 ## Usage
 
 If the `revision` is not provided in the param of the taskrun
