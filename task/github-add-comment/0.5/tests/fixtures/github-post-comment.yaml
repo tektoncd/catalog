@@ -1,0 +1,16 @@
+---
+headers:
+  method: PATCH
+  path: /repos/{repo:[^/]+/[^/]+}/issues/comments/{comment:[0-9]+}
+response:
+  status: 200
+  output: '{"status": 200}'
+  content-type: text/json
+---
+headers:
+  method: GET
+  path: /repos/{repo:[^/]+/[^/]+}/issues/{issue:[0-9]+}/comments
+response:
+  status: 200
+  content-type: text/json
+  file: /fixtures/list-comment-response.json
