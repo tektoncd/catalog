@@ -79,7 +79,7 @@ spec:
         - name: githubtoken
           mountPath: /etc/github-pr-mergeable-status
 
-      image: node:lts
+      image: docker.io/library/node:16
       env:
         - name: GITHUB_TOKEN_SECRET_KEY
           value: $(params.GITHUB_TOKEN_SECRET_KEY)
