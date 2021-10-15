@@ -80,6 +80,21 @@ spec:
           mountPath: /etc/github-pr-mergeable-status
 
       image: node:lts
+      env:
+        - name: GITHUB_TOKEN_SECRET_KEY
+          value: $(params.GITHUB_TOKEN_SECRET_KEY)
+        - name: GITHUB_HOST_URL
+          value: $(params.GITHUB_HOST_URL)
+        - name: API_PATH_PREFIX
+          value: $(params.API_PATH_PREFIX)
+        - name: REPO_FULL_NAME
+          value: $(params.REPO_FULL_NAME)
+        - name: GITHUB_PULL_REQUEST_NUMBER
+          value: $(params.GITHUB_PULL_REQUEST_NUMBER)
+        - name: RETRY
+          value: $(params.RETRY)
+        - name: BACKOFF_MS
+          value: $(params.BACKOFF_MS)
       script: |
         #!/usr/bin/env node
         const https = require('https');
@@ -88,14 +103,14 @@ spec:
 
         let needRetry = true;
         let retryCount = 0;
-        const githubToken = fs.readFileSync("/etc/github-pr-mergeable-status/$(params.GITHUB_TOKEN_SECRET_KEY)").toString();
+        const githubToken = fs.readFileSync(`/etc/github-pr-mergeable-status/${process.env.GITHUB_TOKEN_SECRET_KEY}`).toString();
 
-        let githubBaseAPIUrl = 'https://$(params.GITHUB_HOST_URL)';
-        if ($(params.API_PATH_PREFIX) != '') {
-          githubBaseAPIUrl += $(params.API_PATH_PREFIX)
+        let githubBaseAPIUrl = `https://${process.env.GITHUB_HOST_URL}`;
+        if (`${process.env.API_PATH_PREFIX}` != '') {
+          githubBaseAPIUrl += `${process.env.API_PATH_PREFIX}`
         }
 
-        const githubAPIUrl = githubBaseAPIUrl + '/repos/$(params.REPO_FULL_NAME)/pulls/$(params.GITHUB_PULL_REQUEST_NUMBER)';
+        const githubAPIUrl = githubBaseAPIUrl + `/repos/${process.env.REPO_FULL_NAME}/pulls/${process.env.GITHUB_PULL_REQUEST_NUMBER}';
 
         const sleep = async ms => { return new Promise(resolve => setTimeout(resolve, ms));}
 
@@ -136,11 +151,11 @@ spec:
         }
 
         (async function() {
-            while (needRetry && retryCount < parseInt($(params.RETRY))) {
+            while (needRetry && retryCount < parseInt(process.env.RETRY)) {
                 console.log('Evaluating PR mergeable status',
                   {
-                    pr: $(params.GITHUB_PULL_REQUEST_NUMBER),
-                    repo: '$(params.REPO_FULL_NAME)',
+                    pr: process.env.GITHUB_PULL_REQUEST_NUMBER,
+                    repo: process.env.REPO_FULL_NAME,
                   }
                 );
                 try{
@@ -154,10 +169,10 @@ spec:
                   process.exit(1);
                 }
                 retryCount++;
-                await sleep($(params.BACKOFF_MS));
+                await sleep(process.env.BACKOFF_MS);
             }
             if(!fs.existsSync('$(results.commit-merge-sha.path)')) {
-              console.error('PR is not mergeable', $(params.GITHUB_PULL_REQUEST_NUMBER));
+              console.error('PR is not mergeable', process.env.GITHUB_PULL_REQUEST_NUMBER);
               process.exit(1);
             }
         })();
