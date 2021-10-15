@@ -1,0 +1,8 @@
+---
+headers:
+  method: POST
+  path: /gists
+response:
+  status: 200
+  output: '{"status": 200, "files": {"input.txt": {"raw_url": "http://127.0.0.1:8080"}}}'
+  content-type: text/json
