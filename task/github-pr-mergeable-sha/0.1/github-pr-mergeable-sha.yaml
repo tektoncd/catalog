@@ -1,0 +1,163 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: github-pr-mergeable-sha
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/categories: Git
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: github
+    tekton.dev/displayName: "github pull request mergeable sha"
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
+spec:
+  description: >-
+    This task will fetch pull request mergeable sha via GitHub API Call. For more information, please follow this link
+
+    https://docs.github.com/en/rest/guides/getting-started-with-the-git-database-api#checking-mergeability-of-pull-requests
+
+  results:
+    - name: commit-merge-sha
+      description: The test merge commit
+
+  params:
+  - name: REPO_FULL_NAME
+    description: |
+      The GitHub repository full name, e.g.: tektoncd/catalog
+    type: string
+
+  - name: GITHUB_HOST_URL
+    description: |
+      The GitHub host, adjust this if you run a GitHub enteprise.
+    default: "api.github.com"
+    type: string
+
+  - name: API_PATH_PREFIX
+    description: |
+      The API path prefix, GitHub Enterprise has a prefix e.g. /api/v3
+    default: ""
+    type: string
+
+  - name: GITHUB_PULL_REQUEST_NUMBER
+    description: |
+      The pull request number
+    type: string
+
+  - name: GITHUB_TOKEN_SECRET_NAME
+    description: |
+      The name of the kubernetes secret that contains the GitHub token, default: github
+    type: string
+    default: github
+
+  - name: GITHUB_TOKEN_SECRET_KEY
+    description: |
+      The key within the kubernetes secret that contains the GitHub token, default: token
+    type: string
+    default: token
+
+  - name: RETRY
+    description: |
+      API Call Retry for fetching Pull Request status
+    type: string
+    default: "5"
+
+  - name: BACKOFF_MS
+    description: |
+      Backoff duration before retrying
+    type: string
+    default: "15000"
+
+  volumes:
+    - name: githubtoken
+      secret:
+        secretName: $(params.GITHUB_TOKEN_SECRET_NAME)
+
+  steps:
+    - name: set-status
+      volumeMounts:
+        - name: githubtoken
+          mountPath: /etc/github-pr-mergeable-status
+
+      image: node:lts
+      script: |
+        #!/usr/bin/env node
+        const https = require('https');
+        // for taks result output
+        const fs = require('fs');
+
+        let needRetry = true;
+        let retryCount = 0;
+        const githubToken = fs.readFileSync("/etc/github-pr-mergeable-status/$(params.GITHUB_TOKEN_SECRET_KEY)").toString();
+
+        let githubBaseAPIUrl = 'https://$(params.GITHUB_HOST_URL)';
+        if ($(params.API_PATH_PREFIX) != '') {
+          githubBaseAPIUrl += $(params.API_PATH_PREFIX)
+        }
+
+        const githubAPIUrl = githubBaseAPIUrl + '/repos/$(params.REPO_FULL_NAME)/pulls/$(params.GITHUB_PULL_REQUEST_NUMBER)';
+
+        const sleep = async ms => { return new Promise(resolve => setTimeout(resolve, ms));}
+
+        const fetchPullRequestMergeableStatus = async opts => {
+            return new Promise((resolve, reject) => {
+                const req = https.request(opts.url);
+                req.setHeader('Authorization', `token ${opts.token}`);
+                req.setHeader('User-Agent', 'tekton-task');
+
+                req.on('response', res => {
+                    const {statusCode} = res;
+                    res.setEncoding('utf8');
+                    let rawData = '';
+                    res.on('data', (chunk) => { rawData += chunk; });
+                    res.on('end', () => {
+                        try {
+                            const parsedData = JSON.parse(rawData);
+                            needRetry = parsedData.mergeable == null
+                            if(!needRetry) {
+                                // mergeable is determined
+                                if (!parsedData.mergeable) {
+                                  return reject(false);
+                                }
+                                console.log('merge sha', parsedData.merge_commit_sha);
+                                fs.writeFileSync(opts.resultMergeCommitPath, `${parsedData.merge_commit_sha}`);
+                            }
+                            return resolve();
+                        } catch (e) {
+                            console.log(`raw data`, rawData);
+                            console.error(e.message);
+                            reject(e);
+                        }
+                    });
+                });
+
+                req.end();
+            });
+        }
+
+        (async function() {
+            while (needRetry && retryCount < parseInt($(params.RETRY))) {
+                console.log('Evaluating PR mergeable status',
+                  {
+                    pr: $(params.GITHUB_PULL_REQUEST_NUMBER),
+                    repo: '$(params.REPO_FULL_NAME)',
+                  }
+                );
+                try{
+                  await fetchPullRequestMergeableStatus({
+                    url: githubAPIUrl,
+                    token: githubToken,
+                    resultMergeCommitPath: '$(results.commit-merge-sha.path)'
+                  });
+                } catch(e) {
+                  console.error('PR is not mergeable', e);
+                  process.exit(1);
+                }
+                retryCount++;
+                await sleep($(params.BACKOFF_MS));
+            }
+            if(!fs.existsSync('$(results.commit-merge-sha.path)')) {
+              console.error('PR is not mergeable', $(params.GITHUB_PULL_REQUEST_NUMBER));
+              process.exit(1);
+            }
+        })();
