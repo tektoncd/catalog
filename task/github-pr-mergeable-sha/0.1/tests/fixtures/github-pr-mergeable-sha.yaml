@@ -1,0 +1,26 @@
+---
+headers:
+  method: GET
+  path: /repos/{repo:[^/]+/[^/]+}/pulls/{pull:[0-9]+}
+response:
+  status: 200
+  output: |
+    {
+      "id": 2,
+      "merge_commit_sha": "2c91c37957f751aa818b6563856b868563e31045",
+      "mergeable": true
+    }
+  content-type: application/json
+---
+headers:
+  method: GET
+  path: /api/v3/repos/{repo:[^/]+/[^/]+}/pulls/{pull:[0-9]+}
+response:
+  status: 200
+  output: |
+    {
+      "id": 2,
+      "merge_commit_sha": "2c91c37957f751aa818b6563856b868563e31045",
+      "mergeable": true
+    }
+  content-type: application/json
