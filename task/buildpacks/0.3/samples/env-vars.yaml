@@ -15,7 +15,7 @@ kind: PipelineRun
 metadata:
   name: env-vars-pipeline-run
   labels:
-    app.kubernetes.io/description: A PipelineRun configured to provide _build-time_ environment variables.
+    description: A PipelineRun configured to provide _build-time_ environment variables.
 spec:
   pipelineSpec:
     workspaces:
