@@ -97,7 +97,6 @@ spec:
           value: $(params.BACKOFF_MS)
       script: |
         #!/usr/bin/env node
-        const https = require('https');
         // for taks result output
         const fs = require('fs');
 
@@ -116,7 +115,7 @@ spec:
 
         const fetchPullRequestMergeableStatus = async opts => {
             return new Promise((resolve, reject) => {
-                const req = https.request(opts.url);
+                const req = http.request(opts.url);
                 req.setHeader('Authorization', `token ${opts.token}`);
                 req.setHeader('User-Agent', 'tekton-task');
 
