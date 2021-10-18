@@ -20,6 +20,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/np
 
 - **source**: The place which consists of the project.
 
+## Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x`, and `linux/ppc64le` platforms.
+
 ## Usage
 
 1. Apply the [`git-clone`](https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.2/git-clone.yaml) task which will help to clone the repository.

@@ -16,6 +16,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/wr
 - **mode**: chmod-style mode string to apply to the file. Note that mode will not be applied to created directories.
 - **contents**: Contents of the file to create. Note that octal numbers need quoting in YAML.
 
+## Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x`, and `linux/ppc64le` platforms.
+
 ## Usage
 
 This example task generates a random password from the pipeline run's unique id.

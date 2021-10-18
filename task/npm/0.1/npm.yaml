@@ -8,6 +8,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.17.0"
     tekton.dev/categories: Build Tools
     tekton.dev/tags: build-tool
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
 spec:
   description: >-
     This task can be used to run npm goals on a project.
@@ -28,7 +29,7 @@ spec:
       description: The npm goals you want to run.
     - name: IMAGE
       type: string
-      default: "docker.io/library/node:12-alpine@sha256:12048cdfd75d944df35f3144132d9bdeee78015fbd6df765edad1be46599b110"
+      default: "docker.io/library/node:12-alpine@sha256:dfbebf17bfb014e1e7068e76325a117bccf8679c68aec6a28514184a209c8bae"
       description: The node image you want to use.
   steps:
     - name: npm-run
