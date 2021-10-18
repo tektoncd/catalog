@@ -9,6 +9,8 @@ spec:
         taskRef:
           name: github-pr-mergeable-sha
         params:
+          - name: GITHUB_HOST_URL
+            value: http://localhost:8080
           - name: REPO_FULL_NAME
             value: tektoncd/catalog
           - name: GITHUB_PULL_REQUEST_NUMBER
@@ -17,6 +19,8 @@ spec:
         taskRef:
           name: github-pr-mergeable-sha
         params:
+          - name: GITHUB_HOST_URL
+            value: http://localhost:8080
           - name: API_PATH_PREFIX
             value: /api/v3
           - name: REPO_FULL_NAME
