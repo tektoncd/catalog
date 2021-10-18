@@ -23,6 +23,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/py
 * **SOURCE_PATH**: The path to the source code (_default_: `.`)
 * **REQUIREMENTS_FILE**: The name of the requirements file inside the source location, with fallback to the requirements file in the root location (_default_: `requirements.txt`)
 
+## Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x`, and `linux/ppc64le` platforms.
+
 ## Usage
 
 This `TaskRun` runs `pytest` on a repository.

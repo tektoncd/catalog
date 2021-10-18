@@ -30,6 +30,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/te
   that allows providing a `.docker/config.json` file for tkn to access the container registry. The file should be placed at
   the root of the Workspace with name `config.json`.
 
+## Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x`, and `linux/ppc64le` platforms.
+
 ## Usage
 
 1. Passing `REGISTRY` and catalog workspace:
