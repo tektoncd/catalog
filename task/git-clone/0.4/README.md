@@ -187,8 +187,14 @@ workspace will end up owned by user 65532.
 
 ## Using basic-auth Credentials
 
-**Note**: It is strongly advised that you use `ssh` credentials when the
-option is available to you before using basic auth.
+**Note**: It is strongly advised that you use `ssh` credentials when the option
+is available to you before using basic auth. You can use generate a short
+lived token from WebVCS platforms (Github, Gitlab, Bitbucket etc..) to be use
+as password and generally be able to use `git` as the username.
+On bitbucket server the token may have a / into it so you would need
+to urlquote them before in the `Secret`, see this stackoverflow answer :
+
+https://stackoverflow.com/a/24719496 
 
 To support basic-auth this Task exposes an optional `basic-auth` Workspace.
 The bound Workspace must contain a `.gitconfig` and `.git-credentials` file.
@@ -208,3 +214,4 @@ stringData:
   .git-credentials: |
     https://<user>:<pass>@<hostname>
 ```
+
