@@ -1,0 +1,43 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: robot-framework-test-
+spec:
+  workspaces:
+    - name: shared-workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 100Mi
+  pipelineSpec:
+    workspaces:
+      - name: shared-workspace
+    tasks:
+      - name: write-file
+        taskRef:
+          name: write-file
+        params:
+          - name: path
+            value: ./robot/test.robot
+          - name: contents
+            value: |
+              *** Test Cases ***
+              Testcase 1
+                Log To Console  'Testcase 1'
+        workspaces:
+          - name: output
+            workspace: shared-workspace
+      - name: robot-framework
+        runAfter: [write-file]
+        taskRef:
+          name: robot-framework
+        params:
+          - name: TEST_DIR
+            value: "./"
+        workspaces:
+          - name: source
+            workspace: shared-workspace

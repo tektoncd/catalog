@@ -1,0 +1,80 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: robot-framework
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/categories: Testing
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: python, robot-framework
+    tekton.dev/displayName: robot-framework
+
+spec:
+  description: >-
+    This task will run Robot Framework tests in the source workspace.
+
+  workspaces:
+    - name: source
+      description: A workspace containing .robot test files
+    - name: variables-file
+      optional: true
+      description: A Workspace containing a Robot Framework variables file (usually a secret)
+  params:
+    - name: IMAGE
+      description: The image used to run the tests. This can be a base python image, or an image that already has pre-requirements installed.
+      type: string
+      default: "python@sha256:4ec7de21666118edfa1b90c79b34c282624d03e2e560fa1b542b2069a65b367f"
+    - name: REQUIREMENTS_FILE
+      description: Optional requirements file to use for installing test requirements
+      type: string
+      default: ""
+    - name: ROBOT_OPTIONS
+      description: Arguments to use with the robot command
+      type: string
+      default: ""
+    - name: TEST_DIR
+      description: Directory that contains robot tests
+      type: string
+    - name: VARIABLES_FILE
+      description: Name of the variable file provided in the workspace. A .py extension is necessary.
+      type: string
+      default: "variables.py"
+  steps:
+    - name: robot-tests
+      image: $(params.IMAGE)
+      workingDir: $(workspaces.source.path)
+      script: |
+        export PATH=$PATH:$HOME/.local/bin
+
+        if [ -n "$(inputs.params.REQUIREMENTS_FILE)" ];
+        then
+          if [ -e "$(workspaces.source.path)"/"$(inputs.params.REQUIREMENTS_FILE)" ];
+          then
+            pip install -r "$(workspaces.source.path)"/"$(inputs.params.REQUIREMENTS_FILE)"
+            pip show robotframework || {
+              printf "###\nWarning: Robot Framework is missing in your test requirements file\n###";
+              pip install robotframework
+            }
+          else
+            printf "###\nError: Parameter for requirements file was provided, but file was not found in source workspace. Exiting.\n###";
+            exit 1
+          fi
+        else
+          printf "###\nInfo: No parameter for requirements file was provided, only Robot Framework will be installed.\n###";
+          pip install robotframework
+        fi
+
+        if [ -n '$(workspaces.variables-file.path)' ];
+        then
+          if [ -e "$(workspaces.variables-file.path)"/"$(inputs.params.VARIABLES_FILE)" ];
+          then
+            robot --outputdir ./reports -V $(workspaces.variables-file.path)/$(params.VARIABLES_FILE) $(params.ROBOT_OPTIONS) $(params.TEST_DIR)
+          else
+            printf "\nERROR: Variables file $(params.VARIABLES_FILE) not found in workspace. Exiting."
+            exit 1
+          fi
+        else
+          robot --outputdir ./reports $(params.ROBOT_OPTIONS) $(params.TEST_DIR)
+        fi
