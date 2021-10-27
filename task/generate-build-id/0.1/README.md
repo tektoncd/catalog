@@ -12,6 +12,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/ge
 
 * **base-version**: The base version to use in the generated build id.  _default_: `["1.0"]`
 
+## Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x`, `linux/arm64` and `linux/ppc64le` platforms.
+
 ## Usage
 
 ### Include the task inside a taskrun

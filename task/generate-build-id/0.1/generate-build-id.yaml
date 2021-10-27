@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Build Tools
     tekton.dev/tags: build-tool
     tekton.dev/displayName: "buildid"
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le,linux/arm64"
 spec:
   description: >-
     Given a base version, this task generates a unique build id by appending
@@ -26,14 +27,14 @@ spec:
       description: ID of the current build
   steps:
     - name: get-timestamp
-      image: docker.io/library/bash:5.0.18@sha256:8ef3f8518f47caf1ddcbdf49e983a9a119f9faeb41c2468dd20ff39cd242d69d #tag: 5.0.18
+      image: docker.io/library/bash:5.0.18@sha256:879f94a9da53dc064779e7a68339aecd60a9028ff884cacaa47ae752ca690404 #tag: 5.0.18
       script: |
         #!/usr/bin/env bash
         ts=`date "+%Y%m%d-%H%M%S"`
         echo "Current Timestamp: ${ts}"
         echo ${ts} | tr -d "\n" | tee $(results.timestamp.path)
     - name: get-buildid
-      image: docker.io/library/bash:5.0.18@sha256:8ef3f8518f47caf1ddcbdf49e983a9a119f9faeb41c2468dd20ff39cd242d69d #tag: 5.0.18
+      image: docker.io/library/bash:5.0.18@sha256:879f94a9da53dc064779e7a68339aecd60a9028ff884cacaa47ae752ca690404 #tag: 5.0.18
       script: |
         #!/usr/bin/env bash
         ts=`cat $(results.timestamp.path)`
