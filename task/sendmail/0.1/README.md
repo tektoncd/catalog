@@ -51,6 +51,10 @@ kubectl apply -f server-secret.yaml
 
 * **recipients**: Email recipients email addresses (space delimited)
 
+## Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x`, `linux/arm64` and `linux/ppc64le` platforms.
+
 ## Usage
 
 This TaskRun runs the Task to send an email to the receivers via the SMTP server.

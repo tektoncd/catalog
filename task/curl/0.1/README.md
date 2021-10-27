@@ -14,6 +14,11 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/cu
 * **options**: The arguments to pass to `curl` CLI.  _default_: `[""]`
 * **url**: The url we want to download file from, required field.
 * **curl-image**: The curl docker image to be used. Defaults to `curlimages/curl`.
+
+## Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x`, `linux/arm64` and `linux/ppc64le` platforms.
+
 ## Usage
 
 ### Running the Task

@@ -26,6 +26,12 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/ji
 
 - **IMAGE_DIGEST**: The digest of the image just built.
 
+## Platforms
+
+The Task can be run on `linux/amd64`, `linux/s390x`, and `linux/ppc64le` platforms.
+
+For `linux/s390x` and `linux/ppc64le` platforms specify **BUILDER_IMAGE** parameter with `gradle:5.6.2-jdk11` value in TaskRun or PipelineRun.
+
 ## Usage
 
 This TaskRun runs the Task to fetch a Git repo, and build and push a container image using Jib (Gradle).

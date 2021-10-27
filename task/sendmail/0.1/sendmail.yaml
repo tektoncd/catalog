@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Messaging
     tekton.dev/tags: mail
     tekton.dev/displayName: "send mail"
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le,linux/arm64"
 spec:
   description: >-
     This task sends a simple email to receivers via SMTP server
@@ -31,7 +32,7 @@ spec:
     description: recipient email addresses (space delimited list)
   steps:
   - name: send
-    image: docker.io/library/python:3.8-alpine@sha256:c31682a549a3cc0a02f694a29aed07fd252ad05935a8560237aed99b8e87bf77 #tag: 3.8-alpine
+    image: docker.io/library/python:3.8-alpine@sha256:e11bbd37d4371894e954421b85dbe8dd4eb7198d7cb4ed144ab529f19f57c3f1 #tag: 3.8-alpine
     script: |
       #!/usr/bin/env python3
       import smtplib, ssl, os
