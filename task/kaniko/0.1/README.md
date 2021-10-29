@@ -46,6 +46,10 @@ DockerHub, see the
 [Authentication](https://github.com/tektoncd/pipeline/blob/main/docs/auth.md#basic-authentication-docker)
 documentation page.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 This TaskRun runs the Task to fetch a Git repo, and build and push a container

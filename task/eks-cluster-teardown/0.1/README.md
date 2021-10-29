@@ -21,6 +21,10 @@ Refer [this](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/setup-c
 
 The AWS user/role should have the [minimum IAM policies](https://eksctl.io/usage/minimum-iam-policies/) defined by `eksctl`.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 See [samples/teardown-eks-cluster.yaml](https://github.com/tektoncd/catalog/tree/main/task/eks-cluster-teardown/0.1/samples/teardown-eks-cluster.yaml) for an example of a TaskRun that tears down an EKS cluster.

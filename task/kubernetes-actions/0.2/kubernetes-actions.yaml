@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Kubernetes
     tekton.dev/tags: CLI, kubectl
     tekton.dev/displayName: "kubernetes actions"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This task is the generic kubectl CLI task which can be used

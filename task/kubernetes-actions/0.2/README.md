@@ -25,6 +25,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/ku
 
 - **output-result**: If you want to emit some result which can be used in decision making. One such case is when using [whenExpressions](https://github.com/tektoncd/pipeline/blob/main/docs/pipelines.md#guard-task-execution-using-whenexpressions).
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 In case no manifests are mounted

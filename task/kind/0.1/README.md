@@ -22,6 +22,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 | image   | kind runtime image to use. Users must override this for their particular runtime environment needed for their kind tests. |
 | command | command to run                                                                                                            |
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 This task sets up settings needed to run `kind` in a Tekton Task using

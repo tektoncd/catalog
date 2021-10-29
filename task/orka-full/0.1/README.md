@@ -8,6 +8,10 @@ This `Task` is for utilizing a single macOS build agent in your [Orka environmen
 
 A `Task` that creates a VM template with the specified configuration, deploys a VM instance from it, and then cleans up the environment. All operations in this `Task` are performed against an Orka environment.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Prerequisites
 
 * You need a Kubernetes cluster with Tekton Pipelines v0.16.0 or later configured.

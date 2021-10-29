@@ -23,6 +23,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/he
 - **overwrite_values**: The values to be overwritten (*default: ""*)
 - **helm_version**: The helm version which should be used (*default: latest*)
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 ### PipelineRun

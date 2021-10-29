@@ -32,6 +32,10 @@ You can do the former via `oc` and running the following command, replacing `<na
 oc policy add-role-to-user edit -z default -n <namespace>
 ```
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 The following `TaskRun` runs the commands against a different cluster than the one the `TaskRun` is running on. The cluster credentials are provided via a `PipelineResource` called `stage-cluster`.

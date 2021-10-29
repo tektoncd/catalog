@@ -8,6 +8,10 @@ This `Task`, along with `orka-init` and `orka-deploy`, allows you to utilize mul
 
 A `Task` that cleans up the Orka environment after your workload completes. This `Task` deletes the VM instances deployed with `orka-deploy` and their related template.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Prerequisites
 
 * You need a Kubernetes cluster with Tekton Pipelines v0.16.0 or later configured.

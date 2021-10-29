@@ -45,6 +45,10 @@ as well as
 
 * **commit**: The precise commit SHA that was fetched by this Task
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 ### `git-clone`

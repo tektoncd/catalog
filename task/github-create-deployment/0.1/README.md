@@ -40,6 +40,10 @@ See GitHub's documentation on [Understanding scopes for OAuth Apps](https://deve
   contains the GitHub token. (_default:_ `github`).
 - **GITHUB_TOKEN_SECRET_KEY**: The key within the Kubernetes Secret that contains the GitHub token. (_default:_ `token`).
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 This TaskRun creates a GitHub deployment for the given repository.

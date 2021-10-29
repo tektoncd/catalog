@@ -51,6 +51,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/pipelin
 
   If no value is provided, the target cluster is assumed to be in the same project as the cluster running this Pipeline.
 
+## Platforms
+
+The Pipeline can be run on `linux/amd64` platform.
+
 ## Usage
 
 ### Authorizing the Pipeline

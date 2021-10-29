@@ -10,6 +10,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.16.0"
     tekton.dev/tags: "orka, macstadium, deploy, build"
     tekton.dev/displayName: "MacStadium Orka Deploy"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     With this set of Tasks, you can use your Orka environment

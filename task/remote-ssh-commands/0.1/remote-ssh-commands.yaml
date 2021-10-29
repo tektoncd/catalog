@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Developer Tools
     tekton.dev/tags: ssh, ssh remote
     tekton.dev/displayName: "ssh remote commands"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     The following task can be used to execute commands on remote machine.

@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Git
     tekton.dev/tags: gitlab
     tekton.dev/displayName: "gitlab add label"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This Task will add a label to an issue in Gitlab.

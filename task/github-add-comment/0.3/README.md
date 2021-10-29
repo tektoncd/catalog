@@ -49,6 +49,10 @@ See GitHub's documentation on [Understanding scopes for OAuth Apps](https://deve
 
 - **comment-file**: The optional workspace containing comment file to be posted.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 This TaskRun add a comment to an issue.

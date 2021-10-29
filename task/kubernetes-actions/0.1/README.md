@@ -21,6 +21,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/ku
 - **kubeconfig-dir**: If you want to deploy you application to another cluster then you can mount your `kubeconfig` file via this `workspace`. (Default: _emptyDir:{}_ in case `kubeconfig` is not mounted)
 - **manifest-dir**: Manifest files can be provided via the workspaces.(Default: _emptyDir:{}_ in case no manifest is provided)
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 In case no manifests are mounted

@@ -14,6 +14,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/po
 - **command**: Powershell command
 - **verbose**: Verbosity level for command (_default_: `SilentlyContinue`)
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 This `TaskRun` runs `Write-Output 'Hello World'` command using `latest` powershell image and verbose logs enabled.

@@ -60,6 +60,10 @@ spec:
       storage: 500Mi
 ```
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 This task will use the input param `inputFilePath`, this is provided by the [git clone](https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/git/git-clone.yaml) task, which clones the target repository containing the json or yaml file to be replaced.

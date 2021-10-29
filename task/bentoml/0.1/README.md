@@ -23,3 +23,7 @@ Use bentoml to retrieve a full ML build environment in the cwd:
 ```shell
 tkn task start bentoml -p ARGS="retrieve ServiceName:20200616152703_9E2AD7","YATAISERVICE=10.10.10.1:50051 --target_dir=/workspace/storage"
 ```
+
+## Platforms
+
+The Task can be run on `linux/amd64` platform.

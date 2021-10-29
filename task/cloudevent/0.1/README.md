@@ -29,3 +29,7 @@ Once you have ko, you can build the binary and resolve the task yaml into instal
 `ko resolve -f config/task.yaml > cloudevent.yaml`
 
 The go import path will be replaced in the yaml by the built container.
+
+## Platforms
+
+The Task can be run on `linux/amd64` platform.

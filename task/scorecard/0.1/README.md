@@ -13,6 +13,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/sc
 - **REPO**: The url to the repository to inspect.
 - **GITHUB-OAUTH_SECRET**: The name of the secret storing GitHub credentials. They should be in the `token` field.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 This `TaskRun` runs `scorecard` on a repository:

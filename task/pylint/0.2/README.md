@@ -19,6 +19,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/py
 * **path**: The path to the module which should be analysed by pylint. (_Default_: `"."`)
 * **requirements_file**: The path to the requirements file to pip install for your application to be checked. (_Default_: `"requirements.txt"`)
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 This `TaskRun` runs `pylint` in a python module directory called `module/`.

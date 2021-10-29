@@ -29,6 +29,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/ji
 
 - **IMAGE_DIGEST**: Digest of the image just built.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 This TaskRun runs the Task to fetch a Git repo, and build and push a container

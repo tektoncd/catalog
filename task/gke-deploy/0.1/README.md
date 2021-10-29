@@ -21,6 +21,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gk
 
 * **source**: The Git source repository that contains your application's Kubernetes configs.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 ### Authorizing `gke-deploy` commands

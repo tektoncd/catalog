@@ -85,3 +85,7 @@ spec:
       secret:
         secretName: kubeconfig
 ```
+
+## Platforms
+
+The Task can be run on `linux/amd64` platform.

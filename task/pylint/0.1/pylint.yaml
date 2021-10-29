@@ -10,7 +10,6 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: python, pylint
     tekton.dev/displayName: pylint
-
 spec:
   description: >-
     This task will run pylint on the provided input.

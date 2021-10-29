@@ -57,6 +57,10 @@ _The following are the suggested [builders][builders] from the [Cloud Native Bui
 [builders]: (https://buildpacks.io/docs/concepts/components/builder/)
 [buildpacks-io]: (https://buildpacks.io)
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 See the following samples for usage:

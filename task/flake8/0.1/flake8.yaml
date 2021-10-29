@@ -10,7 +10,7 @@ metadata:
     tekton.dev/categories: Code Quality
     tekton.dev/tags: python, flake8, linter
     tekton.dev/displayName: flake8
-
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This task will run flake8 on the provided input.

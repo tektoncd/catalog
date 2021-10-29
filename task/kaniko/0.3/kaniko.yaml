@@ -8,6 +8,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.17.0"
     tekton.dev/categories: Image Build
     tekton.dev/tags: image-build
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This Task builds source into a container image using Google's kaniko tool.

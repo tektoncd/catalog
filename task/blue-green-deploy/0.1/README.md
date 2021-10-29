@@ -28,6 +28,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/bl
 - **NEW_VERSION**: The version of the deployment to be deployed in the green/blue zone
 - **MANIFEST**: The deployment manifest URL file path provided in case the manifest is present on Github. (_Example_: "https://raw.githubusercontent.com/tektoncd/catalog/main/task/blue-green-deploy/0.1/samples/v1-deploy/blue-deployment.yaml")
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 # Usage
 
 This TaskRun runs the Task to deploy the given Kubernetes resource in the green/blue zone and toggle the service to point to the new zone.

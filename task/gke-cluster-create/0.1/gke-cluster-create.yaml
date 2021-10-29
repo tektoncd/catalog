@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Cloud, Kubernetes
     tekton.dev/tags: "gke,test"
     tekton.dev/displayName: "GKE Cluster Create"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: |
     Create a GKE cluster.

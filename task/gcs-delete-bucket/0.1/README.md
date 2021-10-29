@@ -46,3 +46,7 @@ spec:
   - name: bucketName
     value: gs://my-fancy-new-test-bucket-12345
 ```
+
+## Platforms
+
+The Task can be run on `linux/amd64` platform.

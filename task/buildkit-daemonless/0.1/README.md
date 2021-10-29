@@ -32,3 +32,7 @@ task.tekton.dev/buildkit-daemonless created
 
 * **image**: An `image`-type `PipelineResource` specifying the image that should be built.
   Currently, generating [`resourceResult`](https://github.com/tektoncd/pipeline/blob/main/docs/resources.md#image-resource) is not supported. ([`buildkit#993`](https://github.com/moby/buildkit/issues/993))
+
+## Platforms
+
+The Task can be run on `linux/amd64` platform.

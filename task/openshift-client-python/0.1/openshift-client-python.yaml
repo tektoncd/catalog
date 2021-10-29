@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Openshift
     tekton.dev/tags: cli
     tekton.dev/displayName: "openshift client python"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This task can be used to interact with the openshift cluster via

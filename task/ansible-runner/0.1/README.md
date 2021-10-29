@@ -26,6 +26,10 @@ tkn task ls
 
 * **runner-dir**: A [workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md) to hold the `private_data_dir` as described in https://ansible-runner.readthedocs.io/en/latest/intro.html#runner-input-directory-hierarchy[Runner Directory]
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 The TaskRun uses the repository https://github.com/kameshsampath/tektoncd-ansible-runner-example, that houses some example playbooks.

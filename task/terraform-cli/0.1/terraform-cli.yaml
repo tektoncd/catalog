@@ -10,6 +10,7 @@ metadata:
     tekton.dev/categories: CLI
     tekton.dev/tags: cli
     tekton.dev/displayName: "terraform cli"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     Terraform is an open-source infrastructure as codesoftware tool created by HashiCorp.

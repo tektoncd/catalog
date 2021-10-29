@@ -8,6 +8,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/categories: Testing
     tekton.dev/tags: test
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     These tasks make it possible to use Conftest within your Tekton pipelines

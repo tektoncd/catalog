@@ -52,6 +52,10 @@ the docker `config.json`.
 When using a workspace, the workspace shall be bound to a secret that embeds the
 configuration file in a key called `config.json`.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 This TaskRun runs the Task to fetch a Git repo, and build and push a container

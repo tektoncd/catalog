@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: CLI
     tekton.dev/tags: ansible, cli
     tekton.dev/displayName: "ansible tower cli"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     Ansible-tower-cli task simplifies starting jobs, workflow jobs,

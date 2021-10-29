@@ -34,6 +34,9 @@ AWS `credentials` and `config` both should be provided in the form of `secret`.
 
 Refer [this](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/setup-credentials.html) guide for setting up AWS Credentials and Region.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
 
 ## Usage
 

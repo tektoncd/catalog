@@ -23,6 +23,7 @@ metadata:
     tekton.dev/categories: Kubernetes
     tekton.dev/displayName: "kind"
     tekton.dev/tags: "kind"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     Sets up and executes commands in KinD (Kubernetes in Docker) environment.

@@ -107,6 +107,10 @@ The link to detailed report will take users to a browser window having similar f
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/redhat-codeready-dependency-analysis/0.1/redhat-codeready-dependency-analysis.yaml -n <NAMESPACE>
 ```
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 This task expects a secret named `crda` to exist with a valid CRDA user key in `crda-key`, an attached workspace having target manifest file and its dependencies installed in a directory.

@@ -34,3 +34,6 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gi
 * **CONTEXT**: The GitLab context, A string label to differentiate this status
   from the status of other systems. _e.g:_ `continuous-integration/tekton`
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.

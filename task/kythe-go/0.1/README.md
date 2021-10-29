@@ -16,3 +16,7 @@ for the given package, placing the resulting kzips in the `output` workspace.
 ### Parameters
 
 - **package**: Go package pattern to analyze.
+
+## Platforms
+
+The Task can be run on `linux/amd64` platform.

@@ -10,6 +10,7 @@ metadata:
     tekton.dev/categories: Publishing
     tekton.dev/tags: build
     tekton.dev/displayName: "upload pypi"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This Task publishes Python packages to PyPI index using Twine utility module.

@@ -41,6 +41,10 @@ You can do the former via `oc` and running the following command, replacing `<na
 oc policy add-role-to-user edit -z default -n <namespace>
 ```
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 We can refer to the following [sample](./samples/run-with-workspace.yaml) of how to use this task.

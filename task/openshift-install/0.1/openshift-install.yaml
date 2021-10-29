@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Openshift
     tekton.dev/tags: openshift
     tekton.dev/displayName: "openshift install"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This task is used to create the cluster.

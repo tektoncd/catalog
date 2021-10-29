@@ -24,6 +24,10 @@ A `Task` that allows users customize and extend the gsutil command line based on
 * **serviceAccountPath**: The path to the service account credential file in your credentials workspace. (_default_: "service_account.json")
 * **image**: The google cloud image that will be used in steps. (_default_: "google/cloud-sdk")
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 

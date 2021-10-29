@@ -51,6 +51,9 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gi
 
 * `Secret` to provide Gitlab `access token` to authenticate to the Gitlab.
 
+### Platforms
+
+The Task can be run on `linux/amd64` platform.
 
 ### Usage
 

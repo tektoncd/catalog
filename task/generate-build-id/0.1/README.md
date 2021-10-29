@@ -16,6 +16,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/ge
 
 The Task can be run on `linux/amd64`, `linux/s390x`, `linux/arm64` and `linux/ppc64le` platforms.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 ### Include the task inside a taskrun

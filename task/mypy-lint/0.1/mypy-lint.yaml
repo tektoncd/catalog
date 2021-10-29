@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Code Quality
     tekton.dev/tags: linter
     tekton.dev/displayName: "Mypy(Python) linter"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This task can be used to perform lint check on python files

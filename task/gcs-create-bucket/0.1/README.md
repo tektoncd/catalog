@@ -55,3 +55,7 @@ spec:
   - name: region
     value: ASIA-SOUTHEAST1
 ```
+
+## Platforms
+
+The Task can be run on `linux/amd64` platform.

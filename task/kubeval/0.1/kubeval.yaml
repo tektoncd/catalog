@@ -8,6 +8,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/categories: Code Quality, Kubernetes
     tekton.dev/tags: test
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This task makes it possible to use Kubeval within your Tekton pipelines.

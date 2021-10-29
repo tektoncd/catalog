@@ -8,6 +8,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/categories: Kubernetes
     tekton.dev/tags: deploy, delete
+    tekton.dev/platforms: "linux/amd64"
   namespace: default
 spec:
   description: >-

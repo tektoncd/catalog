@@ -8,6 +8,10 @@ This `Task`, along with `orka-init` and `orka-teardown`, allows you to utilize m
 
 A `Task` that deploys a VM instance from a specified VM template. Usually, you would use the VM template created with `orka-init`.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Prerequisites
 
 * You need a Kubernetes cluster with Tekton Pipelines v0.16.0 or later configured.

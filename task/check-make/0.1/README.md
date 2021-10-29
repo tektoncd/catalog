@@ -16,6 +16,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/ch
 
 - **shared-workspace** : The workspace containing files on which we want to apply linter check. It can be a shared workspace with the `git-clone` task or a `ConfigMap` mounted containing some files.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 1. Create the `git-clone` task

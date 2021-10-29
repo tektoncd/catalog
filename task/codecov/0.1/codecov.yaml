@@ -10,6 +10,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: build,ci
     tekton.dev/displayName: "upload coverage report to codecov"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This task publishes coverage report to Codecov.io.

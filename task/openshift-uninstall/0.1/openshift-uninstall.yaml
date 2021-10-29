@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Openshift
     tekton.dev/tags: openshift
     tekton.dev/displayName: "openshift uninstall"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This task is used to destroy the cluster.

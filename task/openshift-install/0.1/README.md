@@ -50,6 +50,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/op
   cat ~/.ssh/openshift-dev.pub
   ```
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 Taking example of AWS :-

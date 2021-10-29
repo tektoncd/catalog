@@ -30,6 +30,10 @@ See GitHub's documentation on [Understanding scopes for OAuth Apps](https://deve
 * **REQUEST_URL:**: The GitHub pull request or issue url, (_e.g:_
   `https://github.com/tektoncd/catalog/issues/46`)
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 This TaskRun close an issue on a task.

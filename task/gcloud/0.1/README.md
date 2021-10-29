@@ -23,6 +23,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gc
 
 * **ARGS**: The arguments to pass to `gcloud` CLI.  _default_: `["help"]`
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 ### Authorizing `gcloud` commands
