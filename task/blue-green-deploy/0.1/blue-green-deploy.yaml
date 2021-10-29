@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Deployment
     tekton.dev/tags: deployment
     tekton.dev/displayName: "blue green deployment"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This task can be used to do Blue-Green deployment

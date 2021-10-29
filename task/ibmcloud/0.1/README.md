@@ -18,6 +18,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/ib
 
 * **ARGS**: The arguments to pass to `ibmcloud` CLI. This parameter is required to run this task.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 ### Running the Task

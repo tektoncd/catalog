@@ -33,6 +33,10 @@ You can do the former via `oc` and running the following command, replacing `<na
 oc policy add-role-to-user edit -z default -n <namespace>
 ```
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 This `TaskRun` runs an `oc rollout` command to deploy the latest image version for `myapp` on OpenShift.

@@ -12,6 +12,7 @@ metadata:
     tekton.dev/categories: CLI
     tekton.dev/tags: cli
     tekton.dev/displayName: 'Ansible Runner'
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     Task to run Ansible playbooks using Ansible Runner

@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Code Quality
     tekton.dev/tags: formatter, python, black
     tekton.dev/displayName: "Python Black"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This task can be used to format Python code

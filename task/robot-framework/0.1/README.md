@@ -22,6 +22,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/ro
 - **TEST_DIR**: Directory that contains robot tests
 - **VARIABLES_FILE**: Optional: Name of the variable file provided in the workspace. A .py extension is necessary.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 Basic usage without installing extra requirements or using a variables file:

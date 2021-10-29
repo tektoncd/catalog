@@ -18,6 +18,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/az/0.1/
 
 * **ARGS**: The arguments to pass to `az` CLI. This parameter is required to run this task.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 ### Running the Task

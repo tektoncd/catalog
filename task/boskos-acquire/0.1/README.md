@@ -29,6 +29,10 @@ with `pods` (see [service-account.yaml](samples/service-account.yaml) for an exa
 
 * **leased-resource**: The name of the leased resource
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 See [samples/pipelinerun.yaml](samples/pipelinerun.yaml) for an example of a Pipeline that obtains

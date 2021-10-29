@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Git
     tekton.dev/tags: gitlab
     tekton.dev/displayName: "create gitlab release"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This `task` can be used to make a gitlab release.

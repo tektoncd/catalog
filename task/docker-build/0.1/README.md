@@ -29,6 +29,9 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/do
 
 * **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md) volume containing the source to build.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
 
 ### Usage
 

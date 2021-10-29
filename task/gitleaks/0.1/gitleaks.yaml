@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Security
     tekton.dev/tags: Security, Secrets
     tekton.dev/displayName: "Gitleaks"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This task makes it possible to use Gitleaks within your Tekton pipelines.

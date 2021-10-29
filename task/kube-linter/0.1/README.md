@@ -28,6 +28,10 @@ https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.3/git-c
 
 > _Note_ :  If you want to create your own custom checks using templates and built-in checks, you can create a config file containing all the checks. An example config file can be seen [here](https://raw.githubusercontent.com/tektoncd/catalog/main/task/kube-linter/0.1/samples/config_sample2.yaml). Otherwise, you can provide a string with comma-separated built-in checks to be included or excluded in `includelist` and `exludelist` param.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 ```yaml

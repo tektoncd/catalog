@@ -19,6 +19,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/go
 
 - **source**: The workspace containing the Go source code which needs to be released. The default `mountPath` is `/workspace/src/$(params.package)`
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 1. Create the GitHub token by following the steps from [here](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token)

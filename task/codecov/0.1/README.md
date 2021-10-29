@@ -14,6 +14,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/co
 - **codecov-token-secret-key**: Name of the secret key holding the codecov token. (_Default_: `token`)
 - **args**: Extra arguments to be passed to the codecov script, more details [here](https://docs.codecov.io/docs/about-the-codecov-bash-uploader#arguments) (_Default_: [`-Z`])
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 Generate the code coverage file for your project inside your workspace, see here

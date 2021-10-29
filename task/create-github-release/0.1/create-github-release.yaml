@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Git
     tekton.dev/tags: github
     tekton.dev/displayName: "create github release"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This `task` can be used to make a github release.

@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Automation
     tekton.dev/tags: jenkins, build
     tekton.dev/displayName: "jenkins operation"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     The following task can be used to interact with the the Jenkins REST API.

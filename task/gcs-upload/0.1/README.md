@@ -25,6 +25,9 @@ A `Task` that uploads files or directories from a Workspace to a GCS bucket.
 * **location**: The address (including "gs://") where you'd like to upload files to. (_required_)
 * **serviceAccountPath**: The path to the service account credential file in your credentials workspace. (_default_: "service\_account.json")
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
 
 ## Usage
 

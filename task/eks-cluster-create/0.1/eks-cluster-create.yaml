@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Kubernetes
     tekton.dev/tags: "aws, eks"
     tekton.dev/displayName: "EKS Cluster Create"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: |
     Create an EKS cluster.

@@ -9,6 +9,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.17.0"
     tekton.dev/tags: image-build
     tekton.dev/displayName: "Buildpacks"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     The Buildpacks pipeline builds source from a Git repository into a container image and pushes it to a registry, using Cloud Native Buildpacks.

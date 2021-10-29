@@ -35,6 +35,10 @@ can be referred to create `aws-credentials`.
 Refer [aws docs](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/setup-credentials.html) 
 guide for setting up AWS Credentials and Region.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 AWS ECR login task will be used to authenticate to Amazon ECR registry. 

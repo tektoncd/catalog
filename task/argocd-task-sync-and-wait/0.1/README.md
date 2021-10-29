@@ -16,6 +16,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/ar
 
 * **flags:** Flags to append after commands, e.g. `--insecure` (_default:_ `--`)
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 This `Pipeline` implements the typical CD flow using GitOps, as explained [here](https://argoproj.github.io/argo-cd/user-guide/ci_automation/). It runs a sample `Task` that makes and pushes a change to a Git repository, after which it runs the Argo CD `Task` to sync an application based on that repository.

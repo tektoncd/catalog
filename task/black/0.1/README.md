@@ -16,6 +16,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/bl
 
 - **shared-workspace**: The workspace containing python source code which we want to format. It can be a shared workspace with the `git-clone` task or a `ConfigMap` mounted containing some files.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 1. Create the `git-clone` task

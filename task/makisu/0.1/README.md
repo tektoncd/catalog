@@ -61,6 +61,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/ma
 
 * **image**: An `image`-type `PipelineResource` specify the image that should be built.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 This TaskRun runs the Task to fetch a Git repo, and build and push a container

@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Image Build
     tekton.dev/tags: image-build
     tekton.dev/displayName: "jib maven"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This Task builds Java/Kotlin/Groovy/Scala source into a container image using Google's Jib tool.

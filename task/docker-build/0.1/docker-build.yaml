@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Image Build
     tekton.dev/tags: docker, build-image, push-image, dind
     tekton.dev/displayName: docker-build
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This task will build and push an image using docker.

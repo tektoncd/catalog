@@ -8,6 +8,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/categories: Code Quality
     tekton.dev/tags: editor
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This Task is for running Prettier code formatter against the provided

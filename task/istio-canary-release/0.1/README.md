@@ -41,6 +41,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/is
 
 **Note**: The above parameters are used in case we need to do traffic splitting using virtual service and for creating a `VirtualService` then use the `ConfigMap` as shown below.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 # Usage
 
 1. Create `ConfigMap` for `Istio` manifests

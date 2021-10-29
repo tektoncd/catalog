@@ -10,7 +10,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: python, robot-framework
     tekton.dev/displayName: robot-framework
-
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This task will run Robot Framework tests in the source workspace.

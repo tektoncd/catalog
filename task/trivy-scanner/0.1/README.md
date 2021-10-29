@@ -33,3 +33,7 @@ tkn task start trivy-scanner -p ARGS="image,--exit-code,0" -p IMAGE_PATH="docker
 ```
 
 For Pipeline Example See <https://github.com/MoOyeg/trivy-tekton-example>
+
+## Platforms
+
+The Task can be run on `linux/amd64` platform.

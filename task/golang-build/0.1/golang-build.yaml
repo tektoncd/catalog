@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Build Tools
     tekton.dev/tags: build-tool
     tekton.dev/displayName: "golang build"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This Task is Golang task to build Go projects.

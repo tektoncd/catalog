@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Testing
     tekton.dev/tags: test
     tekton.dev/displayName: "golang test"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This Task is Golang task to test Go projects.

@@ -8,6 +8,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/categories: Cloud, Storage
     tekton.dev/tags: cloud, gcs
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     A Task that creates a new GCS bucket.

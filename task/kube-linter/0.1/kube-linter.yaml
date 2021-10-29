@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Code Quality
     tekton.dev/tags: Kubernetes, Misconfiguration
     tekton.dev/displayName: "Kube-Linter"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This task makes it possible to use kube-linter within Tekton Pipeline.

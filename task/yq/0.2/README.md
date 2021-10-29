@@ -18,6 +18,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/yq
 
 - **source** : The workspace containing files on which we want to do the replacement on a single file.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 For a real usage example checkout the [tests directory](https://github.com/tektoncd/catalog/tree/main/task/yq/0.2/tests) of this task for an example on how this task can be used on a Github repository. This can be used together with other git actions to commit such changes towards a GitOps repository for example which is automatically reconciled towards your infrastructure.

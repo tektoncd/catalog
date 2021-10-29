@@ -46,6 +46,10 @@ as well as
 * **commit**: The precise commit SHA that was fetched by this Task
 * **url**: The precise URL that was fetched by this Task
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 If the `revision` is not provided in the param of the taskrun

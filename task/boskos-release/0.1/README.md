@@ -24,6 +24,10 @@ serviceAccount that has the ability to delete `pods` (see [service-account.yaml]
 * **leased-resource**: The name of the leased resource. (_required_)
 * **owner-name**: A string that identifies the owner of the leased resource to request. (_required_)
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 See [samples/pipelinerun.yaml](samples/pipelinerun.yaml) for an example of a Pipeline that obtains

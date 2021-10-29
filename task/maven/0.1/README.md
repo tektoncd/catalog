@@ -37,6 +37,10 @@ spec:
       storage: 500Mi
 ```
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 This Pipeline and PipelineRun runs a Maven build

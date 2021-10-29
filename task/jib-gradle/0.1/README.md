@@ -26,6 +26,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/ji
 
 * **image**: The Docker image name to apply to the newly built image.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 This TaskRun runs the Task to fetch a Git repo, and build and push a container

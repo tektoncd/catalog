@@ -8,6 +8,7 @@ metadata:
   annotations:
     tekton.dev/categories: Cloud, Kubernetes
     tekton.dev/pipelines.minVersion: "0.16.0"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     With this Task, you can use your Orka environment

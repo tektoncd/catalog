@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Deployment
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: helm
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     These tasks will install / upgrade a helm chart into your Kubernetes /

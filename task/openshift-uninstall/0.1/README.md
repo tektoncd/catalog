@@ -24,6 +24,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/op
 
 - **OPENSHIFT_INSTALLER_IMAGE**: OpenShift installer base image for UPI installation (_default_: quay.io/openshift/origin-upi-installer:4.6)
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 Taking example of AWS :-

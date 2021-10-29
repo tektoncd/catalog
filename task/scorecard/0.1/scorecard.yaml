@@ -10,7 +10,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: scorecard
     tekton.dev/displayName: OSSF scorecard
-
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This task can be used to calculate the scorecard results for a repository

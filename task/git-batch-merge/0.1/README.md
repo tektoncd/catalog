@@ -38,6 +38,10 @@ There are 4 additional parameters in addition to the ones mentioned above for th
 * **commit**: The precise commit SHA that was fetched by this Task
 * **tree**: The [git tree][git-tree] object SHA that was created after batch merging the refs on HEAD.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ### Usage
 
 [git-ref](https://git-scm.com/book/en/v2/Git-Internals-Git-References)

@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Developer Tools
     tekton.dev/tags: tokens
     tekton.dev/displayName: "replace tokens"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This task can be used to replace tokens in a file.

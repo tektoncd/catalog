@@ -25,3 +25,7 @@ The gate can make use of any valid [range query](https://prometheus.io/docs/prom
 * **target_strategy:**: min, max or equals. p95/99 not supported yet
 * **timeout:**: Maximum ticker time for gate
 * **tick_time:**: How often to try to assert the desired SLO
+
+## Platforms
+
+The Task can be run on `linux/amd64` platform.

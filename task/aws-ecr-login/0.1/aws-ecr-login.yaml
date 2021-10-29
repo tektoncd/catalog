@@ -10,6 +10,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: aws, ecr
     tekton.dev/displayName: "Amazon ECR Login"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This task retrieves an `authentication token` using the GetAuthorizationToken API

@@ -11,6 +11,10 @@ In order to use Kubeval with Tekton you need to first install the task.
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kubeval/0.1/kubeval.yaml
 ```
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 Once installed, the task can be used as follows:

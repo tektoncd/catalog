@@ -10,6 +10,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: gate, prometheus
     tekton.dev/displayName: prometheus gate
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     A gate task which will query the prometheus API in a loop and await a matching status for N length of time.

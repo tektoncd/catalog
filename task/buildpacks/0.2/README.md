@@ -46,6 +46,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/bu
 
 The `source` workspace holds the source to build. See `SOURCE_SUBPATH` above if source is located within a subpath of this input.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 This `TaskRun` will use the `buildpacks` task to build the source code, then publish a container image.

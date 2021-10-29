@@ -8,6 +8,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/categories: Cloud
     tekton.dev/tags: "boskos,test"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: |
     Acquire a project using Boskos.

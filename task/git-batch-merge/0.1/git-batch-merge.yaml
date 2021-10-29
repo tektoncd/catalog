@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Git
     tekton.dev/tags: git
     tekton.dev/displayName: "git batch merge"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This task takes a set of refspecs, fetches them and performs git operations

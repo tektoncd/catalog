@@ -39,6 +39,10 @@ pull and rebase (_required_).
 
 The Task can be run on `linux/amd64`, `linux/s390x`, `linux/arm64`, and `linux/ppc64le` platforms.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ### Usage
 
 This task needs authentication to git in order to push after the rebase.

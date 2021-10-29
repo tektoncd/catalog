@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Cloud, Storage
     tekton.dev/tags: cloud, gcs
     tekton.dev/displayName: "Upload to GCS"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     A Task that uploads a GCS bucket.

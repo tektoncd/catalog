@@ -45,6 +45,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gi
 * **STATE**: The state of the status. Can be one of the following `error`,
   `failure`, `pending`, or `success`.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 This TaskRun sets a commit on GitHub to `pending` getting tested by the CI.

@@ -21,6 +21,10 @@ requests to the cluster.
 * **secrets**: A Secret containing the AWS credentials to run the create.
 * **kubeconfig**: A workspace into which a kubeconfig file called `kubeconfig` will be written that will contain the information required to access the cluster. The `kubeconfig` will expect to use [aws-iam-authenticator](https://github.com/kubernetes-sigs/aws-iam-authenticator/) to authenticate, so in order for it to be used it must be run in a container which contains both `kubectl` and `aws-iam-authenticator`.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 See [samples/create-eks-cluster.yaml](https://github.com/tektoncd/catalog/tree/main/task/eks-cluster-create/0.1/samples/create-eks-cluster.yaml) for an example of a TaskRun that creates a EKS cluster and writes the kubeconfig to a PVC.

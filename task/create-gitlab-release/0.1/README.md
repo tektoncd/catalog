@@ -34,6 +34,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/cr
 
 Check [this](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html) to get personal access token for `Gitlab`.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 This task expects a secret named gitlab-token to exists, with a Gitlab personal access token in `GITLAB_TOKEN` with enough privileges to create a release.

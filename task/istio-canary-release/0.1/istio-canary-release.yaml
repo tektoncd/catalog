@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Deployment
     tekton.dev/tags: canary deployment, istio
     tekton.dev/displayName: "istio canary release"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This task can be used to perform deployment of an application

@@ -54,6 +54,10 @@ https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/git/git-clone.yaml
 
 Sample IPAddress we will obtain using above command is like http://172.17.0.2:9000
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 1. `sonar-project.properties` present in Github Repository. For example :- following [repo](https://github.com/vinamra28/sonartest) contains the properties file and Sonar Host URL needs to be updated via the `params`.

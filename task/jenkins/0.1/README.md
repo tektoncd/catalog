@@ -70,6 +70,10 @@ stringData:
   apitoken: api-token
 ```
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 1. Start a job without parameters

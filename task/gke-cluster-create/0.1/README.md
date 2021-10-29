@@ -37,6 +37,10 @@ NodePort default range (https://kubernetes.io/docs/concepts/services-networking/
 
 * **cluster-name** The name of the cluster that was created.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 See [samples/create-gke-cluster.yaml](samples/create-gke-cluster.yaml) for an example of a TaskRun

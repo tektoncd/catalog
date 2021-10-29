@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Deployment
     tekton.dev/tags: deploy
     tekton.dev/displayName: "gke deploy"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This Task deploys an application to a Google Kubernetes Engine

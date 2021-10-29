@@ -8,6 +8,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/categories: Networking
     tekton.dev/tags: cloud
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This Task send a single CloudEvent to a specified sink.

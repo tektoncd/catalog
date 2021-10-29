@@ -28,6 +28,9 @@ https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.3/git-c
 
 > _Note_ :  Gitleaks provides some default rulesets for detecting secrets which you can find [here](https://github.com/zricethezav/gitleaks/blob/master/config/default.go). However, user is free to create rulesets as per his requirement by defining them inside (.toml) format file. To know how to write these config file, you can visit this [link](https://github.com/zricethezav/gitleaks#rules-summary). Also, if you want to checkout an example config file, please head over to this [link](https://raw.githubusercontent.com/urvashigupta7/secret_detection/master/gitleaks.toml). The config file can exist in the repository to be scanned or some other repository, if the config file is present in some other repository, you would need to provide url of **config_file_url** and the **config_file_path** where config file would be saved after fetching else you need to provide **config_file_path** only.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
 
 ## Usage
 

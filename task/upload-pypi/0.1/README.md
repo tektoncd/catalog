@@ -30,6 +30,10 @@ stringData:
 
 * **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md) containing the source to build.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 This TaskRun runs the Task to fetch a Git repo, and build and publishes a python module.

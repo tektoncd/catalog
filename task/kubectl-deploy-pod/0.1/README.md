@@ -46,6 +46,10 @@ The extracted value will be write to`/tekton/results/$(name)`.
 
 - **set-ownerreference**: Set the `ownerReferences` for the resource as pod of `step`, default to false.
 
+## Platforms
+
+The Task can be run on `linux/amd64` platform.
+
 ## Usage
 
 This TaskRun runs the Task to deploy the given Kubernetes resource.

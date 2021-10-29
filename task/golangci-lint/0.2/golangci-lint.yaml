@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Code Quality
     tekton.dev/tags: lint
     tekton.dev/displayName: "golangci lint"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     This Task is Golang task to validate Go projects.
