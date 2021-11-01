@@ -98,9 +98,9 @@ type -p pbcopy >/dev/null 2>/dev/null && copier=pbcopy
 (
     echo "<details><summary>Diff between version ${previous_task_version} and ${task_version}</summary>"
     echo
-    echo "\`\`\`diff"
+    echo "\`\`\`\`diff"
     diff -urN task/${task_name}/${previous_task_version} task/${task_name}/${task_version} 
-    echo "\`\`\`"
+    echo "\`\`\`\`"
     echo
     echo "</details>"
 )| tee ${difffilename} | ${copier}
