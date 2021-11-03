@@ -107,7 +107,7 @@ spec:
         mkdir -p "$ENV_DIR"
 
         for env in "${envs[@]}"; do
-            IFS='=' read -r key value string <<< "$env"
+            IFS='=' read -r key value <<< "$env"
             if [[ "$key" != "" && "$value" != "" ]]; then
                 path="${ENV_DIR}/${key}"
                 echo "--> Writing ${path}..."
@@ -154,8 +154,11 @@ spec:
       script: |
         #!/usr/bin/env bash
         set -e
-        cat /layers/report.toml | grep "digest" | cut -d'"' -f2 | cut -d'"' -f2 | tr -d '\n' | tee $(results.APP_IMAGE_DIGEST.path)
-        echo $(params.APP_IMAGE) | tee $(results.APP_IMAGE_URL.path)
+        grep "digest" /layers/report.toml | cut -d'"' -f2 | cut -d'"' -f2 | tr -d '\n' | tee $(results.APP_IMAGE_DIGEST.path)
+
+        # Disable shellcheck here since $() is use for variable substitution and not command execution.
+        # shellcheck disable=SC2005
+        echo "$(params.APP_IMAGE)" | tee $(results.APP_IMAGE_URL.path)
       volumeMounts:
         - name: layers-dir
           mountPath: /layers
