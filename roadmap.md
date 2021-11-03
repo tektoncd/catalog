@@ -22,4 +22,3 @@ even more useful by adding:
   - Support for testing components that depend on external services
 - Increased documentation and examples
 - Well defined Tekton API conformance
--
