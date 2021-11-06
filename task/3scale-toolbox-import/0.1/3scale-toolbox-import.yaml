@@ -1,0 +1,62 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  annotations:
+    tekton.dev/categories: 3ScaleToolbox
+    tekton.dev/displayName: 3scale Toolbox Import API
+    tekton.dev/pipelines.minVersion: 0.12.1
+    tekton.dev/platforms: 'llinux/amd64,linux/s390x,linux/ppc64le,linux/arm64'
+    tekton.dev/tags: 3scale-toolbox-import
+  name: 3scale-toolbox-import
+  labels:
+    app.kubernetes.io/version: '0.1'
+spec:
+  description: >-
+    This task runs commands using the 3scale-toolbox cli and import API
+    definition in OpenAPI specification from a local file or URL The 3scale
+    toolbox is a Ruby client that enables you to manage 3scale services from the
+    command line.
+  params:
+    - description: The path to the source
+      name: CONTEXT_DIR
+      type: string
+    - description: The path to openapi file or url to be imported
+      name: PATH_OPENAPI
+      type: string
+    - description: The name of 3scale target instance.
+      name: DESTINATION
+      type: string
+    - description: 'The URL of the API Backend, custom private base URL.'
+      name: PRIVATE_BASE_URL
+      type: string
+    - description: The Target system name.
+      name: TARGET_SYSTEM_NAME
+      type: string
+  steps:
+    - args:
+        - import
+        - openapi
+        - '-c'
+        - /config/.3scalerc.yaml
+        - '-d'
+        - $(inputs.params.DESTINATION)
+        - >-
+          /workspace/output/$(inputs.params.CONTEXT_DIR)/$(inputs.params.PATH_OPENAPI)
+        - '--override-private-base-url=$(inputs.params.PRIVATE_BASE_URL)'
+        - '--target_system_name=$(inputs.params.TARGET_SYSTEM_NAME)'
+      command:
+        - 3scale
+      image: quay.io/redhat/3scale-toolbox
+      name: import-openapi
+      resources: {}
+      volumeMounts:
+        - mountPath: /config
+          name: 3scale-config
+      workingDir: /workspaces/$(inputs.params.CONTEXT_DIR)
+  volumes:
+    - configMap:
+        name: toolbox-config
+      name: 3scale-config
+  workspaces:
+    - description: The source directory to be used.
+      name: output
