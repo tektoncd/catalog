@@ -47,7 +47,7 @@ spec:
         - '--target_system_name=$(inputs.params.TARGET_SYSTEM_NAME)'
       command:
         - 3scale
-      image: quay.io/redhat/3scale-toolbox:latest
+      image: quay.io/redhat/3scale-toolbox:v0.19.3
       name: import-openapi
       resources: {}
       volumeMounts:
