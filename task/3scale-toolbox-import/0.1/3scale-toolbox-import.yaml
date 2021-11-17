@@ -10,7 +10,6 @@ metadata:
   labels:
     app.kubernetes.io/version: '0.1'
   name: 3scale-toolbox-import
-  namespace: tekton-pipelines
 spec:
   description: >-
     This task runs commands using the 3scale-toolbox cli and import API
