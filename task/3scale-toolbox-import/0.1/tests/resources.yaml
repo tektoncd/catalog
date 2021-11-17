@@ -1,7 +1,7 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: 3scale-pipeline-pvc
+  name: 3scale-source-pvc
 spec:
   accessModes:
     - ReadWriteOnce

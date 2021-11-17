@@ -1,11 +1,11 @@
-# Maven
+# 3Scale Toolbox Import
 
 This Task can be used to run the 3scale toolbox and  import to your 3scale API directly from a local OpenAPI spec compliant file or a remote URL.
 
 ## Install the Task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/3scale-toolbox-import/0.1/3scale-toolbox-import.yaml.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/3scale-toolbox-import/0.1/3scale-toolbox-import.yaml
 ```
 
 ## Parameters
@@ -34,17 +34,18 @@ spec:
 
 ## Platforms
 
-The Task can be run on `linux/amd64` platform.
+The Task can be run on `linux/amd64`,`linux/s390x`,`linux/ppc64le` and `linux/arm64` platform.
 
 ## Usage
 
 This Pipeline and PipelineRun runs a 3scale toolbox import openapi
 
-### With .3scalerc
-Need to generate .3scalerc.yaml if it wasn't created.
+### With .3scalerc.yaml file
+The remote address can be used from .3scalerc.yaml file, need to create a configMap from .3scalerc.yaml file, it could be generated with the command below.
 $ 3scale remote add https://{ACCESS_KEY}@{3SCALE_ADMIN}-admin.{DOMAIN_NAME}
 
-oc create cm toolbox-config \
+Create configMap from file
+$ oc create cm toolbox-config \
   --from-file=.3scalerc.yaml=$HOME/.3scalerc.yaml
 
 ```yaml

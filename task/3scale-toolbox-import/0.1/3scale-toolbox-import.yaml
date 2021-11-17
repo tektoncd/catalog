@@ -1,15 +1,16 @@
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1alpha1
 kind: Task
 metadata:
   annotations:
+    tekton.dev/categories: CLI
     tekton.dev/displayName: 3scale Toolbox Import API
     tekton.dev/pipelines.minVersion: 0.12.1
-    tekton.dev/platforms: 'llinux/amd64,linux/s390x,linux/ppc64le,linux/arm64'
+    tekton.dev/platforms: linux/amd64,linux/s390x,linux/ppc64le,linux/arm64
     tekton.dev/tags: 3scale
-    tekton.dev/categories: CLI
-  name: 3scale-toolbox-import
   labels:
     app.kubernetes.io/version: '0.1'
+  name: 3scale-toolbox-import
+  namespace: tekton-pipelines
 spec:
   description: >-
     This task runs commands using the 3scale-toolbox cli and import API
@@ -26,7 +27,7 @@ spec:
     - description: The name of 3scale target instance.
       name: DESTINATION
       type: string
-    - description: 'The URL of the API Backend, custom private base URL.'
+    - description: The URL of the API Backend, custom private base URL.
       name: PRIVATE_BASE_URL
       type: string
     - description: The Target system name.
@@ -36,27 +37,17 @@ spec:
     - args:
         - import
         - openapi
-        - '-c'
-        - /config/.3scalerc.yaml
         - '-d'
-        - $(inputs.params.DESTINATION)
-        - >-
-          /workspace/output/$(inputs.params.CONTEXT_DIR)/$(inputs.params.PATH_OPENAPI)
-        - '--override-private-base-url=$(inputs.params.PRIVATE_BASE_URL)'
-        - '--target_system_name=$(inputs.params.TARGET_SYSTEM_NAME)'
+        - $(params.DESTINATION)
+        - /workspace/output/$(params.CONTEXT_DIR)/$(params.PATH_OPENAPI)
+        - '--override-private-base-url=$(params.PRIVATE_BASE_URL)'
+        - '--target_system_name=$(params.TARGET_SYSTEM_NAME)'
       command:
         - 3scale
       image: quay.io/redhat/3scale-toolbox:v0.19.3
       name: import-openapi
       resources: {}
-      volumeMounts:
-        - mountPath: /config
-          name: 3scale-config
-      workingDir: /workspaces/$(inputs.params.CONTEXT_DIR)
-  volumes:
-    - configMap:
-        name: toolbox-config
-      name: 3scale-config
+      workingDir: /workspaces/output/$(params.CONTEXT_DIR)
   workspaces:
     - description: The source directory to be used.
       name: output

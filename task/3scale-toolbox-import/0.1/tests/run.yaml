@@ -1,9 +1,12 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1alpha1
 kind: Pipeline
 metadata:
   name: pipeline-import-openapi-sample
 spec:
+  params:
+    - name: REMOTE_DESTINATION
+      type: string
   tasks:
     - name: 3scale-toolbox-import
       params:
@@ -12,11 +15,11 @@ spec:
         - name: PATH_OPENAPI
           value: swagger.json
         - name: PRIVATE_BASE_URL
-          value: 'http://sample.svc.cluster.local:8080'
+          value: http://sample.svc.cluster.local:8080
         - name: TARGET_SYSTEM_NAME
           value: sample_api
         - name: DESTINATION
-          value: 3scale28
+          value: $(params.REMOTE_DESTINATION)
       runAfter:
         - git-clone
       taskRef:
@@ -28,7 +31,7 @@ spec:
     - name: git-clone
       params:
         - name: url
-          value: 'https://github.com/rafamqrs/camel-quarkus-openapi.git'
+          value: https://github.com/rafamqrs/camel-quarkus-openapi.git
         - name: revision
           value: main
         - name: submodules
@@ -43,11 +46,8 @@ spec:
           value: 'true'
         - name: verbose
           value: 'true'
-        - name: gitInitImage
-          value: >-
-            registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:afc5d3f9efe26c7042635d43b8ffd09d67936e3d0b6b901dc08a33e20313d361
       taskRef:
-        kind: ClusterTask
+        kind: Task
         name: git-clone
       workspaces:
         - name: output
@@ -55,16 +55,21 @@ spec:
   workspaces:
     - name: shared-workspace
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1alpha1
 kind: PipelineRun
 metadata:
-  name: pipeline-import-openapi-sample-q6paqc
+  generateName: pipeline-import-openapi-sample-run-
   labels:
     tekton.dev/pipeline: pipeline-import-openapi-sample
+  name: pipeline-import-openapi-sample-run
 spec:
+  params:
+    - name: REMOTE_DESTINATION
+      value: >-
+        https://13ec5907fc051adf4ee4b419882c0f55d6b000c8b26495081551933402a76906@3scale-admin.apps.cluster-7f5a.7f5a.example.opentlc.com
   pipelineRef:
     name: pipeline-import-openapi-sample
   workspaces:
     - name: shared-workspace
       persistentVolumeClaim:
-        claimName: 3scale-pipeline-pvc
+        claimName: 3scale-source-pvc
