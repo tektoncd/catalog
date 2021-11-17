@@ -36,7 +36,3 @@ spec:
   workspaces:
     - emptyDir: {}
       name: shared-workspace
-
-
-
-
