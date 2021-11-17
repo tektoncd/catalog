@@ -4,7 +4,6 @@ kind: Pipeline
 metadata:
   name: pipeline-import-openapi-sample
 spec:
-  params:
   tasks:
     - name: 3scale-toolbox-import
       params:
