@@ -28,6 +28,31 @@ The process for contributing looks like this:
    3. Includes [OWNERS](#owning-and-maintaining-a-task)
 4. Submit a pull request.
 
+## How to Contribute a new version of a Task or Pipeline
+
+If you are planning to add a new version of a Task or Pipeline make sure to
+separate your changes from the copied task. This makes it easy for reviewers to
+review the changes and not the actual copy.
+
+For example if you have to bump the catalog task called `foo` from `0.1` to
+`0.2` you simply first copy the old task :
+
+```shell
+% cp -a tasks/foo/0.1 tasks/foo/0.2
+```
+
+and then immediately commit that change :
+
+```shell
+% git add tasks/foo/0.2
+% git commit -m "Copy task foo from 0.1 to 0.2
+```
+
+and then add your change and commit it.
+
+This will result to a clean git log and makes it easier to only see your
+changes.
+
 ### Guidelines
 
 When reviewing PRs that add new `Task`s or `Pipeline`s, maintainers will follow
