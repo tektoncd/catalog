@@ -39,7 +39,7 @@ spec:
         - openapi
         - '-d'
         - $(params.DESTINATION)
-        - /workspace/output/$(params.CONTEXT_DIR)/$(params.PATH_OPENAPI)
+        - $(params.PATH_OPENAPI)
         - '--override-private-base-url=$(params.PRIVATE_BASE_URL)'
         - '--target_system_name=$(params.TARGET_SYSTEM_NAME)'
       command:
@@ -51,3 +51,4 @@ spec:
   workspaces:
     - description: The source directory to be used.
       name: output
+      optional: true
