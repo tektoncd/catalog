@@ -1,6 +1,6 @@
 # `git-clone`
 
-**Please Note: this Task is only compatible with Tekton Pipelines versions 0.21.0 and greater!**
+**Please Note: this Task is only compatible with Tekton Pipelines versions 0.29.0 and greater!**
 
 This `Task` has two required inputs:
 
