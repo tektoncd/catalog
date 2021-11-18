@@ -25,6 +25,7 @@ spec:
   workspaces:
     - name: secrets
       mountPath: /tekton/home/.aws
+      optional: true
   params:
     - name: region
       type: string
