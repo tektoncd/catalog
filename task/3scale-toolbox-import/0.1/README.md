@@ -11,13 +11,13 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/3s
 ## Parameters
 
 - **CONTEXT_DIR**: The path to the source
-- **PATH_OPENAPI**: The path to openapi file or url to be imported
+- **PATH_OPENAPI**: The path to swagger file or url to be imported
 - **DESTINATION**: The name of 3scale target instance.
 - **PRIVATE_BASE_URL**: The URL of the API Backend, custom private base URL.
 - **TARGET_SYSTEM_NAME**: The Target system name.
 ## Workspaces
 
-- **source**: `PersistentVolumeClaim`-type so that volume can be shared among `git-clone` and `import` task
+- **source**: `PersistentVolumeClaim`-type so that volume can be shared among `git-clone` and `import` task if you want to use the `swagger.json`
 
 ```yaml
 apiVersion: v1
@@ -40,7 +40,7 @@ The Task can be run on `linux/amd64`,`linux/s390x`,`linux/ppc64le` and `linux/ar
 
 This Pipeline and PipelineRun runs a 3scale toolbox import openapi
 
-### With .3scalerc.yaml file
+### 3Scale Authentication with .3scalerc.yaml file
 The remote address can be used from .3scalerc.yaml file, need to create a configMap from .3scalerc.yaml file, it could be generated with the command below.
 $ 3scale remote add https://{ACCESS_KEY}@{3SCALE_ADMIN}-admin.{DOMAIN_NAME}
 
@@ -65,7 +65,7 @@ data:
 ### With Defaults
 
 ```yaml
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1alpha1
 kind: Pipeline
 metadata:
   name: pipeline-import-openapi-sample
@@ -76,64 +76,30 @@ spec:
         - name: CONTEXT_DIR
           value: shared-workspace
         - name: PATH_OPENAPI
-          value: swagger.json
+          value: https://raw.githubusercontent.com/rafamqrs/camel-quarkus-openapi/main/swagger.json
         - name: PRIVATE_BASE_URL
-          value: 'http://sample.svc.cluster.local:8080'
+          value: http://sample.svc.cluster.local:8080
         - name: TARGET_SYSTEM_NAME
           value: sample_api
         - name: DESTINATION
-          value: 3scale28
-      runAfter:
-        - git-clone
+          value: https://<ACCESS_KEY>@<3SCALE_ADMIN_URL>
       taskRef:
         kind: Task
         name: 3scale-toolbox-import
-      workspaces:
-        - name: output
-          workspace: shared-workspace
-    - name: git-clone
-      params:
-        - name: url
-          value: 'https://github.com/rafamqrs/camel-quarkus-openapi.git'
-        - name: revision
-          value: main
-        - name: submodules
-          value: 'true'
-        - name: depth
-          value: '1'
-        - name: sslVerify
-          value: 'true'
-        - name: subdirectory
-          value: shared-workspace
-        - name: deleteExisting
-          value: 'true'
-        - name: verbose
-          value: 'true'
-        - name: gitInitImage
-          value: >-
-            registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:afc5d3f9efe26c7042635d43b8ffd09d67936e3d0b6b901dc08a33e20313d361
-      taskRef:
-        kind: ClusterTask
-        name: git-clone
-      workspaces:
-        - name: output
-          workspace: shared-workspace
   workspaces:
     - name: shared-workspace
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1alpha1
 kind: PipelineRun
 metadata:
-  name: pipeline-import-openapi-sample-q6paqc
   labels:
     tekton.dev/pipeline: pipeline-import-openapi-sample
+  name: pipeline-import-openapi-sample-run
 spec:
   pipelineRef:
     name: pipeline-import-openapi-sample
   workspaces:
-    - name: shared-workspace
-      persistentVolumeClaim:
-        claimName: 3scale-pipeline-pvc
+    - emptyDir: {}
+      name: shared-workspace
 ```
-
 ---
