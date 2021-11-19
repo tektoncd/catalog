@@ -53,4 +53,8 @@ spec:
           fi
           pip install pytest
         fi
-        pytest "$(inputs.params.ARGS)" "$(inputs.params.SOURCE_PATH)"
+        if [ -z "$(inputs.params.ARGS)" ]; then
+          pytest "$(inputs.params.SOURCE_PATH)"
+        else
+          pytest "$(inputs.params.ARGS)" "$(inputs.params.SOURCE_PATH)"
+        fi
