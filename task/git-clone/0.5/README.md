@@ -143,6 +143,10 @@ hold your credentials and bind to this workspace.
       config: # ... base64-encoded ssh config file ...
     ```
 
+    It's highly recommended to use the default id_rsa as the secret name rather than
+    a custom name since id_rsa is the default used by SSH. If a custom name is desired
+    a ~/.ssh/config would need to be generated before the git-clone call.
+
     Including `known_hosts` is optional but strongly recommended. Without it
     the `git-clone` Task will blindly accept the remote server's identity.
 
@@ -204,7 +208,7 @@ as password and generally be able to use `git` as the username.
 On bitbucket server the token may have a / into it so you would need
 to urlquote them before in the `Secret`, see this stackoverflow answer :
 
-https://stackoverflow.com/a/24719496 
+https://stackoverflow.com/a/24719496
 
 To support basic-auth this Task exposes an optional `basic-auth` Workspace.
 The bound Workspace must contain a `.gitconfig` and `.git-credentials` file.
@@ -224,4 +228,3 @@ stringData:
   .git-credentials: |
     https://<user>:<pass>@<hostname>
 ```
-
