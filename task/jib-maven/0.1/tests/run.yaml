@@ -48,7 +48,7 @@ spec:
     name: jib-maven-test-pipeline
   workspaces:
   - name: shared-workspace
-    persistentvolumeclaim:
+    persistentVolumeClaim:
       claimName: jib-maven-source-pvc
   resources:
   - name: build-image
