@@ -12,6 +12,8 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/np
 
 - **PATH_CONTEXT**: The path where `package.json` of the project is defined. (_Default: `"."`_)
 
+- **PACKAGE_MANAGER**: The package manager you want to run from the nodejs env. (_Default: `npm`_)
+
 - **ARGS**: The npm goals you want to run. (_Default: `version`_)
 
 - **IMAGE**: The node image you want to use. (_Default: docker.io/library/node:12-alpine@sha256:12048cdfd75d944df35f3144132d9bdeee78015fbd6df765edad1be46599b110_)

@@ -3,7 +3,7 @@ kind: Task
 metadata:
   name: npm
   labels:
-    app.kubernetes.io/version: "0.1"
+    app.kubernetes.io/version: "0.2"
   annotations:
     tekton.dev/pipelines.minVersion: "0.17.0"
     tekton.dev/categories: Build Tools
@@ -23,10 +23,14 @@ spec:
       type: string
       default: "."
       description: The path where package.json of the project is defined.
+    - name: PACKAGE_MANAGER
+      type: string
+      default: "npm"
+      description: The package manager you want to run from the nodejs env.
     - name: ARGS
       type: array
       default: ["version"]
-      description: The npm goals you want to run.
+      description: The goals you want to run for the given command.
     - name: IMAGE
       type: string
       default: "docker.io/library/node:12-alpine@sha256:dfbebf17bfb014e1e7068e76325a117bccf8679c68aec6a28514184a209c8bae"
@@ -35,7 +39,7 @@ spec:
     - name: npm-run
       image: $(params.IMAGE)
       command:
-        - "npm"
+        - $(params.PACKAGE_MANAGER)
       args:
         - $(params.ARGS)
       workingDir: $(workspaces.source.path)/$(params.PATH_CONTEXT)
