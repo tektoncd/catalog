@@ -1,0 +1,65 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: yarn-run
+spec:
+  workspaces:
+    - name: shared-workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 5Gi
+  pipelineSpec:
+    workspaces:
+      - name: shared-workspace
+    tasks:
+      - name: fetch-repository
+        taskRef:
+          name: git-clone
+        workspaces:
+          - name: output
+            workspace: shared-workspace
+        params:
+          - name: url
+            value: https://gitlab.com/otmane.guourch/yarntest
+          - name: subdirectory
+            value: ""
+          - name: deleteExisting
+            value: "true"
+      - name: install-dependencies
+        taskRef:
+          name: npm
+        workspaces:
+          - name: source
+            workspace: shared-workspace
+        params:
+          - name: COMMAND
+            value: "yarn"
+          - name: PATH_CONTEXT
+            value: "app"
+          - name: ARGS
+            value:
+              - install
+              - --cache-folder
+              - /workspace 
+        runAfter:
+          - fetch-repository
+      - name: run-test
+        taskRef:
+          name: npm
+        workspaces:
+          - name: source
+            workspace: shared-workspace
+        params:
+          - name: COMMAND
+            value: "yarn"
+          - name: PATH_CONTEXT
+            value: "app"
+          - name: ARGS
+            value:
+              - test
+        runAfter:
+          - install-dependencies
