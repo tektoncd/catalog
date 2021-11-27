@@ -1,0 +1,55 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: send-to-webhook-discord
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Messaging
+    tekton.dev/tags: messaging
+    tekton.dev/displayName: "Send a message to Discord channel"
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
+spec:
+  description: >-
+    These tasks post a message to a Discord channel.
+
+    This task uses Webhooks integration of Discord channel to send a message.
+
+  params:
+  - name: webhook-secret
+    type: string
+    description: secret name of Discord webhook URL
+  - name: message
+    type: string
+    description: plain text message
+    default: 'Hello World from Tekton Bot'
+  - name: bot-name
+    type: string
+    description: plain text message
+    default: 'Tekton Bot'
+  - name: avatar-url
+    type: string
+    description: url avatar image
+    default: 'https://github.com/tektoncd.png'
+  steps:
+  - name: post
+    image: docker.io/curlimages/curl:7.70.0@sha256:031df77a11e5edded840bc761a845eab6e3c2edee22669fb8ad6d59484b6a1c4 #tag: 7.70.0
+    script: |
+      #!/usr/bin/env sh
+      MESSAGE=$(echo "${MESSAGE}" | sed -e 's/\"/\\\\"/g')
+      BOTNAME=$(echo "${BOTNAME}" | sed -e 's/\"/\\\\"/g')
+      JSON="{\"content\": \"${MESSAGE}\", \"username\": \"${BOTNAME}\", \"avatar_url\": \"${AVATAR}\"}"
+      curl -X POST "${URL}" -H 'Content-Type: application/json' -d "${JSON}"
+    env:
+    - name: URL
+      valueFrom:
+        secretKeyRef:
+          name: $(params.webhook-secret)
+          key: url
+    - name: MESSAGE
+      value: $(params.message)
+    - name: BOTNAME
+      value: $(params.bot-name)
+    - name: AVATAR
+      value: $(params.avatar-url)
