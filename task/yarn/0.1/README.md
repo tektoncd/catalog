@@ -28,7 +28,7 @@ The Task can be run on `linux/amd64`, `linux/s390x`, and `linux/ppc64le` platfor
 
 1. Apply the [`git-clone`](https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.2/git-clone.yaml) task which will help to clone the repository.
 
-2. Apply the sample [yarn-run.yaml](https://raw.githubusercontent.com/tektoncd/catalog/main/task/yarn/0.1/tests/yarn-run.yaml) which will clone the [tektoncd/hub](https://github.com/tektoncd/hub) repo and perform few npm goals:-
+2. Apply the sample [yarn-run.yaml](https://raw.githubusercontent.com/tektoncd/catalog/main/task/yarn/0.1/tests/yarn-run.yaml) which will clone the [tektoncd/hub](https://github.com/tektoncd/hub) repo and perform few yarn goals:-
    - install dependencies using `yarn install` or just `yarn`  
    - run unit tests using `yarn test`
    - run build tests using `yarn run build`
