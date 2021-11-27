@@ -29,15 +29,14 @@ spec:
             value: ""
           - name: deleteExisting
             value: "true"
+
       - name: install-dependencies
         taskRef:
-          name: npm
+          name: yarn
         workspaces:
           - name: source
             workspace: shared-workspace
-        params:
-          - name: COMMAND
-            value: "yarn"
+        params:          
           - name: PATH_CONTEXT
             value: "app"
           - name: ARGS
@@ -47,15 +46,14 @@ spec:
               - /workspace 
         runAfter:
           - fetch-repository
+
       - name: run-test
         taskRef:
-          name: npm
+          name: yarn
         workspaces:
           - name: source
             workspace: shared-workspace
-        params:
-          - name: COMMAND
-            value: "yarn"
+        params:          
           - name: PATH_CONTEXT
             value: "app"
           - name: ARGS
