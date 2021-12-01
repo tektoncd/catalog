@@ -63,6 +63,8 @@ spec:
     env:
     - name: HOME
       value: /workspace
+    - name: "DOCKER_CONFIG"
+      value: $(credentials.path)/.docker/
     volumeMounts:
     # empty volume required to make the Gradle home globally writable
     - name: empty-dir-volume
