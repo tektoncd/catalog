@@ -1,0 +1,53 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: buildkit-daemonless
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/categories: Image Build
+    tekton.dev/tags: image-build
+    tekton.dev/displayName: "buildkit daemonless"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    This Task builds source into a container image using Moby BuildKit.
+
+    This buildkit-daemonless Task is similar to buildkit but does not need
+    creating Secret, Deployment, and Service resources for setting up the
+    buildkitd daemon cluster.
+
+  params:
+  - name: IMAGE
+    description: Name (reference) of the image to build
+  - name: DOCKERFILE
+    description: The name of the Dockerfile
+    default: "Dockerfile"
+  - name: BUILDKIT_IMAGE
+    description: The name of the BuildKit image
+    default: "docker.io/moby/buildkit:v0.9.3-rootless@sha256:d877f877f7411804fefaf90071464913130f8d34fe5797ac2f7164ddf816d27c"
+  workspaces:
+  - name: source
+  - name: dockerconfig
+    optional: true
+    mountPath: /home/user/.docker
+  steps:
+  - name: build-and-push
+    image: $(params.BUILDKIT_IMAGE)
+    workingDir: $(workspaces.source.path)
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+    env:
+    - name: BUILDKITD_FLAGS
+      value: --oci-worker-no-process-sandbox
+    command: ["buildctl-daemonless.sh", "--debug",
+              "build",
+              "--progress=plain",
+              "--frontend=dockerfile.v0",
+              "--opt", "filename=$(params.DOCKERFILE)",
+              "--local", "context=.", "--local", "dockerfile=.",
+              "--output", "type=image,name=$(params.IMAGE),push=true",
+              "--export-cache", "type=inline",
+              "--import-cache", "type=registry,ref=$(params.IMAGE)"]

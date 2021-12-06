@@ -1,0 +1,51 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: buildkit-daemonless-test-pipeline
+spec:
+  workspaces:
+  - name: shared-workspace
+  params:
+  - name: image
+    description: reference of the image to build
+  tasks:
+  - name: fetch-repository
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: shared-workspace
+    params:
+    - name: url
+      value: https://github.com/kelseyhightower/nocode
+    - name: subdirectory
+      value: ""
+    - name: deleteExisting
+      value: "true"
+  - name: buildkit-daemonless
+    taskRef:
+      name: buildkit-daemonless
+    runAfter:
+    - fetch-repository
+    workspaces:
+    - name: source
+      workspace: shared-workspace
+    params:
+    - name: IMAGE
+      value: $(params.image)
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: buildkit-daemonless-pipeline-run
+spec:
+  pipelineRef:
+    name: buildkit-daemonless-test-pipeline
+  params:
+  - name: image
+    value: localhost:5000/buildkit-daemonless-nocode
+  workspaces:
+  - name: shared-workspace
+    persistentvolumeclaim:
+      claimName: buildkit-daemonless-source-pvc
