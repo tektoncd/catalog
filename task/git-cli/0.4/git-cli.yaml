@@ -4,7 +4,7 @@ kind: Task
 metadata:
   name: git-cli
   labels:
-    app.kubernetes.io/version: "0.3"
+    app.kubernetes.io/version: "0.4"
   annotations:
     tekton.dev/pipelines.minVersion: "0.21.0"
     tekton.dev/categories: Git
