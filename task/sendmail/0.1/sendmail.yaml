@@ -57,7 +57,7 @@ spec:
           server = smtplib.SMTP(smtp_server, port)
       if password != '':
           server.login(user, password)
-      for receiver in receiver_emails.split(' '):
+      for receiver in [item for item in receiver_emails.split(' ') if item]:
           server.sendmail(sender_email, receiver, message.encode('utf-8'))
       server.quit()
     env:
