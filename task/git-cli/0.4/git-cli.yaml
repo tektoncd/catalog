@@ -86,6 +86,12 @@ spec:
       type: string
       default: "true"
 
+    - name: GIT_SSH_COMMAND
+      description: |
+        SSH command git uses when connecting to the remote.
+      type: string
+      default: ""
+
   results:
     - name: commit
       description: The precise commit SHA after the git operation.
@@ -109,6 +115,8 @@ spec:
         value: $(workspaces.basic-auth.bound)
       - name: WORKSPACE_BASIC_AUTH_DIRECTORY_PATH
         value: $(workspaces.basic-auth.path)
+      - name: GIT_SSH_COMMAND
+        value: $(params.GIT_SSH_COMMAND)
       script: |
         #!/usr/bin/env sh
         set -eu
@@ -125,8 +133,9 @@ spec:
         fi
 
         if [ "${WORKSPACE_SSH_DIRECTORY_BOUND}" = "true" ] ; then
-          cp -R "${WORKSPACE_SSH_DIRECTORY_PATH}" "${PARAM_USER_HOME}"/.ssh
+          mkdir -p "${PARAM_USER_HOME}"/.ssh
           chmod 700 "${PARAM_USER_HOME}"/.ssh
+          cp -RL "${WORKSPACE_SSH_DIRECTORY_PATH}"/* "${PARAM_USER_HOME}"/.ssh
           chmod -R 400 "${PARAM_USER_HOME}"/.ssh/*
         fi
 
