@@ -1,0 +1,46 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: dockerslim-test-pipeline
+spec:
+  workspaces:
+  - name: shared-workspace
+  tasks:
+  - name: fetch-repository
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: shared-workspace
+    params:
+    - name: url
+      value: https://gitlab.com/synacksynack/opsperator/docker-squid
+    - name: subdirectory
+      value: ""
+    - name: deleteExisting
+      value: "true"
+  - name: dockerslim-build
+    taskRef:
+      name: dockerslim-build
+    runAfter:
+    - fetch-repository
+    workspaces:
+    - name: source
+      workspace: shared-workspace
+    params:
+    - name: image
+      value: registry.dockerslim-build-0-1.svc.cluster.local:5000/squid
+    - name: insecure_registry
+      value: registry.dockerslim-build-0-1.svc.cluster.local:5000
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: dockerslim-test-pipeline-run
+spec:
+  pipelineRef:
+    name: dockerslim-test-pipeline
+  workspaces:
+  - name: shared-workspace
+    persistentVolumeClaim:
+      claimName: dockerslim-source-pvc

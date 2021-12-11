@@ -1,0 +1,14 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: dockerslim-build
+spec:
+  params:
+  - name: image
+    value: localhost:5000/squid
+  taskRef:
+    name: dockerslim-task
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: dockerslim-source-pvc
