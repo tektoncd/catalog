@@ -1,0 +1,78 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: golang-build
+  labels:
+    app.kubernetes.io/version: "0.3"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Build Tools
+    tekton.dev/tags: build-tool
+    tekton.dev/displayName: "golang build"
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
+spec:
+  description: >-
+    This Task is Golang task to build Go projects.
+
+  params:
+  - name: package
+    description: base package to build in
+  - name: packages
+    description: "packages to build (default: ./cmd/...)"
+    default: "./cmd/..."
+  - name: version
+    description: golang version to use for builds
+    default: "latest"
+  - name: flags
+    description: flags to use for the test command
+    default: -v
+  - name: GOOS
+    description: "running program's operating system target"
+    default: linux
+  - name: GOARCH
+    description: "running program's architecture target"
+    default: amd64
+  - name: GO111MODULE
+    description: "value of module support"
+    default: auto
+  - name: GOCACHE
+    description: "Go caching directory path"
+    default: ""
+  - name: GOMODCACHE
+    description: "Go mod caching directory path"
+    default: ""
+  - name: CGO_ENABLED
+    description: "Toggle cgo tool during Go build. Use value '0' to disable cgo (for static builds)."
+    default: ""
+  - name: GOSUMDB
+    description: "Go checksum database url. Use value 'off' to disable checksum validation."
+    default: ""
+  workspaces:
+  - name: source
+  steps:
+  - name: build
+    image: docker.io/library/golang:$(params.version)
+    workingDir: $(workspaces.source.path)
+    script: |
+      if [ ! -e $GOPATH/src/$(params.package)/go.mod ];then
+        SRC_PATH="$GOPATH/src/$(params.package)"
+        mkdir -p $SRC_PATH
+        cp -R "$(workspaces.source.path)"/* $SRC_PATH
+        cd $SRC_PATH
+      fi
+      go build $(params.flags) $(params.packages)
+    env:
+    - name: GOOS
+      value: "$(params.GOOS)"
+    - name: GOARCH
+      value: "$(params.GOARCH)"
+    - name: GO111MODULE
+      value: "$(params.GO111MODULE)"
+    - name: GOCACHE
+      value: "$(params.GOCACHE)"
+    - name: GOMODCACHE
+      value: "$(params.GOMODCACHE)"
+    - name: CGO_ENABLED
+      value: "$(params.CGO_ENABLED)"
+    - name: GOSUMDB
+      value: "$(params.GOSUMDB)"
