@@ -115,8 +115,6 @@ spec:
         value: $(workspaces.basic-auth.bound)
       - name: WORKSPACE_BASIC_AUTH_DIRECTORY_PATH
         value: $(workspaces.basic-auth.path)
-      - name: GIT_SSH_COMMAND
-        value: $(params.GIT_SSH_COMMAND)
       script: |
         #!/usr/bin/env sh
         set -eu
