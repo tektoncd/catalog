@@ -86,9 +86,9 @@ spec:
       type: string
       default: "true"
 
-    - name: GIT_SSH_COMMAND
+    - name: GIT_EXTRA_ENV_VARS
       description: |
-        SSH command git uses when connecting to the remote.
+          Additional environment variables for git-cli operations
       type: string
       default: ""
 
@@ -123,6 +123,10 @@ spec:
 
         if [ "${PARAM_VERBOSE}" = "true" ] ; then
           set -x
+        fi
+
+        if [ ! -z "$(params.GIT_EXTRA_ENV_VARS)" ]; then
+            export "$(params.GIT_EXTRA_ENV_VARS)"
         fi
 
         if [ "${WORKSPACE_BASIC_AUTH_DIRECTORY_BOUND}" = "true" ] ; then
