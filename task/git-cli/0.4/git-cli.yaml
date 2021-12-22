@@ -88,7 +88,7 @@ spec:
 
     - name: GIT_EXTRA_ENV_VARS
       description: |
-          Additional environment variables for git-cli operations
+          Additional environment variables to set for git-cli operations
       type: string
       default: ""
 

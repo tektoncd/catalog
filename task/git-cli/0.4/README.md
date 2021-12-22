@@ -44,7 +44,7 @@ Command that needs to be run can be passed as a script to the task.
 * **GIT_SCRIPT**: The git script to run. (_required_)
 * **VERBOSE**: Log the commands that are executed during `git-cli`'s operation. (_default_: true)
 * **USER_HOME**: The user's home directory. Set this explicitly if you are running the image as a non-root user. (_default_: "/root")
-* **GIT_SSH_COMMAND**: SSH command git uses when connecting to the remote.
+* **GIT_EXTRA_ENV_VARS**: Additional environment variables to set for git operations
 
 ### Results
 
