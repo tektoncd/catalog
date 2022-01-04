@@ -11,8 +11,8 @@ spec:
       value: |
         kubectl patch deployment $1 --patch='{"spec":{"template":{"spec":{
           "containers":[{
-            "name": $1,
-            "image":$2
+            "name": "'$1'",
+            "image": "'$2'"
           }]
         }}}}'
     - name: args
