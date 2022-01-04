@@ -33,6 +33,9 @@ spec:
       workingDir: $(workspaces.source.path)
       args: ["$(params.files[*])"]
       script: |
+        /usr/bin/env sh
+        set -e
+
         for var in "$@"
         do
             /usr/bin/yq eval -i "$(params.expression)" "$var"
