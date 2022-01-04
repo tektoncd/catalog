@@ -1,0 +1,39 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: yq
+  labels:
+    app.kubernetes.io/version: "0.3"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Developer Tools
+    tekton.dev/tags: yq
+    tekton.dev/displayName: "YQ replace"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    This task can be used to replace fields in YAML files. For example for altering helm charts on GitOps repos.
+  workspaces:
+    - name: source
+      description: A workspace that contains the file which needs to be altered.
+  params:
+    - name: files
+      type: array
+      description: A list of files to execute the expression on. Needs to be relative to the source workspace.
+    - name: expression
+      type: string
+      description: The yq expression to apply. Can be used to replace yaml fields.
+    - name: image
+      type: string
+      description: The yq image to use.
+      default: docker.io/mikefarah/yq:4.16.2@sha256:0d4f6e27bdcac7316f635acd524ab0eecc4ad50834b54d10322268650c7712cb
+  steps:
+    - name: replace-in-yaml
+      image: $(params.image)
+      workingDir: $(workspaces.source.path)
+      args: ["$(params.files[*])"]
+      script: |
+        for var in "$@"
+        do
+            /usr/bin/yq eval -i "$(params.expression)" "$var"
+        done
