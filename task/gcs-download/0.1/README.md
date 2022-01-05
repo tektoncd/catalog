@@ -82,7 +82,7 @@ spec:
       value: "true"
   - name: print-readme
     taskRef:
-      name: cat-readme
+      name: cat-file
     runAfter:
     - copy-files # required to ensure copy occurs before cat
     workspaces:
