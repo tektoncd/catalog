@@ -1,0 +1,58 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  annotations:
+    tekton.dev/categories: Code Quality
+    tekton.dev/displayName: Hadolint
+    tekton.dev/pipelines.minVersion: 0.12.1
+    tekton.dev/platforms: linux/amd64
+    tekton.dev/tags: 'Kubernetes, Misconfiguration'
+  name: hadolint
+  labels:
+    app.kubernetes.io/version: '0.1'
+spec:
+  description: >-
+    This task makes it possible to use Hadolint within Tekton Pipeline.
+
+    A smarter Dockerfile linter that helps you build best practice Docker
+    images. The linter parses the Dockerfile into an AST and performs rules on
+    top of the AST
+  params:
+    - default: ''
+      description: ignore rules.
+      name: ignore-rules
+      type: string
+    - default: './Dockerfile'
+      description: Dockerfile path.
+      name: dockerfile-path
+      type: string
+    - default: tty
+      description: >-
+        The output format for the results [tty | json | checkstyle | codeclimate
+        | gitlab_codeclimate | codacy] (default tty).
+      name: output-format
+      type: string
+  steps:
+    - image: 'ghcr.io/hadolint/hadolint:v2.8.0-alpine@sha256:6c4b7c23f96339489dd35f21a711996d7ce63047467a9a562287748a03ad5242'
+      name: lint-dockerfile
+      script: |
+        set -e
+
+        if [ -n "$RULES" ]
+        then
+          command_to_run="hadolint --ignore=${RULES} "
+        else
+          command_to_run="hadolint"
+        fi
+        $command_to_run "$DOCKERFILE" -f "$OFORMAT"
+      env:
+      - name: RULES
+        value: "$(params.ignore-rules)"
+      - name: DOCKERFILE
+        value: "$(params.dockerfile-path)"
+      - name: OFORMAT
+        value: "$(params.output-format)"
+      workingDir: $(workspaces.source.path)
+  workspaces:
+    - description: A workspace that contains fetched git repo.
+      name: source

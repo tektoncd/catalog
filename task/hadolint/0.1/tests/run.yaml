@@ -1,0 +1,60 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: hadolint-pipeline
+spec:
+  params:
+    - name: repository
+      type: string
+    - name: ignore-rules
+      type: string
+    - name: dockerfile-path
+      type: string
+  workspaces:
+  - name: source
+  tasks:
+  - name: clone-git-repo
+    workspaces:
+    - name: output
+      workspace: source
+    taskRef:
+      name: git-clone
+    params:
+      - name: url
+        value: $(params.repository)
+      - name: deleteExisting
+        value: "true"
+  - name: hadolint
+    taskRef:
+      kind: Task
+      name: hadolint
+    runAfter:
+      - clone-git-repo
+    workspaces:
+      - name: source
+        workspace: source
+    params:
+      - name: ignore-rules
+        value: $(params.ignore-rules)
+      - name: dockerfile-path
+        value: $(params.dockerfile-path)
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: hadolint-pipelinerun
+spec:
+  pipelineRef:
+    name: hadolint-pipeline
+  params:
+  - name: repository
+    value: https://github.com/docker-library/hello-world.git
+  - name: ignore-rules
+    value: 'DL3007'
+  - name: dockerfile-path
+    value: './amd64/hello-world/Dockerfile'
+  workspaces:
+    - name: source
+      persistentVolumeClaim:
+        claimName: hadolint-pvc
