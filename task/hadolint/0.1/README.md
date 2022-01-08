@@ -2,13 +2,9 @@
 
 Tekton Task for hadolint https://github.com/hadolint/hadolint
 
-<img align="right" alt="pipecat" width="150"
-src="https://hadolint.github.io/hadolint/img/cat_container.png" />
-
-A smarter Dockerfile linter that helps you build [best practice][] Docker
-images. The linter parses the Dockerfile into an AST and performs rules on
-top of the AST. It stands on the shoulders of [ShellCheck][] to lint
-the Bash code inside `RUN` instructions.
+A smarter Dockerfile linter that helps you build Docker images. 
+The linter parses the Dockerfile into an AST and performs rules on top of the AST. 
+It stands on the shoulders of ShellCheck to lint the Bash code inside `RUN` instructions.
 
 ## Install the Task
 ```
@@ -43,8 +39,6 @@ In the [tests](../0.1/tests/run.yaml), folder there is an example of the executi
 
 An incomplete list of implemented rules. Click on the error code to get more
 detailed information.
-
-<!--lint disable maximum-line-length-->
 
 | Rule                                                         | Default Severity | Description                                                                                                                                         |
 | :----------------------------------------------------------- | :--------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -146,5 +140,3 @@ detailed information.
 | [SC2154](https://github.com/koalaman/shellcheck/wiki/SC2154) |                  | var is referenced but not assigned.                                                                                                                 |
 | [SC2155](https://github.com/koalaman/shellcheck/wiki/SC2155) |                  | Declare and assign separately to avoid masking return values.                                                                                       |
 | [SC2164](https://github.com/koalaman/shellcheck/wiki/SC2164) |                  | Use <code>cd ... &#124;&#124; exit</code> in case `cd` fails.                                                                                       |
-
-<!--lint enable maximum-line-length-->
