@@ -1,0 +1,32 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: pipeline-grype-test-daemon
+spec:
+  params:
+    - name: ARGS
+      type: array
+      description: The Arguments to be passed to Grype command for config image.
+  description: Test Pipeline for Grype
+  tasks:
+    - name: grype-scan-local-image
+      taskRef:
+        name: grype
+        kind: Task
+      params:
+        - name: ARGS
+          value: ["$(params.ARGS[*])"]
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: pipelinerun-grype-test-daemon-
+spec:
+  params:
+    - name: ARGS
+      value:
+        - "docker.io/devopps/hello-world-cli"
+  pipelineRef:
+    name: pipeline-grype-test-daemon
+  timeout: 1h0m0s
