@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: pipeline-grype-test-source-dir
+  name: pipeline-syft-test-source-dir
 spec:
   workspaces:
     - name: pipeline-pvc
@@ -10,8 +10,8 @@ spec:
   params:
     - name: ARGS
       type: array
-      description: The Arguments to be passed to Grype command for config image.
-  description: Test Pipeline for Grype
+      description: The Arguments to be passed to Syft command for config image.
+  description: Test Pipeline for Syft
   tasks:
     - name: fetch-repository
       taskRef:
@@ -22,9 +22,9 @@ spec:
       params:
       - name: url
         value: https://github.com/kelseyhightower/nocode
-    - name: grype-scan-local-image
+    - name: syft-source-dir-sbom
       taskRef:
-        name: grype
+        name: syft
         kind: Task
       runAfter:
         - fetch-repository
@@ -38,16 +38,16 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: pipelinerun-grype-test-source-dir-
+  generateName: pipelinerun-syft-test-source-dir-
 spec:
   params:
     - name: ARGS
       value:
         - dir:.
   pipelineRef:
-    name: pipeline-grype-test-source-dir
-  timeout: 1h0m0s
+    name: pipeline-syft-test-source-dir
+  timeout: 10m
   workspaces:
     - name: pipeline-pvc
       persistentVolumeClaim:
-        claimName: pvc-grype-test
+        claimName: pvc-syft-test

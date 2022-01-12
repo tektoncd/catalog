@@ -10,11 +10,10 @@ metadata:
     tekton.dev/categories: Security
     tekton.dev/tags: CLI, grype
     tekton.dev/displayName: "grype"
-    tekton.dev/platforms: "linux/amd64"
+    tekton.dev/platforms: "linux/amd64,linux/arm64"
 spec:
   description: >-
     A vulnerability scanner for container images and filesystems.
-    Easily install the binary to try it out. 
     Works with Syft, the powerful SBOM (software bill of materials) tool for container images and filesystems.
   workspaces:
     - name: source-dir
@@ -24,7 +23,7 @@ spec:
       description: The Arguments to be passed to Grype command.
       type: array
     - name: GRYPE_IMAGE
-      default: docker.io/anchore/grype@sha256:84ec572a9d39e6c4774cbaf5678e73c772d394651c6cdee1c21f74203ff68685
+      default: docker.io/anchore/grype@sha256:40c41e43eff0eb979375ea705f0cf5f6f698941099f63c890c3eb90b6ef72db5 # v0.47.0
       description: Grype image to be used
   steps:
     - name: grype

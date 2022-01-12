@@ -1,0 +1,32 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: syft
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Security
+    tekton.dev/tags: CLI, syft
+    tekton.dev/displayName: syft
+    tekton.dev/platforms: "linux/amd64,linux/arm64"
+spec:
+  description: >-
+   CLI tool and library for generating a Software Bill of Materials from container images and filesystems
+  workspaces:
+    - name: source-dir
+      optional: true
+  params:
+    - name: ARGS
+      description: The Arguments to be passed to Syft command.
+      type: array
+    - name: SYFT_IMAGE
+      default: docker.io/anchore/syft@sha256:42ede68d8a8762e42715692221a212cba262ce3a252ed962abf3d44ce3e68a52 # v0.55.0
+      description: Syft image to be used
+  steps:
+    - name: syft
+      image: $(params.SYFT_IMAGE)
+      workingDir: $(workspaces.source-dir.path)
+      args:
+        - "$(params.ARGS)"

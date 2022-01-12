@@ -2,17 +2,17 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: pipeline-grype-test-daemon
+  name: pipeline-syft-test
 spec:
   params:
     - name: ARGS
       type: array
-      description: The Arguments to be passed to Grype command for config image.
-  description: Test Pipeline for Grype
+      description: The Arguments to be passed to Syft command for config image.
+  description: Test Pipeline for Syft
   tasks:
-    - name: grype-scan-local-image
+    - name: syft-image-sbom
       taskRef:
-        name: grype
+        name: syft
         kind: Task
       params:
         - name: ARGS
@@ -21,12 +21,12 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: pipelinerun-grype-test-daemon-
+  generateName: pipelinerun-syft-test-
 spec:
   params:
     - name: ARGS
       value:
       - gcr.io/tekton-releases/dogfooding/tkn
   pipelineRef:
-    name: pipeline-grype-test-daemon
+    name: pipeline-syft-test
   timeout: 10m
