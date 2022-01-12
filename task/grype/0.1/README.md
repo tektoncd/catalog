@@ -1,7 +1,6 @@
 # grype
 
-This task allows the use of the grype for Tekton Pipelines.See <https://github.com/aquasecurity/trivy>
-
+This task allows the use of the grype for Tekton Pipelines.
 ## What's Grype?
 
 A vulnerability scanner for container images and filesystems. Easily install the binary to try it out. Works with Syft, the powerful SBOM (software bill of materials) tool for container images and filesystems.
@@ -33,4 +32,4 @@ tkn task start grype -p ARGS="docker.io/alpine:3.13" --workspace name=source-dir
 
 ## Platforms
 
-The Task can be run on `linux/amd64` platform.
+The Task can be run on `linux/amd64` and `linux/arm64` platforms.
