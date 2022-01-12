@@ -56,5 +56,5 @@ spec:
         if [ -z "$(inputs.params.ARGS)" ]; then
           pytest "$(inputs.params.SOURCE_PATH)"
         else
-          pytest "$(inputs.params.ARGS)" "$(inputs.params.SOURCE_PATH)"
+          pytest $(inputs.params.ARGS) "$(inputs.params.SOURCE_PATH)"
         fi
