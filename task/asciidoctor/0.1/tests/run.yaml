@@ -1,0 +1,72 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: asciidoctor-pipeline
+spec:
+  params:
+    - name: repository
+      type: string
+    - name: ASCIIDOC_CMD
+      type: string
+    - name: ADOC_PATH
+      type: string
+    - name: ASCIIDOC_ARGS
+      type: string
+    - name: ASCIIDOC_IMAGE
+      type: string
+  workspaces:
+  - name: source
+  tasks:
+  - name: clone-git-repo
+    workspaces:
+    - name: output
+      workspace: source
+    taskRef:
+      name: git-clone
+    params:
+      - name: url
+        value: $(params.repository)
+      - name: deleteExisting
+        value: "true"
+  - name: asciidoctor
+    taskRef:
+      kind: Task
+      name: asciidoctor
+    runAfter:
+      - clone-git-repo
+    workspaces:
+      - name: source
+        workspace: source
+    params:
+      - name: ASCIIDOC_CMD
+        value: $(params.ASCIIDOC_CMD)
+      - name: ADOC_PATH
+        value: $(params.ADOC_PATH)
+      - name: ASCIIDOC_ARGS
+        value: $(params.ASCIIDOC_ARGS)
+      - name: ASCIIDOC_IMAGE
+        value: $(params.ASCIIDOC_IMAGE)
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: asciidoctor-pipelinerun
+spec:
+  pipelineRef:
+    name: asciidoctor-pipeline
+  params:
+  - name: repository
+    value: https://github.com/jandradap/tekton-asciidoctor-demo.git
+  - name: ASCIIDOC_CMD
+    value: 'asciidoctor-pdf'
+  - name: ADOC_PATH
+    value: './Readme.adoc'
+  - name: ASCIIDOC_ARGS
+    value: '-a lang=es'
+  - name: ASCIIDOC_IMAGE
+    value: docker.io/asciidoctor/docker-asciidoctor:1.16@sha256:36117d900e9365923dcf1d79c99eb82192c3d1b81ca1bb077e3373f722532e05
+  workspaces:
+    - name: source
+      persistentVolumeClaim:
+        claimName: asciidoctor-pvc

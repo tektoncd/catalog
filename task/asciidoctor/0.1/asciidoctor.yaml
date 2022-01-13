@@ -1,0 +1,53 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  annotations:
+    tekton.dev/pipelines.minVersion: 0.12.1
+    tekton.dev/categories: Publishing
+    tekton.dev/tags: 'asciidoctor, Publishing, PDF, EPUB'
+    tekton.dev/displayName: "asciidoctor text processor"
+    tekton.dev/platforms: "linux/amd64"
+  name: asciidoctor
+  labels:
+    app.kubernetes.io/version: '0.1'
+spec:
+  description: >-
+    Asciidoctor is a fast, open source, Ruby-based text processor
+    for parsing AsciiDoc into a document model and converting it
+    to output formats such as HTML 5, DocBook 5, manual pages, PDF,
+    EPUB 3, and other formats.
+  params:
+    - name: ASCIIDOC_CMD
+      description: Command to convert AsciiDoc files asciidoctor, asciidoctor-pdf, asciidoctor-epub3
+      type: string
+      default: 'asciidoctor-pdf'
+    - name: ADOC_PATH
+      description: The .adoc file path.
+      type: string
+      default: './Readme.adoc'
+    - name: ASCIIDOC_ARGS
+      description: The Arguments to be passed to Asciidoctor command.
+      type: string
+    - name: ASCIIDOC_IMAGE
+      default: docker.io/asciidoctor/docker-asciidoctor:1.16@sha256:36117d900e9365923dcf1d79c99eb82192c3d1b81ca1bb077e3373f722532e05
+      description: Asciidoctor image to be used
+  steps:
+    - name: asciidoctor
+      image: $(params.ASCIIDOC_IMAGE)
+      workingDir: $(workspaces.source.path)
+      script: |
+        #!/usr/bin/env sh
+          set -e
+          ls -lh
+          "${ASCIIDOC_CMD}" "${ASCIIDOC_ARGS}" "${ADOC_PATH}"
+      env:
+      - name: ASCIIDOC_CMD
+        value: "$(params.ASCIIDOC_CMD)"
+      - name: ADOC_PATH
+        value: "$(params.ADOC_PATH)"
+      - name: ASCIIDOC_ARGS
+        value: "$(params.ASCIIDOC_ARGS)"
+  workspaces:
+    - description: A workspace that contains fetched git repo.
+      name: source
