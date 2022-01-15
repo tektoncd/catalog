@@ -1,0 +1,42 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: kythe-go-run
+spec:
+  workspaces:
+    - name: output
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 5Gi
+  pipelineSpec:
+    workspaces:
+      - name: output
+    tasks:
+      - name: fetch-repository
+        taskRef:
+          name: git-clone
+        workspaces:
+          - name: output
+            workspace: output
+        params:
+          - name: url
+            value: https://github.com/tektoncd/pipeline
+          - name: subdirectory
+            value: ""
+          - name: deleteExisting
+            value: "true"
+      - name: kythe-go-run
+        taskRef:
+          name: kythe-go
+        params:
+          - name: package
+            value: github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1
+        workspaces:
+          - name: output
+            workspace: output
+        runAfter:
+          - fetch-repository

@@ -1,0 +1,40 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: kythe-go
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.27.0"
+    tekton.dev/categories: Build Tools
+    tekton.dev/tags: annotations
+    tekton.dev/displayName: "kythe go"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    This task generates annotations for source code.
+
+    The kythe-go Task runs the Kythe Go extractor for the given
+    package, placing the resulting kzips in the output workspace.
+
+  workspaces:
+    - name: output
+      description: Output directory for kzip output files.
+      mountPath: /workspace/src/$(params.package)
+  params:
+    - name: package
+      type: string
+      description: Go package to analyze.
+  steps:
+    - name: analyze-packages
+      image: gcr.io/kythe-public/golang-extractor:git-8697a6c4b15caf12b59d8e32b9ac0ee4aa9306bc@sha256:e56f0afbae2408288828065a40dddb6d864aef12dc84c412f48fd6e664184dc3
+      workingDir: $(workspaces.output.path)
+      args:
+        - "$(params.package)"
+      env:
+        - name: OUTPUT
+          value: $(workspaces.output.path)
+        - name: GOPATH
+          value: /workspace
+        - name: KYTHE_CORPUS
+          value: "$(params.package)"
