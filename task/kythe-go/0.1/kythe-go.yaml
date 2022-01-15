@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: annotations
     tekton.dev/displayName: "kythe go"
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/deprecated: "true"
 spec:
   description: >-
     This task generates annotations for source code.
