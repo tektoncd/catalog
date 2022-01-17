@@ -37,14 +37,11 @@ spec:
       name: lint-dockerfile
       script: |
         set -e
-
         if [ -n "$RULES" ]
         then
-          command_to_run="hadolint --ignore=${RULES} "
-        else
-          command_to_run="hadolint"
+          for rule in ${RULES//,/ }; do ignore_rules="$ignore_rules --ignore $rule"; done
         fi
-        $command_to_run "$DOCKERFILE" -f "$OFORMAT"
+        hadolint "$ignore_rules" "$DOCKERFILE" -f "$OFORMAT"
       env:
       - name: RULES
         value: "$(params.ignore-rules)"
