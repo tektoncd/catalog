@@ -41,6 +41,8 @@ This is **not** a samples repo to showcase Tekton features, this is a collection
 * Submissions should be well-documented.
 * *Coming Soon* Submissions should be testable, and come with the required
 tests.
+* **For reviewers:** You can trigger `diff-tool` job by commenting on the PR `/diff-task`.
+This will add a comment on PR if it is the version bump of a task/pipeline.
 
 If you have an idea for a new submission, feel free to open an issue to discuss
 the idea with the catalog maintainers and community.
