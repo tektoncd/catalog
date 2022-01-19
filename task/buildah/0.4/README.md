@@ -10,14 +10,14 @@ to assemble a container image, then pushes that image to a container registry.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildah/0.2/buildah.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildah/0.4/buildah.yaml
 ```
 
 ## Parameters
 
 * **IMAGE**: The name (reference) of the image to build.
 * **BUILDER_IMAGE:**: The name of the image containing the Buildah tool. See
-  note below.  (_default:_ quay.io/buildah/stable:v1.17.0)
+  note below.  (_default:_ registry.access.redhat.com/ubi8/buildah:8.5-8)
 * **DOCKERFILE**: The path to the `Dockerfile` to execute (_default:_
   `./Dockerfile`)
 * **CONTEXT**: Path to the directory to use as context (_default:_
@@ -36,6 +36,14 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/bu
 
 * **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md) containing the source to build.
 * **sslcertdir**: An [*optional* Workspace](https://github.com/tektoncd/pipeline/blob/v0.17.0/docs/workspaces.md#optional-workspaces) containing your custom SSL certificates to connect to the registry. Buildah will look for files ending with *.crt, *.cert, *.key into this workspace. See [this sample](./samples/openshift-internal-registry.yaml) for a complete example on how to use it with OpenShift internal registry.
+
+## Build user id
+
+By default the buildah task will reuse the `build` user inside the image to
+build as user using [user
+namespaces](https://man7.org/linux/man-pages/man7/user_namespaces.7.html). If
+you need to run as root you will need to modify the `securityContext` and
+`runAsUser` 0.
 
 ## Platforms
 
