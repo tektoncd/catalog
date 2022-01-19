@@ -1,0 +1,23 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  annotations:
+    tekton.dev/categories: Image Build
+    tekton.dev/pipelines.minVersion: 0.17.0
+    tekton.dev/platforms: linux/amd64,linux/s390x,linux/ppc64le,linux/arm64
+    tekton.dev/tags: image-build
+  labels:
+    app.kubernetes.io/managed-by: tekton-pipelines
+    app.kubernetes.io/version: "0.3"
+    tekton.dev/task: buildah
+  name: buildah-run
+  namespace: test
+spec:
+  serviceAccountName: pipeline
+  taskRef:
+    kind: Task
+    name: buildah
+  workspaces:
+  - configMap:
+      name: dockerfile
+    name: source
