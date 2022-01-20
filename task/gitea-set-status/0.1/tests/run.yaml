@@ -1,0 +1,25 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: gitea-set-status
+spec:
+  tasks:
+    - name: set-status
+      taskRef:
+        name: gitea-set-status
+      params:
+        - name: GITEA_HOST_URL
+          value: "127.0.0.1:8080"
+        - name: GITEA_HTTPS_OR_HTTP
+          value: http
+        - name: REPO_FULL_NAME
+          value: tektoncd/catalog
+        - name: SHA
+          value: d87daf015916c89cc65817cc9d2ccd90d3406746
+        - name: TARGET_URL
+          value: "https://tekton.dev/"
+        - name: DESCRIPTION
+          value: "Gitea set status"
+        - name: STATE
+          value: success
