@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: deploy
     tekton.dev/displayName: "argocd"
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/deprecated: "true"
 spec:
   description: >-
     This task syncs (deploys) an Argo CD application and waits for it to be healthy.
