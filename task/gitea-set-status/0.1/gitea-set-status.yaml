@@ -1,0 +1,162 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: gitea-set-status
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/categories: Git
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: gitea
+    tekton.dev/displayName: "set gitea status"
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
+spec:
+  description: >-
+    This task will set the status of the CI job to the specified value along
+    with a link to the specified target URL where developers can follow the
+    progress of the CI job.
+
+    The `gitea-set-status` task allows external services to mark Gitea commits
+    with an `error`, `failure`, `pending`, or `success` state, which is then
+    reflected in pull requests involving those commits. Statuses include as well a
+    `description` and a `target_url`, to give the user informations about the CI
+    statuses or a direct link to the full log.
+
+  params:
+  - name: GITEA_HOST_URL
+    description: |
+      The Gitea host, e.g: git.yourcompany.com. Can include port.
+    type: string
+
+  - name: GITEA_HTTPS_OR_HTTP
+    description: |
+      If we should connect with HTTP or HTTPS. Use "http" or "https" here.
+    type: string
+    default: https
+
+  - name: API_PATH_PREFIX
+    description: |
+      The API path prefix of Gitea, default: /api/v1
+    default: "/api/v1"
+    type: string
+
+  - name: REPO_FULL_NAME
+    description: |
+      The Gitea repository full name, e.g.: tektoncd/catalog
+    type: string
+
+  - name: GITEA_TOKEN_SECRET_NAME
+    description: |
+      The name of the kubernetes secret that contains the Gitea token, default: gitea
+    type: string
+    default: gitea
+
+  - name: GITEA_TOKEN_SECRET_KEY
+    description: |
+      The key within the kubernetes secret that contains the Gitea token, default: token
+    type: string
+    default: token
+
+  - name: SHA
+    description: |
+      Commit SHA to set the status for.
+    type: string
+
+  - name: TARGET_URL
+    description: |
+      The target URL to associate with this status. This URL will be linked
+      from the Gitea UI to allow users to easily see the source of the
+      status.
+    type: string
+
+  - name: DESCRIPTION
+    description: |
+      A short description of the status.
+    type: string
+
+  - name: CONTEXT
+    description: |
+      The Gitea context, A string label to differentiate this status from
+      the status of other systems. ie: "continuous-integration/tekton"
+    default: "continuous-integration/tekton"
+    type: string
+
+  - name: STATE
+    description: |
+      The state of the status. Can be one of the following `error`,
+      `failure`, `pending`, `warning` or `success`.
+    type: string
+
+  - name: IMAGE
+    description: |
+      Image providing the python binary which this task uses.
+    type: string
+    default: python:3.10.1-alpine3.15@sha256:affe0faa14e7553fc570beec3864e74b5e36f8c19b2bb49ae8ba79c0e9e7236e
+
+  - name: SHEBANG
+    description: |
+      Python path. Depends on the image.
+    type: string
+    default: /usr/bin/env python
+
+  volumes:
+    - name: giteatoken
+      secret:
+        secretName: $(params.GITEA_TOKEN_SECRET_NAME)
+
+  steps:
+    - name: set-status
+      volumeMounts:
+        - name: giteatoken
+          mountPath: /etc/gitea-set-status
+
+      image: $(params.IMAGE)
+      script: |
+        #!$(params.SHEBANG)
+
+        """This script will set the CI status on a Gitea commit"""
+
+        import json
+        import sys
+        import http.client
+
+        gitea_token = open("/etc/gitea-set-status/$(params.GITEA_TOKEN_SECRET_KEY)", "r").read()
+
+        status_url = "$(params.API_PATH_PREFIX)" + "/repos/$(params.REPO_FULL_NAME)/" + \
+            "statuses/$(params.SHA)"
+
+        data = {
+            "state": "$(params.STATE)",
+            "target_url": "$(params.TARGET_URL)",
+            "description": "$(params.DESCRIPTION)",
+            "context": "$(params.CONTEXT)"
+        }
+        print("Sending this data to Gitea: ")
+        print(data)
+
+        authHeader = "token " + gitea_token
+
+        if "$(params.GITEA_HTTPS_OR_HTTP)" == "https":
+          conn = http.client.HTTPSConnection("$(params.GITEA_HOST_URL)")
+        else:
+          conn = http.client.HTTPConnection("$(params.GITEA_HOST_URL)")
+
+        conn.request(
+            "POST",
+            status_url,
+            body=json.dumps(data),
+            headers={
+                "User-Agent": "TektonCD, the peaceful cat",
+                "Authorization": authHeader,
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            })
+        resp = conn.getresponse()
+        if not str(resp.status).startswith("2"):
+            print("Error: %d" % (resp.status))
+            print(resp.read())
+            sys.exit(1)
+        else:
+            print("Gitea status '$(params.STATE)' has been set on "
+                "$(params.REPO_FULL_NAME)#$(params.SHA) ")
