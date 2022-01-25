@@ -32,7 +32,7 @@ spec:
       script: |
         apk add --no-cache curl jq
 
-        if [ "$(workspaces.token.bound)" == "true" ] ; then
+        if [ "$(workspaces.token.bound)" = "true" ] ; then
           echo "Getting quality gate for $(params.SONAR_PROJECT_KEY) with authentication"
           token=$(cat $(workspaces.token.path)/token)
           response=$(curl -u "$token:" $(params.SONAR_HOST_URL)/api/qualitygates/project_status?projectKey=$(params.SONAR_PROJECT_KEY))  
@@ -43,7 +43,7 @@ spec:
 
         status=$(echo $response | jq -r '.projectStatus.status')
 
-        if [ $status == 'OK' ]; then 
+        if [ $status = 'OK' ]; then 
           echo "Quality gate passed."
           exit 0
         else
