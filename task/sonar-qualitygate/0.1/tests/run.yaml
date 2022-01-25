@@ -1,0 +1,16 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: sonar-qualitygate-test-
+spec:
+  pipelineSpec:
+    tasks:
+      - name: sonar-qualitygate
+        taskRef:
+          name: sonar-qualitygate
+        params:
+          - name: SONAR_HOST_URL
+            value: "https://sonarcloud.io"
+          - name: SONAR_PROJECT_KEY
+            value: "sonarqube-scanner"

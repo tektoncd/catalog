@@ -1,0 +1,52 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: sonar-qualitygate
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/categories: Code Quality
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: sonarqube, sonarcloud
+    tekton.dev/displayName: sonar-qualitygate
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    Task that checks the quality gate for a Sonar project
+  workspaces:
+    - name: token
+      optional: true
+      description: Sonar authentication token
+  params:
+    - name: SONAR_HOST_URL
+      description: Host URL where the sonarqube server is running
+    - name: SONAR_PROJECT_KEY
+      description: Project's unique key
+    - name: IMAGE
+      description: Image used to execute the task
+      default: "docker.io/alpine@sha256:e7d88de73db3d3fd9b2d63aa7f447a10fd0220b7cbf39803c803f2af9ba256b3"
+  steps:
+    - name: check-qualitygate
+      image: $(params.IMAGE)
+      script: |
+        apk add --no-cache curl jq
+
+        if [ "$(workspaces.token.bound)" == "true" ] ; then
+          echo "Getting quality gate for $(params.SONAR_PROJECT_KEY) with authentication"
+          token=$(cat $(workspaces.token.path)/token)
+          response=$(curl -u "$token:" $(params.SONAR_HOST_URL)/api/qualitygates/project_status?projectKey=$(params.SONAR_PROJECT_KEY))  
+        else
+          echo "Getting quality gate for $(params.SONAR_PROJECT_KEY) without authentication"
+          response=$(curl $(params.SONAR_HOST_URL)/api/qualitygates/project_status?projectKey=$(params.SONAR_PROJECT_KEY))
+        fi
+
+        status=$(echo $response | jq -r '.projectStatus.status')
+
+        if [ $status == 'OK' ]; then 
+          echo "Quality gate passed."
+          exit 0
+        else
+          echo "Quality gate failed. Stopping pipelinerun."
+          exit 1
+        fi
