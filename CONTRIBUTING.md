@@ -30,6 +30,12 @@ The process for contributing looks like this:
 
 ## How to Contribute a new version of a Task or Pipeline
 
+To provide stability of resources, we require that resources have to be bumped
+to new versions when making changes instead of modifying existing versions. This
+ensures that the resource definition is independent of the time it was applied to
+the cluster. Changes to existing versions may be permitted only for non-functional
+parts of the resources, e.g. labels and annotations, but we try to keep that minimal.
+
 If you are planning to add a new version of a Task or Pipeline make sure to
 separate your changes from the copied task. This makes it easy for reviewers to
 review the changes and not the actual copy.
