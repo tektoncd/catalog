@@ -56,7 +56,7 @@ spec:
 
       python setup.py sdist bdist_wheel
   - name: upload-package
-    image: quay.io/thoth-station/twine@sha256:643ab12bb05c91db1cec6c042160466a3f258e030f5acff2a39d5b0a00442f4b #tag: latest
+    image: quay.io/thoth-station/twine:v0.0.2 #tag: v0.0.2
     workingDir: $(workspaces.source.path)
     env:
     - name: TWINE_REPOSITORY_URL
