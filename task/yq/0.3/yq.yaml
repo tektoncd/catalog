@@ -33,7 +33,7 @@ spec:
       workingDir: $(workspaces.source.path)
       args: ["$(params.files[*])"]
       script: |
-        /usr/bin/env sh
+        #!/usr/bin/env sh
         set -e
 
         for var in "$@"
