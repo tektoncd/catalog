@@ -1,0 +1,68 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: datree-pipeline
+spec:
+  params:
+  - name: git_url
+    default: https://github.com/kubernetes/examples
+    type: string
+  workspaces:
+    - name: source-code-ws
+  tasks:
+  - name: git-clone
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: source-code-ws
+    params:
+    - name: url
+      value: $(params.git_url)
+  - name: datree-test
+    taskRef:
+      name: datree
+    workspaces:
+    - name: source
+      workspace: source-code-ws
+    params:
+    - name: yamlSrc
+      value: "guestbook/*.yaml"
+    - name: output
+      value: json
+    - name: schemaVersion
+      value: "1.22.0"
+    - name: ignoreMissingSchemas
+      value: "false"
+    - name: policy
+      value: Default
+    - name: onlyK8sFiles
+      value: "true"
+    - name: DATREE_TOKEN_SECRET
+      value: datree-token
+    - name: DATREE_TOKEN_SECRET_KEY
+      value: DATREE_TOKEN
+    - name: datreeImage
+      value: docker.io/datree/datree:latest
+    runAfter:
+    - git-clone
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  creationTimestamp: null
+  generateName: datree-pipeline-run-
+  namespace: default
+spec:
+  params:
+  - name: git_url
+    value: https://github.com/kubernetes/examples
+  pipelineRef:
+    name: datree-pipeline
+  workspaces:
+  - name: source-code-ws
+    persistentVolumeClaim:
+      claimName: tekton-pvc
+    subPath: ~/
+status: {}
