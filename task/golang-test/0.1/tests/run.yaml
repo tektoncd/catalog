@@ -15,7 +15,7 @@ spec:
           workspace: shared-workspace
       params:
         - name: url
-          value: https://github.com/tektoncd/cli
+          value: https://github.com/chmouel/go-rest-api-test
         - name: subdirectory
           value: ""
         - name: deleteExisting
@@ -30,7 +30,7 @@ spec:
           workspace: shared-workspace
       params:
         - name: package
-          value: github.com/tektoncd/cli
+          value: github.com/chmouel/go-rest-api-test
 
 ---
 apiVersion: tekton.dev/v1beta1
