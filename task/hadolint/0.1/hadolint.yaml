@@ -33,14 +33,16 @@ spec:
       name: output-format
       type: string
   steps:
-    - image: 'ghcr.io/hadolint/hadolint:v2.8.0-alpine@sha256:6c4b7c23f96339489dd35f21a711996d7ce63047467a9a562287748a03ad5242'
+    - image: 'ghcr.io/hadolint/hadolint:v2.8.0-debian@sha256:50b0e60aa2b4aba5a26eeb4ad08c96ed7a828fca996632e29114aabea18345f4'
       name: lint-dockerfile
       script: |
+        #!/bin/bash
         set -e
-
         if [ -n "$RULES" ]
         then
-          command_to_run="hadolint --ignore=${RULES} "
+          IFS="," read -a RULES <<< "$RULES"
+          for rule in ${RULES[@]}; do ignore_rules="--ignore $rule $ignore_rules"; done
+          command_to_run="hadolint ${ignore_rules}"
         else
           command_to_run="hadolint"
         fi
