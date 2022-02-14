@@ -1,0 +1,81 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: sonarqube-scanner
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Security
+    tekton.dev/tags: security
+    tekton.dev/displayName: "sonarqube scanner"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    The following task can be used to perform static analysis on the source code
+    provided the SonarQube server is hosted
+
+    SonarQube is the leading tool for continuously inspecting the Code Quality and Security
+    of your codebases, all while empowering development teams. Analyze over 25 popular
+    programming languages including C#, VB.Net, JavaScript, TypeScript and C++. It detects
+    bugs, vulnerabilities and code smells across project branches and pull requests.
+
+  workspaces:
+    - name: source
+    - name: sonar-settings
+  params:
+    - name: SONAR_HOST_URL
+      description: Host URL where the sonarqube server is running
+      default: ""
+    - name: SONAR_PROJECT_KEY
+      description: Project's unique key
+      default: ""
+  steps:
+    - name: sonar-properties-create
+      image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
+      workingDir: $(workspaces.source.path)
+      script: |
+        #!/usr/bin/env bash
+
+        replaceValues() {
+          filename=$1
+          thekey=$2
+          newvalue=$3
+
+          if ! grep -R "^[#]*\s*${thekey}=.*" $filename >/dev/null; then
+            echo "APPENDING because '${thekey}' not found"
+            echo "" >>$filename
+            echo "$thekey=$newvalue" >>$filename
+          else
+            echo "SETTING because '${thekey}' found already"
+            sed -ir "s|^[#]*\s*${thekey}=.*|$thekey=$newvalue|" $filename
+          fi
+        }
+
+        if [[ -f $(workspaces.sonar-settings.path)/sonar-project.properties ]]; then
+          echo "using user provided sonar-project.properties file"
+          cp -RL $(workspaces.sonar-settings.path)/sonar-project.properties $(workspaces.source.path)/sonar-project.properties
+        fi
+
+        if [[ -f $(workspaces.source.path)/sonar-project.properties ]]; then
+          if [[ -n "$(params.SONAR_HOST_URL)" ]]; then
+            replaceValues $(workspaces.source.path)/sonar-project.properties sonar.host.url $(params.SONAR_HOST_URL)
+          fi
+          if [[ -n "$(params.SONAR_PROJECT_KEY)" ]]; then
+            replaceValues $(workspaces.source.path)/sonar-project.properties sonar.projectKey $(params.SONAR_PROJECT_KEY)
+          fi
+        else
+          touch sonar-project.properties
+          echo "sonar.projectKey=$(params.SONAR_PROJECT_KEY)" >> sonar-project.properties
+          echo "sonar.host.url=$(params.SONAR_HOST_URL)" >> sonar-project.properties
+          echo "sonar.sources=." >> sonar-project.properties
+        fi
+
+        echo "---------------------------"
+        cat $(workspaces.source.path)/sonar-project.properties
+
+    - name: sonar-scan
+      image: docker.io/sonarsource/sonar-scanner-cli:4.5@sha256:b8c95a37025f3c13162118cd55761ea0b2a13d1837f9deec51b7b6d82c52040a #tag: 4.5
+      workingDir: $(workspaces.source.path)
+      command:
+        - sonar-scanner
