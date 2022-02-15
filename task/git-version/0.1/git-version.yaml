@@ -32,6 +32,8 @@ spec:
       env:
         - name: PARAM_BRANCH
           value: $(params.branch)
+        - name: SSL_CERT_FILE
+          value: /etc/ssl/certs/ca-certificates.crt
       script: |
         #!/usr/bin/env bash
         export PATH="$PATH:/tekton/home/.dotnet/tools"
