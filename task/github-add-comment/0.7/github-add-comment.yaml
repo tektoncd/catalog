@@ -1,0 +1,195 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: github-add-comment
+  labels:
+    app.kubernetes.io/version: "0.7"
+  annotations:
+    tekton.dev/categories: Git
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/tags: github
+    tekton.dev/displayName: "add github comment"
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
+spec:
+  description: >-
+    This Task will add a comment to a pull request or an issue.
+
+    It can take either a filename or a comment as input and can
+    post the comment back to GitHub accordingly.
+
+  workspaces:
+    - name: comment-file
+      optional: true
+      description: The optional workspace containing comment file to be posted.
+
+  results:
+    - name: OLD_COMMENT
+      description: The old text of the comment, if any.
+
+    - name: NEW_COMMENT
+      description: The new text of the comment, if any.
+
+  params:
+    - name: GITHUB_HOST_URL
+      description: |
+        The GitHub host, adjust this if you run a GitHub enteprise.
+      default: "api.github.com"
+      type: string
+
+    - name: API_PATH_PREFIX
+      description: |
+        The API path prefix, GitHub Enterprise has a prefix e.g. /api/v3
+      default: ""
+      type: string
+
+    - name: REQUEST_URL
+      description: |
+        The GitHub issue or pull request URL where we want to add a new
+        comment.
+      type: string
+
+    - name: COMMENT_OR_FILE
+      description: |
+        The actual comment to add or the filename containing comment to post.
+      type: string
+
+    - name: GITHUB_TOKEN_SECRET_NAME
+      description: |
+        The name of the Kubernetes Secret that contains the GitHub token.
+      type: string
+      default: github
+
+    - name: GITHUB_TOKEN_SECRET_KEY
+      description: |
+        The key within the Kubernetes Secret that contains the GitHub token.
+      type: string
+      default: token
+
+    - name: AUTH_TYPE
+      description: |
+        The type of authentication to use. You could use the less secure "Basic" for example
+      type: string
+      default: Bearer
+
+    - name: COMMENT_TAG
+      description: |
+        An invisible tag to be added into the comment. The tag is made
+        invisible by embedding in an an HTML comment. The tag allows for later
+        retrieval of the comment, and it allows replacing an existing comment.
+      type: string
+      default: ""
+
+    - name: REPLACE
+      description: |
+        When a tag is specified, and `REPLACE` is `true`, look for a comment
+        with a matching tag and replace it with the new comment.
+      type: string
+      default: "false"  # Alternative value: "true"
+
+  steps:
+    - name: post-comment
+      workingDir: $(workspaces.comment-file.path)
+      env:
+        - name: GITHUBTOKEN
+          valueFrom:
+            secretKeyRef:
+              name: $(params.GITHUB_TOKEN_SECRET_NAME)
+              key: $(params.GITHUB_TOKEN_SECRET_KEY)
+
+      image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
+      script: |
+        #!/usr/libexec/platform-python
+        import json
+        import os
+        import http.client
+        import sys
+        import urllib.parse
+
+        authHeader = "$(params.AUTH_TYPE) " + os.environ["GITHUBTOKEN"]
+
+        split_url = urllib.parse.urlparse(
+            "$(params.REQUEST_URL)").path.split("/")
+
+        # This will convert https://github.com/foo/bar/pull/202 to
+        # api url path /repos/foo/issues/
+        api_url = "{base}/repos/{package}/issues/{id}".format(
+          base="$(params.API_PATH_PREFIX)", package="/".join(split_url[1:3]), id=split_url[-1])
+
+        commentParamValue = """$(params.COMMENT_OR_FILE)"""
+
+        # check if workspace is bound and parameter passed is a filename or not
+        if "$(workspaces.comment-file.bound)" == "true" and os.path.exists(commentParamValue):
+          commentParamValue = open(commentParamValue, "r").read()
+
+        # If a tag was specified, append it to the comment
+        if "$(params.COMMENT_TAG)":
+          commentParamValue += "<!-- {tag} -->".format(tag="$(params.COMMENT_TAG)")
+
+        data = {
+            "body": commentParamValue,
+        }
+
+        # This is for our fake github server
+        if "$(params.GITHUB_HOST_URL)".startswith("http://"):
+          conn = http.client.HTTPConnection("$(params.GITHUB_HOST_URL)".replace("http://", ""))
+        else:
+          conn = http.client.HTTPSConnection("$(params.GITHUB_HOST_URL)")
+
+        # If REPLACE is true, we need to search for comments first
+        matching_comment = ""
+        if "$(params.REPLACE)" == "true":
+          if not "$(params.COMMENT_TAG)":
+            print("REPLACE requested but no COMMENT_TAG specified")
+            sys.exit(1)
+          r = conn.request(
+            "GET",
+            api_url + "/comments",
+            headers={
+                "User-Agent": "TektonCD, the peaceful cat",
+                "Authorization": authHeader,
+            })
+
+          resp = conn.getresponse()
+          if not str(resp.status).startswith("2"):
+              print("Error: %d" % (resp.status))
+              print(resp.read())
+              sys.exit(1)
+          print(resp.status)
+
+          comments = json.loads(resp.read())
+          print(comments)
+          # If more than one comment is found take the last one
+          matching_comment = [x for x in comments if '$(params.COMMENT_TAG)' in x['body']][-1:]
+          if matching_comment:
+              with open("$(results.OLD_COMMENT.path)", "w") as result_old:
+                result_old.write(str(matching_comment[0]))
+              matching_comment = matching_comment[0]['url']
+
+        if matching_comment:
+            method = "PATCH"
+            target_url = urllib.parse.urlparse(matching_comment).path
+        else:
+            method = "POST"
+            target_url = api_url + "/comments"
+
+        print("Sending this data to GitHub with {}: ".format(method))
+        print(data)
+        r = conn.request(
+            method,
+            target_url,
+            body=json.dumps(data),
+            headers={
+                "User-Agent": "TektonCD, the peaceful cat",
+                "Authorization": authHeader,
+            })
+        resp = conn.getresponse()
+        if not str(resp.status).startswith("2"):
+            print("Error: %d" % (resp.status))
+            print(resp.read())
+            sys.exit(1)
+        else:
+            with open("$(results.NEW_COMMENT.path)", "wb") as result_new:
+              result_new.write(resp.read())
+            print("a GitHub comment has been {} to $(params.REQUEST_URL)".format(
+              "updated" if matching_comment else "added"))
