@@ -96,8 +96,8 @@ spec:
   - name: digest-to-results
     image: $(params.BUILDER_IMAGE)
     script: |
-    
-      cat $(workspaces.source.path)/image-digest | tee /tekton/results/IMAGE_DIGEST
+          
+      cat $(workspaces.source.path)/image-digest | tee $(results.IMAGE_DIGEST.path)
       
       echo $(params.IMAGE) | tee $(results.IMAGE_URL.path)
 
