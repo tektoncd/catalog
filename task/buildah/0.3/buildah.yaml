@@ -96,9 +96,9 @@ spec:
   - name: digest-to-results
     image: $(params.BUILDER_IMAGE)
     script: |
-      cat $(workspaces.source.path)/image-digest | tee $(results.IMAGE_DIGEST.path)
+      cat "$(workspaces.source.path)"/image-digest | tee $(results.IMAGE_DIGEST.path)
       
-      echo $(params.IMAGE) | tee $(results.IMAGE_URL.path)
+      echo "$(params.IMAGE)" | tee $(results.IMAGE_URL.path)
       
   volumes:
   - name: varlibcontainers
