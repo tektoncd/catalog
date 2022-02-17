@@ -1,0 +1,68 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: buildpacks-test-pipeline
+spec:
+  workspaces:
+    - name: source-ws
+    - name: cache-ws
+    - name: ca-ws
+      optional: true
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: source-ws
+      params:
+        - name: url
+          value: https://github.com/buildpacks/samples
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+    - name: buildpacks
+      taskRef:
+        name: buildpacks
+      runAfter:
+        - fetch-repository
+      workspaces:
+        - name: source
+          workspace: source-ws
+        - name: cache
+          workspace: cache-ws
+        - name: ca
+          workspace: ca-ws
+      params:
+        - name: APP_IMAGE
+          value: harbor-core:443/library/buildpacks-app
+        - name: SOURCE_SUBPATH
+          value: apps/java-maven
+        - name: BUILDER_IMAGE
+          value: cnbs/sample-builder:alpine@sha256:b51367258b3b6fff1fe8f375ecca79dab4339b177efb791e131417a5a4357f42
+        - name: CA_FILENAME
+          value: ca.crt # This is the key of your CA file in your K8s secret.
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: buildpacks-test-pipeline-run
+spec:
+  serviceAccountName: buildpacks-service-account # Only needed if you set up authorization
+  pipelineRef:
+    name: buildpacks-test-pipeline
+  workspaces:
+    - name: source-ws
+      subPath: source
+      persistentVolumeClaim:
+        claimName: buildpacks-pvc
+    - name: cache-ws
+      subPath: cache
+      persistentVolumeClaim:
+        claimName: buildpacks-pvc
+    - name: ca-ws
+      secret:
+        secretName: harbor-core-internal-tls # The secret containing the CA of the registry.
+---
