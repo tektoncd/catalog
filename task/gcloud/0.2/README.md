@@ -12,7 +12,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gc
 
 * **gcloud-image**: `gcloud` CLI container image to run this task.
 
-  _default_: `google/cloud-sdk:slim`
+  _default_: `gcr.io/google.com/cloudsdktool/cloud-sdk:374.0.0-slim`
 
   You can use a specific version of the `gcloud` CLI using
   `google/cloud-sdk:263.0.0-slim`.
