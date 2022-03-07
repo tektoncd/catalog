@@ -135,6 +135,7 @@ Omit `--namespace` if installing in the `default` namespace.
 | Parameter | Description | Default |
 | --- | --- | ---: |
 | `base-image` | The Orka base image to use for the VM config. | --- |
+| `task-image` | The docker image used to run the task steps. | --- |
 | `cpu-count` | The number of CPU cores to dedicate for the VM. Must be 3, 4, 6, 8, 12, or 24. | 3 |
 | `vcpu-count` | The number of vCPUs for the VM. Must equal the number of CPUs, when CPU is less than or equal to 3. Otherwise, must equal half of or exactly the number of CPUs specified. | 3 |
 | `vnc-console` | Enables or disables VNC for the VM. | false |
