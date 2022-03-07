@@ -19,7 +19,7 @@ The Task can be run on `linux/amd64` platform.
   * Orka 1.4.1 or later.
   * [An Orka service endpoint](https://orkadocs.macstadium.com/docs/endpoint-faqs#whats-the-orka-service-endpoint) (IP or custom domain). Usually, `http://10.221.188.100`, `http://10.10.10.100` or `https://<custom-domain>`.
   * A dedicated Orka user with valid credentials (email & password). Create a new user or request one from your Orka administrator.
-  * An SSH-enabled base image and the respective SSH credentials (email & password OR SSH key). Use an [existing base image](https://orkadocs.macstadium.com/docs/existing-images-upload-management) or [create your own](https://orkadocs.macstadium.com/docs/creating-an-ssh-enabled-image). 
+  * An SSH-enabled base image and the respective SSH credentials (email & password OR SSH key). Use an [existing base image](https://orkadocs.macstadium.com/docs/existing-images-upload-management) or [create your own](https://orkadocs.macstadium.com/docs/creating-an-ssh-enabled-image).
 * You need an active VPN connection between your Kubernetes cluster and Orka. Use a [VPN client](https://orkadocs.macstadium.com/docs/vpn-connect) for temporary access or create a [site-to-site VPN tunnel](https://orkadocs.macstadium.com/docs/aws-orka-connections) for permanent access.
 
 See also: [Using Orka, At a Glance](https://orkadocs.macstadium.com/docs/quick-start-introduction)
@@ -118,6 +118,7 @@ See also: [`use-ssh-key`](https://github.com/tektoncd/catalog/blob/main/task/ork
 | Parameter | Description | Default |
 | --- | --- | ---: |
 | `base-image` | The Orka base image to use for the VM config. | --- |
+| `task-image` | The docker image used to run the task steps. | --- |
 | `cpu-count` | The number of CPU cores to dedicate for the VM. Must be 3, 4, 6, 8, 12, or 24. | 3 |
 | `vcpu-count` | The number of vCPUs for the VM. Must equal the number of CPUs, when CPU is less than or equal to 3. Otherwise, must equal half of or exactly the number of CPUs specified. | 3 |
 | `vnc-console` | Enables or disables VNC for the VM. | false |
