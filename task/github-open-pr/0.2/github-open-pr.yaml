@@ -115,7 +115,7 @@ spec:
             "head": "$(params.HEAD)",
             "base": "$(params.BASE)",
             "title": "$(params.TITLE)",
-            "body": "$(params.BODY)"
+            "body": """$(params.BODY)"""
         }
         print("Sending this data to GitHub: ")
         print(data)
