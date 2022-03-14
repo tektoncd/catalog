@@ -42,7 +42,7 @@ spec:
   taskRef:
     name: kubectl-actions
   params:
-    - name: SCRIPT
+    - name: script
       value: |
         kubectl get pods 
         echo "-----------"
