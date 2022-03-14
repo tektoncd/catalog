@@ -39,18 +39,27 @@ spec:
     params:
     - name: digest
       value: $(tasks.jib-gradle.results.IMAGE_DIGEST)
+    - name: url
+      value: $(tasks.jib-gradle.results.IMAGE_URL)
     taskSpec:
       params:
       - name: digest
+      - name: url
       steps:
       - name: bash
         image: ubuntu
         script: |
           echo $(params.digest)
           case .$(params.digest) in
-            ".sha"*) exit 0 ;;
+            ".sha"*) echo PASSED ;;
             *)       echo "Digest value is not correct" && exit 1 ;;
           esac
+          echo $(params.url)
+          case $(params.url) in
+            *"/console-java-simple") echo PASSED ;;
+            *)       echo "URL value is not correct" && exit 1 ;;
+          esac
+          exit 0
 ---
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun

@@ -3,7 +3,7 @@ kind: Task
 metadata:
   name: jib-gradle
   labels:
-    app.kubernetes.io/version: "0.3"
+    app.kubernetes.io/version: "0.4"
   annotations:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/categories: Image Build
@@ -41,6 +41,8 @@ spec:
   results:
   - name: IMAGE_DIGEST
     description: Digest of the image just built.
+  - name: IMAGE_URL
+    description: URL of the image just built.
 
   steps:
   - name: build-and-push
@@ -72,8 +74,9 @@ spec:
         -Duser.home="$HOME" \
         -Djib.allowInsecureRegistries="$(params.INSECUREREGISTRY)" \
         -Djib.to.image="$(params.IMAGE)" \
-        -Djib.outputPaths.digest="$(workspaces.source.path)/$(params.DIRECTORY)/image-digest" \
+        -Djib.outputPaths.digest="$(results.IMAGE_DIGEST.path)" \
         $(params.EXTRA_ARGS)
+      echo $(params.IMAGE) | tee $(results.IMAGE_URL.path)
     env:
     - name: HOME
       value: /workspace
@@ -98,10 +101,6 @@ spec:
       subPath: jib-cache
     securityContext:
       runAsUser: 0
-
-  - name: digest-to-results
-    image: $(params.BUILDER_IMAGE)
-    script: cat $(workspaces.source.path)/$(params.DIRECTORY)/image-digest | tee /tekton/results/IMAGE_DIGEST
 
   volumes:
   - name: empty-dir-volume

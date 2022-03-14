@@ -7,7 +7,7 @@ Jib works with [Gradle](https://github.com/GoogleContainerTools/jib/tree/master/
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/jib-gradle/0.3/jib-gradle.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/jib-gradle/0.4/jib-gradle.yaml
 ```
 
 ## Parameters
@@ -26,6 +26,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/ji
 ## Results
 
 - **IMAGE_DIGEST**: The digest of the image just built.
+- **IMAGE_URL**: URL of the image just built.
 
 ## Platforms
 
