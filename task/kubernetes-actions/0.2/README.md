@@ -40,7 +40,7 @@ metadata:
   name: kubectl-run
 spec:
   taskRef:
-    name: kubectl-actions
+    name: kubernetes-actions
   params:
     - name: SCRIPT
       value: |
@@ -58,7 +58,7 @@ metadata:
   name: kubectl-run
 spec:
   taskRef:
-    name: kubectl-actions
+    name: kubernetes-actions
   params:
     - name: script
       value: |
@@ -83,7 +83,7 @@ Running `kubectl` commands on other cluster
      name: kubectl-run
    spec:
      taskRef:
-       name: kubectl-actions
+       name: kubernetes-actions
      workspaces:
        - name: kubeconfig-dir
          configMap:
