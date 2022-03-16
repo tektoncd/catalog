@@ -17,7 +17,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/bu
 
 * **IMAGE**: The name (reference) of the image to build.
 * **BUILDER_IMAGE:**: The name of the image containing the Buildah tool. See
-  note below.  (_default:_ quay.io/buildah/stable:v1.18.0)
+  note below.  (_default:_ `quay.io/buildah/stable:v1.19.6`)
 * **DOCKERFILE**: The path to the `Dockerfile` to execute (_default:_
   `./Dockerfile`)
 * **CONTEXT**: Path to the directory to use as context (_default:_
