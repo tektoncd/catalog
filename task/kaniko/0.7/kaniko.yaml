@@ -3,7 +3,7 @@ kind: Task
 metadata:
   name: kaniko
   labels:
-    app.kubernetes.io/version: "0.6"
+    app.kubernetes.io/version: "0.7"
   annotations:
     tekton.dev/pipelines.minVersion: "0.17.0"
     tekton.dev/categories: Image Build
@@ -37,6 +37,10 @@ spec:
       description: Includes a docker `config.json`
       optional: true
       mountPath: /kaniko/.docker
+    - name: aws_credentials
+      description: Includes aws credentials file, when using credentials to authenticate ecr
+      optional: true
+      mountPath: /root/.aws/
   results:
     - name: IMAGE_DIGEST
       description: Digest of the image just built.
