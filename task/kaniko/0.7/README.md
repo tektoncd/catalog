@@ -38,6 +38,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/ka
 
 * **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) containing the source to build.
 * **dockerconfig**: An optional [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) containing a Docker `config.json`
+* **aws_credentials**: An optional [Workspace](https://github.com/tektoncd/pipeline/blob/master/docs/workspaces.md) containing aws credentials file to authenticate ecr (when not using instance role)
 
 ## Results
 
@@ -55,6 +56,10 @@ the docker `config.json`.
 
 When using a workspace, the workspace shall be bound to a secret that embeds the
 configuration file in a key called `config.json`.
+
+When using kaniko to push to ecr and you are not authenticating using instance role, the workspace shall be bound to a secret that embeds the credentials files.
+
+see how to create the secret [here](https://github.com/GoogleContainerTools/kaniko#pushing-to-amazon-ecr) 
 
 ## Usage
 
