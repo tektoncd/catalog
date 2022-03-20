@@ -58,7 +58,7 @@ spec:
       securityContext:
         runAsUser: 0
     - name: write-url
-      image: docker.io/library/bash:5.1.4@sha256:b208215a4655538be652b2769d82e576bc4d0a2bb132144c060efc5be8c3f5d6
+      image: docker.io/library/busybox:1.35.0
       script: |
         set -e
         image="$(params.IMAGE)"
