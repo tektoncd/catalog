@@ -91,7 +91,7 @@ See also: [use-ssh-key.yaml](https://github.com/tektoncd/catalog/blob/main/task/
 | `verbose` | Enables verbose logging for all connection activity to the VM. | false |
 | `ssh-key` | Specifies whether the SSH credentials secret contains an [SSH key](#using-an-ssh-key), as opposed to a password. | false |
 | `delete-vm` | Specifies whether to delete the VM after use when run in a pipeline. You can discard build agents that are no longer needed to free up resources. Set to false if you intend to clean up VMs after use manually. | true |
-| `task-image` | The docker image used to run the task steps. | docker.io/macstadium/orka-tekton-runner:2020-10-23-a93757dc-0.1@sha256:e8ed3370dcb91cdb8bcd4e9a7e9f6652879d80acdab9644cda69a98cd8c93339 |
+| `orka-image` | The docker image used to run the task steps. | docker.io/macstadium/orka-tekton-runner:2020-10-23-a93757dc-0.1@sha256:e8ed3370dcb91cdb8bcd4e9a7e9f6652879d80acdab9644cda69a98cd8c93339 |
 
 ### Configuring secrets and config maps
 

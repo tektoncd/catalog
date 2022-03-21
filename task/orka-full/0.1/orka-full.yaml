@@ -21,7 +21,7 @@ spec:
     - name: base-image
       type: string
       description: The Orka base image to use for the VM config.
-    - name: task-image
+    - name: orka-image
       type: string
       description: |
         The name of the docker image which runs the task step.
@@ -109,7 +109,7 @@ spec:
     workingDir: /workspace
   steps:
     - name: copy-script
-      image: $(params.task-image)
+      image: $(params.orka-image)
       script: |
         #!/bin/sh
         SCRIPT=$(mktemp)
@@ -119,7 +119,7 @@ spec:
         EOF
         copy-script $SCRIPT
     - name: build
-      image: $(params.task-image)
+      image: $(params.orka-image)
       securityContext:
         privileged: true
       env:
