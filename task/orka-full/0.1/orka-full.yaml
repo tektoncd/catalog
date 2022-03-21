@@ -21,7 +21,7 @@ spec:
     - name: base-image
       type: string
       description: The Orka base image to use for the VM config.
-    - name: task-image
+    - name: orka-image
       type: string
       description: |
         The name of the docker image which runs the task step.
@@ -102,6 +102,11 @@ spec:
       type: string
       default: /tekton/home
       description: Absolute path to the user's home directory.
+    - name: task-image
+      type: string
+      description: |
+        The name of the docker image which runs the task step.
+      default: docker.io/macstadium/orka-tekton-runner:2020-10-23-a93757dc-0.1@sha256:e8ed3370dcb91cdb8bcd4e9a7e9f6652879d80acdab9644cda69a98cd8c93339
   stepTemplate:
     env:
       - name: HOME
@@ -109,7 +114,7 @@ spec:
     workingDir: /workspace
   steps:
     - name: copy-script
-      image: $(params.task-image)
+      image: $(params.orka-image)
       script: |
         #!/bin/sh
         SCRIPT=$(mktemp)
@@ -119,7 +124,7 @@ spec:
         EOF
         copy-script $SCRIPT
     - name: build
-      image: $(params.task-image)
+      image: $(params.orka-image)
       securityContext:
         privileged: true
       env:
