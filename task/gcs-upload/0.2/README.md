@@ -8,7 +8,6 @@ are intended as its replacement. This is part of our plan to [offer replacement
 as well as
 [document those replacements](https://github.com/tektoncd/pipeline/issues/1369).
 
-
 ## `gcs-upload`
 
 A `Task` that uploads files or directories from a Workspace to a GCS bucket.
@@ -23,6 +22,9 @@ A `Task` that uploads files or directories from a Workspace to a GCS bucket.
 
 * **path**: The path to files or directories relative to the source workspace that you'd like to upload. (_required_)
 * **location**: The address (including "gs://") where you'd like to upload files to. (_required_)
+* **deleteExtraFiles**: When "true", delete extra files under location not found under path.
+  NOTE: this option can delete data quickly if you specify the wrong source/destination combination.
+  "BE CAREFUL WHEN USING THIS OPTION!". (_default_: "false")
 * **serviceAccountPath**: The path to the service account credential file in your credentials workspace. (_default_: "service\_account.json")
 
 ## Platforms
@@ -30,7 +32,6 @@ A `Task` that uploads files or directories from a Workspace to a GCS bucket.
 The Task can be run on `linux/amd64` platform.
 
 ## Usage
-
 
 ### `gcs-upload`
 
