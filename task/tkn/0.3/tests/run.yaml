@@ -1,0 +1,14 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: tkn-run-without-workspace
+spec:
+  serviceAccountName: tkn-account
+  taskRef:
+    name: tkn
+  params:
+    - name: SCRIPT
+      value: |
+        tkn task list
+        echo "-----------"
+        tkn task describe tkn
