@@ -24,7 +24,7 @@ spec:
   steps:
     - name: pluto
       workingDir: $(workspaces.source.path)
-      image: quay.io/fairwinds/pluto:v5@sha256:cea6f363e9afbaf7bff6834a1d0923b0c46145249275dd85ac6ad16497c78fe8 #tag: v5
+      image: quay.io/fairwinds/pluto:v5 #tag: v5
       command: ["/pluto"]
       args:
         - "$(params.ARGS)"
