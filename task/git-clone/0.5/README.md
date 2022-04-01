@@ -150,8 +150,7 @@ hold your credentials and bind to this workspace.
     Including `known_hosts` is optional but strongly recommended. Without it
     the `git-clone` Task will blindly accept the remote server's identity.
 
-2. Use Tekton Pipelines' built-in credentials support as [documented in
-Pipelines' auth.md](https://github.com/tektoncd/pipeline/blob/master/docs/auth.md).
+2. Use Tekton Pipelines' built-in credentials support as [documented in Pipelines' auth.md](https://github.com/tektoncd/pipeline/blob/master/docs/auth.md).
 
 ## Running as a Non-Root User
 
