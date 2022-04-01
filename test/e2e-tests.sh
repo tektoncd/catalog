@@ -15,7 +15,7 @@
 # limitations under the License.
 
 # Configure the number of parallel tests running at the same time, start from 0
-MAX_NUMBERS_OF_PARALLEL_TASKS=4 # => 5
+MAX_NUMBERS_OF_PARALLEL_TASKS=7 # => 8
 
 export RELEASE_YAML=https://github.com/tektoncd/pipeline/releases/download/v0.33.1/release.yaml
 
