@@ -1,0 +1,96 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  annotations:
+    tekton.dev/displayName: s2i angular nginx
+    tekton.dev/categories: Image Build
+    tekton.dev/tags: image, build, angular, nginx
+    tekton.dev/pipelines.minVersion: '0.19'
+  name: s2i-angular-nginx
+  labels:
+    app.kubernetes.io/version: '0.1'
+spec:
+  params:
+    - default: '14'
+      description: The tag of nodejs version
+      name: NODEJS_VERSION
+      type: string
+    - default: .
+      description: The location of the path to run s2i from.
+      name: CONTEXT_PATH
+      type: string
+    - default: 'true'
+      description: >-
+        Verify the TLS on the registry endpoint (for push/pull to a non-TLS
+        registry)
+      name: TLSVERIFY
+      type: string
+    - description: Location of the repo where image has to be pushed
+      name: IMAGE
+      type: string
+    - default: >-
+        registry.redhat.io/rhel8/buildah@sha256:e19cf23d5f1e0608f5a897f0a50448beb9f8387031cca49c7487ec71bd91c4d3
+      description: The location of the buildah builder image.
+      name: BUILDER_IMAGE
+      type: string
+  results:
+    - description: Digest of the image just built.
+      name: IMAGE_DIGEST
+  steps:
+    - image: registry.access.redhat.com/ubi8:latest
+      name: generate
+      resources: {}
+      script: |
+        echo """
+        FROM registry.access.redhat.com/ubi8/nodejs-$(params.NODEJS_VERSION) as node
+        COPY $(params.CONTEXT_PATH) .
+        RUN npm install
+        RUN npm run build --prod
+        FROM ubi8/nginx-120
+        COPY --from=node /opt/app-root/src/dist/*/ .
+        CMD /usr/libexec/s2i/run
+        """ > Dockerfile
+      workingDir: $(workspaces.source.path)
+    - command:
+        - buildah
+        - bud
+        - '--storage-driver=vfs'
+        - '--tls-verify=$(params.TLSVERIFY)'
+        - '--layers'
+        - '-t'
+        - $(params.IMAGE)
+        - $(params.CONTEXT_PATH)
+      image: $(params.BUILDER_IMAGE)
+      name: build
+      resources: {}
+      volumeMounts:
+        - mountPath: /var/lib/containers
+          name: varlibcontainers
+      workingDir: $(workspaces.source.path)
+    - command:
+        - buildah
+        - push
+        - '--storage-driver=vfs'
+        - '--tls-verify=$(params.TLSVERIFY)'
+        - '--digestfile=$(workspaces.source.path)/image-digest'
+        - $(params.IMAGE)
+        - 'docker://$(params.IMAGE)'
+      image: $(params.BUILDER_IMAGE)
+      name: push
+      resources: {}
+      volumeMounts:
+        - mountPath: /var/lib/containers
+          name: varlibcontainers
+      workingDir: $(workspaces.source.path)
+    - image: $(params.BUILDER_IMAGE)
+      name: digest-to-results
+      resources: {}
+      script: >-
+        cat $(workspaces.source.path)/image-digest | tee
+        /tekton/results/IMAGE_DIGEST
+  volumes:
+    - emptyDir: {}
+      name: varlibcontainers
+  workspaces:
+    - mountPath: /workspace/source
+      name: source
