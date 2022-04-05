@@ -62,4 +62,4 @@ spec:
       script: |
         set -e
         image="$(params.IMAGE)"
-        echo "${image}" | tee "$(results.IMAGE_URL.path)"
+        echo -n "${image}" | tee "$(results.IMAGE_URL.path)"
