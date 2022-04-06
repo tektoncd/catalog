@@ -1,0 +1,21 @@
+# Default GitHub
+---
+headers:
+  method: POST
+  path: /repos/{repo:[^/]+/[^/]+}/statuses/{sha:[0-9a-f]+}
+response:
+  status: 201
+  output: '{"state": "success"}'
+  content-type: text/json
+  file: /fixtures/github-set-status-response.json
+
+# GitHub Enterprise Server
+---
+headers:
+  method: POST
+  path: /api/v3/repos/{repo:[^/]+/[^/]+}/statuses/{sha:[0-9a-f]+}
+response:
+  status: 200
+  output: '{"status": 200}'
+  content-type: text/json
+  file: /fixtures/github-set-status-response.json
