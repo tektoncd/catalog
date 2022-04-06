@@ -3,7 +3,7 @@ kind: Task
 metadata:
   name: gcs-upload
   labels:
-    app.kubernetes.io/version: "0.2"
+    app.kubernetes.io/version: "0.3"
   annotations:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/categories: Cloud, Storage
@@ -35,8 +35,19 @@ spec:
 
       NOTE: this option can delete data quickly if you specify the wrong
       source/destination combination. "BE CAREFUL WHEN USING THIS OPTION!".
+
+      NOTE: this option is implemented via "gsutil rsync". If the target bucket
+      contains a large number of files, it may take a long time for gsutil to
+      fetch the remote metadata for sync.
+
+      NOTE: setting this option to "true" is not compatible with replaceExistingFiles="false"
     default: "false"
     type: string
+  - name: replaceExistingFiles
+    description: |
+      When "false", files that already exists are skipped. Default: "true"
+
+      NOTE: setting this option to "false" is not compatible with deleteExtraFiles="true"
   - name: serviceAccountPath
     description: The path inside the credentials workspace to the GOOGLE_APPLICATION_CREDENTIALS key file.
     type: string
@@ -52,6 +63,8 @@ spec:
         value: "$(params.location)"
       - name: DELETE_EXTRA_FILES
         value: $(params.deleteExtraFiles)
+      - name: REPLACE_EXISTING_FILES
+        value: $(params.replaceExistingFiles)
     image: gcr.io/google.com/cloudsdktool/cloud-sdk:379.0.0-slim@sha256:d844877c7aaa06a0072979230c68417ddb0f27087277f29747c7169d6ed0d2b9 #tag: 379.0.0-slim
     script: |
       #!/usr/bin/env bash
@@ -66,12 +79,24 @@ spec:
         gcloud auth activate-service-account --key-file="${GOOGLE_APPLICATION_CREDENTIALS}"
       fi
 
-      RSYNC_PARAMS=""
+      CP_PARAMS=""
+      if [[ "$REPLACE_EXISTING_FILES" == "false" ]]; then
+          CP_PARAMS="-n"
+      fi
+
       if [[ -d "$SOURCE" ]]; then
+        # Copying one folder
         if [[ "$DELETE_EXTRA_FILES" == "true" ]]; then
-          RSYNC_PARAMS="-d"
+            if [[ "$REPLACE_EXISTING_FILES" == "false" ]]; then
+              echo "\"deleteExtraFiles\"" can be used only when \"replaceExistingFiles\"" is true"
+              exit 1
+            fi
+          # When deleteExtraFiles is requested, use rsync
+          gsutil -m rsync -d -r "${SOURCE}" "${LOCATION}"
+        else
+          gsutil -m cp ${CP_PARAMS} -r "${SOURCE}" "${LOCATION}"
         fi
-        gsutil -m rsync ${RSYNC_PARAMS} -r "${SOURCE}" "${LOCATION}"
       else
-        gsutil cp "${SOURCE}" "${LOCATION}"
+        # Copying one file
+        gsutil cp ${CP_PARAMS} "${SOURCE}" "${LOCATION}"
       fi
