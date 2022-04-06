@@ -22,9 +22,16 @@ A `Task` that uploads files or directories from a Workspace to a GCS bucket.
 
 * **path**: The path to files or directories relative to the source workspace that you'd like to upload. (_required_)
 * **location**: The address (including "gs://") where you'd like to upload files to. (_required_)
-* **deleteExtraFiles**: When "true", delete extra files under location not found under path.
-  NOTE: this option can delete data quickly if you specify the wrong source/destination combination.
-  "BE CAREFUL WHEN USING THIS OPTION!". (_default_: "false")
+* **deleteExtraFiles**: When "true", delete extra files under location not found under path. (_default_: "false")
+  NOTE: this option can delete data quickly if you specify the wrong source/destination combination. "BE CAREFUL WHEN USING THIS OPTION!".
+
+  NOTE: this option is implemented via "gsutil rsync". If the target bucket
+  contains a large number of files, it may take a long time for gsutil to
+  fetch the remote metadata for sync.
+
+  NOTE: setting this option to "true" is not compatible with replaceExistingFiles="false"
+* **replaceExistingFiles**: When "false", files that already exists are skipped. (_default_: "true")
+  NOTE: setting this option to "false" is not compatible with deleteExtraFiles="true"
 * **serviceAccountPath**: The path to the service account credential file in your credentials workspace. (_default_: "service\_account.json")
 
 ## Platforms
