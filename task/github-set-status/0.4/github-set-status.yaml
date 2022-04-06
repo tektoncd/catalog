@@ -161,12 +161,18 @@ spec:
             "description": os.getenv("DESCRIPTION"),
             "context": os.getenv("CONTEXT")
         }
-        print("Sending this data to GitHub: ")
+        print("Sending this data to GitHub@{url}: ".format(
+          url=os.getenv("GITHUB_HOST_URL")))
         print(data)
 
         authHeader = os.getenv("AUTH_TYPE") + " " + github_token
 
-        conn = http.client.HTTPSConnection(os.getenv("GITHUB_HOST_URL"))
+        # This is for our fake github server
+        if "$(params.GITHUB_HOST_URL)".startswith("http://"):
+          conn = http.client.HTTPConnection("$(params.GITHUB_HOST_URL)".replace("http://", ""))
+        else:
+          conn = http.client.HTTPSConnection("$(params.GITHUB_HOST_URL)")
+
         conn.request(
             "POST",
             status_url,
@@ -182,7 +188,7 @@ spec:
             print(resp.read())
             sys.exit(1)
         else:
-            print("GitHub status '{state}' has been set on {repo}#{shat} ".format(
+            print("GitHub status '{state}' has been set on {repo}#{sha} ".format(
                 state=os.getenv("STATE"),
                 repo=os.getenv("REPO_FULL_NAME"),
                 sha=os.getenv("SHA")))
