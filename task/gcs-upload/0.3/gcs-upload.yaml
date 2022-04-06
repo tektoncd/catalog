@@ -48,6 +48,7 @@ spec:
       When "false", files that already exists are skipped. Default: "true"
 
       NOTE: setting this option to "false" is not compatible with deleteExtraFiles="true"
+    default: "true"
   - name: serviceAccountPath
     description: The path inside the credentials workspace to the GOOGLE_APPLICATION_CREDENTIALS key file.
     type: string
