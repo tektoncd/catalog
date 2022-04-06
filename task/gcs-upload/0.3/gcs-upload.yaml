@@ -1,0 +1,77 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: gcs-upload
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Cloud, Storage
+    tekton.dev/tags: cloud, gcs
+    tekton.dev/displayName: "Upload to GCS"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    A Task that uploads a GCS bucket.
+
+    This task uploads files or directories from a Workspace to a GCS bucket.
+
+  workspaces:
+  - name: credentials
+    description: A secret with a service account key to use as GOOGLE_APPLICATION_CREDENTIALS.
+  - name: source
+    description: A workspace where files will be uploaded from.
+  params:
+  - name: path
+    description: The path to files or directories relative to the source workspace that you'd like to upload.
+    type: string
+  - name: location
+    description: The address (including "gs://") where you'd like to upload files to.
+    type: string
+  - name: deleteExtraFiles
+    description: |
+      When "true", delete extra files under location not found under path.
+      By default extra files are not deleted.
+
+      NOTE: this option can delete data quickly if you specify the wrong
+      source/destination combination. "BE CAREFUL WHEN USING THIS OPTION!".
+    default: "false"
+    type: string
+  - name: serviceAccountPath
+    description: The path inside the credentials workspace to the GOOGLE_APPLICATION_CREDENTIALS key file.
+    type: string
+    default: service_account.json
+  steps:
+  - name: upload
+    env:
+      - name: CRED_PATH
+        value: "$(workspaces.credentials.path)/$(params.serviceAccountPath)"
+      - name: SOURCE
+        value: "$(workspaces.source.path)/$(params.path)"
+      - name: LOCATION
+        value: "$(params.location)"
+      - name: DELETE_EXTRA_FILES
+        value: $(params.deleteExtraFiles)
+    image: gcr.io/google.com/cloudsdktool/cloud-sdk:379.0.0-slim@sha256:d844877c7aaa06a0072979230c68417ddb0f27087277f29747c7169d6ed0d2b9 #tag: 379.0.0-slim
+    script: |
+      #!/usr/bin/env bash
+      set -xe
+
+      if [[ -f "$CRED_PATH" ]]; then
+        GOOGLE_APPLICATION_CREDENTIALS="$CRED_PATH"
+      fi
+
+      if [[ "${GOOGLE_APPLICATION_CREDENTIALS}" != "" ]]; then
+        echo GOOGLE_APPLICATION_CREDENTIALS is set, activating Service Account...
+        gcloud auth activate-service-account --key-file="${GOOGLE_APPLICATION_CREDENTIALS}"
+      fi
+
+      RSYNC_PARAMS=""
+      if [[ -d "$SOURCE" ]]; then
+        if [[ "$DELETE_EXTRA_FILES" == "true" ]]; then
+          RSYNC_PARAMS="-d"
+        fi
+        gsutil -m rsync ${RSYNC_PARAMS} -r "${SOURCE}" "${LOCATION}"
+      else
+        gsutil cp "${SOURCE}" "${LOCATION}"
+      fi
