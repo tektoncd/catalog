@@ -79,7 +79,7 @@ spec:
     - command:
         - buildah
         - push
-        - '--storage-driver=vfs'
+        - '--storage-driver=$(params.STORAGE_DRIVER)'
         - '--tls-verify=$(params.TLSVERIFY)'
         - '--digestfile=$(workspaces.source.path)/image-digest'
         - $(params.IMAGE)
