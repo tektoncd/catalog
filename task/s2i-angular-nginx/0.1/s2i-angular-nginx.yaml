@@ -11,7 +11,7 @@ metadata:
     app.kubernetes.io/version: '0.1'
 spec:
   params:
-    - default: '14'
+    - default: '16'
       description: The tag of nodejs version
       name: NODEJS_VERSION
       type: string
@@ -33,6 +33,14 @@ spec:
       description: The location of the buildah builder image.
       name: BUILDER_IMAGE
       type: string
+    - name: BUILD_COMMAND
+      description: build command used to compile the source of the application
+      default: 'RUN npm run build -- --prod'
+      type: string
+    - name: STORAGE_DRIVER
+      description: storage driver used to save the image to registry
+      default: vfs
+      type: string
   results:
     - description: Digest of the image just built.
       name: IMAGE_DIGEST
@@ -43,18 +51,19 @@ spec:
       script: |
         echo """
         FROM node:$(params.NODEJS_VERSION) as node
+        WORKDIR /app
         COPY $(params.CONTEXT_PATH) .
-        RUN npm install
-        RUN npm run build --prod
+        RUN npm ci
+        RUN $(params.BUILD_COMMAND)
         FROM nginx:alpine
-        COPY --from=node /opt/app-root/src/dist/*/ .
-        CMD /usr/libexec/s2i/run
+        COPY --from=node /app/dist/*/ /usr/share/nginx/html
+        EXPOSE 80
         """ > Dockerfile
       workingDir: $(workspaces.source.path)
     - command:
         - buildah
         - bud
-        - '--storage-driver=vfs'
+        - '--storage-driver=$(params.STORAGE_DRIVER)'
         - '--tls-verify=$(params.TLSVERIFY)'
         - '--layers'
         - '-t'
