@@ -1,0 +1,154 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: registry
+spec:
+  selector:
+    matchLabels:
+      run: registry
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: registry
+    spec:
+      containers:
+      - name: registry
+        image: docker.io/registry:2
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: registry
+spec:
+  ports:
+  - port: 5000
+  selector:
+    run: registry
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ansible-builder-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  volumeMode: Filesystem
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: ansible-builder
+spec:
+  workspaces:
+  - name: ee-repo
+  params:
+  # Fetch Task
+  - name: git-url
+    type: string
+    description: url of the git repo for the code of deployment
+    default: https://github.com/jtudelag/ansible-execution-environments.git
+  - name: git-revision
+    type: string
+    description: revision to be used from repo of the code for deployment (Commit id)
+    default: main
+  - description: Name of the container image to be built
+    name: NAME
+    type: string
+  - description: Tag of the container image to be built
+    name: TAG
+    type: string
+    default: "latest"
+  - description: Path to the directory to use as context for buildah.
+    name: CONTEXT
+    type: string
+    default: "context/"
+  - description: The path to the Dockerfile to execute.
+    name: DOCKERFILE
+    type: string
+    default: "Containerfile"
+  - description: Execution environment file definition.
+    name: FILENAME
+  tasks:
+
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+      - name: output
+        workspace: ee-repo
+      params:
+      - name: url
+        value: $(params.git-url)
+      - name: deleteExisting
+        value: "true"
+      - name: revision
+        value: $(params.git-revision)
+
+    - name: ansible-builder
+      taskRef:
+        name: ansible-builder
+        kind: Task
+      workspaces:
+      - name: source
+        workspace: ee-repo
+      runAfter:
+      - fetch-repository
+      params:
+      - name: FILENAME
+        value: $(params.FILENAME)
+
+    # Build latest tag
+    - name: build-image-tag
+      taskRef:
+        name: buildah
+      workspaces:
+      - name: source
+        workspace: ee-repo
+      runAfter:
+      - ansible-builder
+      params:
+      - name: TLSVERIFY
+        value: "false"
+      - name: IMAGE
+        value: $(params.NAME):$(params.TAG)
+      - name: CONTEXT
+        value: "$(params.CONTEXT)"
+      - name: DOCKERFILE
+        value: "$(params.DOCKERFILE)"
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: build-ee
+  labels:
+    tekton.dev/pipeline: ansible-builder
+spec:
+  params:
+    - name: git-url
+      value: 'https://github.com/jtudelag/ansible-execution-environments.git'
+    - name: git-revision
+      value: main
+    - name: NAME
+      value: registry:5000/ansible-ee-test
+    - name: TAG
+      value: test
+    - name: CONTEXT
+      value: context/
+    - name: DOCKERFILE
+      value: Containerfile
+    - name: FILENAME
+      value: execution-environment-upstream.yml
+  pipelineRef:
+    name: ansible-builder
+  timeout: 1h0m0s
+  workspaces:
+    - name: ee-repo
+      persistentVolumeClaim:
+        claimName: ansible-builder-pvc

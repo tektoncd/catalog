@@ -1,0 +1,50 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: ansible-builder
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.0"
+    tekton.dev/displayName: ansible-builder
+    tekton.dev/categories: Build Tools
+    tekton.dev/tags: ansible, ansible-builder, build-tool, automation
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    Creates a build context (including a Containerfile) from an execution environment spec.
+    This build context is populated with dependencies including requirements files.
+  workspaces:
+    - name: source
+      description: The source workspace where the execution environment code is cloned.
+  params:
+    - description: Execution environment file definition.
+      name: FILENAME
+      type: string
+      default: execution-environment.yml
+    - description: Execution environment build context.
+      name: BUILD_CONTEXT
+      type: string
+      default: context
+    - name: OUTPUT_FILENAME
+      description: Name of file to write image definition to. Either Dockerfile or Containerfile.
+      type: string
+      default: Containerfile
+    - description: ansible-builder output verbosity.
+      name: VERBOSITY
+      type: string
+      default: "2"
+    - name: BUILDER_IMAGE
+      description: The location of the ansible-builder image.
+      type: string
+      default: quay.io/ansible/ansible-builder:latest
+  steps:
+
+    - name: ansible-builder-create
+      workingDir: $(workspaces.source.path)
+      image: $(params.BUILDER_IMAGE)
+      script: |
+        #!/bin/sh
+        set -eux -o
+
+        ansible-builder create -f "$(params.FILENAME)" -c "$(params.BUILD_CONTEXT)" --output-filename "$(params.OUTPUT_FILENAME)" -v "$(params.VERBOSITY)"
