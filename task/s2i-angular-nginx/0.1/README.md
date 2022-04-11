@@ -46,7 +46,7 @@ spec:
         name: s2i-angular-nginx
       params:
         - name: NODEJS_VERSION
-          value: '14'
+          value: '16'
         - name: CONTEXT_PATH
           value: '.'
         - name: TLSVERIFY
