@@ -20,13 +20,17 @@ spec:
   params:
     - name: application-name
       description: name of the application to sync
+      type: string
     - name: revision
       description: the revision to sync to
       default: HEAD
+      type: string
     - name: flags
       default: --
+      type: string
     - name: argocd-version
       default: v2.2.2
+      type: string
   stepTemplate:
     envFrom:
       - configMapRef:
