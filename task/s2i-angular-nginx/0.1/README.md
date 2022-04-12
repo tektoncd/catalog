@@ -20,6 +20,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/s2
 
 * **BUILDER_IMAGE:** the buildah image needed to build the resulting image
 
+* **BUILD_COMMAND:** the build command used to compile an angular application. By default `npm run build -- --prod` will be run.
+
+* **STORAGE_DRIVER:** driver used to build the container image layers. By default `vfs` is used, but you can use `overlay`instead.
+
 ## Results
 * **IMAGE_DIGEST:** digest of the image just built.
 
