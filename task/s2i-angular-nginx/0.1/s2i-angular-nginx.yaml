@@ -35,7 +35,7 @@ spec:
       type: string
     - name: BUILD_COMMAND
       description: build command used to compile the source of the application
-      default: 'RUN npm run build -- --prod'
+      default: 'RUN npm run build -- --configuration=production'
       type: string
     - name: STORAGE_DRIVER
       description: storage driver used to save the image to registry
