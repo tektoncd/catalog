@@ -30,8 +30,12 @@ spec:
       type: string
     - default: >-
         quay.io/buildah/stable:latest
-      description: The location of the buildah builder image.
+      description: The location of the buildah builder image
       name: BUILDER_IMAGE
+      type: string
+    - name: INSTALL_COMMAND
+      description: command used to install dependencies
+      default: 'npm ci'
       type: string
     - name: BUILD_COMMAND
       description: build command used to compile the source of the application
@@ -53,7 +57,7 @@ spec:
         FROM node:$(params.NODEJS_VERSION) as node
         WORKDIR /app
         COPY $(params.CONTEXT_PATH) .
-        RUN npm ci
+        RUN $(params.INSTALL_COMMAND)
         RUN $(params.BUILD_COMMAND)
         FROM nginx:alpine
         COPY --from=node /app/dist/*/ /usr/share/nginx/html
