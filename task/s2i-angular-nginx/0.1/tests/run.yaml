@@ -1,0 +1,50 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: s2i-angular-nginx-test-pipeline
+spec:
+  workspaces:
+  - name: shared-workspace
+  tasks:
+  - name: fetch-repository
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: shared-workspace
+    params:
+    - name: url
+      value: https://github.com/jlozano-rh/Angular-HelloWorld.git
+    - name: subdirectory
+      value: ""
+    - name: deleteExisting
+      value: "true"
+  - name: angular-build
+    taskRef:
+      name: s2i-angular-nginx
+    runAfter:
+    - fetch-repository
+    workspaces:
+    - name: source
+      workspace: shared-workspace
+    params:
+    - name: NODEJS_VERSION
+      value: '10'
+    - name: CONTEXT_PATH
+      value: .
+    - name: TLSVERIFY
+      value: 'false'
+    - name: IMAGE
+      value: 'registry:5000/angular-helloworld'
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: s2i-angular-nginx-test-pipeline-run
+spec:
+  pipelineRef:
+    name: s2i-angular-nginx-test-pipeline
+  workspaces:
+  - name: shared-workspace
+    persistentvolumeclaim:
+      claimName: shared-workspace-pvc
