@@ -13,8 +13,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/da
 
 ## Parameters
 
-- **yamlSrc**: Path for the yaml files relative to the workspace path (_default:_ `.`).
-- **yamlFile**: YAML file to test inside the yamlSrc directory (_default:_ `*.yaml`).
+- **yamlSrc**: Complete path for the yaml files relative to the workspace path. Should include the yaml file name with extension. (_default:_ `./*.yaml`).
 - **output**: Output the policy check results in the requested format (simple, json, yaml, xml) (_Optional_).
 - **schemaVersion**: Set Kubernetes version to validate against. Defaults to 1.18.0 in Datree (_Optional_).
 - **ignoreMissingSchemas**: Skip files with missing schemas instead of failing the schema validation check Should be a string of either `true` or `false` (_Optional_).
