@@ -1,0 +1,51 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: ansibler-runner-pipeline
+spec:
+  workspaces:
+    - name: runner-dir
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: runner-dir
+      params:
+        - name: url
+          value: |
+            https://github.com/vinamra28/tektoncd-ansible-runner-example
+        - name: revision
+          value: 'master'
+        - name: deleteExisting
+          value: 'true'
+    # ansible-runner
+    - name: ansible-runner-run
+      taskRef:
+        name: ansible-runner
+      runAfter:
+        - fetch-repository
+      workspaces:
+        - name: runner-dir
+          workspace: runner-dir
+      params:
+        - name: project-dir
+          value: 'kubernetes'
+        - name: args
+          value: ['-p', 'list-pods.yml']
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: ansibler-runner-pipeline-run
+spec:
+  serviceAccountName: ansible-deployer-account
+  pipelineRef:
+    name: ansibler-runner-pipeline
+  workspaces:
+    - name: runner-dir
+      persistentVolumeClaim:
+        claimName: ansible-playbooks-pvc

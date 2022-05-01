@@ -1,0 +1,68 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: ansible-runner
+  labels:
+    app.kubernetes.io/version: '0.2'
+    app.kubernetes.io/ansible-version: '2.12.5'
+  annotations:
+    tekton.dev/pipelines.minVersion: '0.12.1'
+    tekton.dev/categories: CLI
+    tekton.dev/tags: cli
+    tekton.dev/displayName: 'Ansible Runner'
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    Task to run Ansible playbooks using Ansible Runner
+
+  workspaces:
+    - name: runner-dir
+      description: The Ansibler runner directory
+  params:
+    - name: project-dir
+      description: The project directory under the workspace runner-dir
+      default: 'project'
+    - name: args
+      description: The arguments to pass ansible-runner
+      type: array
+      default:
+        - --help
+    - name: user-home
+      description: Absolute path to the user's home directory.
+      default: /tekton/home
+  stepTemplate:
+    env:
+      - name: HOME
+        value: $(params.user-home)
+  steps:
+    - name: requirements
+      image: quay.io/ansible/ansible-runner:stable-2.12-latest #tag: stable-2.12-latest
+      script: |
+        #!/bin/bash
+        set -e
+
+        if [ -f requirements.txt ];
+        then
+          pip3 install --user \
+            -r requirements.txt
+        fi
+
+        if [ -f  requirements.yml ];
+        then
+          ansible-galaxy role install -vv \
+            -r requirements.yml
+          ansible-galaxy collection install -vv \
+            -r requirements.yml
+        fi
+      workingDir: '$(workspaces.runner-dir.path)/$(params.project-dir)'
+
+    - name: run-playbook
+      image: quay.io/ansible/ansible-runner:stable-2.12-latest #tag: stable-2.12-latest
+      command: ['entrypoint']
+      args:
+        - ansible-runner
+        - run
+        - $(params.args)
+        - $(params.project-dir)
+      workingDir: '$(workspaces.runner-dir.path)'
