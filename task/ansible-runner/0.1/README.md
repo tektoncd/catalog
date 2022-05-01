@@ -2,6 +2,9 @@
 
 Ansible Runner Task allows running the Ansible Playbooks using the [ansible-runner](https://ansible-runner.readthedocs.io/) tool.
 
+
+**NOTE**: This Task is now deprecated and will be removed soon as the image is removed from the dockerhub by the authors. Please use the version [0.2](../0.2) instead.
+
 ## Creating the Task
 
 Create the Task and other resources:
