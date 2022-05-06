@@ -1,0 +1,60 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: anchore-cli
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Security
+    tekton.dev/tags: CLI, anchore
+    tekton.dev/displayName: "anchore cli"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    The Anchore CLI provides a command line interface on top of the Anchore Engine REST API.
+    Using the Anchore CLI users can manage and inspect images, policies, subscriptions and registries
+  workspaces:
+    - name: manifest-dir
+  params:
+    - name: ARGS
+      description: The Arguments to be passed to anchore command.
+      type: array
+    - name: ANCHORE_CLI_IMAGE
+      default: anchore/engine-cli
+      description: Anchore cli image to be used
+    - name: ANCHORE_CLI_USER
+      default: admin
+      description: Anchore engine user name.      
+    - name: ANCHORE_CLI_PASS
+      default: foobar
+      description: Anchore engine password.      
+    - name: ANCHORE_CLI_URL
+      default: http://192.168.0.101:8228/v1/
+      description: Anchore engine URL.      
+    - name: IMAGE_NAME
+      default: openjdk:7-jre-alpine
+      description: Image to be scanned
+
+  steps:
+    - name: anchore-cli
+      image: $(params.ANCHORE_CLI_IMAGE)
+      workingDir: $(workspaces.manifest-dir.path)
+      script: |
+        #!/usr/bin/env sh
+        export ANCHORE_CLI_USER=$(params.ANCHORE_CLI_USER) 
+        export ANCHORE_CLI_PASS=$(params.ANCHORE_CLI_PASS)
+        export ANCHORE_CLI_URL=$(params.ANCHORE_CLI_URL)
+        anchore-cli image add $(params.IMAGE_NAME) > /dev/null 2>&1
+        anchore-cli image vuln $(params.IMAGE_NAME) > /dev/null 2>&1
+        status=`anchore-cli evaluate check $(params.IMAGE_NAME)`
+        if echo $status | grep  -q 'fail'; then
+          echo " Image Vulnerable. Status Failed"
+          exit
+        else
+          echo "Image not Vulnerable. Status Success"
+        fi
+
+      args:
+        - "$(params.ARGS)"
