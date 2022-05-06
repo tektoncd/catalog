@@ -1,0 +1,126 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: nexus-lifecycle-scan-task
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.33.2"
+    tekton.dev/categories: Continuous Integration, Security
+    tekton.dev/tags: sonatype, nexus, iq, sbom
+    tekton.dev/displayName: "Sonatype Nexus Lifecycle Scan"
+spec:
+  description: >-
+    This task uses the Sonatype Nexus IQ CLI to invoke a Nexus Lifecycle scan.
+  params:
+    - default: ''
+      description: URL to the IQ Server that will evaluate policies
+      name: SERVER_URL
+      type: string
+    - default: ''
+      description: Authentication credentials to use for the IQ Server
+      name: AUTHENTICATION
+      type: string
+    - default: ''
+      description: Public ID of the application on the IQ Server
+      name: APPLICATION_ID
+      type: string
+    - default: build
+      description: >-
+        The stage to run analysis against. Accepted values: develop | build |
+        stage-release | release | operate. Default: build
+      name: STAGE
+      type: string
+    - default: ''
+      description: >-
+        Path to a JSON file where the results of the policy evaluation will be
+        stored in a machine-readable format. Default: none
+      name: RESULT_FILE
+      type: string
+    - default: ''
+      description: >-
+        Introduced in 1.125.0-04a: The format of the HTML evaluation report.
+        Accepted values: summary | enhanced. Default: enhanced
+      name: REPORT_FORMAT
+      type: string
+    - default: ''
+      description: 'Fail on policy evaluation warnings. Default: false'
+      name: FAIL_ON_POLICY_WARNINGS
+      type: string
+    - default: ''
+      description: 'Ignore system errors (IO, network, server, etc). Default: false'
+      name: IGNORE_SYSTEM_ERRORS
+      type: string
+    - default: ''
+      description: 'Proxy to use. Default: none'
+      name: PROXY
+      type: string
+    - default: ''
+      description: 'Credentials to use for the proxy. Default: none'
+      name: PROXY_USER
+      type: string
+    - default: ''
+      description: >-
+        Enable debug logs. WARNING: This may expose sensitive information in the
+        log. Default: false
+      name: DEBUG
+      type: string
+    - default: ''
+      description: 'Show the help screen. Default: false'
+      name: HELP
+      type: string
+    - default: ''
+      description: Scan targets
+      name: TARGETS
+      type: string
+  results:
+    - description: The server url
+      name: server-url
+  steps:
+    - env:
+        - name: SERVER_URL
+          value: $(params.SERVER_URL)
+        - name: APPLICATION_ID
+          value: $(params.APPLICATION_ID)
+        - name: AUTHENTICATION
+          value: $(params.AUTHENTICATION)
+        - name: RESULT_FILE
+          value: $(params.RESULT_FILE)
+        - name: STAGE
+          value: $(params.STAGE)
+        - name: RESULT_FILE
+          value: $(params.RESULT_FILE)
+        - name: REPORT_FORMAT
+          value: $(params.REPORT_FORMAT)
+        - name: FAIL_ON_POLICY_WARNINGS
+          value: $(params.FAIL_ON_POLICY_WARNINGS)
+        - name: IGNORE_SYSTEM_ERRORS
+          value: $(params.IGNORE_SYSTEM_ERRORS)
+        - name: PROXY
+          value: $(params.PROXY)
+        - name: PROXY_USER
+          value: $(params.PROXY_USER)
+        - name: DEBUG
+          value: $(params.DEBUG)
+        - name: HELP
+          value: $(params.HELP)
+        - name: TARGETS
+          value: $(params.TARGETS)
+      image: 'docker.io/sonatype/nexus-iq-cli:1.136.0-01'
+      name: ''
+      resources: {}
+      script: >
+        #!/usr/bin/env bash
+
+        /sonatype/evaluate ${SERVER_URL:+"-s $SERVER_URL"} ${APPLICATION_ID:+"
+        -i $APPLICATION_ID"}${AUTHENTICATION:+" -a $AUTHENTICATION"}${STAGE:+"
+        -t $STAGE"}${RESULT_FILE:+" -r $RESULT_FILE"}${REPORT_FORMAT:+" -f
+        $REPORT_FORMAT"} ${FAIL_ON_POLICY_WARNINGS:+"
+        -w"}${IGNORE_SYSTEM_ERRORS:+" -e"}${PROXY:+" -p $PROXY"}${PROXY_USER:+"
+        -U $PROXY_USER"}${DEBUG:+" -X"}${HELP:+" -h"}${TARGETS:+" $TARGETS"}
+  workspaces:
+    - description: The workspace used by this task
+      name: nexus-cli-workspace
+    - description: The workspace that will store the bill of materials file as 'sbom.xml'
+      name: output
+      optional: true
