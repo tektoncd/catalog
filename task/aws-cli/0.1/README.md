@@ -1,87 +1,80 @@
-# aws
+# Anchore CLI
 
-This task performs operations on Amazon Web Services resources using `aws`.
-
-All aws cli commands can be found [here](https://docs.aws.amazon.com/cli/latest/reference/).
+The Anchore CLI provides a command line interface on top of the Anchore Engine REST API.
+Anchore CLI will try to connect to the Anchore Engine at http://localhost/v1 with no authentication. The username, password and URL for the server can be passed to the Anchore CLI as command line arguments
 
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/aws-cli/0.1/aws-cli.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/anchore-cli/0.1/anchore-cli.yaml
 ```
 
 ## Parameters
 
-- **SCRIPT**: The script of aws commands to execute e.g. `aws $1 $2` This will take
- the first value and second value of ARGS as `s3` and `ls` (default: `aws $@`)
-- **ARGS**: The arguments to pass to `aws` CLI, which are appended
-    to `aws` e.g. `s3 ls` ( default: `["help"]` ).
+    - name: ARGS
+      description: The Arguments to be passed to anchore command.
+      type: array
+    - name: ANCHORE_CLI_IMAGE
+      default: anchore/engine-cli
+      description: Anchore cli image to be used
+    - name: ANCHORE_CLI_USER
+      default: admin
+      description: Anchore engine user name.      
+    - name: ANCHORE_CLI_PASS
+      default: foobar
+      description: Anchore engine password.      
+    - name: ANCHORE_CLI_URL
+      default: http://192.168.0.101:8228/v1/
+      description: Anchore engine URL.      
+    - name: IMAGE_NAME
+      default: openjdk:7-jre-alpine
+      description: Image to be scanned
 
 
-## Workspaces
+* **ARGS:** Arguments to be passed to anchore command
 
-- **source**: To mount file which is to be uploaded to the aws resources,
-    this should be mounted using any volume supported in workspace.
-- **secrets**: A workspace that consists of credentials required by the `aws` which needs to be mounted to their default path as required by the aws.
+* **ANCHORE_CLI_IMAGE:** Anchore cli image to be used 
 
+* **ANCHORE_CLI_USER:** Anchore cli user to be passed as secret variable
 
-## Secret
+* **ANCHORE_CLI_PASS:** Arguments to be passed to anchore command
 
-AWS `credentials` and `config` both should be provided in the form of `secret`.
+* **ANCHORE_CLI_URL:** Anchore Server URL
 
-[This](../0.1/samples/secret.yaml) example can be referred to create `aws-credentials`.
+* **IMAGE_NAME:** Image to be scanned
 
-Refer [this](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/setup-credentials.html) guide for setting up AWS Credentials and Region.
+## Platforms
 
+The Task can be run on `linux/amd64` platform.
 
 ## Usage
 
-After creating the task, you should now be able to execute `aws` commands by
+## Usage
+
+After creating the task, you should now be able to execute `anchore cli` commands by
 specifying the command you would like to run as the `ARGS` or `SCRIPT` param.
 
 The `ARGS` param takes an array of aws subcommands that will be executed as
 part of this task and the `SCRIPT` param takes the multiple commands that you would like to run on aws CLI.
 
-This [samples](../0.1/samples/secret.yaml), can be referred to create secret file for aws credentials.
 
-In the [samples](../0.1/samples/run.yaml), ConfigMap as the volume is used. In place of ConfigMap, any volume supported in workspace can be used.
+The `ConfigMap` and `Secret` give an example of how to define the Anchore server address and give credentials for logging in.
 
-Following `command` can be used to create `ConfigMap` from the `file`.
-```
-kubectl create configmap upload-file --from-file=demo.zip
-```
-Here `upload-file` is the name of the `ConfigMap`, this can be changed based on the requirements.
+```YAML
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: anchorecli-env-configmap
+data:
+  ANCHORE_SERVER: <Anchore server address>
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: anchorecli-env-secret
+data:
+  # choose one of username/password or auth token
+  ANCHORE_USERNAME: <username>
+  ANCHORE_PASSWORD: <password>
 
-See [here](../0.1/samples/run.yaml) for example of `aws s3` command.
 
-
-### Note
-
-
-- Either `SCRIPT` or `ARGS` must be provided in the `params` of the task.
-
-- To support multiple `aws` commands to run on a single task, SCRIPT can be used as follows:
-
-  ```yaml
-  - name: SCRIPT
-    value: |
-      aws s3 mb s3://test-bucket
-      aws s3api put-object --bucket test-bucket --key test/
-      aws s3 cp $(workspaces.source.path)/demo.zip s3://test-bucket/test/demo.zip
-  ```
-
-- In case there is no requirement of file that is to be uploaded on the aws resources,
- then `emptyDir` needs to be mounted in the `workspace` as shown below:
-    ```
-    workspaces:
-      - name: source
-        emptyDir: {}
-    ```
-    otherwise, if `Volume(e.g. ConfigMap) is needed:
-
-    ```yaml
-    workspaces:
-      - name: source
-        configmap:
-            name: upload-file
-    ```
