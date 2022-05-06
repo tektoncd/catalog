@@ -1,0 +1,76 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: sample-pipeline-nexus-lifecycle-scan
+spec:
+  tasks:
+    - name: git-clone
+      params:
+        - name: url
+          value: 'https://github.com/koraytugay/path-history'
+        - name: submodules
+          value: 'true'
+        - name: depth
+          value: '1'
+        - name: sslVerify
+          value: 'false'
+        - name: deleteExisting
+          value: 'true'
+        - name: verbose
+          value: 'true'
+        - name: gitInitImage
+          value: >-
+            gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.29.0
+        - name: userHome
+          value: /tekton/home
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: sample-nexus-pipeline-workspace
+    - name: maven
+      params:
+        - name: MAVEN_IMAGE
+          value: >-
+            gcr.io/cloud-builders/mvn@sha256:57523fc43394d6d9d2414ee8d1c85ed7a13460cbb268c3cd16d28cfb3859e641
+        - name: GOALS
+          value:
+            - package
+        - name: PROXY_PROTOCOL
+          value: http
+        - name: CONTEXT_DIR
+          value: .
+      runAfter:
+        - git-clone
+      taskRef:
+        kind: ClusterTask
+        name: maven
+      workspaces:
+        - name: source
+          workspace: sample-nexus-pipeline-workspace
+        - name: maven-settings
+          workspace: sample-nexus-pipeline-workspace
+    - name: nexus-lifecycle-scan
+      params:
+        - name: SERVER_URL
+          value: ENTER YOUR SERVER URL HERE
+        - name: AUTHENTICATION
+          value: ENTER YOUR AUTH CREDS HERE
+        - name: APPLICATION_ID
+          value: ENTER YOUR APP ID HERE
+        - name: TARGETS
+          value: |
+            /workspace/nexus-cli-workspace/target/path-history-0.2-SNAPSHOT.jar
+      runAfter:
+        - maven
+      taskRef:
+        kind: Task
+        name: nexus-lifecycle-scan-task
+      workspaces:
+        - name: nexus-cli-workspace
+          workspace: sample-nexus-pipeline-workspace
+        - name: output
+          workspace: sample-nexus-pipeline-workspace
+  workspaces:
+    - name: sample-nexus-pipeline-workspace
