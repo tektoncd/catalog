@@ -76,5 +76,7 @@ data:
   # choose one of username/password or auth token
   ANCHORE_USERNAME: <username>
   ANCHORE_PASSWORD: <password>
+  
+ Note: Anchore server should be installed as part of pre-requisite
 
 
