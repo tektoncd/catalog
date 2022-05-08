@@ -16,15 +16,9 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/an
       type: array
     - name: ANCHORE_CLI_IMAGE
       default: anchore/engine-cli
-      description: Anchore cli image to be used
-    - name: ANCHORE_CLI_USER
-      default: admin
-      description: Anchore engine user name.      
-    - name: ANCHORE_CLI_PASS
-      default: foobar
-      description: Anchore engine password.      
+      description: Anchore cli image to be used     
     - name: ANCHORE_CLI_URL
-      default: http://192.168.0.101:8228/v1/
+      default: http://localhost:8228/v1/
       description: Anchore engine URL.      
     - name: IMAGE_NAME
       default: openjdk:7-jre-alpine
@@ -34,10 +28,6 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/an
 * **ARGS:** Arguments to be passed to anchore command
 
 * **ANCHORE_CLI_IMAGE:** Anchore cli image to be used 
-
-* **ANCHORE_CLI_USER:** Anchore cli user to be passed as secret variable
-
-* **ANCHORE_CLI_PASS:** Arguments to be passed to anchore command
 
 * **ANCHORE_CLI_URL:** Anchore Server URL
 
@@ -60,21 +50,32 @@ part of this task and the `SCRIPT` param takes the multiple commands that you wo
 
 The `ConfigMap` and `Secret` give an example of how to define the Anchore server address and give credentials for logging in.
 
-```YAML
+---
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: anchorecli-env-configmap
 data:
   ANCHORE_SERVER: <Anchore server address>
+  
+
 ---
-apiVersion: v1
+    
+To create a secret you can use the following command
+kubectl create secret generic tower-creds --from-literal=username=ANCHORE_CLI_PASS --from-literal=password=ANCHORE_CLI_USER
+
+---
 kind: Secret
+apiVersion: v1
 metadata:
-  name: anchorecli-env-secret
+   name: anchore-cli-secret
 data:
-  # choose one of username/password or auth token
-  ANCHORE_USERNAME: <username>
-  ANCHORE_PASSWORD: <password>
+  ANCHORE_CLI_PASS: YWRtaW50b3dlcg==
+  ANCHORE_CLI_USER: YWRtaW4=
+type: Opaque
+
+---
+
 
 
