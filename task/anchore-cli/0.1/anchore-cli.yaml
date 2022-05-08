@@ -23,15 +23,9 @@ spec:
       type: array
     - name: ANCHORE_CLI_IMAGE
       default: anchore/engine-cli
-      description: Anchore cli image to be used
-    - name: ANCHORE_CLI_USER
-      default: admin
-      description: Anchore engine user name.      
-    - name: ANCHORE_CLI_PASS
-      default: foobar
-      description: Anchore engine password.      
+      description: Anchore cli image to be used      
     - name: ANCHORE_CLI_URL
-      default: http://192.168.0.101:8228/v1/
+      default: http://localhost:8228/v1/
       description: Anchore engine URL.      
     - name: IMAGE_NAME
       default: openjdk:7-jre-alpine
@@ -43,8 +37,6 @@ spec:
       workingDir: $(workspaces.manifest-dir.path)
       script: |
         #!/usr/bin/env sh
-        export ANCHORE_CLI_USER=$(params.ANCHORE_CLI_USER) 
-        export ANCHORE_CLI_PASS=$(params.ANCHORE_CLI_PASS)
         export ANCHORE_CLI_URL=$(params.ANCHORE_CLI_URL)
         anchore-cli image add $(params.IMAGE_NAME) > /dev/null 2>&1
         anchore-cli image vuln $(params.IMAGE_NAME) > /dev/null 2>&1
@@ -58,3 +50,14 @@ spec:
 
       args:
         - "$(params.ARGS)"
+      env:
+        - name: ANCHORE_CLI_USER
+          valueFrom:
+            secretKeyRef:
+              name: $(params.anchore-cli-secret)
+              key: ANCHORE_CLI_USER
+        - name: ANCHORE_CLI_PASS
+          valueFrom:
+            secretKeyRef:
+              name: $(params.anchore-cli-secret)
+              key: ANCHORE_CLI_PASS
