@@ -52,4 +52,3 @@ spec:
         else
           argocd repo add "$(params.repository-url)" --type helm --name "$(params.repository-name)" "$(params.flags)";
         fi
-        
