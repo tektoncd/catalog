@@ -1,0 +1,45 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: trivy-scanner
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Security
+    tekton.dev/tags: CLI, trivy
+    tekton.dev/displayName: "trivy scanner"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    Trivy is a simple and comprehensive scanner for
+    vulnerabilities in container images,file systems
+    ,and Git repositories, as well as for configuration issues.
+
+    This task can be used to scan for vulnenrabilities on the source code
+    in stand alone mode.
+  workspaces:
+    - name: manifest-dir
+  params:
+    - name: ARGS
+      description: The Arguments to be passed to Trivy command.
+      type: array
+    - name: TRIVY_IMAGE
+      default: docker.io/aquasec/trivy@sha256:c65fdec1b99ba72102e04b9fa81312ea16b863173406321d3ded014d80a3ac09
+      description: Trivy scanner image to be used
+    - name: IMAGE_PATH
+      description: Image or Path to be scanned by trivy.
+      type: string
+  steps:
+    - name: trivy-scan
+      image: $(params.TRIVY_IMAGE)
+      workingDir: $(workspaces.manifest-dir.path)
+      script: |
+        #!/usr/bin/env sh
+          cmd="trivy $* $(params.IMAGE_PATH)"
+          echo "Running trivy task with command below"
+          echo "$cmd"
+          eval "$cmd"
+      args:
+        - "$(params.ARGS)"
