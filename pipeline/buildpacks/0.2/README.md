@@ -32,7 +32,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/bu
 #### Install pipeline
 
 ```shell
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/pipeline/buildpacks/0.1/buildpacks.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/pipeline/buildpacks/0.2/buildpacks.yaml
 ```
 
 ## Workspaces
@@ -48,7 +48,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/pipelin
  - **`SOURCE_URL`**: A git repo url where the source code resides. _(REQUIRED)_
  - **`SOURCE_REFERENCE`**: The branch, tag or SHA to checkout. _(optional, default: "")_
  - **`SOURCE_SUBPATH`**: A subpath within checked out source where the source to build is located. _(optional, default: "")_
- - **`ENV_VARS`**: Environment variables to set during _build-time_. _(optional, default: [])_
+ - **`ENV_VARS`**: Environment variables to set during _build-time_. _(optional, default: [""])_
  - **`PROCESS_TYPE`**: The default process type to set on the image. _(optional, default: "web")_
  - **`RUN_IMAGE`**: The name of the run image to use (defaults to image specified in builder). _(optional, default: "")_
  - **`CACHE_IMAGE`**: The name of the persistent cache image. _(optional, default: "")_
