@@ -1,0 +1,90 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: pull-revision
+spec:
+  description: |
+    pull-revision takes a git script and a commit SHA
+    and validates that the task returns a correct commit SHA. This is an example
+    Pipeline demonstrating the following:
+      - Using the git-cli catalog Task that execute a script to pull a repository
+      - Passing a pulled repo to subsequent Tasks using a Workspace.
+      - Ordering Tasks in a Pipeline using "runAfter" so that
+        git-cli completes before we try to read from the Workspace.
+      - Using a volumeClaimTemplate Volume as a Workspace.
+      - Avoiding hard-coded paths by using a Workspace's path
+        variable instead.
+  params:
+  - name: GIT_SCRIPT
+    type: string
+    description: The script that git-cli needs to execute.
+  - name: commit
+    type: string
+    description: The git commit to check.
+  workspaces:
+  - name: shared-data
+    description: |
+      This workspace will receive the pulled git repo and be passed
+      to the next Task for the commit to be checked.
+  tasks:
+  - name: fetch-repo
+    taskRef:
+      name: git-cli
+    workspaces:
+    - name: source
+      workspace: shared-data
+    params:
+    - name: GIT_SCRIPT
+      value: $(params.GIT_SCRIPT)
+  - name: compare-received-commit-to-expected
+    runAfter: ["fetch-repo"]  # Wait until the pull is done before checking the expected commit SHA.
+    params:
+    - name: expected-commit
+      value: $(params.commit)
+    workspaces:
+    - name: source
+      workspace: shared-data
+    taskSpec:
+      params:
+      - name: expected-commit
+      workspaces:
+      - name: source
+      steps:
+      - image: alpine/git:v2.36.2
+        script: |
+          #!/usr/bin/env sh
+          cd $(workspaces.source.path)
+          receivedCommit=$(git rev-parse HEAD)
+          if [ $receivedCommit != $(params.expected-commit) ]; then
+            echo "Expected commit $(params.expected-commit) but received $receivedCommit."
+            exit 1
+          else
+            echo "Received commit $receivedCommit as expected."
+          fi
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: git-cli-checking-out-a-commit-
+spec:
+  pipelineRef:
+    name: pull-revision
+  workspaces:
+  - name: shared-data
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 500Mi
+        volumeMode: Filesystem
+  params:
+  - name: GIT_SCRIPT
+    value: |
+      git init
+      git remote add origin https://github.com/kelseyhightower/nocode
+      git pull origin master
+  - name: commit
+    value: 6c073b08f7987018cbb2cb9a5747c84913b3608e  # Latest commit of repository
