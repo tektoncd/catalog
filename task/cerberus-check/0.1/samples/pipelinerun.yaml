@@ -1,0 +1,57 @@
+---
+kind: Pipeline
+apiVersion: tekton.dev/v1beta1
+metadata:
+  name: cerberus-check-example
+  labels:
+    app.kubernetes.io/name: "cerberus-check-example-pipeline"
+    tool: cerberus
+  annotations:
+    tekton.dev/displayName: Define a pipeline with a single cerberus check of an Openshift cluster
+spec:
+  params:
+    - name: cerberus_server
+      type: string
+      description: Full URL to the cerberus server
+      default: "http://cerberus:8080"
+    - name: timeout
+      type: string
+      description: Timeout for the healthcheck performed against the cerberus server
+      default: "60"
+    - name: frequency
+      type: string
+      description: Frequency of the healthcheck in case of bad pulse
+      default: "10"
+  tasks:
+  - name: cerberus-check
+    params:
+      - name: cerberus_server
+        value: $(params.cerberus_server)
+      - name: timeout
+        value: $(params.timeout)
+      - name: frequency
+        value: $(params.frequency)
+    taskRef:
+      kind: Task
+      name: cerberus-check
+---
+kind: PipelineRun
+apiVersion: tekton.dev/v1beta1
+metadata:
+  name: cerberus-check-example-run
+  labels:
+    app.kubernetes.io/name: "cerberus-check-example-pipelinerun"
+    tekton.dev/pipeline: cerberus-check-example
+    tool: cerberus
+  annotations:
+    tekton.dev/displayName: Run a pipeline with a single cerberus check of an Openshift cluster
+spec:
+  params:
+    - name: cerberus_server
+      value: "http://cerberus.chaos-cerberus.svc.cluster.local:8080"
+    - name: timeout
+      value: "60"
+    - name: frequency
+      value: "10"
+  pipelineRef:
+    name: cerberus-check-example
