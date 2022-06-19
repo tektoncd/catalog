@@ -47,8 +47,7 @@ spec:
         set -ex
 
         function checkCerberus {
-          curl -s "$1" | grep True &> /dev/null
-          if [[ "$?" == "0" ]]; then
+          if curl -s "$1" | grep True &> /dev/null; then
               echo "Cerberus check is OK at ${1}"
               return 0
          else
@@ -64,11 +63,11 @@ spec:
           url=${1:-localhost}
           while [ "$step" -le "$timeout" ]
           do
-            checkCerberus "$url"
-            if [[ "$?" == "0" ]]; then
+            
+            if checkCerberus "$url"; then
               exit 0;
             fi
-            step=$(( $step + $increment ))
+            step=$(( ${step} + ${increment} ))
             sleep "$increment"
           done
           echo "Cerberus check reach ${timeout}s timeout limit"
