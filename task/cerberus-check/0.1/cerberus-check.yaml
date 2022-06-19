@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/name: "cerberus-check-task"
     tool: cerberus
   annotations:
-    tekton.dev/categories: Test
+    tekton.dev/categories: Testing
     tekton.dev/displayName: cerberus-check
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/platforms: linux/amd64

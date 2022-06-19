@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/name: "kraken-scenario-task"
     tool: kraken
   annotations:
-    tekton.dev/categories: Test
+    tekton.dev/categories: Testing
     tekton.dev/displayName: kraken-scenario
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/platforms: linux/amd64
