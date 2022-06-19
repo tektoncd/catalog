@@ -1,0 +1,123 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: ab-load-post-example
+  labels:
+    app.kubernetes.io/name: "ab-load-post-example"
+data:
+  content: |
+    key1=value1&key2=value2
+---
+kind: Pipeline
+apiVersion: tekton.dev/v1beta1
+metadata:
+  name: ab-load-example
+  labels:
+    app.kubernetes.io/name: "ab-load-example-pipeline"
+    tool: ab
+  annotations:
+    tekton.dev/displayName: Define a pipeline with a single apache benchmark of an http endpoint
+spec:
+  params:
+    - name: url
+      type: string
+      description: The URL targeted by the load test
+      default: "http://myapp.target_cluster.local/"
+    - name: size
+      type: string
+      description: Number of requests to perform
+      default: "1000"
+    - name: concurrency
+      type: string
+      description: Number of multiple requests to make at a time
+      default: "10"
+    - name: timeout
+      type: string
+      description: Seconds to max. wait for each response
+      default: "5"
+  tasks:
+  - name: get-load
+    params:
+      - name: url
+        value: $(params.url)
+      - name: size
+        value: $(params.size)
+      - name: concurrency
+        value: $(params.concurrency)
+      - name: timeout
+        value: $(params.timeout)
+      - name: method
+        value: GET
+    taskRef:
+      kind: Task
+      name: ab-load
+  - name: post-load
+    runAfter:
+      - get-load
+    params:
+      - name: url
+        value: $(params.url)
+      - name: size
+        value: $(params.size)
+      - name: concurrency
+        value: $(params.concurrency)
+      - name: timeout
+        value: $(params.timeout)
+      - name: method
+        value: POST
+    taskRef:
+      kind: Task
+      name: ab-load
+    workspaces:
+      - name: body-content
+        workspace: body-content
+  - name: put-load
+    runAfter:
+      - post-load
+    params:
+      - name: url
+        value: $(params.url)
+      - name: size
+        value: $(params.size)
+      - name: concurrency
+        value: $(params.concurrency)
+      - name: timeout
+        value: $(params.timeout)
+      - name: method
+        value: PUT
+    taskRef:
+      kind: Task
+      name: ab-load
+    workspaces:
+      - name: body-content
+        workspace: body-content
+  workspaces:
+  - name: body-content
+---
+kind: PipelineRun
+apiVersion: tekton.dev/v1beta1
+metadata:
+  name: ab-load-example-run
+  labels:
+    app.kubernetes.io/name: "ab-load-example-pipelinerun"
+    tekton.dev/pipeline: ab-load-example
+    tool: ab
+  annotations:
+    tekton.dev/displayName: Run the ab-load-example pipeline against https://startx.free.beeceptor.com
+spec:
+  params:
+    - name: url
+      value: "https://startx.free.beeceptor.com/"
+    - name: size
+      value: "1000"
+    - name: concurrency
+      value: "10"
+    - name: timeout
+      value: "5"
+  pipelineRef:
+    name: ab-load-example
+  workspaces:
+    - name: body-content
+      configMap:
+        name: ab-load-post-example

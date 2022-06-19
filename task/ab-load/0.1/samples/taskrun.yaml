@@ -1,0 +1,92 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: ab-load-post-example
+  labels:
+    app.kubernetes.io/name: "ab-load-post-example"
+data:
+  content: |
+    key1=value1&key2=value2
+---
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: ab-load-get-example-run
+  labels:
+    app.kubernetes.io/name: "ab-load-get-example-taskrun"
+    tool: ab
+  annotations:
+    tekton.dev/displayName: Run a task with a small GET example agains't the URL
+spec:
+  taskRef:
+    name: ab-load
+  params:
+    - name: url
+      value: "https://startx.free.beeceptor.com/"
+    - name: size
+      value: "1000"
+    - name: concurrency
+      value: "10"
+    - name: timeout
+      value: "5"
+    - name: method
+      value: GET
+    - name: additionnalFlags
+      value: "-k -I"
+---
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: ab-load-post-example-run
+  labels:
+    app.kubernetes.io/name: "ab-load-post-example-taskrun"
+    tool: ab
+  annotations:
+    tekton.dev/displayName: Run a task with a small POST example agains't the URL
+spec:
+  taskRef:
+    name: ab-load
+  params:
+    - name: url
+      value: "https://startx.free.beeceptor.com/"
+    - name: size
+      value: "1000"
+    - name: concurrency
+      value: "10"
+    - name: timeout
+      value: "5"
+    - name: method
+      value: POST
+    - name: additionnalFlags
+      value: "-k"
+  workspaces:
+  - name: body-content
+    configMap:
+      name: ab-load-post-example
+---
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: ab-load-delete-example-run
+  labels:
+    app.kubernetes.io/name: "ab-load-delete-example-taskrun"
+    tool: ab
+  annotations:
+    tekton.dev/displayName: Run a task with a small DELETE example agains't the URL
+spec:
+  taskRef:
+    name: ab-load
+  params:
+    - name: url
+      value: "https://startx.free.beeceptor.com/"
+    - name: size
+      value: "1000"
+    - name: concurrency
+      value: "10"
+    - name: timeout
+      value: "5"
+    - name: method
+      value: DELETE
+    - name: additionnalFlags
+      value: "-k -I"
