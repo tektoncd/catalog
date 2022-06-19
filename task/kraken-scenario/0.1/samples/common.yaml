@@ -1,0 +1,134 @@
+---
+kind: Secret
+apiVersion: v1
+type: Opaque
+metadata:
+  name: kraken-aws-creds
+  labels:
+    app.kubernetes.io/name: "kraken-aws-creds"
+stringData:
+  AWS_ACCESS_KEY_ID: AKIAXXMYKEYXXX
+  AWS_DEFAULT_REGION: eu-west-3
+  AWS_SECRET_ACCESS_KEY: XXXXXXXXXX_MY_SECRET_KEY_XXXXXXXXXXXXXXXX
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: kraken-kubeconfig
+  labels:
+    app.kubernetes.io/name: "kraken-kubeconfig"
+data:
+  config: |
+    kind: Config
+    apiVersion: v1
+    current-context: default
+    clusters:
+    - name: default
+      cluster:
+        insecure-skip-tls-verify: true
+        server: "https://api.mycluster.local:6443"
+    users:
+    - name: default
+      user:
+        token: "___PUT_YOUR_TOKEN_HERE___"
+    contexts:
+    - name: default
+      context:
+        cluster: default
+        namespace: default
+        user: default
+    preferences: {}
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: kraken-config-example
+  labels:
+    app.kubernetes.io/name: "kraken-config-example"
+data:
+  config.yaml: |-
+    kraken:
+      distribution: openshift
+      kubeconfig_path: /root/.kube/config
+      exit_on_failure: False
+      port: 8081
+      publish_kraken_status: True
+      signal_state: RUN
+      litmus_version: v1.13.6
+      litmus_uninstall: False
+      litmus_uninstall_before_run: False
+      chaos_scenarios:
+        - pod_scenarios:
+          - - common/default_pod_scenario.yml
+    cerberus:
+        cerberus_enabled: True
+        cerberus_url: "http://cerberus.chaos-cerberus.svc.cluster.local:8080"
+        check_applicaton_routes: True
+    performance_monitoring:
+        deploy_dashboards: False
+        repo: "https://github.com/cloud-bulldozer/performance-dashboards.git"
+        kube_burner_binary_url: "https://github.com/cloud-bulldozer/kube-burner/releases/download/v0.9.1/kube-burner-0.9.1-Linux-x86_64.tar.gz"
+        capture_metrics: True
+        config_path: common/default_kubeburner.yaml
+        metrics_profile_path: common/default_metrics.yaml
+        prometheus_url:
+        prometheus_bearer_token:
+        uuid:
+        enable_alerts: False
+        alert_profile: common/default_alerts.yaml
+    tunings:
+        wait_duration: 45
+        iterations: 1
+        daemon_mode: False
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: kraken-common-example
+  labels:
+    app.kubernetes.io/name: "kraken-common-example"
+data:
+  default_kubeburner.yaml: |-
+    ---
+    global:
+      writeToFile: true
+      metricsDirectory: collected-metrics
+      measurements:
+        - name: podLatency
+          esIndex: kraken
+      indexerConfig:
+        enabled: true
+        esServers: [http://elasticsearch.openshift-logging.svc.cluster.local:9200]
+        insecureSkipVerify: true
+        defaultIndex: kraken
+        type: elastic
+  default_metrics.yaml: |-
+    metrics:
+      - query: cluster_version{type="completed"}
+        metricName: clusterVersion
+        instant: true
+  default_alerts.yaml: |-
+    - expr: increase(etcd_server_leader_changes_seen_total[2m]) > 0
+      description: etcd leader changes observed
+      severity: critical
+  default_pod_scenario.yml: |
+    config:
+      runStrategy:
+        runs: 2
+        maxSecondsBetweenRuns: 12
+        minSecondsBetweenRuns: 6
+    scenarios:
+      - name: kill up to 3 running pods in all namespaces
+        steps:
+        - podAction:
+            matches:
+              - namespace: "*"
+            filters:
+              - property:
+                  name: "state"
+                  value: "Running"
+              - randomSample:
+                  size: 3
+            actions:
+              - kill:
+                  probability: .8
