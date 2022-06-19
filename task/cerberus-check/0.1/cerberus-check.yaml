@@ -1,4 +1,3 @@
-
 ---
 kind: Task
 apiVersion: tekton.dev/v1beta1
@@ -48,12 +47,12 @@ spec:
         set -ex
 
         function checkCerberus {
-          curl -s $1 | grep True &> /dev/null
+          curl -s "$1" | grep True &> /dev/null
           if [[ "$?" == "0" ]]; then
-              echo "Cerberus check is OK at $1"
+              echo "Cerberus check is OK at ${1}"
               return 0
          else
-              echo "Cerberus check is KO at $1"
+              echo "Cerberus check is KO at ${1}"
               return 1
           fi
         }
@@ -63,14 +62,14 @@ spec:
           step=0
           increment=${3:-5}
           url=${1:-localhost}
-          while [ $step -le $timeout ]
+          while [ "$step" -le "$timeout" ]
           do
-            checkCerberus $url
+            checkCerberus "$url"
             if [[ "$?" == "0" ]]; then
               exit 0;
             fi
             step=$(( $step + $increment ))
-            sleep $increment
+            sleep "$increment"
           done
           echo "Cerberus check reach ${timeout}s timeout limit"
         }

@@ -58,10 +58,10 @@ spec:
             local concurrency=${3:-10}
             local timeout=${4:-10}
             local additionnal=${5}
-            echo "= Start http test GET $AB_URL"
-            echo "  - $size requests"
-            echo "  - $concurrency concurrent jobs"
-            ab -m GET -n $size -c $concurrency -s $timeout $additionnal $url
+            echo "= Start http test GET ${AB_URL}"
+            echo "  - ${size} requests"
+            echo "  - ${concurrency} concurrent jobs"
+            ab -m GET -n "$size" -c "$concurrency" -s "$timeout" $additionnal "$url"
           }
 
           # execute the AB benchmark for POST load
@@ -73,15 +73,15 @@ spec:
             local concurrency=${3:-10}
             local timeout=${4:-10}
             local additionnal=${5}
-            echo "= Start http test POST $AB_URL"
-            echo "  - $size requests"
-            echo "  - $concurrency concurrent jobs"
-            ab -n $size \
-               -c $concurrency \
-               -s $timeout \
-               -p $file \
-               -T '$type; charset=UTF-8' \
-            $additionnal $url
+            echo "= Start http test POST ${AB_URL}"
+            echo "  - ${size} requests"
+            echo "  - ${concurrency} concurrent jobs"
+            ab -n "$size" \
+               -c "$concurrency" \
+               -s "$timeout" \
+               -p "$file" \
+               -T '${type}; charset=UTF-8' \
+            $additionnal "$url"
           }
 
           # execute the AB benchmark for PUT load
@@ -93,15 +93,15 @@ spec:
             local concurrency=${3:-10}
             local timeout=${4:-10}
             local additionnal=${5}
-            echo "= Start http test PUT $AB_URL"
-            echo "  - $size requests"
-            echo "  - $concurrency concurrent jobs"
-            ab -n $size \
-               -c $concurrency \
-               -s $timeout \
-               -u $file \
-               -T '$type; charset=UTF-8' \
-            $additionnal $url
+            echo "= Start http test PUT ${AB_URL}"
+            echo "  - ${size} requests"
+            echo "  - ${concurrency} concurrent jobs"
+            ab -n "$size" \
+               -c "$concurrency" \
+               -s "$timeout" \
+               -u "$file" \
+               -T '${type}; charset=UTF-8' \
+            $additionnal "$url"
           }
 
           # execute the AB benchmark for DELETE load
@@ -111,10 +111,10 @@ spec:
             local concurrency=${3:-10}
             local timeout=${4:-10}
             local additionnal=${5}
-            echo "= Start http test DELETE $AB_URL"
-            echo "  - $size requests"
-            echo "  - $concurrency concurrent jobs"
-            ab -m DELETE -n $size -c $concurrency -s $timeout $additionnal $url
+            echo "= Start http test DELETE ${AB_URL}"
+            echo "  - ${size} requests"
+            echo "  - ${concurrency} concurrent jobs"
+            ab -m DELETE -n "$size" -c "$concurrency" -s "$timeout" "$additionnal" "$url"
           }
 
           if [[ $AB_METHOD == 'DELETE' ]]
