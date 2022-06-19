@@ -67,7 +67,7 @@ spec:
             if checkCerberus "$url"; then
               exit 0;
             fi
-            step=$(( ${step} + ${increment} ))
+            step=$(( $step + $increment ))
             sleep "$increment"
           done
           echo "Cerberus check reach ${timeout}s timeout limit"
