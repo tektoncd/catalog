@@ -47,7 +47,7 @@ spec:
   steps:
     - image: quay.io/startx/apache:fc35
       command: ["/bin/bash", "-c"]
-      args: 
+      args:
         - |-
           #!/bin/bash
 
@@ -150,7 +150,7 @@ spec:
   workspaces:
     - name: body-content
       description: >-
-        Data to send to the endpoint must have a `content` key with content ready to send to the endpoint. 
+        Data to send to the endpoint must have a `content` key with content ready to send to the endpoint.
         Could be from a `configMap`, a `secret` or a `persistentVolumeClaim` as souon as they hold a `content` file.
       mountPath: /tmp/postfile
       optional: true
