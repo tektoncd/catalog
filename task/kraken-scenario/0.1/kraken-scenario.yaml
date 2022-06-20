@@ -28,7 +28,7 @@ spec:
       description: Name of the secret key holding the aws-credentials (mandatory but used only for aws infrastructure chaos test).
       default: kraken-aws-creds
   steps:
-    - image: quay.io/chaos-kubox/krkn
+    - image: quay.io/chaos-kubox/krkn:latest
       args:
         - python3 run_kraken.py -c config/config.yaml
       command:
