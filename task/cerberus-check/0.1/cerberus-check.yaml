@@ -34,7 +34,7 @@ spec:
       description: Frequency of the healthcheck in case of bad pulse
       default: "10"
   steps:
-    - image: "quay.io/startx/fedora:latest"
+    - image: "quay.io/startx/fedora:fc35"
       env:
         - name: CERBERUS_URL
           value: $(params.cerberus_server)

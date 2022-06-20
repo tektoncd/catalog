@@ -45,7 +45,7 @@ spec:
       description: "All ab command supported flag (ex: -k for keepalive)"
       default: "-k -I"
   steps:
-    - image: quay.io/startx/apache:latest
+    - image: quay.io/startx/apache:fc35
       command: ["/bin/bash", "-c"]
       args: 
         - |-
