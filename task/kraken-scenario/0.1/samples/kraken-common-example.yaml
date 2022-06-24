@@ -1,0 +1,52 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: kraken-common-example
+  labels:
+    app.kubernetes.io/name: "kraken-common-example"
+data:
+  default_kubeburner.yaml: |-
+    ---
+    global:
+      writeToFile: true
+      metricsDirectory: collected-metrics
+      measurements:
+        - name: podLatency
+          esIndex: kraken
+      indexerConfig:
+        enabled: true
+        esServers: [http://elasticsearch.openshift-logging.svc.cluster.local:9200]
+        insecureSkipVerify: true
+        defaultIndex: kraken
+        type: elastic
+  default_metrics.yaml: |-
+    metrics:
+      - query: cluster_version{type="completed"}
+        metricName: clusterVersion
+        instant: true
+  default_alerts.yaml: |-
+    - expr: increase(etcd_server_leader_changes_seen_total[2m]) > 0
+      description: etcd leader changes observed
+      severity: critical
+  default_pod_scenario.yml: |
+    config:
+      runStrategy:
+        runs: 2
+        maxSecondsBetweenRuns: 12
+        minSecondsBetweenRuns: 6
+    scenarios:
+      - name: kill up to 3 running pods in all namespaces
+        steps:
+        - podAction:
+            matches:
+              - namespace: "*"
+            filters:
+              - property:
+                  name: "state"
+                  value: "Running"
+              - randomSample:
+                  size: 3
+            actions:
+              - kill:
+                  probability: .8
