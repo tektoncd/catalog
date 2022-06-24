@@ -1,0 +1,26 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: kraken-scenario-example-run
+  labels:
+    app.kubernetes.io/name: "kraken-scenario-example-taskrun"
+    tool: kraken
+  annotations:
+    tekton.dev/displayName: Run a task  with a single kraken chaos test of 2 x up to 3 pod pickup by hazard.
+spec:
+  taskRef:
+    name: kraken-scenario
+  params:
+    - name: cloudProviderCredentialsSecret
+      value: "kraken-cloudprovider-creds"
+  workspaces:
+    - name: kraken-kubeconfig
+      configMap:
+        name: kraken-kubeconfig
+    - name: kraken-config
+      configMap:
+        name: kraken-config-example
+    - name: kraken-common
+      configMap:
+        name: kraken-common-example

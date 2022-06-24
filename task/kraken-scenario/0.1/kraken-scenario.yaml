@@ -1,0 +1,62 @@
+---
+kind: Task
+apiVersion: tekton.dev/v1beta1
+metadata:
+  name: kraken-scenario
+  labels:
+    app.kubernetes.io/version: "0.1"
+    app.kubernetes.io/name: "kraken-scenario-task"
+    tool: kraken
+  annotations:
+    tekton.dev/categories: Testing
+    tekton.dev/displayName: kraken-scenario
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/platforms: linux/amd64
+    tekton.dev/tags: kraken, chaos, test
+spec:
+  description: >-
+    This `task` can be used to start a kraken chaos scenarios as part of a chaos pipeline.
+
+    kraken chaos testing is a good way to execute chaos testing of openshift or kubernetes
+    cluster as well as application running on top of it. This task allow you to use kraken
+    chaos scenarios as part of your application testing pipeline. It can also be part of
+    a complete chaos pipeline for your infrastructure layer.
+  params:
+    - name: cloudProviderCredentialsSecret
+      type: string
+      description: >-
+        Name of the secret key holding the cloud infrastructure credentials.
+        Mandatory but only used for cloud infrastructure chaos test like node failures.
+        See https://github.com/chaos-kubox/krkn/blob/main/docs/cloud_setup.md for more information
+        and get a list of supported cloud provider.
+      default: kraken-cloudprovider-creds
+    - name: image
+      type: string
+      description: The image name to use for this task
+      default: "quay.io/chaos-kubox/krkn:latest"
+  steps:
+    - image: "$(params.image)"
+      args:
+        - python3 run_kraken.py -c config/config.yaml
+      command:
+        - /bin/sh
+        - -c
+      envFrom:
+        - secretRef:
+            name: $(params.cloudProviderCredentialsSecret)
+      resources: {}
+      securityContext:
+        privileged: true
+  workspaces:
+    - name: kraken-kubeconfig
+      description: The kubeconfig configuration file of the targeted cluster
+      mountPath: /root/.kube
+    - name: kraken-config
+      description: The kraken configuration file defining the chaos scenario to run
+      mountPath: /root/kraken/config
+    - name: kraken-common
+      description: The kraken common configuration files related to the chaos configuration
+      mountPath: /root/kraken/common
+  results:
+    - name: report
+      description: The final report of the chaos test
