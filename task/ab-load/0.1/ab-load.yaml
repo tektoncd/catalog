@@ -1,0 +1,119 @@
+---
+kind: Task
+apiVersion: tekton.dev/v1beta1
+metadata:
+  name: ab-load
+  labels:
+    app.kubernetes.io/version: "0.1"
+    app.kubernetes.io/name: "ab-load-task"
+    tool: ab
+  annotations:
+    tekton.dev/categories: Testing
+    tekton.dev/displayName: apache-benchmark-load
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/platforms: linux/amd64
+    tekton.dev/tags: ab, apache, benchmark, http, load, test
+spec:
+  description: >-
+    This `task` can be used to start an http load test as part of an application test pipeline.
+
+    Apache benchmark is a simple and powerful tool used to generate http load to emulate a
+    load peak for your http/https exposed application.
+  params:
+    - name: url
+      type: string
+      description: The URL targeted by the load test (mandatory)
+    - name: size
+      type: string
+      description: Number of requests to perform
+      default: "1000"
+    - name: concurrency
+      type: string
+      description: Number of multiple requests to make at a time
+      default: "10"
+    - name: timeout
+      type: string
+      description: Seconds to max. wait for each response
+      default: "5"
+    - name: method
+      type: string
+      description: Method name
+      default: "GET"
+    - name: additionnalFlags
+      type: string
+      description: "All ab command supported flag (ex: -k for keepalive)"
+      default: "-k -I"
+    - name: type
+      type: string
+      description: "The http type of payload sended to the target endpoint"
+      default: "application/x-www-form-urlencoded; charset=UTF-8"
+    - name: payload
+      type: string
+      description: "Name of the file with content to send for POST or PUT request. The file is stored in the body-content workspace"
+      default: "content.txt"
+    - name: image
+      type: string
+      description: The image name to use for this task
+      default: "quay.io/startx/apache:alpine3"
+  steps:
+    - image: "$(params.image)"
+      command: ["/bin/bash", "-c"]
+      args:
+        - |-
+          #!/bin/bash
+
+          # execute the AB benchmark for default load
+          function ABExec {
+            local method=${AB_METHOD:-GET}
+            local url=${AB_URL:-"http://example.com/"}
+            local size=${AB_SIZE:-1000}
+            local concurrency=${AB_CONCURRENCY:-10}
+            local timeout=${AB_TIMEOUT:-10}
+            local file=${AB_FILE:-"/tmp/default"}
+            local type=${AB_TYPE:-"application/x-www-form-urlencoded"}
+            local additionnal=${AB_ADDITIONNAL_FLAGS}
+            echo "= Start http test ${method} ${url}"
+            echo "  - ${size} requests"
+            echo "  - ${concurrency} concurrent jobs"
+            if [[ $method == 'POST' ]]
+            then
+                echo "  - payload from $file"
+                ab -n ${size} -c ${concurrency} -s ${timeout} -p $file -T '${type}' ${additionnal} ${url} 2>&1 | tee $(results.report.path)
+            elif [[ $method == 'PUT' ]]
+            then
+                echo "  - payload from $file"
+                ab -n ${size} -c ${concurrency} -s ${timeout} -u $file -T '${type}' ${additionnal} ${url} 2>&1 | tee $(results.report.path)
+            else
+                ab -n ${size} -c ${concurrency} -s ${timeout} -m $method ${additionnal} ${url} 2>&1 | tee $(results.report.path)
+            fi
+          }
+
+          ABExec
+      env:
+        - name: AB_URL
+          value: $(params.url)
+        - name: AB_SIZE
+          value: $(params.size)
+        - name: AB_CONCURRENCY
+          value: $(params.concurrency)
+        - name: AB_TIMEOUT
+          value: $(params.timeout)
+        - name: AB_METHOD
+          value: $(params.method)
+        - name: AB_ADDITIONNAL_FLAGS
+          value: $(params.additionnalFlags)
+        - name: AB_FILE
+          value: /tmp/postfile/$(params.payload)
+        - name: AB_TYPE
+          value: $(params.type)
+      resources: {}
+  workspaces:
+    - name: body-content
+      description: >-
+        Data to send to the endpoint. The file to use must be defined in the `payload` param.
+        Could be from a `configMap`, a `secret` or a `persistentVolumeClaim` as soon as they have a file matching the `payload` param.
+      mountPath: /tmp/postfile
+      optional: true
+  results:
+    - name: report
+      description: The final report of the http load test
