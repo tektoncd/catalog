@@ -1,0 +1,11 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: cerberus-check-test
+spec:
+  taskRef:
+    name: cerberus-check
+  params:
+  - name: cerberus_server
+    value: "http://cerberus.chaos-cerberus.svc.cluster.local:8080"
