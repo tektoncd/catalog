@@ -1,0 +1,163 @@
+---
+kind: Task
+apiVersion: tekton.dev/v1beta1
+metadata:
+  name: ab-load
+  labels:
+    app.kubernetes.io/version: "0.1"
+    app.kubernetes.io/name: "ab-load-task"
+    tool: ab
+  annotations:
+    tekton.dev/categories: Testing 
+    tekton.dev/displayName: apache-benchmark-load
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/platforms: linux/amd64
+    tekton.dev/tags: ab, http, load, test
+spec:
+  description: >-
+    This `task` can be used to start an http load test as part of an application test pipeline.
+
+    Apache benchmark is a simple and powerful tool used to generate http load to emulate a
+    load peak for your http/https exposed application.
+  params:
+    - name: url
+      type: string
+      description: The URL targeted by the load test
+      default: "http://myapp.target_cluster.local/"
+    - name: size
+      type: string
+      description: Number of requests to perform
+      default: "1000"
+    - name: concurrency
+      type: string
+      description: Number of multiple requests to make at a time
+      default: "10"
+    - name: timeout
+      type: string
+      description: Seconds to max. wait for each response
+      default: "5"
+    - name: method
+      type: string
+      description: Method name
+      default: "GET"
+    - name: additionnalFlags
+      type: string
+      description: "All ab command supported flag (ex: -k for keepalive)"
+      default: "-k -I"
+    - name: type
+      type: string
+      description: "The http type of payload sended to the target endpoint"
+      default: "application/x-www-form-urlencoded"
+  steps:
+    - image: quay.io/startx/apache:fc35
+      command: ["/bin/bash", "-c"]
+      args: 
+        - |-
+          #!/bin/bash
+
+          # execute the AB benchmark for GET load
+          function abGET {
+            local url=${1:-myurl}
+            local size=${2:-1000}
+            local concurrency=${3:-10}
+            local timeout=${4:-10}
+            local additionnal=${5}
+            echo "= Start http test GET ${AB_URL}"
+            echo "  - ${size} requests"
+            echo "  - ${concurrency} concurrent jobs"
+            ab -m GET -n "$size" -c "$concurrency" -s "$timeout" $additionnal "$url"
+          }
+
+          # execute the AB benchmark for POST load
+          function abPOST {
+            local file=${AB_FILE}
+            local type=${AB_TYPE:-application/x-www-form-urlencoded}
+            local url=${1:-myurl}
+            local size=${2:-1000}
+            local concurrency=${3:-10}
+            local timeout=${4:-10}
+            local additionnal=${5}
+            echo "= Start http test POST ${AB_URL}"
+            echo "  - ${size} requests"
+            echo "  - ${concurrency} concurrent jobs"
+            ab -n "$size" \
+               -c "$concurrency" \
+               -s "$timeout" \
+               -p "$file" \
+               -T '${type}; charset=UTF-8' \
+            $additionnal "$url"
+          }
+
+          # execute the AB benchmark for PUT load
+          function abPUT {
+            local file=${AB_FILE}
+            local type=${AB_TYPE:-application/x-www-form-urlencoded}
+            local url=${1:-myurl}
+            local size=${2:-1000}
+            local concurrency=${3:-10}
+            local timeout=${4:-10}
+            local additionnal=${5}
+            echo "= Start http test PUT ${AB_URL}"
+            echo "  - ${size} requests"
+            echo "  - ${concurrency} concurrent jobs"
+            ab -n "$size" \
+               -c "$concurrency" \
+               -s "$timeout" \
+               -u "$file" \
+               -T '${type}; charset=UTF-8' \
+            $additionnal "$url"
+          }
+
+          # execute the AB benchmark for DELETE load
+          function abDELETE {
+            local url=${1:-myurl}
+            local size=${2:-1000}
+            local concurrency=${3:-10}
+            local timeout=${4:-10}
+            local additionnal=${5}
+            echo "= Start http test DELETE ${AB_URL}"
+            echo "  - ${size} requests"
+            echo "  - ${concurrency} concurrent jobs"
+            ab -m DELETE -n "$size" -c "$concurrency" -s "$timeout" "$additionnal" "$url"
+          }
+
+          if [[ $AB_METHOD == 'DELETE' ]]
+          then
+              abDELETE "$AB_URL" "$AB_SIZE" "$AB_CONCURRENCY" "$AB_TIMEOUT" "$AB_ADDITIONNAL_FLAGS"
+          elif [[ $AB_METHOD == 'POST' ]]
+          then
+              abPOST "$AB_URL" "$AB_SIZE" "$AB_CONCURRENCY" "$AB_TIMEOUT" "$AB_ADDITIONNAL_FLAGS"
+          elif [[ $AB_METHOD == 'PUT' ]]
+          then
+              abPUT "$AB_URL" "$AB_SIZE" "$AB_CONCURRENCY" "$AB_TIMEOUT" "$AB_ADDITIONNAL_FLAGS"
+          else
+              abGET "$AB_URL" "$AB_SIZE" "$AB_CONCURRENCY" "$AB_TIMEOUT" "$AB_ADDITIONNAL_FLAGS"
+          fi
+      env:
+        - name: AB_URL
+          value: $(params.url)
+        - name: AB_SIZE
+          value: $(params.size)
+        - name: AB_CONCURRENCY
+          value: $(params.concurrency)
+        - name: AB_TIMEOUT
+          value: $(params.timeout)
+        - name: AB_METHOD
+          value: $(params.method)
+        - name: AB_ADDITIONNAL_FLAGS
+          value: $(params.additionnalFlags)
+        - name: AB_FILE
+          value: /tmp/postfile/content
+        - name: AB_TYPE
+          value: $(params.type)
+      resources: {}
+  workspaces:
+    - name: body-content
+      description: >-
+        Data to send to the endpoint must have a `content` key with content ready to send to the endpoint. 
+        Could be from a `configMap`, a `secret` or a `persistentVolumeClaim` as soon as they have a `content` key.
+      mountPath: /tmp/postfile
+      optional: true
+  results:
+    - name: report
+      description: The final report of the http load test

@@ -1,0 +1,10 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: ab-load-post-example
+  labels:
+    app.kubernetes.io/name: "ab-load-post-example"
+data:
+  content: |
+    key1=value1&key2=value2
