@@ -1,0 +1,77 @@
+---
+kind: Task
+apiVersion: tekton.dev/v1beta1
+metadata:
+  name: cerberus-check
+  labels:
+    app.kubernetes.io/version: "0.1"
+    app.kubernetes.io/name: "cerberus-check-task"
+    tool: cerberus
+  annotations:
+    tekton.dev/categories: Testing
+    tekton.dev/displayName: cerberus-check
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/platforms: linux/amd64
+    tekton.dev/tags: cerberus, chaos, test
+spec:
+  description: >-
+    The cerberus-check `task`` execute periodic check of a cerberus server and return
+    a OK when cerberus signal is positive.
+
+    Cerberus is a cluster watchdog who return health status of openshift or kubernetes
+    cluster. This task allow you to check this signal as part of your chaos pipeline.
+  params:
+    - name: cerberus_server
+      type: string
+      description: Full URL to the cerberus server
+      default: "http://cerberus:8080"
+    - name: timeout
+      type: string
+      description: Timeout for the healthcheck performed against the cerberus server
+      default: "60"
+    - name: frequency
+      type: string
+      description: Frequency of the healthcheck in case of bad pulse
+      default: "10"
+  steps:
+    - image: "quay.io/startx/fedora:35"
+      env:
+        - name: CERBERUS_URL
+          value: $(params.cerberus_server)
+        - name: CERBERUS_TIMEOUT
+          value: $(params.timeout)
+        - name: CERBERUS_FREQUENCY
+          value: $(params.frequency)
+      script: |
+        #!/usr/bin/env bash
+        set -ex
+
+        function checkCerberus {
+          if curl -s "$1" | grep True &> /dev/null; then
+              echo "Cerberus check is OK at ${1}"
+              return 0
+         else
+              echo "Cerberus check is KO at ${1}"
+              return 1
+          fi
+        }
+
+        function loopCheckCerberus {
+          timeout=${2:-30}
+          step=0
+          increment=${3:-5}
+          url=${1:-localhost}
+          while [ "$step" -le "$timeout" ]
+          do
+            
+            if checkCerberus "$url"; then
+              exit 0;
+            fi
+            step=$(( step + increment ))
+            sleep "$increment"
+          done
+          echo "Cerberus check reach ${timeout}s timeout limit"
+        }
+
+        echo "Check ${CERBERUS_URL} for ${CERBERUS_TIMEOUT} seconds"
+        loopCheckCerberus "${CERBERUS_URL}" "${CERBERUS_TIMEOUT}" "${CERBERUS_FREQUENCY}"
