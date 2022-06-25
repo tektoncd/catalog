@@ -77,7 +77,6 @@ spec:
         value: $(params.kustomizeArguments)
     script: |
       #!/usr/bin/env sh
-      PARAM_CLI_ARGUMENTS = $OUTPUT_FLAG $SCHEMA_VERSION_FLAG $IGNORE_MISSING_SCHEMAS_FLAG $POLICY_FLAG $K8S_FLAG
 
       if [ "$PARAM_IS_HELM_CHART" = "true" ]; then
           helm datree test $WORKSPACE_PATH/$PARAM_INPUT_PATH $PARAM_CLI_ARGUMENTS -- $PARAM_HELM_ARGUMENTS
