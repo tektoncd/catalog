@@ -1,0 +1,90 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: datree
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.21.0"
+    tekton.dev/categories: Code Quality
+    tekton.dev/tags: "Kubernetes, Misconfiguration"
+    tekton.dev/displayName: Datree
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    The Datree task is used to run security scans on Kubernetes manifests using the open source tool, Datree(datree.io).
+  workspaces:
+    - name: source
+  params:
+    - name: inputPath
+      description: Complete path for the yaml files relative to the workspace path. Should include the yaml file name with extension or the path for helm/kustomise.
+      type: string
+      default: "./*.yaml"
+    - name: cliArguments
+      description: The desired Datree CLI arguments for the policy check.
+      default: ""
+    - name: isHelmChart
+      description: Specify whether the given path is a Helm chart. If this option is unused, the path will be considered as a regular yaml file.
+      default: "false"
+    - name: helmArguments
+      description: The Helm arguments to be used, if the path is a Helm chart. Only necessary when isHelmChart is set to true.
+      default: ""
+    - name: isKustomization
+      description: Specify whether the given path is a directory containing a kustomization.yaml file. If this option is unused, the path will be considered as a regular yaml file.
+      default: "false"
+    - name: kustomizeArguments
+      description: The Kustomize arguments to be used, if the path is a Kustomization directory. Only necessary when isKustomization is set to true.
+      default: ""
+    - name: DATREE_TOKEN_SECRET
+      description: Name of the secret holding the datree token
+      type: string
+      default: "datree-token"
+    - name: DATREE_TOKEN_SECRET_KEY
+      description: Name of the secret key holding the datree token
+      type: string
+      default: "DATREE_TOKEN"
+    - name: datreeImage
+      description: Datree image to run datree
+      type: string
+      # Use the appropriate tag based on the cluster architecture(amd64/arm64) from https://hub.docker.com/r/datree/datreeci/tags
+      default: docker.io/datree/datreeci:latest@sha256:d5a50cbcd4af907b19491f1a13e22e02ea81991d406fc3d6b68e8c65123d90b0
+  steps:
+  - name: datree-test
+    image: $(params.datreeImage)
+    securityContext:
+      runAsUser: 0
+      privileged: true
+    workingDir: $(workspaces.source.path)
+    env:
+      - name: DATREE_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: $(params.DATREE_TOKEN_SECRET)
+            key: $(params.DATREE_TOKEN_SECRET_KEY)
+      - name: WORKSPACE_PATH
+        value: $(workspaces.source.path)
+      - name: PARAM_INPUT_PATH
+        value: $(params.inputPath)
+      - name: PARAM_CLI_ARGUMENTS
+        value: $(params.cliArguments)
+      - name: PARAM_IS_HELM_CHART
+        value: $(params.isHelmChart)
+      - name: PARAM_HELM_ARGUMENTS
+        value: $(params.helmArguments)
+      - name: PARAM_IS_KUSTOMIZATION
+        value: $(params.isKustomization)
+      - name: PARAM_KUSTOMIZE_ARGUMENTS
+        value: $(params.kustomizeArguments)
+    script: |
+      #!/usr/bin/env sh
+      PARAM_CLI_ARGUMENTS = $OUTPUT_FLAG $SCHEMA_VERSION_FLAG $IGNORE_MISSING_SCHEMAS_FLAG $POLICY_FLAG $K8S_FLAG
+
+      if [ "$PARAM_IS_HELM_CHART" = "true" ]; then
+          helm datree test $WORKSPACE_PATH/$PARAM_INPUT_PATH $PARAM_CLI_ARGUMENTS -- $PARAM_HELM_ARGUMENTS
+      elif [ "$PARAM_IS_KUSTOMIZATION" = "true" ]; then
+          datree kustomize test $WORKSPACE_PATH/$PARAM_INPUT_PATH $PARAM_CLI_ARGUMENTS -- $PARAM_KUSTOMIZE_ARGUMENTS
+      else
+          datree test $WORKSPACE_PATH/$PARAM_INPUT_PATH $PARAM_CLI_ARGUMENTS
+      fi
+
+      
