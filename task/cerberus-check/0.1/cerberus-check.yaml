@@ -34,7 +34,7 @@ spec:
       description: Frequency of the healthcheck in case of bad pulse
       default: "10"
   steps:
-    - image: "quay.io/startx/fedora:35"
+    - image: "quay.io/startx/apache:alpine3"
       env:
         - name: CERBERUS_URL
           value: $(params.cerberus_server)
@@ -51,7 +51,7 @@ spec:
               echo "Cerberus check is OK at ${1}"
               return 0
          else
-              echo "Cerberus check is KO at ${1}"
+              echo "Cerberus check is NOT OK at ${1}"
               return 1
           fi
         }
