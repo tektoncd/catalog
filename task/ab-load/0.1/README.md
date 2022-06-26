@@ -24,7 +24,7 @@ kubectl apply -f https://raw.githubusercontent.com/startxfr/tekton-catalog/main/
 
 | Key          | Mount         | Description                                                                                                                                                                                                   |
 | ------------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| body-content | `/root/.kube` | Data to send to the endpoint must have a `content` key with content ready to send to the endpoint. Could be from a `configMap`, a `secret` or a `persistentVolumeClaim` as soon as they have a `content` key. |
+| body-content | `/tmp/postfile` | Data to send to the endpoint must have a `content` key with content ready to send to the endpoint. Could be from a `configMap`, a `secret` or a `persistentVolumeClaim` as soon as they have a `content` key. |
 
 ## Platforms
 

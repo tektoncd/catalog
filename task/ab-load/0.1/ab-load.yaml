@@ -12,7 +12,7 @@ metadata:
     tekton.dev/displayName: apache-benchmark-load
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/platforms: linux/amd64
-    tekton.dev/tags: ab, http, load, test
+    tekton.dev/tags: ab, apache, benchmark, http, load, test
 spec:
   description: >-
     This `task` can be used to start an http load test as part of an application test pipeline.
@@ -55,17 +55,23 @@ spec:
         - |-
           #!/bin/bash
 
-          # execute the AB benchmark for GET load
-          function abGET {
-            local url=${1:-myurl}
-            local size=${2:-1000}
-            local concurrency=${3:-10}
-            local timeout=${4:-10}
-            local additionnal=${5}
+          # execute the AB benchmark for default load
+          function abDefault {
+            local method=${1}
+            local url=${2:-myurl}
+            local size=${3:-1000}
+            local concurrency=${4:-10}
+            local timeout=${5:-10}
+            local additionnal=${6}
             echo "= Start http test GET ${AB_URL}"
             echo "  - ${size} requests"
             echo "  - ${concurrency} concurrent jobs"
-            ab -m GET -n "$size" -c "$concurrency" -s "$timeout" $additionnal "$url"
+            ab -m "$method" -n "$size" -c "$concurrency" -s "$timeout" $additionnal "$url"
+          }
+
+          # execute the AB benchmark for GET load
+          function abGET {
+            abDefault GET "$url" "$size" "$concurrency" "$timeout" "$additionnal"
           }
 
           # execute the AB benchmark for POST load
@@ -110,15 +116,7 @@ spec:
 
           # execute the AB benchmark for DELETE load
           function abDELETE {
-            local url=${1:-myurl}
-            local size=${2:-1000}
-            local concurrency=${3:-10}
-            local timeout=${4:-10}
-            local additionnal=${5}
-            echo "= Start http test DELETE ${AB_URL}"
-            echo "  - ${size} requests"
-            echo "  - ${concurrency} concurrent jobs"
-            ab -m DELETE -n "$size" -c "$concurrency" -s "$timeout" "$additionnal" "$url"
+            abDefault DELETE "$url" "$size" "$concurrency" "$timeout" "$additionnal"
           }
 
           if [[ $AB_METHOD == 'DELETE' ]]
