@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/name: "ab-load-task"
     tool: ab
   annotations:
-    tekton.dev/categories: Testing 
+    tekton.dev/categories: Testing
     tekton.dev/displayName: apache-benchmark-load
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/platforms: linux/amd64
@@ -51,7 +51,7 @@ spec:
   steps:
     - image: quay.io/startx/apache:fc35
       command: ["/bin/bash", "-c"]
-      args: 
+      args:
         - |-
           #!/bin/bash
 
@@ -152,7 +152,7 @@ spec:
   workspaces:
     - name: body-content
       description: >-
-        Data to send to the endpoint must have a `content` key with content ready to send to the endpoint. 
+        Data to send to the endpoint must have a `content` key with content ready to send to the endpoint.
         Could be from a `configMap`, a `secret` or a `persistentVolumeClaim` as soon as they have a `content` key.
       mountPath: /tmp/postfile
       optional: true
