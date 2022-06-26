@@ -10,11 +10,12 @@ kubectl apply -f https://raw.githubusercontent.com/startxfr/tekton-catalog/main/
 
 ## Parameters
 
-| Key             | Default                | Description                                                                        |
-| --------------- | ---------------------- | ---------------------------------------------------------------------------------- |
-| cerberus_server | `http://cerberus:8080` | Full URL to the cerberus server. Must be internal when inside a kubernetes cluster |
-| timeout         | `60`                   | Timeout for the healthcheck performed against the cerberus server                  |
-| frequency       | `10`                   | Frequency of the healthcheck in case of bad pulse                                  |
+| Key             | Default                         | Description                                                                        |
+| --------------- | ------------------------------- | ---------------------------------------------------------------------------------- |
+| cerberus_server | `http://cerberus:8080`          | Full URL to the cerberus server. Must be internal when inside a kubernetes cluster |
+| timeout         | `60`                            | Timeout for the healthcheck performed against the cerberus server                  |
+| frequency       | `10`                            | Frequency of the healthcheck in case of bad pulse                                  |
+| image           | `quay.io/startx/apache:alpine3` | The image name to use for this check (should have curl and bash)                   |
 
 ## Workspaces
 

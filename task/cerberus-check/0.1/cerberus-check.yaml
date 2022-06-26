@@ -33,8 +33,12 @@ spec:
       type: string
       description: Frequency of the healthcheck in case of bad pulse
       default: "10"
+    - name: image
+      type: string
+      description: The image name to use for this check (should have curl and bash)
+      default: "quay.io/startx/apache:alpine3"
   steps:
-    - image: "quay.io/startx/apache:alpine3"
+    - image: "$(params.image)"
       env:
         - name: CERBERUS_URL
           value: $(params.cerberus_server)
