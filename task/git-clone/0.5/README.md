@@ -152,6 +152,59 @@ hold your credentials and bind to this workspace.
 
 2. Use Tekton Pipelines' built-in credentials support as [documented in Pipelines' auth.md](https://github.com/tektoncd/pipeline/blob/master/docs/auth.md).
 
+3. Another approach is to bind an `ssl-ca-directory` workspace to this
+Task. The workspace should contain crt keys (e.g. `ca-bundle.crt`)files - anything you need to interact with your git remote
+via custom CA . It's **strongly** recommended that you use Kubernetes `Secrets` to
+hold your credentials and bind to this workspace.
+
+    In a TaskRun that would look something like this:
+
+    ```yaml
+    kind: TaskRun
+    spec:
+      workspaces:
+      - name: ssl-ca-directory
+        secret:
+          secretName: my-ssl-credentials
+    ```
+
+    And in a Pipeline and PipelineRun it would look like this:
+
+    ```yaml
+    kind: Pipeline
+    spec:
+      workspaces:
+      - name: ssl-creds
+      # ...
+      tasks:
+      - name: fetch-source
+        taskRef:
+          name: git-clone
+        workspaces:
+        - name: ssl-ca-directory
+          workspace: ssl-creds
+      # ...
+    ---
+    kind: PipelineRun
+    spec:
+      workspaces:
+      - name: ssl-creds
+        secret:
+          secretName: my-ssl-credentials
+      # ...
+    ```
+
+    The `Secret` would appear like below:
+
+    ```yaml
+    kind: Secret
+    apiVersion: v1
+    metadata:
+      name: my-ssl-credentials
+    data:
+      ca-bundle.crt: # ... base64-encoded crt ... 
+    ```
+
 ## Running as a Non-Root User
 
 The `git-init` image that this Task utilizes offers a built in nonroot
