@@ -12,7 +12,7 @@ metadata:
     tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
-    The Datree task is used to run security scans on Kubernetes manifests using the open source tool, Datree(datree.io).
+    The Datree task is used to scan Kubernetes manifests for misconfigurations using the open source tool Datree(datree.io).
   workspaces:
     - name: source
   params:

@@ -34,7 +34,7 @@ rules:
     resources: ['services', 'revisions', 'routes']
     verbs: ['get', 'list', 'create', 'update', 'delete', 'patch', 'watch']
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: ansible-deployer-binding
