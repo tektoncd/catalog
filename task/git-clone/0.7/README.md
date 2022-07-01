@@ -1,6 +1,6 @@
 # `git-clone`
 
-**Please Note: this Task is only compatible with Tekton Pipelines versions 0.21.0 and greater!**
+**Please Note: this Task is only compatible with Tekton Pipelines versions 0.29.0 and greater!**
 
 This `Task` has two required inputs:
 
@@ -50,6 +50,7 @@ clone takes place. This behaviour can be disabled by setting the
 * **submodules**: Initialize and fetch git submodules. (_default_: true)
 * **depth**: Perform a shallow clone, fetching only the most recent N commits. (_default_: 1)
 * **sslVerify**: Set the `http.sslVerify` global git config. Setting this to `false` is not advised unless you are sure that you trust your git remote. (_default_: true)
+* **crtFileName**: If `sslVerify` is **true** and `ssl-ca-directory` workspace is given then set `crtFileName` if mounted file name is different than `ca-bundle.crt`. (_default_: "ca-bundle.crt")
 * **subdirectory**: Subdirectory inside the `output` workspace to clone the repo into. (_default:_ "")
 * **deleteExisting**: Clean out the contents of the destination directory if it already exists before cloning. (_default_: true)
 * **httpProxy**: HTTP proxy server for non-SSL requests. (_default_: "")
@@ -83,7 +84,7 @@ The following pipelines demonstrate usage of the git-clone Task:
 
 ## Cloning Private Repositories
 
-This Task supports fetching private repositories. There are two ways to
+This Task supports fetching private repositories. There are three ways to
 authenticate:
 
 1. The simplest approach is to bind an `ssh-directory` workspace to this
@@ -143,14 +144,11 @@ hold your credentials and bind to this workspace.
       config: # ... base64-encoded ssh config file ...
     ```
 
-    It's highly recommended to use the default id_rsa as the secret name rather than
-    a custom name since id_rsa is the default used by SSH. If a custom name is desired
-    a ~/.ssh/config would need to be generated before the git-clone call.
-
     Including `known_hosts` is optional but strongly recommended. Without it
     the `git-clone` Task will blindly accept the remote server's identity.
 
-2. Use Tekton Pipelines' built-in credentials support as [documented in Pipelines' auth.md](https://github.com/tektoncd/pipeline/blob/master/docs/auth.md).
+2. Use Tekton Pipelines' built-in credentials support as [documented in
+Pipelines' auth.md](https://github.com/tektoncd/pipeline/blob/master/docs/auth.md).
 
 3. Another approach is to bind an `ssl-ca-directory` workspace to this
 Task. The workspace should contain crt keys (e.g. `ca-bundle.crt`)files - anything you need to interact with your git remote
@@ -202,7 +200,7 @@ hold your credentials and bind to this workspace.
     metadata:
       name: my-ssl-credentials
     data:
-      ca-bundle.crt: # ... base64-encoded crt ... 
+      ca-bundle.crt: # ... base64-encoded crt ...  # If key/filename is other than ca-bundle.crt then set crtFileName param as explained under Parameters section
     ```
 
 ## Running as a Non-Root User
@@ -260,7 +258,7 @@ as password and generally be able to use `git` as the username.
 On bitbucket server the token may have a / into it so you would need
 to urlquote them before in the `Secret`, see this stackoverflow answer :
 
-https://stackoverflow.com/a/24719496
+https://stackoverflow.com/a/24719496 
 
 To support basic-auth this Task exposes an optional `basic-auth` Workspace.
 The bound Workspace must contain a `.gitconfig` and `.git-credentials` file.
@@ -280,3 +278,4 @@ stringData:
   .git-credentials: |
     https://<user>:<pass>@<hostname>
 ```
+
