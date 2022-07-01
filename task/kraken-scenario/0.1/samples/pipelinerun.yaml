@@ -10,29 +10,29 @@ metadata:
     tekton.dev/displayName: Define a pipeline with a single cerberus check of an Openshift cluster
 spec:
   params:
-    - name: awsCredentialSecret
+    - name: cloudProviderCredentialsSecret
       type: string
       description: Name of the secret key holding the aws-credentials (mandatory but used only for aws infrastructure chaos test).
-      default: kraken-aws-creds
+      default: kraken-cloudprovider-creds
   tasks:
-  - name: kraken-scenario
-    params:
-      - name: awsCredentialSecret
-        value: $(params.awsCredentialSecret)
-    taskRef:
-      kind: Task
-      name: kraken-scenario
-    workspaces:
-      - name: kraken-kubeconfig
-        workspace: kraken-kubeconfig
-      - name: kraken-config
-        workspace: kraken-config
-      - name: kraken-common
-        workspace: kraken-common
+    - name: kraken-scenario
+      params:
+        - name: cloudProviderCredentialsSecret
+          value: $(params.cloudProviderCredentialsSecret)
+      taskRef:
+        kind: Task
+        name: kraken-scenario
+      workspaces:
+        - name: kraken-kubeconfig
+          workspace: kraken-kubeconfig
+        - name: kraken-config
+          workspace: kraken-config
+        - name: kraken-common
+          workspace: kraken-common
   workspaces:
-  - name: kraken-kubeconfig
-  - name: kraken-config
-  - name: kraken-common
+    - name: kraken-kubeconfig
+    - name: kraken-config
+    - name: kraken-common
 ---
 kind: PipelineRun
 apiVersion: tekton.dev/v1beta1
@@ -46,8 +46,8 @@ metadata:
     tekton.dev/displayName: Run a pipeline with a single kraken chaos test of 2 x up to 3 pod pickup by hazard.
 spec:
   params:
-    - name: awsCredentialSecret
-      value: "kraken-aws-creds"
+    - name: cloudProviderCredentialsSecret
+      value: "kraken-cloudprovider-creds"
   pipelineRef:
     name: kraken-scenario-example
   workspaces:

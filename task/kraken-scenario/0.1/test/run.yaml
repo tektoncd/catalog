@@ -3,9 +3,9 @@ kind: Secret
 apiVersion: v1
 type: Opaque
 metadata:
-  name: kraken-aws-creds
+  name: kraken-cloudprovider-creds
   labels:
-    app.kubernetes.io/name: "kraken-aws-creds"
+    app.kubernetes.io/name: "kraken-cloudprovider-creds"
 stringData:
   AWS_ACCESS_KEY_ID: AKIAXXMYKEYXXX
   AWS_DEFAULT_REGION: eu-west-3
@@ -146,15 +146,15 @@ spec:
   taskRef:
     name: kraken-scenario
   params:
-    - name: awsCredentialSecret
-      value: "kraken-aws-creds"
+    - name: cloudProviderCredentialsSecret
+      value: "kraken-cloudprovider-creds"
   workspaces:
-  - name: kraken-kubeconfig
-    configMap:
-      name: kraken-kubeconfig
-  - name: kraken-config
-    configMap:
-      name: kraken-config-test
-  - name: kraken-common
-    configMap:
-      name: kraken-common-test
+    - name: kraken-kubeconfig
+      configMap:
+        name: kraken-kubeconfig
+    - name: kraken-config
+      configMap:
+        name: kraken-config-test
+    - name: kraken-common
+      configMap:
+        name: kraken-common-test

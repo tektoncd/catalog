@@ -3,9 +3,9 @@ kind: Secret
 apiVersion: v1
 type: Opaque
 metadata:
-  name: kraken-aws-creds
+  name: kraken-cloudprovider-creds
   labels:
-    app.kubernetes.io/name: "kraken-aws-creds"
+    app.kubernetes.io/name: "kraken-cloudprovider-creds"
 stringData:
   AWS_ACCESS_KEY_ID: AKIAXXMYKEYXXX
   AWS_DEFAULT_REGION: eu-west-3

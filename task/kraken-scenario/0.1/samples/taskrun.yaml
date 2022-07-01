@@ -12,15 +12,15 @@ spec:
   taskRef:
     name: kraken-scenario
   params:
-    - name: awsCredentialSecret
-      value: "kraken-aws-creds"
+    - name: cloudProviderCredentialsSecret
+      value: "kraken-cloudprovider-creds"
   workspaces:
-  - name: kraken-kubeconfig
-    configMap:
-      name: kraken-kubeconfig
-  - name: kraken-config
-    configMap:
-      name: kraken-config-example
-  - name: kraken-common
-    configMap:
-      name: kraken-common-example
+    - name: kraken-kubeconfig
+      configMap:
+        name: kraken-kubeconfig
+    - name: kraken-config
+      configMap:
+        name: kraken-config-example
+    - name: kraken-common
+      configMap:
+        name: kraken-common-example
