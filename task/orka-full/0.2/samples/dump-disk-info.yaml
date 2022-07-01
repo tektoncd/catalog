@@ -1,0 +1,28 @@
+# ###
+# This example shows how to use the orka-full Task to create a single macOS VM.
+# The script provided in the params will be executed inside the VM.
+#
+# You will need to have a secret containing the Orka credentials as well as a
+# secret containing the VM SSH credentials as described in the README.
+# ###
+---
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: dump-disk-info
+spec:
+  taskRef:
+    name: orka-full
+  params:
+    - name: base-image
+      value: catalina-ssh-30G.img
+    - name: copy-build
+      value: "false"
+    - name: script
+      value: |
+        DISK_INFO=$(mktemp)
+        diskutil info / > $DISK_INFO
+        cat $DISK_INFO
+  workspaces:
+    - name: orka
+      emptyDir: {}
