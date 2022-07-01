@@ -5,7 +5,7 @@ set -e
 : ${NAMESPACE:="default"}
 : ${ORKA_API:="http://10.221.188.100"}
 
-BASE_URL="https://raw.githubusercontent.com/tektoncd/catalog/main/task/orka-full/0.1"
+BASE_URL="https://raw.githubusercontent.com/tektoncd/catalog/main/task/orka-full/0.2"
 USAGE=$(cat <<EOF
 Usage:
   NAMESPACE=<namespace> ORKA_API=<url> ./install.sh [-a|-d|--apply|--delete]

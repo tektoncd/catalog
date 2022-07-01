@@ -4,7 +4,7 @@ set -e
 
 : ${NAMESPACE:="default"}
 
-BASE_URL="https://raw.githubusercontent.com/tektoncd/catalog/main/task/orka-full/0.1"
+BASE_URL="https://raw.githubusercontent.com/tektoncd/catalog/main/task/orka-full/0.2"
 USAGE=$(cat <<EOF
 Usage:
   NAMESPACE=<namespace> SSH_USERNAME=<username> SSH_PASSWORD=<password> ./add-ssh-creds.sh [-a|-d|--apply|--delete]
