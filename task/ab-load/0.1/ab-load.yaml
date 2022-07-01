@@ -22,8 +22,7 @@ spec:
   params:
     - name: url
       type: string
-      description: The URL targeted by the load test
-      default: "http://myapp.target_cluster.local/"
+      description: The URL targeted by the load test (mandatory)
     - name: size
       type: string
       description: Number of requests to perform
@@ -47,90 +46,49 @@ spec:
     - name: type
       type: string
       description: "The http type of payload sended to the target endpoint"
-      default: "application/x-www-form-urlencoded"
+      default: "application/x-www-form-urlencoded; charset=UTF-8"
+    - name: payload
+      type: string
+      description: "Name of the file with content to send for POST or PUT request. The file is stored in the body-content workspace"
+      default: "content.txt"
+    - name: image
+      type: string
+      description: The image name to use for this task
+      default: "quay.io/startx/apache:alpine3"
   steps:
-    - image: quay.io/startx/apache:fc35
+    - image: "$(params.image)"
       command: ["/bin/bash", "-c"]
       args:
         - |-
           #!/bin/bash
 
           # execute the AB benchmark for default load
-          function abDefault {
-            local method=${1}
-            local url=${2:-myurl}
-            local size=${3:-1000}
-            local concurrency=${4:-10}
-            local timeout=${5:-10}
-            local additionnal=${6}
-            echo "= Start http test GET ${AB_URL}"
+          function ABExec {
+            local method=${AB_METHOD:-GET}
+            local url=${AB_URL:-"http://example.com/"}
+            local size=${AB_SIZE:-1000}
+            local concurrency=${AB_CONCURRENCY:-10}
+            local timeout=${AB_TIMEOUT:-10}
+            local file=${AB_FILE:-"/tmp/default"}
+            local type=${AB_TYPE:-"application/x-www-form-urlencoded"}
+            local additionnal=${AB_ADDITIONNAL_FLAGS}
+            echo "= Start http test ${method} ${url}"
             echo "  - ${size} requests"
             echo "  - ${concurrency} concurrent jobs"
-            ab -m "$method" -n "$size" -c "$concurrency" -s "$timeout" $additionnal "$url"
+            if [[ $method == 'POST' ]]
+            then
+                echo "  - payload from $file"
+                ab -n ${size} -c ${concurrency} -s ${timeout} -p $file -T '${type}' ${additionnal} ${url} 2>&1 | tee $(results.report.path)
+            elif [[ $method == 'PUT' ]]
+            then
+                echo "  - payload from $file"
+                ab -n ${size} -c ${concurrency} -s ${timeout} -u $file -T '${type}' ${additionnal} ${url} 2>&1 | tee $(results.report.path)
+            else
+                ab -n ${size} -c ${concurrency} -s ${timeout} -m $method ${additionnal} ${url} 2>&1 | tee $(results.report.path)
+            fi
           }
 
-          # execute the AB benchmark for GET load
-          function abGET {
-            abDefault GET "$url" "$size" "$concurrency" "$timeout" "$additionnal"
-          }
-
-          # execute the AB benchmark for POST load
-          function abPOST {
-            local file=${AB_FILE}
-            local type=${AB_TYPE:-application/x-www-form-urlencoded}
-            local url=${1:-myurl}
-            local size=${2:-1000}
-            local concurrency=${3:-10}
-            local timeout=${4:-10}
-            local additionnal=${5}
-            echo "= Start http test POST ${AB_URL}"
-            echo "  - ${size} requests"
-            echo "  - ${concurrency} concurrent jobs"
-            ab -n "$size" \
-               -c "$concurrency" \
-               -s "$timeout" \
-               -p "$file" \
-               -T '${type}; charset=UTF-8' \
-            $additionnal "$url"
-          }
-
-          # execute the AB benchmark for PUT load
-          function abPUT {
-            local file=${AB_FILE}
-            local type=${AB_TYPE:-application/x-www-form-urlencoded}
-            local url=${1:-myurl}
-            local size=${2:-1000}
-            local concurrency=${3:-10}
-            local timeout=${4:-10}
-            local additionnal=${5}
-            echo "= Start http test PUT ${AB_URL}"
-            echo "  - ${size} requests"
-            echo "  - ${concurrency} concurrent jobs"
-            ab -n "$size" \
-               -c "$concurrency" \
-               -s "$timeout" \
-               -u "$file" \
-               -T '${type}; charset=UTF-8' \
-            $additionnal "$url"
-          }
-
-          # execute the AB benchmark for DELETE load
-          function abDELETE {
-            abDefault DELETE "$url" "$size" "$concurrency" "$timeout" "$additionnal"
-          }
-
-          if [[ $AB_METHOD == 'DELETE' ]]
-          then
-              abDELETE "$AB_URL" "$AB_SIZE" "$AB_CONCURRENCY" "$AB_TIMEOUT" "$AB_ADDITIONNAL_FLAGS"
-          elif [[ $AB_METHOD == 'POST' ]]
-          then
-              abPOST "$AB_URL" "$AB_SIZE" "$AB_CONCURRENCY" "$AB_TIMEOUT" "$AB_ADDITIONNAL_FLAGS"
-          elif [[ $AB_METHOD == 'PUT' ]]
-          then
-              abPUT "$AB_URL" "$AB_SIZE" "$AB_CONCURRENCY" "$AB_TIMEOUT" "$AB_ADDITIONNAL_FLAGS"
-          else
-              abGET "$AB_URL" "$AB_SIZE" "$AB_CONCURRENCY" "$AB_TIMEOUT" "$AB_ADDITIONNAL_FLAGS"
-          fi
+          ABExec
       env:
         - name: AB_URL
           value: $(params.url)
@@ -145,15 +103,15 @@ spec:
         - name: AB_ADDITIONNAL_FLAGS
           value: $(params.additionnalFlags)
         - name: AB_FILE
-          value: /tmp/postfile/content
+          value: /tmp/postfile/$(params.payload)
         - name: AB_TYPE
           value: $(params.type)
       resources: {}
   workspaces:
     - name: body-content
       description: >-
-        Data to send to the endpoint must have a `content` key with content ready to send to the endpoint.
-        Could be from a `configMap`, a `secret` or a `persistentVolumeClaim` as soon as they have a `content` key.
+        Data to send to the endpoint. The file to use must be defined in the `payload` param.
+        Could be from a `configMap`, a `secret` or a `persistentVolumeClaim` as soon as they have a file matching the `payload` param.
       mountPath: /tmp/postfile
       optional: true
   results:

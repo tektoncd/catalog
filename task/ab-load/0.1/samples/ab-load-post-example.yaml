@@ -6,5 +6,5 @@ metadata:
   labels:
     app.kubernetes.io/name: "ab-load-post-example"
 data:
-  content: |
+  content.txt: |
     key1=value1&key2=value2

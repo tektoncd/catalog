@@ -14,16 +14,8 @@ spec:
   params:
     - name: url
       value: "https://startx.free.beeceptor.com/"
-    - name: size
-      value: "1000"
-    - name: concurrency
-      value: "10"
-    - name: timeout
-      value: "5"
     - name: method
       value: GET
-    - name: additionnalFlags
-      value: "-k -I"
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TaskRun
@@ -40,16 +32,8 @@ spec:
   params:
     - name: url
       value: "https://startx.free.beeceptor.com/"
-    - name: size
-      value: "1000"
-    - name: concurrency
-      value: "10"
-    - name: timeout
-      value: "5"
     - name: method
       value: POST
-    - name: additionnalFlags
-      value: "-k -I"
   workspaces:
   - name: body-content
     configMap:
@@ -70,13 +54,5 @@ spec:
   params:
     - name: url
       value: "https://startx.free.beeceptor.com/"
-    - name: size
-      value: "1000"
-    - name: concurrency
-      value: "10"
-    - name: timeout
-      value: "5"
     - name: method
       value: DELETE
-    - name: additionnalFlags
-      value: "-k -I"

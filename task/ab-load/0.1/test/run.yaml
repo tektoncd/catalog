@@ -6,7 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/name: "ab-load-post-test"
 data:
-  content: |
+  content.txt: |
     key1=value1&key2=value2
 ---
 apiVersion: tekton.dev/v1beta1
