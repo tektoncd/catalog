@@ -34,5 +34,8 @@ find task -name *registry*.yaml | xargs -I{} yq eval '(..|select(.kind?=="Deploy
 echo "Change GOARCH parameter value"
 find task/golang*/*/tests/run.yaml | xargs -I{} yq eval '(..|select(.kind?=="Pipeline")|.spec.tasks[1].params) |= . +{"name": "GOARCH","value": env(GOARCH)}' -i {}
 
+echo "Add extra GRADLE_IMAGE value"
+find task/gradle/*/tests/run.yaml | xargs -I{} yq eval '(..|select(.kind?=="Pipeline")|.spec.tasks[1].params) |= . +{"name": "GRADLE_IMAGE","value": env(BUILDER_IMAGE)}' -i {}
+
 echo "Add extra BUILDER_IMAGE parameter"
 find task/jib-gradle/*/tests/run.yaml | xargs -I{} yq eval '(..|select(.kind?=="Pipeline")|.spec.tasks[1].params) |= . +{"name": "BUILDER_IMAGE","value": env(BUILDER_IMAGE)}' -i {}
