@@ -20,8 +20,10 @@ spec:
         name: orka-init
       params:
         - name: base-image
-          value: catalina-ssh-30G.img
+          value: 90GBigSurSSH.img
     - name: diskinfo
+      runAfter:
+        - setup
       retries: 1
       taskRef:
         name: orka-deploy
@@ -35,6 +37,8 @@ spec:
         - name: orka
           workspace: shared-data
     - name: ruby
+      runAfter:
+        - setup
       retries: 1
       taskRef:
         name: orka-deploy
