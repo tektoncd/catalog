@@ -1,0 +1,17 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: ike-create-run
+spec:
+  serviceAccountName: istio-workspace
+  taskRef:
+    name: ike-create
+  params:
+    - name: target
+      value: ratings-v1
+    - name: session
+      value: $(params.git-pr-head-ref)
+    - name: image
+      value: quay.io/workspace-demo/$(params.git-repo-name)-ratings:$(params.git-revision)
+    - name: route
+      value: "header:ike-session-id=$(params.git-pr-head-ref)"
