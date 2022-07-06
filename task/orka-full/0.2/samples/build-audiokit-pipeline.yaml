@@ -11,6 +11,9 @@
 # which can be consumed by a later Task in the Pipeline, or simply
 # saved to a cloud storage bucket.
 #
+# You will first need to install Xcode on the VM and commit or save an
+# image using `orka image commit` or `orka image save` and specify that base image.
+#
 # ###
 # Install the git-clone task:
 # kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.2/git-clone.yaml
@@ -19,7 +22,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: build-audiokit-pipeline
+  name: build-calcupad-pipeline
 spec:
   workspaces:
     - name: shared-data
@@ -32,8 +35,10 @@ spec:
           workspace: shared-data
       params:
         - name: url
-          value: https://github.com/audiokit/AudioKit.git
-    - name: build-audiokit
+          value: https://github.com/kwonye/calcupad.git
+        - name: revision
+          value: f59faf96b1d45120bc6a3b4ea9e94d4fd67fb9a3
+    - name: build-calcupad
       runAfter:
         - fetch-repo
       taskRef:
@@ -49,14 +54,13 @@ spec:
           value: "true"
         - name: script
           value: |
-            cd AudioKit/iOS
-            time xcodebuild
+            time xcodebuild CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
       workspaces:
         - name: orka
           workspace: shared-data
     - name: show-build
       runAfter:
-        - build-audiokit
+        - build-calcupad
       workspaces:
         - name: source
           workspace: shared-data
@@ -65,20 +69,21 @@ spec:
           - name: source
         steps:
           - name: list
-            image: docker.io/macstadium/orka-tekton-runner:2020-10-23-a93757dc-0.1@sha256:e8ed3370dcb91cdb8bcd4e9a7e9f6652879d80acdab9644cda69a98cd8c93339
+            image: ghcr.io/macstadium/orka-tekton-runner:2022-06-29-ec3440a7@sha256:d7cfb75ea082a927e36c131aa96e96bfcacd23f62fdaf33f5b37320b86baf50e
             script: |
               #!/bin/sh
               set -ex
-              ls -al $(workspaces.source.path)/AudioKit/iOS
-              ls -al $(workspaces.source.path)/AudioKit/iOS/build
+              ls -al $(workspaces.source.path)
+              ls -al $(workspaces.source.path)/build
+              ls -al $(workspaces.source.path)/build/Release-iphoneos
 ---
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  name: run-build-audiokit-pipeline
+  name: run-build-calcupad-pipeline
 spec:
   pipelineRef:
-    name: build-audiokit-pipeline
+    name: build-calcupad-pipeline
   workspaces:
     - name: shared-data
       volumeClaimTemplate:
