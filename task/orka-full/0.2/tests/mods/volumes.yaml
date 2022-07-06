@@ -1,0 +1,8 @@
+---
+- name: startup-script
+  configMap:
+    name: ssh-scripts
+    items:
+      - key: "startup-script"
+        path: "startup.sh"
+        mode: 448
