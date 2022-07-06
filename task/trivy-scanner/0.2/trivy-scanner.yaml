@@ -6,7 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/version: "0.2"
   annotations:
-    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/pipelines.minVersion: "0.17.0"
     tekton.dev/categories: Security
     tekton.dev/tags: CLI, trivy
     tekton.dev/displayName: "trivy scanner"
