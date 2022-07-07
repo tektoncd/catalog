@@ -46,6 +46,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/
 ## Results
 
  - **`APP_IMAGE_DIGEST`**: The digest of the built `APP_IMAGE`.
+ - **`APP_IMAGE_URL`**: The URL of the built `APP_IMAGE`.
 
 ## Builders
 

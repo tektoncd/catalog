@@ -14,8 +14,6 @@ apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
   name: results-pipeline-run
-  labels:
-    app.kubernetes.io/description: A PipelineRun configured to demonstrate usage of task results.
 spec:
   pipelineSpec:
     workspaces:
@@ -62,10 +60,14 @@ spec:
               script: |
                 #!/usr/bin/env bash
                 set -e
+                echo "URL of created app image: $(params.URL)"
                 echo "Digest of created app image: $(params.DIGEST)"
           params:
+            - name: URL
             - name: DIGEST
         params:
+          - name: URL
+            value: $(tasks.buildpacks.results.APP_IMAGE_URL)
           - name: DIGEST
             value: $(tasks.buildpacks.results.APP_IMAGE_DIGEST)
   workspaces:

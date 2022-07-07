@@ -14,8 +14,6 @@ apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
   name: env-vars-pipeline-run
-  labels:
-    description: A PipelineRun configured to provide _build-time_ environment variables.
 spec:
   pipelineSpec:
     workspaces:
