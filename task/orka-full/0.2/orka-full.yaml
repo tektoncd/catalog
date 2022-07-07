@@ -9,6 +9,8 @@ metadata:
     tekton.dev/categories: Cloud, Kubernetes
     tekton.dev/pipelines.minVersion: "0.16.0"
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/tags: orka
+    tekton.dev/displayName: "orka full"
 spec:
   description: >-
     With this Task, you can use your Orka environment
@@ -143,10 +145,10 @@ spec:
         #!/bin/sh
         SCRIPT=$(mktemp)
         # Safeguard against having to escape quotes / vars in script
-        cat > $SCRIPT << 'EOF'
+        cat > "$SCRIPT" << 'EOF'
         $(params.script)
         EOF
-        copy-script $SCRIPT
+        copy-script "$SCRIPT"
     - name: build
       image: $(params.docker-image)
       securityContext:
