@@ -21,6 +21,7 @@ spec:
     in stand alone mode.
   workspaces:
     - name: manifest-dir
+      optional: true
   params:
     - name: ARGS
       description: The Arguments to be passed to Trivy command.
