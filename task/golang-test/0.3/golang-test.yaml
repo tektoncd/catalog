@@ -9,7 +9,7 @@ metadata:
     tekton.dev/categories: Testing
     tekton.dev/tags: test
     tekton.dev/displayName: "golang test"
-    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
+    tekton.dev/platforms: "linux/arm64,linux/amd64,linux/s390x,linux/ppc64le"
 spec:
   description: >-
     This Task is Golang task to test Go projects.
@@ -44,19 +44,66 @@ spec:
   - name: GOMODCACHE
     description: "Go mod caching directory path"
     default: ""
+  - name: CGOENABLED
+    description: configure go env variable
+  - name: GOPRIVATE
+    description: "list of go private modules"
+  - name: GIT_ALLOW_PROTOCOL
+    description: "list of colon separated vcs schemes"
+  - name: git_config_add
+    description: git config to add in space separated format. <name> <value>
+  - name: pkgs
+    description: linux packages to install from the apt library in space separated format. <pkg1> <pkg2>
+  - name: pkg_source
+    description: additional linux package sources to fetch apt packages from
   workspaces:
   - name: source
+  - name: ssh-directory
+    optional: true
+    description: |
+      A .ssh directory with private key, known_hosts, config, etc. Copied to
+      the user's home to authenticate private modules.
   steps:
   - name: unit-test
     image: docker.io/library/golang:$(params.version)
     workingDir: $(workspaces.source.path)
+    args:
+    - $(params.git_config_add)
+    - $(params.pkg_source)
+    - $(params.pkgs)
     script: |
-      if [ ! -e $GOPATH/src/$(params.package)/go.mod ];then
+      if [ "$(workspaces.ssh-directory.bound)" = "true" ] ; then
+        USER="$(id -u -n)"
+        if [ "$USER" = "root" ] 
+        then
+          USER_HOME="/root"
+        else
+          USER_HOME="/home/$USER"
+        fi
+        cp -R "$(workspaces.ssh-directory.path)" "$USER_HOME"/.ssh
+        chmod 700 "$USER_HOME"/.ssh
+        chmod -R 400 "$USER_HOME"/.ssh/*
+      fi
+
+      if [ "$1" != "" ] ; then
+        git config --add --global $1
+      fi
+
+      if [ "$2" != "" ] ; then
+        echo "$2" >> /etc/apt/sources.list
+      fi
+      
+      if [ $3 != "" ] ; then
+        apt-get update && apt-get -y install $3
+      fi
+
+      if [ ! -e $GOPATH/src/$(params.package)/go.mod ] ; then
          SRC_PATH="$GOPATH/src/$(params.package)"
          mkdir -p $SRC_PATH
          cp -R "$(workspaces.source.path)/$(params.context)"/* $SRC_PATH
          cd $SRC_PATH
       fi
+      
       go test $(params.flags) $(params.packages)
     env:
     - name: GOOS
@@ -69,3 +116,9 @@ spec:
       value: "$(params.GOCACHE)"
     - name: GOMODCACHE
       value: "$(params.GOMODCACHE)"
+    - name: GOPRIVATE
+      value: "$(params.GOPRIVATE)"
+    - name: CGOENABLED
+      value: "$(params.CGOENABLED)"
+    - name: GIT_ALLOW_PROTOCOL
+      value: "$(params.GIT_ALLOW_PROTOCOL)"

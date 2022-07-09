@@ -20,14 +20,22 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/go
 * **GO111MODULE**: value of module support (_default:_ auto)
 * **GOCACHE**: value for go caching path (_default:_ "")
 * **GOMODCACHE**: value for go module caching path (_default:_ "")
+* **CGOENABLED**: go env. enables cgo
+* **GOPRIVATE**: go env. private modules to be fetched from original source
+* **GIT_ALLOW_PROTOCOL**: list of vcs schemes to download module dependencies
+* **git_config_add**: git configuration to add
+* **pkgs**: linux packages to install from the apt library
+* **pkg_source**: additional linux package sources to fetch apt packages from
 
-### Workspaces
 
-* **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md) containing the source to build.
+### [Workspaces](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md)
+
+* **source**: Source to build.
+* **ssh-directory**: ssh secrets to authorize module downloads with git
 
 ## Platforms
 
-The Task can be run on `linux/amd64`, `linux/s390x` and `linux/ppc64le` platforms.
+The Task can be run on `linux/arm64`, `linux/amd64`, `linux/s390x` and `linux/ppc64le` platforms.
 
 Specify value for `GOARCH` parameter according to the desired target architecture.
 Do not use `-race` flag in `flags` parameter for `linux/s390x` platform.
