@@ -93,8 +93,8 @@ spec:
         echo "$2" >> /etc/apt/sources.list
       fi
       
-      if [ $3 != "" ] ; then
-        apt-get update && apt-get -y install $3
+      if [ "$3" != "" ] ; then
+        apt-get update && apt-get -y install "$3"
       fi
 
       if [ ! -e $GOPATH/src/$(params.package)/go.mod ] ; then
