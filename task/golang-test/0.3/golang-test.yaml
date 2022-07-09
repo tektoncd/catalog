@@ -45,9 +45,13 @@ spec:
     description: "Go mod caching directory path"
     default: ""
   - name: CGOENABLED
-    description: configure go env variable
+    description: enable cgo 
   - name: GOPRIVATE
     description: "list of go private modules"
+  - name: GOPROXY
+    description: go proxy to fetch dependencies from
+  - name: GOSUMDB
+    description: whitelist go module checksum DB's
   - name: GIT_ALLOW_PROTOCOL
     description: "list of colon separated vcs schemes"
   - name: git_config_add
