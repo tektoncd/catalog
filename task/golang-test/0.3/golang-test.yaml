@@ -3,7 +3,7 @@ kind: Task
 metadata:
   name: golang-test
   labels:
-    app.kubernetes.io/version: "0.2"
+    app.kubernetes.io/version: "0.3"
   annotations:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/categories: Testing
@@ -12,7 +12,7 @@ metadata:
     tekton.dev/platforms: "linux/arm64,linux/amd64,linux/s390x,linux/ppc64le"
 spec:
   description: >-
-    This Task is Golang task to test Go projects.
+    This is a Golang task to test Go projects.
 
   params:
   - name: package
