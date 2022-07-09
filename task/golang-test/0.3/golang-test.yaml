@@ -23,6 +23,9 @@ spec:
   - name: context
     description: path to the directory to use as context.
     default: "."
+  - name: image
+    description: docker image to run the task
+    default: "docker.io/library/golang"
   - name: version
     description: golang version to use for tests
     default: "latest"
@@ -69,7 +72,7 @@ spec:
       the user's home to authenticate private modules.
   steps:
   - name: unit-test
-    image: docker.io/library/golang:$(params.version)
+    image: $(params.image):$(params.version)
     workingDir: $(workspaces.source.path)
     args:
     - $(params.git_config_add)
