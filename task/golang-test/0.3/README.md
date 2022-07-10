@@ -26,6 +26,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/go
 * **git_config_add**: git configuration to add
 * **pkgs**: linux packages to install from the apt library
 * **pkg_source**: additional linux package sources to fetch apt packages from
+* **GOPROXY**: [Proxy settings](https://go.dev/ref/mod#goproxy-protocol) for Go dependencies (default: empty, not enabled)
 
 
 ### [Workspaces](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md)

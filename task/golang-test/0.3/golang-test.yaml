@@ -53,8 +53,10 @@ spec:
     description: "list of go private modules"
   - name: GOPROXY
     description: go proxy to fetch dependencies from
+    default: "https://proxy.golang.org,direct"
   - name: GOSUMDB
     description: whitelist go module checksum DB's
+    default: "sum.golang.org"
   - name: GIT_ALLOW_PROTOCOL
     description: "list of colon separated vcs schemes"
   - name: git_config_add
@@ -129,3 +131,5 @@ spec:
       value: "$(params.CGOENABLED)"
     - name: GIT_ALLOW_PROTOCOL
       value: "$(params.GIT_ALLOW_PROTOCOL)"
+    - name: GOPROXY
+      value: "$(params.GOPROXY)"
