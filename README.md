@@ -163,7 +163,7 @@ metadata:
 spec:
   taskRef:
     name: golang-build
-    bundle: gcr.io/tekton-releases/catalog/upstream/goland-build:0.1
+    bundle: gcr.io/tekton-releases/catalog/upstream/golang-build:0.1
   params:
   - name: package
     value: github.com/tektoncd/pipeline
