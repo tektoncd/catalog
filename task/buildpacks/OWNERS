@@ -1,20 +1,21 @@
 approvers:
-- jkutner
-- hone
-- nebhale
-- sclevine
+# buildpacks/toc
 - ekcasey
+- hone
+- jkutner
+- samj1912
+- sclevine
+# buildpacks/platform-maintainers
+- dfreilich
 - jromero
-- ameyer-pivotal
-- simonjjones
 
 reviewers:
-- vdemeester
-- ImJasonH
-- jkutner
-- hone
-- sclevine
+# buildpacks/toc
 - ekcasey
+- hone
+- jkutner
+- samj1912
+- sclevine
+# buildpacks/platform-maintainers
+- dfreilich
 - jromero
-- ameyer-pivotal
-- simonjjones
