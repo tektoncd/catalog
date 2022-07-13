@@ -49,9 +49,8 @@ spec:
     - description: Digest of the image just built.
       name: IMAGE_DIGEST
   steps:
-    - image: registry.access.redhat.com/ubi8@sha256:f20fb774c96377b793475021aca89909da74e9da05136eb6e824aa16f85f22db
+    - image: quay.io/centos/centos:8
       name: generate
-      resources: {}
       script: |
         echo """
         FROM node:$(params.NODEJS_VERSION) as node
