@@ -7,7 +7,7 @@ The following task is used to provide static analysis on python files mounted us
 ## Installing the Task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/mypy-lint/0.1/mypy-lint.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/mypy-lint/0.1/raw
 ```
 
 ## Parameters
@@ -27,7 +27,7 @@ The Task can be run on `linux/amd64` platform.
 1. Create the `git-clone` task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.1/git-clone.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/git-clone/0.1/raw
 ```
 
 2. Create the PVC

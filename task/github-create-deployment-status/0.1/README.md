@@ -7,7 +7,7 @@ See GitHub's deployment API on [Create a deployment status](https://docs.github.
 ### Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-create-deployment-status/0.1/github-create-deployment-status.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/github-create-deployment-status/0.1/raw
 ```
 
 ### Secrets

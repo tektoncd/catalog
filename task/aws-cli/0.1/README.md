@@ -7,7 +7,7 @@ All aws cli commands can be found [here](https://docs.aws.amazon.com/cli/latest/
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/aws-cli/0.1/aws-cli.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/aws-cli/0.1/raw
 ```
 
 ## Parameters

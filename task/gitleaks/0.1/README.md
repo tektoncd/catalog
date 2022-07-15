@@ -5,13 +5,13 @@ This task makes it possible to use [gitleaks](https://github.com/zricethezav/git
 
 ## Installation
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gitleaks/0.1/gitleaks.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/gitleaks/0.1/raw
 ```
 
 ## Pre-requisite
 Install git-clone task from catalog
 ```
-https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.3/git-clone.yaml
+https://api.hub.tekton.dev/v1/resource/tekton/task/git-clone/0.3/raw
 ```
 
 

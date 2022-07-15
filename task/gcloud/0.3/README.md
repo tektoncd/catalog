@@ -11,7 +11,7 @@ For details on the underlying image, see https://github.com/GoogleCloudPlatform/
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gcloud/0.3/gcloud.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/gcloud/0.3/raw
 ```
 
 ## Parameters

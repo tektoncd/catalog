@@ -13,7 +13,7 @@ Guide to provision a cluster on AWS can be found [here](https://docs.openshift.c
 ### **Install the Task**
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/openshift-uninstall/0.1/openshift-uninstall.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/openshift-uninstall/0.1/raw
 ```
 
 ### **Workspaces**

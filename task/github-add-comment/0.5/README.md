@@ -11,7 +11,7 @@ issue.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-add-comment/0.5/github-add-comment.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/github-add-comment/0.5/raw
 ```
 
 ## Secrets

@@ -13,7 +13,7 @@ The task provides code coverage based on [coverage](https://coverage.readthedocs
 ### Install pytest
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/python-coverage/0.1/python-coverage.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/python-coverage/0.1/raw
 ```
 
 ## Parameters

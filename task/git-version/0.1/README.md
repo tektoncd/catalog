@@ -5,7 +5,7 @@ The `git-version` task let you generate a version from git history using `https:
 ### Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-version/0.1/git-version.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/git-version/0.1/raw
 ```
 
 ## Workspaces

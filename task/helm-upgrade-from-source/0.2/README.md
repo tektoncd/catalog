@@ -7,7 +7,7 @@ These tasks will install / upgrade a helm chart into your Kubernetes / OpenShift
 ### helm install / upgrade from source code
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/helm-upgrade-from-source/0.2/helm-upgrade-from-source.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/helm-upgrade-from-source/0.2/raw
 ```
 
 #### Parameters

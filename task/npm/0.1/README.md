@@ -5,7 +5,7 @@ This task can be used to run `npm` goals on a source code with the default envir
 ## Install the Task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/npm/0.1/npm.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/npm/0.1/raw
 ```
 
 ## Parameters
@@ -26,7 +26,7 @@ The Task can be run on `linux/amd64`, `linux/s390x`, and `linux/ppc64le` platfor
 
 ## Usage
 
-1. Apply the [`git-clone`](https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.2/git-clone.yaml) task which will help to clone the repository.
+1. Apply the [`git-clone`](https://api.hub.tekton.dev/v1/resource/tekton/task/git-clone/0.2/raw) task which will help to clone the repository.
 
 2. Apply the sample [run.yaml](https://raw.githubusercontent.com/tektoncd/catalog/main/task/npm/0.1/tests/run.yaml) which will clone the [tektoncd/hub](https://github.com/tektoncd/hub) repo and perform few npm goals:-
    - install dependencies using `npm clean-install`

@@ -10,7 +10,7 @@ Follow instructions [here](https://support.discord.com/hc/en-us/articles/2283836
 ## Install the Task and create a secret
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/send-to-webhook-discord/0.1/send-to-webhook-discord.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/send-to-webhook-discord/0.1/raw
 ```
 
 Create a secret that has the generated webhook URL

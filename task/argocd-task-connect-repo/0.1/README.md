@@ -5,7 +5,7 @@
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/argocd-task-connect-repo/0.1/argocd-task-connect-repo.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/argocd-task-connect-repo/0.1/raw
 ```
 
 ## Parameters

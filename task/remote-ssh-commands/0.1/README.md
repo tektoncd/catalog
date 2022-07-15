@@ -5,7 +5,7 @@ This task can be used to run shell commands on remote machine and produce the re
 ## Install the Task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/remote-ssh-commands/0.1/remote-ssh-commands.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/remote-ssh-commands/0.1/raw
 ```
 
 ## Parameters

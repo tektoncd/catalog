@@ -109,7 +109,7 @@ Install the Tekton Pipelines CLI to view your logs by following the instructions
 4. Install the `build-push-gke-deploy` Pipeline.
 
   ```bash
-  kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/pipeline/build-push-gke-deploy/0.1/build-push-gke-deploy.yaml
+  kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/pipeline/build-push-gke-deploy/0.1/raw
   ```
 
 5. Create the `PipelineRun` config to run your Pipeline.

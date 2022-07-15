@@ -5,7 +5,7 @@ This Task is Golang task to build Go projects.
 ## Install the task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/golang-build/0.3/golang-build.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/golang-build/0.3/raw
 
 ```
 

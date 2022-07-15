@@ -6,7 +6,7 @@ in their code repositories and their helm releases.
 Install `pluto` task:
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/pluto/0.1/pluto.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/pluto/0.1/raw
 ```
 
 ## Parameters

@@ -10,7 +10,7 @@ Create this webhook as described [here](https://docs.microsoft.com/en-us/microso
 ## Install the Task and create a secret
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/send-to-microsoft-teams/0.1/send-to-microsoft-teams.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/send-to-microsoft-teams/0.1/raw
 ```
 
 Create a secret that has the webhook URL in it.

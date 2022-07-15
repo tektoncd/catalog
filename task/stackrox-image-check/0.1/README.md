@@ -9,7 +9,7 @@ This task requires an active installation of [Red Hat Advanced Cluster Security 
 ## Install the Task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/stackrox-image-scan/0.1/stackrox-image-scan.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/stackrox-image-scan/0.1/raw
 ```
 
 ## Parameters

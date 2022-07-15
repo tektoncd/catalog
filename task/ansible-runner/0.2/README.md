@@ -9,7 +9,7 @@ The latest versions of ansible-runner requires [`community.general`](https://git
 Create the Task and other resources:
 
 ```shell
-kubectl apply --filename https://raw.githubusercontent.com/tektoncd/catalog/main/task/ansible-runner/0.2/ansible-runner.yaml
+kubectl apply --filename https://api.hub.tekton.dev/v1/resource/tekton/task/ansible-runner/0.2/raw
 ```
 
 Verify the created tasks:
@@ -46,7 +46,7 @@ All the examples will be run in namespace called `funstuff`. Create the namespac
 ### Create the PVC and clone example sources
 
 ```shell
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.5/git-clone.yaml \
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/git-clone/0.5/raw \
   -f  https://raw.githubusercontent.com/tektoncd/catalog/main/task/ansible-runner/0.2/support/playbooks-pvc.yaml
 ```
 
