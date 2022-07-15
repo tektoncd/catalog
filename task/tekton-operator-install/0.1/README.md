@@ -5,7 +5,7 @@ This task can be used to install Tekton pipelines and also it's components using
 ## Install the Task
 
 ```shell
-kubectl apply --filename https://raw.githubusercontent.com/tektoncd/catalog/main/task/tekton-operator-install/0.1/tekton-operator-install.yaml
+kubectl apply --filename https://api.hub.tekton.dev/v1/resource/tekton/task/tekton-operator-install/0.1/raw
 ```
 
 ## Parameters

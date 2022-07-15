@@ -6,7 +6,7 @@ This Task deploys (or delete) a Kubernetes resource (pod). It uses
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kubectl-deploy-pod/0.1/kubectl-deploy-pod.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/kubectl-deploy-pod/0.1/raw
 ```
 
 ## Install ClusterRole

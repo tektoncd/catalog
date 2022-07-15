@@ -7,7 +7,7 @@ The Docker Build task builds source into a container image using [Docker](https:
 ### Install the Docker Build Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/docker-build/0.1/docker-build.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/docker-build/0.1/raw
 ```
 
 ### Parameters

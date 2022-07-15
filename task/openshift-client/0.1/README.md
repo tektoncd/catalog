@@ -7,7 +7,7 @@ Openshift-client runs commands against the cluster where the task run is being e
 
 ## Install the Task
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/openshift-client/0.1/openshift-client.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/openshift-client/0.1/raw
 ```
 
 ## Parameters

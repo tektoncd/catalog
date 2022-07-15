@@ -82,17 +82,17 @@ kubectl create -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/k
 
 4 - Install buildah task from tektoncd/catalog
 ```bash
-https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildah/0.4/buildah.yaml
+https://api.hub.tekton.dev/v1/resource/tekton/task/buildah/0.4/buildah.yaml
 ```
 
 5 - Install the kn task from the tektoncd/catalog
 ```bash
-https://raw.githubusercontent.com/tektoncd/catalog/main/task/kn/0.2/kn.yaml
+https://api.hub.tekton.dev/v1/resource/tekton/task/kn/0.2/kn.yaml
 ```
 
 5 - Install the git-clone task from the tektoncd/catalog
 ```bash
-https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.8/git-clone.yaml
+https://api.hub.tekton.dev/v1/resource/tekton/task/git-clone/0.8/git-clone.yaml
 ```
 
 ## Pipelines:

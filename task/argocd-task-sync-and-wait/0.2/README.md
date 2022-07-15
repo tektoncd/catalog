@@ -5,7 +5,7 @@ This task syncs (deploys) an [Argo CD](https://argoproj.github.io/argo-cd/) appl
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/argocd-task-sync-and-wait/0.2/argocd-task-sync-and-wait.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/argocd-task-sync-and-wait/0.2/raw
 ```
 
 ## Parameters

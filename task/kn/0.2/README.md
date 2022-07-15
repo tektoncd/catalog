@@ -6,7 +6,7 @@ This Task performs operations on Knative resources (services, revisions, routes)
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kn/0.2/kn.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/kn/0.2/raw
 ```
 
 ## Parameters
@@ -45,7 +45,7 @@ with permission to manage Knative resources.
 To create a `ServiceAccount` with these permissions, you can run:
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kn/0.2/support/kn-deployer.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/kn/0.2/support/raw
 ```
 
 ### Running the Task

@@ -22,7 +22,7 @@ makes it a perfect tool to be part of Tekton.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kaniko/0.3/kaniko.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/kaniko/0.3/raw
 ```
 
 ## Parameters

@@ -13,7 +13,7 @@ The task provides linting based on [pylint](https://pypi.org/project/pylint/) fo
 ### Install pylint
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/pylint/0.1/pylint.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/pylint/0.1/raw
 ```
 
 ## Parameters

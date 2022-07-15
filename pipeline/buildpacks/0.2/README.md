@@ -24,15 +24,15 @@ This pipeline builds source into a container image using [Cloud Native Buildpack
 #### Install dependencies (if missing)
 
 ```shell
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.3/git-clone.yaml
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildpacks/0.3/buildpacks.yaml
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildpacks-phases/0.2/buildpacks-phases.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/git-clone/0.3/raw
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/buildpacks/0.3/raw
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/buildpacks-phases/0.2/raw
 ```
 
 #### Install pipeline
 
 ```shell
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/pipeline/buildpacks/0.2/buildpacks.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/pipeline/buildpacks/0.2/raw
 ```
 
 ## Workspaces

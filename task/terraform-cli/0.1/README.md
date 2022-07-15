@@ -8,7 +8,7 @@
 
 Install `terraform-cli` task for kubernetes 1.6+:
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/terraform-cli/0.1/terraform-cli.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/terraform-cli/0.1/raw
 ```
 This task currently works only on kubernetes 1.6+ support for a task that works on older versions of kubernetes will be added soon.
 

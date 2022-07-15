@@ -10,7 +10,7 @@ Ansible Runner Task allows running the Ansible Playbooks using the [ansible-runn
 Create the Task and other resources:
 
 ```shell
-kubectl apply --filename https://raw.githubusercontent.com/tektoncd/catalog/main/task/ansible-runner/0.1/ansible-runner.yaml
+kubectl apply --filename https://api.hub.tekton.dev/v1/resource/tekton/task/ansible-runner/0.1/raw
 ```
 
 Verify the created tasks:
@@ -47,7 +47,7 @@ All the examples will be run in namespace called `funstuff`. Create the namespac
 ### Create the PVC and clone example sources
 
 ```shell
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.1/git-clone.yaml \
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/git-clone/0.1/raw \
   -f  https://raw.githubusercontent.com/tektoncd/catalog/main/task/ansible-runner/0.1/support/playbooks-pvc.yaml
 ```
 

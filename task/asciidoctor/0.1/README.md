@@ -8,13 +8,13 @@ The resulting document can be sent by email, uploaded to the artifact repository
 
 ## Install the Task
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/asciidoctor/0.1/asciidoctor.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/asciidoctor/0.1/raw
 ```
 
 ## Pre-requisite
 Install git-clone task from catalog
 ```
-https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.3/git-clone.yaml
+https://api.hub.tekton.dev/v1/resource/tekton/task/git-clone/0.3/raw
 ```
 
 ## Workspaces

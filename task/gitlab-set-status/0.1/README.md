@@ -14,7 +14,7 @@ informations about the CI statuses or a direct link to the full log.
 ### Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gitlab-set-status/0.1/gitlab-set-status.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/gitlab-set-status/0.1/raw
 ```
 
 ### Parameters

@@ -9,7 +9,7 @@ It means a further task that works with Dockerfile/Containerfile such as `builda
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/ansible-builder/0.1/ansible-builder.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/ansible-builder/0.1/raw
 ```
 
 ## Parameters

@@ -5,7 +5,7 @@ This task is a Golang task to test Go projects.
 ## Install the task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/golang-test/0.2/golang-test.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/golang-test/0.2/raw
 ```
 
 ### Parameters

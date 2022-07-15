@@ -5,7 +5,7 @@ This is a generic task used to perform kubernetes actions such as `kubectl get d
 ## Install the task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kubernetes-actions/0.2/kubernetes-actions.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/kubernetes-actions/0.2/raw
 ```
 
 ## Inputs

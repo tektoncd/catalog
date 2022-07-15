@@ -8,17 +8,17 @@ This Pipeline builds, pushes, and deploys your application to a Google Kubernete
 Both `Kaniko` and `Gke-deploy` tasks have been used from tekton catalog
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kaniko/0.2/kaniko.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/kaniko/0.2/raw
 ```
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gke-deploy/0.1/gke-deploy.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/gke-deploy/0.1/raw
 ```
 
 ## Install the Pipeline
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/pipeline/build-push-gke-deploy/0.1/build-push-gke-deploy.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/pipeline/build-push-gke-deploy/0.1/raw
 ```
 
 ## Workspaces

@@ -5,7 +5,7 @@ The following task is used to replace a specific field in a yaml in the workspac
 ## Installing the Task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/yq/0.3/yq.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/yq/0.3/raw
 ```
 
 ## Parameters

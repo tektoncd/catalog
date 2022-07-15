@@ -5,7 +5,7 @@ These tasks provides scorecard results based on the [OSSF Scorecards](https://gi
 ## Install the Task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/scorecard/0.1/scorecard.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/scorecard/0.1/raw
 ```
 
 ## Parameters

@@ -6,7 +6,7 @@ This task deploys a given image to a Knative Service using
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kn-apply/0.2/kn-apply.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/kn-apply/0.2/raw
 ```
 
 ## Parameters
@@ -37,7 +37,7 @@ with permission to manage Knative resources.
 To create a `ServiceAccount` with these permissions, you can run:
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kn-apply/0.2/support/kn-deployer.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/kn-apply/0.2/support/raw
 ```
 
 The service account is being created for 'default' namespace, please edit the

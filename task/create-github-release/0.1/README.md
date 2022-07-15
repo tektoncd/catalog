@@ -13,7 +13,7 @@ Task can also be used to upload multiple `assets` including `binaries` of the re
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/create-github-release/0.1/create-github-release.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/create-github-release/0.1/raw
 ```
 
 ## Parameters
