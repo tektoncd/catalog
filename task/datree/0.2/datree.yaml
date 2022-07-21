@@ -85,5 +85,4 @@ spec:
       else
           datree test $WORKSPACE_PATH/$PARAM_INPUT_PATH $PARAM_CLI_ARGUMENTS
       fi
-
-      
+ 
