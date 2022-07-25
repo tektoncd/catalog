@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: git-batch-merge-test-mode-merge
@@ -9,16 +9,15 @@ spec:
       emptyDir: {}
   taskRef:
     name: git-batch-merge
-  inputs:
-    params:
-      - name: url
-        value: https://github.com/kelseyhightower/nocode
-      - name: mode
-        value: "merge"
-      - name: batchedRefs
-        value: "refs/pull/4014/head refs/pull/3894/head"
+  params:
+    - name: url
+      value: https://github.com/kelseyhightower/nocode
+    - name: mode
+      value: "merge"
+    - name: batchedRefs
+      value: "refs/pull/4014/head refs/pull/3894/head"
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: git-batch-merge-test-mode-merge-cherry-pick
@@ -28,11 +27,10 @@ spec:
       emptyDir: {}
   taskRef:
     name: git-batch-merge
-  inputs:
-    params:
-      - name: url
-        value: https://github.com/kelseyhightower/nocode
-      - name: mode
-        value: "cherry-pick"
-      - name: batchedRefs
-        value: "refs/pull/4014/head refs/pull/3894/head"
+  params:
+    - name: url
+      value: https://github.com/kelseyhightower/nocode
+    - name: mode
+      value: "cherry-pick"
+    - name: batchedRefs
+      value: "refs/pull/4014/head refs/pull/3894/head"

@@ -48,7 +48,7 @@ kubectl create -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kn/
  `kubectl create -f pipeline_run.yaml`.
 
 ```yaml
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
   generateName: kn-service-traffic-splitting-

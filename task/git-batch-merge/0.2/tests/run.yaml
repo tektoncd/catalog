@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: git-batch-merge-test-mode-merge
@@ -9,20 +9,19 @@ spec:
       emptyDir: {}
   taskRef:
     name: git-batch-merge
-  inputs:
-    params:
-      - name: url
-        value: https://github.com/tektoncd/catalog
-      - name: mode
-        value: "merge"
-      - name: refspec
-        value: "refs/heads/main:refs/heads/main"
-      - name: batchedRefs
-        value: "refs/pull/474/head refs/pull/475/head"
-      - name: revision
-        value: 3c23c446a970c5e02c011c894e2387e685ca086c
+  params:
+    - name: url
+      value: https://github.com/tektoncd/catalog
+    - name: mode
+      value: "merge"
+    - name: refspec
+      value: "refs/heads/main:refs/heads/main"
+    - name: batchedRefs
+      value: "refs/pull/474/head refs/pull/475/head"
+    - name: revision
+      value: 3c23c446a970c5e02c011c894e2387e685ca086c
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: git-batch-merge-test-mode-merge-cherry-pick
@@ -32,15 +31,14 @@ spec:
       emptyDir: {}
   taskRef:
     name: git-batch-merge
-  inputs:
-    params:
-      - name: url
-        value: https://github.com/tektoncd/catalog
-      - name: mode
-        value: "cherry-pick"
-      - name: refspec
-        value: "refs/heads/main:refs/heads/main"
-      - name: batchedRefs
-        value: "refs/pull/474/head refs/pull/475/head"
-      - name: revision
-        value: 3c23c446a970c5e02c011c894e2387e685ca086c
+  params:
+    - name: url
+      value: https://github.com/tektoncd/catalog
+    - name: mode
+      value: "cherry-pick"
+    - name: refspec
+      value: "refs/heads/main:refs/heads/main"
+    - name: batchedRefs
+      value: "refs/pull/474/head refs/pull/475/head"
+    - name: revision
+      value: 3c23c446a970c5e02c011c894e2387e685ca086c

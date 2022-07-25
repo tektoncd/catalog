@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: git-clone-run-noargs
@@ -9,12 +9,11 @@ spec:
       emptyDir: {}
   taskRef:
     name: git-clone
-  inputs:
-    params:
-      - name: url
-        value: https://github.com/kelseyhightower/nocode
+  params:
+    - name: url
+      value: https://github.com/kelseyhightower/nocode
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: git-clone-run-tag
@@ -24,15 +23,14 @@ spec:
       emptyDir: {}
   taskRef:
     name: git-clone
-  inputs:
-    params:
-      - name: url
-        value: https://github.com/kelseyhightower/nocode
-      - name: revision
-        value: 1.0.0
+  params:
+    - name: url
+      value: https://github.com/kelseyhightower/nocode
+    - name: revision
+      value: 1.0.0
 
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: git-clone-run-no-submodules
@@ -42,14 +40,13 @@ spec:
       emptyDir: {}
   taskRef:
     name: git-clone
-  inputs:
-    params:
-      - name: url
-        value: https://github.com/githubtraining/example-dependency
-      - name: submodules
-        value: "false"
+  params:
+    - name: url
+      value: https://github.com/githubtraining/example-dependency
+    - name: submodules
+      value: "false"
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: git-clone-run-no-depth-2
@@ -59,14 +56,13 @@ spec:
       emptyDir: {}
   taskRef:
     name: git-clone
-  inputs:
-    params:
-      - name: url
-        value: https://github.com/kelseyhightower/nocode
-      - name: depth
-        value: "2"
+  params:
+    - name: url
+      value: https://github.com/kelseyhightower/nocode
+    - name: depth
+      value: "2"
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: git-clone-run-sslverify-none
@@ -76,14 +72,13 @@ spec:
       emptyDir: {}
   taskRef:
     name: git-clone
-  inputs:
-    params:
-      - name: url
-        value: https://github.com/kelseyhightower/nocode
-      - name: sslVerify
-        value: "false"
+  params:
+    - name: url
+      value: https://github.com/kelseyhightower/nocode
+    - name: sslVerify
+      value: "false"
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: git-clone-run-subdirectory
@@ -93,14 +88,13 @@ spec:
       emptyDir: {}
   taskRef:
     name: git-clone
-  inputs:
-    params:
-      - name: url
-        value: https://github.com/kelseyhightower/nocode
-      - name: subdirectory
-        value: "hellomoto"
+  params:
+    - name: url
+      value: https://github.com/kelseyhightower/nocode
+    - name: subdirectory
+      value: "hellomoto"
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: git-clone-run-delete-existing
@@ -110,9 +104,8 @@ spec:
       emptyDir: {}
   taskRef:
     name: git-clone
-  inputs:
-    params:
-      - name: url
-        value: https://github.com/kelseyhightower/nocode
-      - name: deleteExisting
-        value: "true"
+  params:
+    - name: url
+      value: https://github.com/kelseyhightower/nocode
+    - name: deleteExisting
+      value: "true"
