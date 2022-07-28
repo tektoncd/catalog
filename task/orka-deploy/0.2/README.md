@@ -17,7 +17,7 @@ The Task can be run on `linux/amd64` platform.
 * You need a Kubernetes cluster with Tekton Pipelines v0.16.0 or later configured.
 * You need an Orka environment with the following components:
   * Orka 1.4.1 or later.
-  * [An Orka service endpoint](https://orkadocs.macstadium.com/docs/endpoint-faqs#whats-the-orka-service-endpoint) (IP or custom domain). Usually, `http://10.221.188.100`, `http://10.10.10.100` or `https://<custom-domain>`.
+  * [An Orka service endpoint](https://orkadocs.macstadium.com/docs/endpoint-faqs#whats-the-orka-service-endpoint) (IP or custom domain). Usually, `http://10.221.188.20`, `http://10.221.188.100` or `https://<custom-domain>`.
   * A dedicated Orka user with valid credentials (email & password). Create a new user or request one from your Orka administrator.
   * An SSH-enabled base image and the respective SSH credentials (email & password OR SSH key). Use an [existing base image](https://orkadocs.macstadium.com/docs/existing-images-upload-management) or [create your own](https://orkadocs.macstadium.com/docs/creating-an-ssh-enabled-image).
 * You need an active VPN connection between your Kubernetes cluster and Orka. Use a [VPN client](https://orkadocs.macstadium.com/docs/vpn-connect) for temporary access or create a [site-to-site VPN tunnel](https://orkadocs.macstadium.com/docs/aws-orka-connections) for permanent access.
@@ -26,12 +26,14 @@ See also: [Using Orka, At a Glance](https://orkadocs.macstadium.com/docs/quick-s
 
 See also: [GCP-MacStadium Site-to-Site VPN](https://docs.macstadium.com/docs/google-cloud-setup)
 
+> **NOTE:** Beginning with Orka 2.1.0, net new Orka clusters are configured with the Orka service endpoint as `http://10.221.188.20`. Existing clusters will continue to use the service endpoint as initially configured, typically `http://10.221.188.100`.
+
 ## Installation
 
-Before you can use this `Task` in Tekton pipelines, you need to install it and the Orka configuration in your Kubernetes cluster. See the `orka-init` documentation [here](https://github.com/tektoncd/catalog/blob/main/task/orka-init/0.1/README.md#installation) for more information on setting up the Orka API configuration.
+Before you can use this `Task` in Tekton pipelines, you need to install it and the Orka configuration in your Kubernetes cluster. See the `orka-init` documentation [here](https://github.com/tektoncd/catalog/blob/main/task/orka-init/0.2/README.md#installation) for more information on setting up the Orka API configuration.
 
 ```sh
-kubectl apply --namespace=<namespace> -f https://raw.githubusercontent.com/tektoncd/catalog/task/orka-deploy/0.1/orka-deploy.yaml
+kubectl apply --namespace=<namespace> -f https://raw.githubusercontent.com/tektoncd/catalog/task/orka-deploy/0.2/orka-deploy.yaml
 ```
 
 Omit `--namespace` if installing in the `default` namespace.
@@ -74,7 +76,7 @@ If using an SSH key to connect to the VM instead of an SSH username and password
 kubectl create secret generic orka-ssh-key --from-file=id_rsa=/path/to/id_rsa --from-literal=username=<username>
 ```
 
-See also: [use-ssh-key.yaml](https://github.com/tektoncd/catalog/blob/main/task/orka-deploy/0.1/samples/use-ssh-key.yaml) example
+See also: [use-ssh-key.yaml](https://github.com/tektoncd/catalog/blob/main/task/orka-deploy/0.2/samples/use-ssh-key.yaml) example
 
 ## Workspaces
 
@@ -86,12 +88,15 @@ See also: [use-ssh-key.yaml](https://github.com/tektoncd/catalog/blob/main/task/
 
 | Parameter | Description | Default |
 | --- | --- | ---: |
+| `vm-metadata` | Inject custom metadata to the VM (on Intel nodes only). You need to provide the metadata in format:`[{ key: firstKey, value: firstValue }, { key: secondKey, value: secondValue }]`. Refer to [`inject-vm-metadata`](samples/inject-vm-metadata.yaml) example. | --- |
+| `system-serial` | Assign an owned macOS system serial number to the VM (on Intel nodes only). Refer to [`inject-system-serial`](samples/inject-system-serial.yaml) example. | --- |
+| `gpu-passthrough` | Enables or disables GPU passthrough for the VM (on Intel nodes only). Refer to [`gpu-passthrough`](samples/gpu-passthrough.yaml) example. | false |
 | `script` | The script to run inside of the VM. The script will be prepended with `#!/bin/sh` and `set -ex` if no shebang is present. You can set your shebang instead (e.g., to run a script with your preferred shell or a scripting language like Python or Ruby). | --- |
 | `copy-build` | Specifies whether to copy build artifacts from the Orka VM back to the workspace. Disable when there is no need to copy build artifacts (e.g., when running tests or linting code). | true |
 | `verbose` | Enables verbose logging for all connection activity to the VM. | false |
 | `ssh-key` | Specifies whether the SSH credentials secret contains an [SSH key](#using-an-ssh-key), as opposed to a password. | false |
 | `delete-vm` | Specifies whether to delete the VM after use when run in a pipeline. You can discard build agents that are no longer needed to free up resources. Set to false if you intend to clean up VMs after use manually. | true |
-| `orka-image` | The docker image used to run the task steps. | docker.io/macstadium/orka-tekton-runner:2020-10-23-a93757dc-0.1@sha256:e8ed3370dcb91cdb8bcd4e9a7e9f6652879d80acdab9644cda69a98cd8c93339 |
+| `docker-image` | The docker image used to run the task steps. | ghcr.io/macstadium/orka-tekton-runner:2022-06-29-ec3440a7@sha256:d7cfb75ea082a927e36c131aa96e96bfcacd23f62fdaf33f5b37320b86baf50e |
 
 ### Configuring secrets and config maps
 
@@ -107,7 +112,7 @@ See also: [use-ssh-key.yaml](https://github.com/tektoncd/catalog/blob/main/task/
 
 ## Samples
 
-[parallel-deploy.yaml](https://github.com/tektoncd/catalog/blob/main/task/orka-deploy/0.1/samples/parallel-deploy.yaml) is a sample `Pipeline` that uses the `orka-init`, `orka-deploy`, and `orka-teardown` tasks and performs the following operations:
+[parallel-deploy.yaml](https://github.com/tektoncd/catalog/blob/main/task/orka-deploy/0.2/samples/parallel-deploy.yaml) is a sample `Pipeline` that uses the `orka-init`, `orka-deploy`, and `orka-teardown` tasks and performs the following operations:
 1. Sets up an Orka job runner.
 2. Deploys 2 VMs in parallel and executes a different script on each VM.
 3. Cleans up the environment.

@@ -12,54 +12,29 @@
 # ###
 ---
 apiVersion: tekton.dev/v1beta1
-kind: Pipeline
+kind: TaskRun
 metadata:
   name: use-ssh-key
 spec:
+  taskRef:
+    name: orka-full
+  params:
+    - name: base-image
+      value: catalina-ssh-key-30G.img
+    - name: ssh-secret
+      value: orka-ssh-key
+    - name: ssh-password-key
+      value: id_rsa
+    - name: ssh-key
+      value: "true"
+    - name: verbose
+      value: "true"
+    - name: copy-build
+      value: "false"
+    - name: script
+      value: |
+        #!/usr/bin/env ruby
+        puts "Hello macOS"
   workspaces:
-    - name: shared-data
-  tasks:
-    - name: setup
-      taskRef:
-        name: orka-init
-      params:
-        - name: base-image
-          value: catalina-ssh-key-30G.img
-    - name: hello-macos
-      retries: 1
-      taskRef:
-        name: orka-deploy
-      params:
-        - name: ssh-secret
-          value: orka-ssh-key
-        - name: ssh-password-key
-          value: id_rsa
-        - name: ssh-key
-          value: "true"
-        - name: verbose
-          value: "true"
-        - name: copy-build
-          value: "false"
-        - name: script
-          value: |
-            #!/usr/bin/env ruby
-            puts "Hello macOS"
-      workspaces:
-        - name: orka
-          workspace: shared-data
-  finally:
-    - name: cleanup
-      taskRef:
-        name: orka-teardown
----
-apiVersion: tekton.dev/v1beta1
-kind: PipelineRun
-metadata:
-  name: run-use-ssh-key
-spec:
-  serviceAccountName: orka-svc
-  pipelineRef:
-    name: use-ssh-key
-  workspaces:
-    - name: shared-data
+    - name: orka
       emptyDir: {}

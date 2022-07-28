@@ -4,13 +4,14 @@ kind: Task
 metadata:
   name: orka-deploy
   labels:
-    app.kubernetes.io/version: "0.1"
+    app.kubernetes.io/version: "0.2"
   annotations:
     tekton.dev/categories: Deployment
     tekton.dev/pipelines.minVersion: "0.16.0"
     tekton.dev/tags: "orka, macstadium, deploy, build"
     tekton.dev/displayName: "MacStadium Orka Deploy"
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/displayName: "orka deploy"
 spec:
   description: >-
     With this set of Tasks, you can use your Orka environment
@@ -47,11 +48,11 @@ spec:
 
         Set to false if you intend to clean up VMs after use manually.
       default: "true"
-    - name: orka-image
+    - name: docker-image
       type: string
       description: |
         The name of the docker image which runs the task step.
-      default: docker.io/macstadium/orka-tekton-runner:2020-10-23-a93757dc-0.1@sha256:e8ed3370dcb91cdb8bcd4e9a7e9f6652879d80acdab9644cda69a98cd8c93339
+      default: ghcr.io/macstadium/orka-tekton-runner:2022-06-29-ec3440a7@sha256:d7cfb75ea082a927e36c131aa96e96bfcacd23f62fdaf33f5b37320b86baf50e
     - name: ssh-key
       type: string
       description: |
@@ -75,6 +76,23 @@ spec:
         If ssh-key is true, this parameter should specify the name of the key in
         the VM SSH credentials secret that holds the private SSH key.
       default: password
+    - name: system-serial
+      type: string
+      description: "Assign an owned macOS system serial number to the VM (on Intel nodes only)."
+      default: ""
+    - name: vm-metadata
+      type: string
+      description: |
+        "Inject custom metadata to the VM (on Intel nodes only). You need to provide the metadata in format:
+        [
+          { key: firstKey, value: firstValue },
+          { key: secondKey, value: secondsValue }
+        ]"
+      default: ""
+    - name: gpu-passthrough
+      type: string
+      description: Enables or disables GPU passthrough for the VM (on Intel nodes only).
+      default: "false"
     - name: orka-token-secret
       type: string
       description: |
@@ -106,17 +124,17 @@ spec:
     workingDir: /workspace
   steps:
     - name: copy-script
-      image: $(params.orka-image)
+      image: $(params.docker-image)
       script: |
         #!/bin/sh
         SCRIPT=$(mktemp)
         # Safeguard against having to escape quotes / vars in script
-        cat > $SCRIPT << 'EOF'
+        cat > "$SCRIPT" << 'EOF'
         $(params.script)
         EOF
-        copy-script $SCRIPT
+        copy-script "$SCRIPT"
     - name: build
-      image: $(params.orka-image)
+      image: $(params.docker-image)
       env:
         - name: ORKA_API
           valueFrom:
@@ -138,6 +156,12 @@ spec:
           value: /etc/$(params.ssh-secret)/$(params.ssh-password-key)
         - name: SSH_KEY
           value: $(params.ssh-key)
+        - name: SYSTEM_SERIAL
+          value: $(params.system-serial)
+        - name: VM_METADATA
+          value: $(params.vm-metadata)
+        - name: GPU_PASSTHROUGH
+          value: $(params.gpu-passthrough)
         - name: TOKEN
           valueFrom:
             secretKeyRef:
