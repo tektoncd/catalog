@@ -1,0 +1,147 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: orka-init
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/categories: Cloud, Kubernetes
+    tekton.dev/pipelines.minVersion: "0.16.0"
+    tekton.dev/tags: "orka, macstadium, init, setup"
+    tekton.dev/displayName: "orka init"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    With this set of Tasks, you can use your Orka environment
+    to run macOS builds and macOS-related testing from your Tekton pipelines.
+
+    This Task creates a VM template with the specified configuration.
+    All operations in this Task are performed against an Orka environment.
+  params:
+    - name: base-image
+      type: string
+      description: The Orka base image to use for the VM config.
+    - name: docker-image
+      type: string
+      description: |
+        The name of the docker image which runs the task step.
+      default: ghcr.io/macstadium/orka-tekton-runner:2022-06-29-ec3440a7@sha256:d7cfb75ea082a927e36c131aa96e96bfcacd23f62fdaf33f5b37320b86baf50e
+    - name: cpu-count
+      type: string
+      description: |
+        The number of CPU cores to dedicate for the VM. Must be 3, 4, 6, 8, 12, or 24.
+      default: "3"
+    - name: vcpu-count
+      type: string
+      description: |
+        The number of vCPUs for the VM. Must equal the number of CPUs, when CPU is less than or equal to 3.
+        Otherwise, must equal half of or exactly the number of CPUs specified.
+      default: "3"
+    - name: vnc-console
+      type: string
+      description: Enables or disables VNC for the VM.
+      default: "true"
+    - name: tag
+      type: string
+      description: When specified, the VM is preferred to be deployed to a node marked with this tag.
+      default: ""
+    - name: tag-required
+      type: string
+      description: VM is required to be deployed to a node marked with tag specified above.
+      default: "false"
+    - name: scheduler
+      type: string
+      description: "When set to 'most-allocated', the deployed VM will be scheduled to nodes having most of their resources allocated."
+      default: "default"
+    - name: orka-creds-secret
+      type: string
+      description: The name of the secret holding your Orka credentials.
+      default: orka-creds
+    - name: orka-creds-email-key
+      type: string
+      description: |
+        The name of the key in the Orka user credentials secret for the email address associated with the Orka user.
+      default: email
+    - name: orka-creds-password-key
+      type: string
+      description: |
+        The name of the key in the Orka credentials secret for the password associated with the Orka user.
+      default: password
+    - name: orka-token-secret
+      type: string
+      description: |
+        The name of the secret holding the authentication token used to access the Orka API.
+      default: orka-token
+    - name: orka-token-secret-key
+      type: string
+      description: |
+        The name of the key in the Orka token secret, which holds the authentication token.
+      default: token
+    - name: orka-vm-name-config
+      type: string
+      description: |
+        The name of the config map, which stores the name of the generated VM configuration.
+      default: orka-vm-name
+    - name: orka-vm-name-config-key
+      type: string
+      description: |
+        The name of the key in the VM name config map, which stores the name of the generated VM configuration.
+      default: vm-name
+  steps:
+    - name: orka-init
+      image: "$(params.docker-image)"
+      securityContext:
+        privileged: true
+      env:
+        - name: ORKA_API
+          valueFrom:
+            configMapKeyRef:
+              name: orka-tekton-config
+              key: ORKA_API
+        - name: BASE_IMAGE
+          value: $(params.base-image)
+        - name: CPU_COUNT
+          value: $(params.cpu-count)
+        - name: VCPU_COUNT
+          value: $(params.vcpu-count)
+        - name: VNC_CONSOLE
+          value: $(params.vnc-console)
+        - name: TAG
+          value: $(params.tag)
+        - name: TAG_REQUIRED
+          value: $(params.tag-required)
+        - name: SCHEDULER
+          value: $(params.scheduler)
+        - name: SVC_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: $(params.orka-creds-secret)
+              key: $(params.orka-creds-email-key)
+        - name: SVC_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: $(params.orka-creds-secret)
+              key: $(params.orka-creds-password-key)
+      script: |
+        #!/bin/sh
+        set -x
+        EXIT_CODE=$(orka-init)
+        if [ "$EXIT_CODE" -ne 0 ]; then
+          orka-cleanup
+          exit 1
+        fi
+        TOKEN=/etc/orka-token
+        VM_NAME=/etc/orka-vm-name
+        if [ -f "$TOKEN" ] && [ -f "$VM_NAME" ]; then
+          kubectl delete secret "$(params.orka-token-secret)" --ignore-not-found
+          kubectl create secret generic "$(params.orka-token-secret)" \
+            --from-file="$(params.orka-token-secret-key)"=$TOKEN
+          kubectl delete configmap "$(params.orka-vm-name-config)" --ignore-not-found
+          kubectl create configmap "$(params.orka-vm-name-config)" \
+            --from-file="$(params.orka-vm-name-config-key)"=$VM_NAME
+        else
+          echo "fatal: could not create resources!"
+          orka-cleanup
+          exit 1
+        fi
