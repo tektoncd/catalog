@@ -22,7 +22,7 @@ spec:
       description: The Arguments to be passed to anchore command.
       type: array
     - name: ANCHORE_CLI_IMAGE
-      default: anchore/engine-cli
+      default: anchore/engine-cli:latest
       description: Anchore cli image to be used      
     - name: ANCHORE_CLI_URL
       default: http://localhost:8228/v1/
