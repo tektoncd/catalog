@@ -1,0 +1,86 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: s2i
+  labels:
+    app.kubernetes.io/version: "0.3"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/categories: Image Build
+    tekton.dev/tags: image-build
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    Source-to-Image (S2I) is a toolkit and workflow for building reproducible
+    container images from source code
+
+    S2I produces images by injecting source code into a base S2I container image
+    and letting the container prepare that source code for execution. The base
+    S2I container images contains the language runtime and build tools needed for
+    building and running the source code.
+
+  params:
+    - name: BUILDER_IMAGE
+      description: The location of the s2i builder image.
+    - name: IMAGE
+      description: Reference of the image S2I will produce.
+    - name: PATH_CONTEXT
+      description: The location of the path to run s2i from.
+      default: .
+    - name: TLSVERIFY
+      description: Verify the TLS on the registry endpoint (for push/pull to a non-TLS registry)
+      default: "true"
+    - name: LOGLEVEL
+      description: Log level when running the S2I binary
+      default: "0"
+  workspaces:
+    - name: source
+    - name: sslcertdir
+      optional: true
+    - name: dockerconfig
+      description: >-
+        An optional workspace that allows providing a .docker/config.json file
+        for Buildah to access the container registry.
+        The file should be placed at the root of the Workspace with name config.json.
+      optional: true
+  results:
+    - name: IMAGE_DIGEST
+      description: Digest of the image just built.
+  steps:
+    - name: generate
+      image: quay.io/openshift-pipeline/s2i:nightly
+      workingDir: $(workspaces.source.path)
+      command:
+        - /usr/local/bin/s2i
+        - --loglevel=$(params.LOGLEVEL)
+        - build
+        - $(params.PATH_CONTEXT)
+        - $(params.BUILDER_IMAGE)
+        - --as-dockerfile
+        - /gen-source/Dockerfile.gen
+      volumeMounts:
+        - mountPath: /gen-source
+          name: gen-source
+    - name: build
+      image: quay.io/buildah/stable:v1.17.0
+      workingDir: /gen-source
+      script: |
+        [[ "$(workspaces.sslcertdir.bound)" == "true" ]] && CERT_DIR_FLAG="--cert-dir $(workspaces.sslcertdir.path)"
+        buildah ${CERT_DIR_FLAG} bud --tls-verify=$(params.TLSVERIFY) --layers \
+          -f /gen-source/Dockerfile.gen -t $(params.IMAGE) .
+        [[ "$(workspaces.dockerconfig.bound)" == "true" ]] && export DOCKER_CONFIG="$(workspaces.dockerconfig.path)"
+        buildah ${CERT_DIR_FLAG} push --tls-verify=$(params.TLSVERIFY) --digestfile $(workspaces.source.path)/image-digest \
+          $(params.IMAGE) docker://$(params.IMAGE)
+        cat $(workspaces.source.path)/image-digest | tee /tekton/results/IMAGE_DIGEST
+      volumeMounts:
+      - name: varlibcontainers
+        mountPath: /var/lib/containers
+      - mountPath: /gen-source
+        name: gen-source
+      securityContext:
+        privileged: true
+  volumes:
+    - emptyDir: {}
+      name: varlibcontainers
+    - emptyDir: {}
+      name: gen-source
