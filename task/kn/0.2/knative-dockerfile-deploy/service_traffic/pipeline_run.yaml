@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: kn-service-traffic-splitting-
+spec:
+  serviceAccountName: kn-deployer-account
+  pipelineRef:
+    name: kn-service-traffic-splitting
+  params:
+    - name: ARGS
+      value:
+        - "service"
+        - "update"
+        - "hello"
+        - "--tag=hello-v1=v1"
+        - "--tag=hello-v2=v2"
+        - "--traffic=v1=50"
+        - "--traffic=v2=50"

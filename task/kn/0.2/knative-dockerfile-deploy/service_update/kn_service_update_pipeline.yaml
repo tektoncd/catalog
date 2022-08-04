@@ -1,0 +1,21 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: kn-service-update
+spec:
+  params:
+  - name: ARGS
+    type: array
+    description: Arguments to pass to kn CLI
+    default:
+      - "help"
+  tasks:
+  - name: kn-service-update
+    taskRef:
+      name: kn
+    params:
+    - name: kn-image
+      value: "gcr.io/knative-nightly/knative.dev/client/cmd/kn"
+    - name: ARGS
+      value:
+        - "$(params.ARGS)"
