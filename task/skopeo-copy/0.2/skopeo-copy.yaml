@@ -46,8 +46,8 @@ spec:
         # Function to copy multiple images.
         #
         copyimages() {
-          filename='$(workspaces.images-url.path)/url.txt'
-          while IFS= read line || [ -n "$line" ]
+          filename="$(workspaces.images-url.path)/url.txt"
+          while IFS= read -r line || [ -n "$line" ]
           do
             cmd=""
             for url in $line
@@ -56,15 +56,15 @@ spec:
               cmd="$cmd \
                   $url"
             done
-            skopeo copy $cmd --src-tls-verify=$(params.srcTLSverify) --dest-tls-verify=$(params.destTLSverify)
-            echo $cmd
+            skopeo copy "$cmd" --src-tls-verify="$(params.srcTLSverify)" --dest-tls-verify="$(params.destTLSverify)"
+            echo "$cmd"
           done < "$filename"
         }
         #
         # If single image is to be copied then, it can be passed through
         # params in the taskrun.
         if [ "$(params.srcImageURL)" != "" ] && [ "$(params.destImageURL)" != "" ] ; then
-          skopeo copy "$(params.srcImageURL)" "$(params.destImageURL)" --src-tls-verify=$(params.srcTLSverify) --dest-tls-verify=$(params.destTLSverify)
+          skopeo copy "$(params.srcImageURL)" "$(params.destImageURL)" --src-tls-verify="$(params.srcTLSverify)" --dest-tls-verify="$(params.destTLSverify)"
         else
           # If file is provided as a configmap in the workspace then multiple images can be copied.
           #
