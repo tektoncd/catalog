@@ -4,7 +4,7 @@ kind: Task
 metadata:
   name: tkn
   labels:
-    app.kubernetes.io/version: "0.3"
+    app.kubernetes.io/version: "0.4"
   annotations:
     tekton.dev/pipelines.minVersion: "0.17.0"
     tekton.dev/categories: CLI
