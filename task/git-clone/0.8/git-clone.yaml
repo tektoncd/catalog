@@ -105,10 +105,9 @@ spec:
       default: "gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.29.0"
     - name: userHome
       description: |
-        Absolute path to the user's home directory. Set this explicitly if you are running the image as a non-root user or have overridden
-        the gitInitImage param with an image containing custom user configuration.
+        Absolute path to the user's home directory.
       type: string
-      default: "/tekton/home"
+      default: "/home/nonroot"
   results:
     - name: commit
       description: The precise commit SHA that was fetched by this Task.
@@ -164,6 +163,9 @@ spec:
         value: $(workspaces.ssl-ca-directory.bound)
       - name: WORKSPACE_SSL_CA_DIRECTORY_PATH
         value: $(workspaces.ssl-ca-directory.path)
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
       script: |
         #!/usr/bin/env sh
         set -eu

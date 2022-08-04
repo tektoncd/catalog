@@ -15,6 +15,9 @@ already populated then by default the contents will be deleted before the
 clone takes place. This behaviour can be disabled by setting the
 `deleteExisting` param to `"false"`.
 
+**Note**: The `git-clone` Task is run as nonroot. The files cloned on to the `output`
+workspace will end up owned by user 65532.
+
 ## Workspaces
 
 * **output**: A workspace for this Task to fetch the git repository in to.
@@ -59,7 +62,7 @@ clone takes place. This behaviour can be disabled by setting the
 * **verbose**: Log the commands that are executed during `git-clone`'s operation. (_default_: true)
 * **sparseCheckoutDirectories**: Which directories to match or exclude when performing a sparse checkout (_default_: "")
 * **gitInitImage**: The image providing the git-init binary that this Task runs. (_default_: "gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:TODO")
-* **userHome**: The user's home directory. Set this explicitly if you are running the image as a non-root user. (_default_: "/tekton/home")
+* **userHome**: The user's home directory. (_default_: "/home/nonroot")
 
 ## Results
 
@@ -202,52 +205,6 @@ hold your credentials and bind to this workspace.
     data:
       ca-bundle.crt: # ... base64-encoded crt ...  # If key/filename is other than ca-bundle.crt then set crtFileName param as explained under Parameters section
     ```
-
-## Running as a Non-Root User
-
-The `git-init` image that this Task utilizes offers a built in nonroot
-user. In combination with support from other Tasks this allows your
-Pipelines to run without needing root permissions. There are some extra
-steps you'll need to take for this to work:
-
-- In the security context for the Task make sure you're using UID 65532.
-
-    In a TaskRun that looks like this:
-
-    ```yaml
-    kind: TaskRun
-    spec:
-      podTemplate:
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 65532
-    ```
-
-    And in a PipelineRun it looks like this:
-
-    ```yaml
-    kind: PipelineRun
-    spec:
-      taskRunSpecs:
-      - pipelineTaskName: footask # ...your git-clone PipelineTask name...
-        taskPodTemplate:
-          securityContext:
-            runAsNonRoot: true
-            runAsUser: 65532
-    ```
-
-- Make sure to provide the `userHome` param and set it to nonroot's
-home directory:
-
-    ```yaml
-    params:
-    - name: userHome
-      value: /home/nonroot
-    ```
-
-Once these two modifications are in effect you should now see your
-`git-clone` Task run as nonroot. The files cloned on to the `output`
-workspace will end up owned by user 65532.
 
 ## Using basic-auth Credentials
 
