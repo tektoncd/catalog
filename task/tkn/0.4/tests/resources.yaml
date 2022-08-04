@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tkn-account
+  namespace: tkn-0-3
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: tkn-role
+  namespace: tkn-0-3
+rules:
+  - apiGroups: ["tekton.dev"]
+    resources: ["*"]
+    verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tkn-binding
+  namespace: tkn-0-3
+subjects:
+  - kind: ServiceAccount
+    name: tkn-account
+    namespace: tkn-0-3
+roleRef:
+  kind: Role
+  name: tkn-role
+  apiGroup: rbac.authorization.k8s.io
