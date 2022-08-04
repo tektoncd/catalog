@@ -27,6 +27,9 @@ spec:
     image: "$(params.KN_IMAGE)"
     command: ["/ko-app/kn"]
     args: ["service", "apply", "$(params.SERVICE)", "--image", "$(params.IMAGE)"]
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 65532
     env:
     - name: HOME
-      value: /tekton/home
+      value: /home/nonroot
