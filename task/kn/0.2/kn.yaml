@@ -28,3 +28,6 @@ spec:
     image: "$(params.kn-image)"
     command: ["/ko-app/kn"]
     args: ["$(params.ARGS)"]
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 65532
