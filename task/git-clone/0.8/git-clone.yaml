@@ -3,7 +3,7 @@ kind: Task
 metadata:
   name: git-clone
   labels:
-    app.kubernetes.io/version: "0.7"
+    app.kubernetes.io/version: "0.8"
   annotations:
     tekton.dev/pipelines.minVersion: "0.29.0"
     tekton.dev/categories: Git
