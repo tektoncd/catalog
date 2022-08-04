@@ -44,3 +44,6 @@ spec:
 
         $(params.SCRIPT)
       args: ["$(params.ARGS)"]
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
