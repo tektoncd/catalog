@@ -38,11 +38,11 @@ spec:
     - name: tkn
       image: "$(params.TKN_IMAGE)"
       script: |
-        if [ "$(workspaces.kubeconfig.bound)" == "true" ] && [[ -e $(workspaces.kubeconfig.path)/kubeconfig ]]; then
-          export KUBECONFIG=$(workspaces.kubeconfig.path)/kubeconfig
+        if [ "$(workspaces.kubeconfig.bound)" = "true" ] && [ -e $(workspaces.kubeconfig.path)/kubeconfig ]; then
+          export KUBECONFIG="$(workspaces.kubeconfig.path)"/kubeconfig
         fi
 
-        $(params.SCRIPT)
+        eval "$(params.SCRIPT)"
       args: ["$(params.ARGS)"]
       securityContext:
         runAsNonRoot: true
