@@ -70,3 +70,6 @@ spec:
           #
           copyimages
         fi
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
