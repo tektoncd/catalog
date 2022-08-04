@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: kn-service-update-
+spec:
+  serviceAccountName: kn-deployer-account
+  pipelineRef:
+    name: kn-service-update
+  params:
+    - name: ARGS
+      value:
+        - "service"
+        - "update"
+        - "hello"
+        - "--revision-name=hello-v2"
+        - "--image=gcr.io/knative-samples/helloworld-go"
+        - "--env=TARGET=v2"
+        - "--service-account=kn-deployer-account"
