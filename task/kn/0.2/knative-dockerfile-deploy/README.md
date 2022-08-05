@@ -77,22 +77,22 @@ roleRef:
 
   - If you've used the same names for namespace and secrets as mentioned above, you can configure the ServiceAccount with the YAML file in this repo using:
 ```bash
-kubectl create -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kn/knative-dockerfile-deploy/kn_deployer.yaml
+kubectl create -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kn/0.2/knative-dockerfile-deploy/kn_deployer.yaml
 ```
 
 4 - Install buildah task from tektoncd/catalog
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/buildah/buildah.yaml
+https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildah/0.4/buildah.yaml
 ```
 
 5 - Install the kn task from the tektoncd/catalog
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kn/kn.yaml
+https://raw.githubusercontent.com/tektoncd/catalog/main/task/kn/0.2/kn.yaml
 ```
 
 5 - Install the git-clone task from the tektoncd/catalog
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/git/git-clone.yaml
+https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.8/git-clone.yaml
 ```
 
 ## Pipelines:

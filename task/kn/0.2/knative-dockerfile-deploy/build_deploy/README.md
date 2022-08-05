@@ -72,7 +72,7 @@ spec:
 
  - You can also create this Pipeline using the YAML file present in this repo using
 ```
-kubectl create -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kn/knative-dockerfile-deploy/build_deploy/build_deploy_pipeline.yaml
+https://raw.githubusercontent.com/tektoncd/catalog/main/task/kn/0.2/knative-dockerfile-deploy/build_deploy/build_deploy_pipeline.yaml
 ```
 ## Shared Workspace
 
@@ -142,7 +142,7 @@ spec:
 
  - You can also create this PipelineRun using the YAML file present in this repo using
 ```
-kubectl create -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kn/knative-dockerfile-deploy/build_deploy/pipeline_run.yaml
+https://raw.githubusercontent.com/tektoncd/catalog/main/task/kn/0.2/knative-dockerfile-deploy/build_deploy/pipeline_run.yaml
 ```
 
 - We can monitor the logs of this PipelineRun using `tkn` CLI

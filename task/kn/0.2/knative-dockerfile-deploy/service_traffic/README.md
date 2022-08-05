@@ -37,7 +37,7 @@ spec:
 
  - You can also create this Pipeline using the YAML file present in this repo using
 ```
-kubectl create -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kn/knative-dockerfile-deploy/service_traffic/kn_service_traffic_splitting_pipeline.yaml
+https://raw.githubusercontent.com/tektoncd/catalog/main/task/kn/0.2/knative-dockerfile-deploy/service_traffic/kn_service_traffic_splitting_pipeline.yaml
 ```
 
 ## PipelineRun:
@@ -69,7 +69,7 @@ spec:
 ```
 - You can also create this PipelineRun using the YAML file present in this repo using
 ```
-kubectl create -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kn/knative-dockerfile-deploy/service_traffic/pipeline_run.yaml
+https://raw.githubusercontent.com/tektoncd/catalog/main/task/kn/0.2/knative-dockerfile-deploy/service_traffic/pipeline_run.yaml
 ```
 
 - Let's monitor the logs of the Pipeline run using `tkn`
