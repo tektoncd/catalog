@@ -6,7 +6,7 @@ This task performs operations on Tekton resources using
 ## Install the Task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/tkn/0.3/tkn.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/tkn/0.4/tkn.yaml
 ```
 
 ## Parameters
@@ -46,7 +46,7 @@ spec:
 
 2. Passing `SCRIPT` and `ARGS` and `WORKSPACE`
 
-   1. Sample secret can be found [here](https://github.com/tektoncd/catalog/tree/main/task/tkn/0.3/samples/secrets.yaml)
+   1. Sample secret can be found [here](https://github.com/tektoncd/catalog/tree/main/task/tkn/0.4/samples/secrets.yaml)
 
    2. Create `TaskRun`
 

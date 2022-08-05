@@ -39,7 +39,7 @@ This `task` can be used to copy one or more than one images to-and fro various s
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/skopeo-copy/0.1/skopeo-copy.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/skopeo-copy/0.2/skopeo-copy.yaml
 ```
 
 ## Parameters
@@ -58,7 +58,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/sk
 * `Secret` to provide the credentials of the source and destination registry where the image needs to be copied from and to.
 * `ConfigMap` to provide support for copying multiple images, this contains file `url.txt` which stores images registry URL's.
 
-  [This](../0.1/samples/quay-secret.yaml) example can help to use secrets for providing credentials of image registries.
+  [This](../0.2/samples/quay-secret.yaml) example can help to use secrets for providing credentials of image registries.
 
 ## Platforms
 
@@ -84,9 +84,9 @@ In case there is only one source and destination image that needs to be copied t
 This will result in the image getting copied from the source registry to the destination registry.
 
 
-[This](../0.1/samples/serviceaccount.yaml) will guide the user to use service account for authorization to image registries.
+[This](../0.2/samples/serviceaccount.yaml) will guide the user to use service account for authorization to image registries.
 
-See [here](../0.1/samples/run.yaml) for example of `TaskRun`.
+See [here](../0.2/samples/run.yaml) for example of `TaskRun`.
 ### Note
 
 - `Source credentials` are only required, if the source image registry needs authentication to pull the image, whereas `Destination credentials` are always required.
