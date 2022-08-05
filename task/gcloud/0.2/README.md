@@ -145,6 +145,6 @@ spec:
     - --zone=ZONE
 ```
 
-Run it with `kubect create -f create-instance.yaml`
+Run it with `kubectl create -f create-instance.yaml`
 
 When this runs, it will create a new GCE VM instance in the specified zone.
