@@ -1,0 +1,37 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: gcloud
+  labels:
+    app.kubernetes.io/version: "0.3"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: CLI
+    tekton.dev/tags: gcp
+    tekton.dev/platforms: "linux/amd64"
+    tekton.dev/displayName: "gcloud"
+spec:
+  description: >-
+    This task performs operations on Google Cloud Platform resources using gcloud.
+
+  params:
+  - name: gcloud-image
+    description: gcloud CLI container image to run this task
+    default: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+  - name: version
+    description: gcloud CLI version run this task
+    default: "slim" # latest slim version
+  - name: ARGS
+    type: array
+    description: gcloud CLI arguments to run
+    default: ["help"]
+  - name: SCRIPT
+    description: CLI script to execute
+    type: string
+    default: "gcloud $@"
+  steps:
+  - name: gcloud
+    image: "$(params.gcloud-image):$(params.version)"
+    script: |
+      $(params.SCRIPT)
+    args: ["$(params.ARGS)"]
