@@ -1,0 +1,10 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: gsutil-version
+spec:
+  taskRef:
+    name: gcloud
+  params:
+    - name: SCRIPT
+      value: "gsutil -v"

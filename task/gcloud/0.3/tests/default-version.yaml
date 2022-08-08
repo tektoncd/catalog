@@ -1,0 +1,10 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: gcloud-version
+spec:
+  taskRef:
+    name: gcloud
+  params:
+    - name: ARGS
+      value: ['version']
