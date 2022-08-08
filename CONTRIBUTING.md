@@ -92,56 +92,61 @@ yet.
 
 #### End to end Testing
 
-There is two type of e2e tests launched on CI.
+There are two types of e2e tests launched on CI.
 
 The first one would just apply the yaml files making sure they don't have any
-syntax issues. Pretty simple one, it just basically check the syntax.
+syntax issues. Pretty simple one, it just basically checks the syntax.
 
 The second one would do some proper functional testing, making sure the task
 actually **ran** properly.
 
 The way the functional tests works is that if you have a directory called
-`tests/` inside the task, it would start creating a random `Namespace`, apply
-the task and then every yaml files that you have in that `tests/` directory.
+`tests/` inside the task, CI will create a random `Namespace` then apply
+the task and then every yaml file in the `tests/` directory.
 
 Note that the test runner for the integration tests will only test the tasks
-that has been added or modified in the submitted PR and will not run any other
-tests that hasn't been changed unless the environment variable
+that have been added or modified in the submitted PR and will not run tests for
+any tasks that haven't been changed unless the environment variable
 `TEST_RUN_ALL_TESTS` has been set.
 
 Usually in these other yaml files you would have a yaml file for the
 test resources (`PipelineResource`) and a yaml files to run the tasks
 (`TaskRun or PipelineRun`).
 
-Sometime you may need to be able to launch some scripts before applying the
-tested task or the other yaml files. Some may pre-setup something on the
-`Namespace` or have to do something externally or sometimes you may even want to do
-some manipulation of the main `Task`.
+Sometimes you may need to be able to run scripts before applying the tested task
+or the other yaml files. For example, your tests may need pre-setup in the
+`Namespace`, external setup, or perhaps even manipulation of the main `Task`.
 
-For example on the *image builders* tasks like `kaniko` or `jib` we want to
-upload the tasks to a registry to make sure it is actually built properly. To do
-so we [manipulate](kaniko/tests/pre-apply-task-hook.sh) with a python script the
-`Task` (something we don't want for everyone but only for the tests) to add a
-registry as a `Sidecar` and make sure that the `TaskRun` set the parameters to
-upload there. Simple and straightforward no need to upload to an external image
-registry provider having to setup the tokens and deals with the side effects...
+For example on *image builders* tasks like `kaniko` or `jib` we want to upload
+the tasks to a registry to make sure it is actually built properly. To do so, we
+[manipulate](task/kaniko/0.6/tests/pre-apply-task-hook.sh) the `Task` with a
+python script (something we only want for the tests) to add a registry as a
+`Sidecar` and make sure that the `TaskRun` sets the parameters to upload there.
+This is simple and straightforward -- there is no need to upload to an external
+image registry provider which would require settin up tokens and dealing with
+both side effects and an external dependency.
 
-There is two different scripts that are checked if present in the `scripts`,
-those scripts actually sourced via the `source` bash script, so you can output
-some environment variables to it that would be applied :
+There are two different scripts that are automatically applied if present. These
+are applied using the `source` bash script, so you can output environment
+variables that will be applied:
 
 1. **pre-apply-task-hook.sh**: Script to run before applying the task
 2. **pre-apply-taskrun-hook.sh**: Script to run before applying the taskruns or other yaml files.
 
-We have some helper functions you can use from your `hook` scripts :
+We have some helper functions you can use from your `hook` scripts:
 
-* **add_sidecar_registry**: This will add a registry as a sidecar to allow the builder tasks to upload image directly to this sidecar registry instead of having to rely on external registries.
-* **add_sidecar_secure_registry**: This will run a secure registry as a sidecar to allow the tasks to push to this registry using the certs. It will create
-  a configmap `sslcert` with certificate available at key `ca.crt`
-* **add_task**: Install a task into the testing namespace, the first argument is the name of the task, the second argument is the version of the task. If the version is equal to `latest` it will install the latest version of the task.
+* **add_sidecar_registry**: This will add a registry as a sidecar to allow the
+  builder tasks to upload an image directly to this sidecar registry instead of
+  relying on an external registries.
+* **add_sidecar_secure_registry**: This will run a secure registry as a sidecar
+  to allow the tasks to push to this registry using certs. It will create a
+  configmap `sslcert` with certificate available at key `ca.crt`
+* **add_task**: Install a task into the testing namespace, the first argument is
+  the name of the task, the second argument is the version of the task. If the
+  version is equal to `latest` it will install the latest version of the task.
 
-What can you run from those scripts is whatever defined in the test-runner
-image, if you need to have another binary available feel free to make a PR to this Dockerfile :
+What can you run from those scripts is defined in the test-runner image. If you
+need to have another binary available, make a PR to this `Dockerfile`:
 
 https://github.com/tektoncd/plumbing/blob/main/tekton/images/test-runner/Dockerfile
 
@@ -153,38 +158,52 @@ specify the task name and the version as the first and the second argument i.e:
 ./test/run-test.sh git-clone 0.1
 ```
 
-and it will use your kubernetes to run the test and show you the outputs as done
-in the CI.
+and it will use your current kubernetes context to run the test and show you the
+outputs similar to the CI.
 
 #### End to end Testing for external services
 
 Some tasks need to be able to access some external REST api services.
 
-There are two approaches for testing external services, the first one if you can is to spin up a deployment of the service tests and exposed as a kubernetes service and the second one is an http rest api reflector for task that connect to rest apis endpoint that cannot be available as a deployment (i.e: Saas services like github)
+There are two approaches for testing external services:
 
-For the first approach, you can take the [trigger-jenkins-build test](task/trigger-jenkins-job/0.1/tests/) as an example.
+1. Spin up a deployment of the service tests and expose a kubernetes service.
+2. Create an http rest api reflector for task that connects to a rest apis
+   endpoint that cannot be available as a deployment (i.e: Saas services like
+   github)
 
-You will want to modify the [pre-apply-task-hook.sh](task/trigger-jenkins-job/0.1/tests/pre-apply-task-hook.sh) script to create the deployment and make it available to your test pipelinerun.
+For the first approach, you can take the [trigger-jenkins-build
+test](task/trigger-jenkins-job/0.1/tests/) as an example.
+
+You will want to modify the
+[pre-apply-task-hook.sh](task/trigger-jenkins-job/0.1/tests/pre-apply-task-hook.sh)
+script to create the deployment and make it available to your test `PipelineRun`.
 
 Here is a rundown of the steps we are doing in `trigger-jenkins-build/pre-apply-task-hook.sh` script :
 
 - Create a deployment with the `jenkins` image
 - Wait until the deployment has completed.
-- expose the deployment as a service, which would then be easily available for other pods in the namespace.
-- Do some shenanigans inside the jenkins pod so we can grab the jenkins apikey and create a new jenkins job.
-- create a secret with the apikey, username and other stuff.
+- Expose the deployment as a service, which would then be easily available for
+  other pods in the namespace.
+- Do some shenanigans inside the jenkins pod so we can grab the jenkins apikey
+  and create a new jenkins job.
+- Create a secret with the apikey, username and other items.
 
-The [test pipelinerun](task/trigger-jenkins-job/0.1/tests/run.yaml) for the `trigger-jenkins-build/` will then points to `http://jenkins:8080` which it the service URL where our just deployed jenkins is exposed and use the secrets credentials from the just created secret in the `pre-apply-task-hook.sh` script.
+The [test pipelinerun](task/trigger-jenkins-job/0.1/tests/run.yaml) for the
+`trigger-jenkins-build/` will then point to `http://jenkins:8080` which is the
+service URL where our just deployed jenkins is exposed. It uses the credentials
+from the secret in the `pre-apply-task-hook.sh` script.
 
-For those other services where you can't spin up a new deployment of the service easily, the test runner support the ["Go Rest api
-test"](https://github.com/chmouel/go-rest-api-test) project.
-The Go rest api test project is a simple service that replies back to http
-requests according to rules.
+For services where you can't spin up a new deployment of the service easily, the
+test runner supports the ["Go Rest api
+test"](https://github.com/chmouel/go-rest-api-test) project.  The Go rest api
+test project is a simple service that replies back to http requests according to
+rules.
 
 As an example see the [github-add-comment task](task/github-add-comment).
 For this task to be tested we need to be able to *"fake"* the Github REST api
 calls. To be able to do so, we are adding a go-rest-api-test rule inside the
-[testing](task/github-add-comment/0.1/tests/fixtures) repository, the rule looks
+[testing](task/github-add-comment/0.1/tests/fixtures) repository; the rule looks
 like this :
 
 ```yaml
@@ -198,14 +217,14 @@ response:
   content-type: text/json
 ```
 
-The rules is saying that for every **POST** requests going to this url :
+The rule is saying that for every **POST** requests going to this url :
 
 `/repos/${ORG}/${REPO}/issues/${issues}/comments`
 
 we will reply by a `200` status and output `{"status": 200}`
 
 The [Pipelinerun](task/github-add-comment/0.1/tests/run.yaml) test for the
-github-add-comment task overrides the github host url in its param to point to
+`github-add-comment` task overrides the github host url in its param to point to
 `localhost:8080` :
 
 ```yaml
@@ -223,8 +242,8 @@ The task runs against that service instead of the github servcer and the
 responder replies with the right calls, we know then that the task has been
 properly tested.
 
-The only requirement to use the fixtures testing facility is to be have the task
-having the capability via a task parameter to override the URL.
+The only requirement to use the fixtures testing facility is to enable the task
+to override the URL via a task parameter.
 
 The `go-rest-api-test` is a very simple service at the moment and may see other
 improvements in the future to support more robust testing.
