@@ -24,6 +24,7 @@ https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.5/git-c
 
 - **SONAR_HOST_URL**: Host URL where the sonarqube server is running
 - **SONAR_PROJECT_KEY**: Project's unique key
+- **SONAR_SOURCES**: Source path is relative to the sonar-project.properties file. Defaults to .
 
 > _Note_ : Parameters are provided in that case when we want to override the corresponding values in `sonar-project.properties` or there is no `sonar-project.properties` present for the project which needs to be analyzed
 
@@ -99,6 +100,8 @@ spec:
           value: http://172.17.0.2:9000
         - name: SONAR_PROJECT_KEY
           value: testapp
+        - name: SONAR_SOURCES
+          value: src
       workspaces:
         - name: source
           workspace: shared-workspace
