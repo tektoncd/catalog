@@ -1,0 +1,104 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/categories: "CLI"
+    tekton.dev/displayName: "script"
+    tekton.dev/tags: "bash,shell,script,exec"
+    tekton.dev/platforms: "linux/amd64,linux/arm32v5,linux/arm32v7,linux/arm64v8,linux/i386,linux/mips64le,linux/ppc64le,linux/riscv64,linux/s390x"
+  name: script
+spec:
+  description: >-
+    Executes a script(e.g bash, python etc) and exposes stderr, stdout and exit_code as results.
+    In the default image bash version 5 is installed
+  params:
+    - name: "script_source"
+      description: >-
+        script source code (multiline)-string.
+        Will be copied to a file and then executed via '/var/myScript', so please specify a shebang line, e.g. for bash:
+        `#!/usr/bin/env bash`
+    - name: "image"
+      description: >-
+        Image that this task runs on.
+        Must contain bash since bash is used to start the provided script,
+        which can in turn reference any other interpreter as specified by a shebang line.
+        The default image contains GNU bash, version 5.1.4(1)-release (x86_64-pc-linux-gnu).
+      default: "debian:bullseye@sha256:2ce44bbc00a79113c296d9d25524e15d423b23303fdbbe20190d2f96e0aeb251"
+    - name: "trace"
+      description: >-
+        Enable tracing (executes set -x).
+        Note that in your script_source you will need to turn on tracing independently, this is only meant for
+        debugging this tasks' code.
+      default: "false"
+  steps:
+    - name: "execute-script"
+      image: "$(params.image)"
+      env:
+        - name: "SCRIPT_SOURCE"
+          value: "$(params.script_source)"
+      script: |
+        #!/usr/bin/env bash
+        set -eo pipefail
+
+        # debug
+        [[ "$(params.trace)" == "true" ]] && set -x
+
+        # prepare input script
+        cat <<EOF >/var/myScript
+        ${SCRIPT_SOURCE}
+        EOF
+        mkdir -p /tekton/results/
+        [[ "$(params.trace)" == "true" ]] && cat /var/myScript
+        chmod +x /var/myScript
+        set +e
+
+        # execute input script
+        # this line makes it that the tekton task receives live logs (stdout and stderr) and in addition it is logged
+        # as result. credit goes to
+        # https://stackoverflow.com/questions/692000/how-do-i-write-standard-error-to-a-file-while-using-tee-with-a-pipe
+        # https://stackoverflow.com/questions/36847897/in-bash-how-can-i-force-a-flush-of-an-incomplete-line-printed-to-the-terminal
+        /var/myScript 1> >(tee "$(results.stdout.path)") 2> >(tee "$(results.stderr.path)" >&2)
+        EXIT_CODE="$?"
+
+        # handle result
+        set -e
+        echo -n "${EXIT_CODE}" >"$(results.exit_code.path)"
+        # sleep here as workaround for flaky error that frequently stdout and stderr are not flushed.
+        # At least some tekton result were (actually only stderr and/or stdout) missing!
+        # I tried running through script binary (but this seems to combine stderr and stdout,
+        # I want separate results for this!
+        # Furthermore I tried stdbuf, had not effect on flakiness.
+        # So the sleep fixes the flakiness 100% for me.
+        # Seems that the tee subprocesses run and terminate independently and on slow systems they may return after
+        # myScript returns.
+        i=0
+        while [ ${i} -lt 10 ]; do
+          set +e
+          if [[ -f "$(results.stdout.path)" && -f "$(results.stderr.path)" && -f "$(results.exit_code.path)" ]]; then
+            exit "${EXIT_CODE}"
+          fi
+          ((i++))
+          sleep 1
+        done
+        echo "ERROR: timeout awaiting '$(results.stdout.path)', '$(results.stderr.path)'
+              and '$(results.exit_code.path)'"
+        exit 1
+  results:
+    - name: stdout
+      description: script standard output
+    - name: stderr
+      description: script error output
+    - name: exit_code
+      description: >-
+        Script exit code, note however that the task will fail (with the exit code of the failed script) in case of
+        failure and then the result will not be accessible, because a failed tekton task has no results atm!
+  workspaces:
+    - name: "workspace-a"
+      optional: true
+    - name: "workspace-b"
+      optional: true
+    - name: "workspace-c"
+      optional: true

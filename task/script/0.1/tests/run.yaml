@@ -1,0 +1,48 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: task-script-test-pipelinerun
+spec:
+  pipelineSpec:
+    tasks:
+      - name: "run-test-script"
+        taskRef:
+          name: script
+          kind: Task
+        params:
+        - name: script_source
+          value: |
+            #!/usr/bin/env bash
+            set -e
+            echo -n "my_stdout"
+            echo -n "my_stderr" 1>&2
+      - name: "verify"
+        params:
+          - name: stdout_from_previous_task
+            value: "$(tasks.run-test-script.results.stdout)"
+          - name: stderr_from_previous_task
+            value: "$(tasks.run-test-script.results.stderr)"
+          - name: exit_code_from_previous_task
+            value: "$(tasks.run-test-script.results.exit_code)"
+        taskSpec:
+          params:
+            - name: stdout_from_previous_task
+            - name: stderr_from_previous_task
+            - name: exit_code_from_previous_task
+          steps:
+            - name: "verify-test-results"
+              image: bash@sha256:b3abe4255706618c550e8db5ec0875328333a14dbf663e6f1e2b6875f45521e5
+              script: |
+                #!/usr/bin/env bash
+                set -eo pipefail
+
+                [[ "$(params.stdout_from_previous_task)" != "my_stdout" ]] && \
+                  echo "Expected: 'my_stdout' from previous task, got: '$(params.stdout_from_previous_task)'"
+                [[ "$(params.stderr_from_previous_task)" != "my_stderr" ]] && \
+                  echo "Expected: 'my_stderr' from previous task, got: '$(params.stderr_from_previous_task)'"
+                [[ "$(params.exit_code_from_previous_task)" != "0" ]] && \
+                  echo "Expected: exit_code '0' from previous task, got: '$(params.exit_code_from_previous_task)'"
+
+                echo "TEST SUCCESS"
+        runAfter:
+          - "run-test-script"
