@@ -25,14 +25,18 @@ _See [our project roadmap](roadmap.md)._
 1. Each resource follows the following structure
 
     ```
-    ./task/                     👈 the kind of the resource
+    ./task/                                    👈 the kind of the resource
 
-        /argocd                 👈 definition file must have same name
-           /0.1
-             /OWNERS            👈 owners of this resource
-             /README.md
-             /argocd.yaml       👈 the file name should match the resource name
-             /samples/deploy-to-k8s.yaml
+        /argocd                                👈 definition file must have same name
+            /0.1
+                /OWNERS                        👈 owners of this resource
+                /README.md
+                /argocd.yaml                   👈 the file name should match the resource name
+                /samples/deploy-to-k8s.yaml
+                /tests
+                    run.yaml                   👈 contains a pipelinerun named [task|pipeline]-<taskname>-test-pipelinerun
+                    pre-apply-task-hook.sh     👈 optional: shellscript to be executed before task apply
+                    pre-apply-taskrun-hook.sh  👈 optional: shellscript to be executed before taskrun apply
            /0.2/...
 
         /golang-build

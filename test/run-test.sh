@@ -14,7 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+# This creates and deletes a namespace containing the given task name and version to execute the tests as closely to
+# CI as possible. As a consequence you need to be a cluster admin or have similar permissions.
+# For a more lightweight and non-invasive approach, check out support/test-local!
 
 set -x
 set -e

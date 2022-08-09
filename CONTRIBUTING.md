@@ -26,6 +26,9 @@ The process for contributing looks like this:
    1. Follows the [guidelines](#guidelines)
    2. Meets the [technical requirements](#technical-requirements)
    3. Includes [OWNERS](#owning-and-maintaining-a-task)
+   4. Successfully passes tests using at least one of the methods listed below.
+      - [test-local.sh](support/test-local.sh)
+      - [run-test.sh](test/run-test.sh)
 4. Submit a pull request.
 
 ## How to Contribute a new version of a Task or Pipeline
@@ -145,8 +148,22 @@ image, if you need to have another binary available feel free to make a PR to th
 
 https://github.com/tektoncd/plumbing/blob/main/tekton/images/test-runner/Dockerfile
 
-A helper script called [`run-test.sh`](test/run-test.sh) is provider in the
-[test](./test) directory to help the developer running the test locally. Just
+##### test-local.sh
+A helper script called [test-local.sh](support/test-local.sh) is provided in the [support](./support) directory
+to help the developer running the test locally. Contrary to [run-test.sh](#run-testsh), this does not create and delete 
+namespaces (requires high permissions) and performs cleanup based on a less invasive approach.
+
+Example Invocation Snippet to test the task called `script` in version `0.1`:
+```bash
+support/test-local.sh task/script/0.1
+```
+
+Note: As the (only) argument to the script is a path, most shells will be able to code-complete the arg without further 
+ado! 
+
+##### run-test.sh
+A helper script called [`run-test.sh`](test/run-test.sh) is provided in the
+[test](./test) directory to enable local test runs. Just
 specify the task name and the version as the first and the second argument i.e:
 
 ```bash
@@ -155,6 +172,9 @@ specify the task name and the version as the first and the second argument i.e:
 
 and it will use your kubernetes to run the test and show you the outputs as done
 in the CI.
+
+Running this requires namespace delete permissions! Check out [test-local](#test-localsh), if you lack the 
+permissions!
 
 #### End to end Testing for external services
 
