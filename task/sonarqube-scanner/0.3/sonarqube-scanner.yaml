@@ -3,7 +3,7 @@ kind: Task
 metadata:
   name: sonarqube-scanner
   labels:
-    app.kubernetes.io/version: "0.2"
+    app.kubernetes.io/version: "0.3"
   annotations:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/categories: Security
@@ -30,6 +30,9 @@ spec:
     - name: SONAR_PROJECT_KEY
       description: Project's unique key
       default: ""
+    - name: SONAR_SOURCES
+      description: Source path is relative to the sonar-project.properties file. Defaults to .
+      default: "."
   steps:
     - name: sonar-properties-create
       image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
@@ -64,11 +67,14 @@ spec:
           if [[ -n "$(params.SONAR_PROJECT_KEY)" ]]; then
             replaceValues $(workspaces.source.path)/sonar-project.properties sonar.projectKey $(params.SONAR_PROJECT_KEY)
           fi
+          if [[ -n "$(params.SONAR_SOURCES)" ]]; then
+            replaceValues $(workspaces.source.path)/sonar-project.properties sonar.sources $(params.SONAR_SOURCES)
+          fi
         else
           touch sonar-project.properties
           echo "sonar.projectKey=$(params.SONAR_PROJECT_KEY)" >> sonar-project.properties
           echo "sonar.host.url=$(params.SONAR_HOST_URL)" >> sonar-project.properties
-          echo "sonar.sources=." >> sonar-project.properties
+          echo "sonar.sources=$(params.SONAR_SOURCES)" >> sonar-project.properties
         fi
 
         echo "---------------------------"
