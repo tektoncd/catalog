@@ -107,7 +107,7 @@ spec:
       description: |
         Absolute path to the user's home directory.
       type: string
-      default: "/home/nonroot"
+      default: "/tekton/home"
   results:
     - name: commit
       description: The precise commit SHA that was fetched by this Task.

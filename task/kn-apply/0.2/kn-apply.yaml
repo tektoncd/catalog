@@ -33,4 +33,4 @@ spec:
       runAsUser: 65532
     env:
     - name: HOME
-      value: /home/nonroot
+      value: /tekton/home
