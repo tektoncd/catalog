@@ -26,6 +26,9 @@ spec:
     - "help"
   steps:
   - name: kn
+    env:
+    - name: HOME
+      value: /tekton/home
     image: "$(params.kn-image)"
     command: ["/ko-app/kn"]
     args: ["$(params.ARGS)"]

@@ -36,6 +36,9 @@ spec:
       default: ["--help"]
   steps:
     - name: tkn
+      env:
+      - name: HOME
+        value: /tekton/home
       image: "$(params.TKN_IMAGE)"
       script: |
         if [ "$(workspaces.kubeconfig.bound)" = "true" ] && [ -e $(workspaces.kubeconfig.path)/kubeconfig ]; then
