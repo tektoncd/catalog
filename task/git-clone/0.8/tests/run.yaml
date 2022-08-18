@@ -9,6 +9,9 @@ spec:
       emptyDir: {}
   taskRef:
     name: git-clone
+  podTemplate:
+    securityContext:
+      fsGroup: 65532
   params:
     - name: url
       value: https://github.com/kelseyhightower/nocode
@@ -23,6 +26,9 @@ spec:
       emptyDir: {}
   taskRef:
     name: git-clone
+  podTemplate:
+    securityContext:
+      fsGroup: 65532
   params:
     - name: url
       value: https://github.com/kelseyhightower/nocode
@@ -39,6 +45,9 @@ spec:
       emptyDir: {}
   taskRef:
     name: git-clone
+  podTemplate:
+    securityContext:
+      fsGroup: 65532
   params:
     - name: url
       value: https://github.com/githubtraining/example-dependency
@@ -53,6 +62,9 @@ spec:
   workspaces:
     - name: output
       emptyDir: {}
+  podTemplate:
+    securityContext:
+      fsGroup: 65532
   taskRef:
     name: git-clone
   params:
@@ -71,6 +83,9 @@ spec:
       emptyDir: {}
   taskRef:
     name: git-clone
+  podTemplate:
+    securityContext:
+      fsGroup: 65532
   params:
     - name: url
       value: https://github.com/kelseyhightower/nocode
@@ -89,6 +104,9 @@ spec:
       emptyDir: {}
   taskRef:
     name: git-clone
+  podTemplate:
+    securityContext:
+      fsGroup: 65532
   params:
     - name: url
       value: https://github.com/kelseyhightower/nocode
@@ -105,6 +123,9 @@ spec:
       emptyDir: {}
   taskRef:
     name: git-clone
+  podTemplate:
+    securityContext:
+      fsGroup: 65532
   params:
     - name: url
       value: https://github.com/kelseyhightower/nocode
@@ -121,6 +142,9 @@ spec:
       emptyDir: {}
   taskRef:
     name: git-clone
+  podTemplate:
+    securityContext:
+      fsGroup: 65532
   params:
     - name: url
       value: https://github.com/kelseyhightower/nocode
@@ -137,6 +161,9 @@ spec:
     emptyDir: {}
   taskRef:
     name: git-clone
+  podTemplate:
+    securityContext:
+      fsGroup: 65532
   params:
     - name: url
       value: https://github.com/kelseyhightower/nocode
@@ -153,6 +180,9 @@ spec:
     emptyDir: {}
   taskRef:
     name: git-clone
+  podTemplate:
+    securityContext:
+      fsGroup: 65532
   params:
     - name: url
       value: https://github.com/kelseyhightower/nocode

@@ -59,6 +59,9 @@ metadata:
 spec:
   pipelineRef:
     name: cat-branch-readme
+  podTemplate:
+    securityContext:
+      fsGroup: 65532
   workspaces:
   - name: shared-data
     volumeClaimTemplate:

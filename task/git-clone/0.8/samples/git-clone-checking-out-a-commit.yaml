@@ -95,6 +95,9 @@ metadata:
 spec:
   pipelineRef:
     name: checking-out-a-revision
+  podTemplate:
+    securityContext:
+      fsGroup: 65532
   workspaces:
   - name: shared-data
     volumeClaimTemplate:

@@ -1,6 +1,8 @@
 # `git-clone`
 
-**Please Note: this Task is only compatible with Tekton Pipelines versions 0.29.0 and greater!**
+**Note: this Task is only compatible with Tekton Pipelines versions 0.29.0 and greater!**
+
+**Note: this Task is not backwards compatible with the previous versions as it is now run as a non-root user!**
 
 This `Task` has two required inputs:
 
@@ -19,6 +21,44 @@ clone takes place. This behaviour can be disabled by setting the
 workspace will end up owned by user 65532.
 
 ## Workspaces
+
+**Note**: This task is run as a non-root user with UID 65532 and GID 65532.
+Generally, the default permissions for storage volumes are configured for the
+root user. To make the volumes accessible by the non-root user, you will need
+to either configure the permissions manually or set the `fsGroup` field under
+`PodSecurityContext` in your TaskRun or PipelineRun.
+
+An example PipelineRun will look like:
+```yaml
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: git-clone-
+spec:
+  pipelineRef:
+    name: git-clone-pipeline
+  podTemplate:
+    securityContext:
+      fsGroup: 65532
+...
+...
+```
+
+An example TaskRun will look like:
+```yaml
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: taskrun
+spec:
+  taskRef:
+    name: git-clone
+  podTemplate:
+    securityContext:
+      fsGroup: 65532
+...
+...
+```
 
 * **output**: A workspace for this Task to fetch the git repository in to.
 * **ssh-directory**: An optional workspace to provide SSH credentials. At

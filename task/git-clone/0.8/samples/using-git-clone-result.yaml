@@ -66,6 +66,9 @@ metadata:
 spec:
   pipelineRef:
     name: validate-tag-sha
+  podTemplate:
+    securityContext:
+      fsGroup: 65532
   workspaces:
   - name: output
     emptyDir: {}  # We don't care about the repo contents in this example, just the "commit" result
