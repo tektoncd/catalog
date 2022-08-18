@@ -1,0 +1,43 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: orka-deploy-test
+spec:
+  workspaces:
+    - name: shared-data
+  tasks:
+    - name: init
+      taskRef:
+        name: orka-init
+      params:
+        - name: base-image
+          value: base-image.img
+    - name: deploy
+      runAfter:
+        - init
+      taskRef:
+        name: orka-deploy
+      params:
+        - name: copy-build
+          value: "false"
+        - name: verbose
+          value: "true"
+        - name: script
+          value: |
+            echo "Hello from TektonCD test"
+      workspaces:
+        - name: orka
+          workspace: shared-data
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: orka-deploy-test-run
+spec:
+  serviceAccountName: orka-svc
+  pipelineRef:
+    name: orka-deploy-test
+  workspaces:
+    - name: shared-data
+      emptyDir: {}
