@@ -60,6 +60,9 @@ metadata:
 spec:
   pipelineRef:
     name: sparse-checkout-list-dir
+  podTemplate:
+    securityContext:
+      fsGroup: 65532
   workspaces:
   - name: shared-data
     volumeClaimTemplate:
