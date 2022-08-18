@@ -1,0 +1,67 @@
+# ###
+# This example demonstrates how to use an SSH key to connect to the Orka VM.
+# You will first need to copy the public key to the VM and commit or save an
+# image using `orka image commit` or `orka image save` and specify that base image.
+# in the TaskRun or Pipeline as a param.
+#
+# You must specify the Task param ssh-key="true" in order to use an SSH key.
+#
+# ###
+# You can create a Kubernetes secret with the SSH credentials as follows:
+# kubectl create secret generic orka-ssh-key --from-file=id_rsa=/path/to/id_rsa --from-literal=username=<username>
+# ###
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: use-ssh-key
+spec:
+  workspaces:
+    - name: shared-data
+  tasks:
+    - name: setup
+      taskRef:
+        name: orka-init
+      params:
+        - name: base-image
+          value: catalina-ssh-key-30G.img
+    - name: hello-macos
+      runAfter:
+        - setup
+      retries: 1
+      taskRef:
+        name: orka-deploy
+      params:
+        - name: ssh-secret
+          value: orka-ssh-key
+        - name: ssh-password-key
+          value: id_rsa
+        - name: ssh-key
+          value: "true"
+        - name: verbose
+          value: "true"
+        - name: copy-build
+          value: "false"
+        - name: script
+          value: |
+            #!/usr/bin/env ruby
+            puts "Hello macOS"
+      workspaces:
+        - name: orka
+          workspace: shared-data
+  finally:
+    - name: cleanup
+      taskRef:
+        name: orka-teardown
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: run-use-ssh-key
+spec:
+  serviceAccountName: orka-svc
+  pipelineRef:
+    name: use-ssh-key
+  workspaces:
+    - name: shared-data
+      emptyDir: {}

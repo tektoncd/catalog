@@ -1,0 +1,191 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: orka-deploy
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/categories: Deployment
+    tekton.dev/pipelines.minVersion: "0.16.0"
+    tekton.dev/tags: "orka, macstadium, deploy, build"
+    tekton.dev/platforms: "linux/amd64"
+    tekton.dev/displayName: "orka deploy"
+spec:
+  description: >-
+    With this set of Tasks, you can use your Orka environment
+    to run macOS builds and macOS-related testing from your Tekton pipelines.
+
+    This Task deploys a VM instance from a specified VM template.
+    Usually, you would use the VM template created with `orka-init`.
+  params:
+    - name: script
+      type: string
+      description: |
+        The script to run inside of the VM. The script will be prepended with the following
+        if no shebang is present:
+
+        #!/bin/sh
+        set -ex
+
+        You can set your shebang instead (e.g., to run a script with your preferred shell or a scripting language like Python or Ruby).
+    - name: copy-build
+      type: string
+      description: |
+        Specifies whether to copy build artifacts from the Orka VM back to the workspace.
+        Disable when there is no need to copy build artifacts (e.g., when running tests or linting code).
+      default: "true"
+    - name: verbose
+      type: string
+      description: Enables verbose logging for all connection activity to the VM.
+      default: "false"
+    - name: delete-vm
+      type: string
+      description: |
+        Specifies whether to delete the VM after use when run in a pipeline.
+        You can discard build agents that are no longer needed to free up resources.
+
+        Set to false if you intend to clean up VMs after use manually.
+      default: "true"
+    - name: orka-tekton-runner-image
+      type: string
+      description: |
+        The name of the docker image which runs the task step.
+      default: ghcr.io/macstadium/orka-tekton-runner:2022-06-29-ec3440a7@sha256:d7cfb75ea082a927e36c131aa96e96bfcacd23f62fdaf33f5b37320b86baf50e
+    - name: ssh-key
+      type: string
+      description: |
+        Specifies whether the SSH credentials secret contains an SSH key, as opposed to a password.
+      default: "false"
+    - name: ssh-secret
+      type: string
+      description: The name of the secret holding your VM SSH credentials.
+      default: orka-ssh-creds
+    - name: ssh-username-key
+      type: string
+      description: |
+        The name of the key in the VM SSH credentials secret for the username associated with the macOS VM.
+      default: username
+    - name: ssh-password-key
+      type: string
+      description: |
+        The name of the key in the VM SSH credentials secret for the password
+        associated with the macOS VM.
+
+        If ssh-key is true, this parameter should specify the name of the key in
+        the VM SSH credentials secret that holds the private SSH key.
+      default: password
+    - name: system-serial
+      type: string
+      description: "Assign an owned macOS system serial number to the VM (on Intel nodes only)."
+      default: ""
+    - name: vm-metadata
+      type: string
+      description: |
+        "Inject custom metadata to the VM (on Intel nodes only). You need to provide the metadata in format:
+        [
+          { key: firstKey, value: firstValue },
+          { key: secondKey, value: secondsValue }
+        ]"
+      default: ""
+    - name: gpu-passthrough
+      type: string
+      description: Enables or disables GPU passthrough for the VM (on Intel nodes only).
+      default: "false"
+    - name: orka-token-secret
+      type: string
+      description: |
+        The name of the secret holding the authentication token used to access the Orka API.
+      default: orka-token
+    - name: orka-token-secret-key
+      type: string
+      description: |
+        The name of the key in the Orka token secret, which holds the authentication token.
+      default: token
+    - name: orka-vm-name-config
+      type: string
+      description: |
+        The name of the config map, which stores the name of the generated VM configuration.
+      default: orka-vm-name
+    - name: orka-vm-name-config-key
+      type: string
+      description: |
+        The name of the key in the VM name config map, which stores the name of the generated VM configuration.
+      default: vm-name
+    - name: user-home
+      type: string
+      default: /tekton/home
+      description: Absolute path to the user's home directory.
+  stepTemplate:
+    env:
+      - name: HOME
+        value: $(params.user-home)
+    workingDir: /workspace
+  steps:
+    - name: copy-script
+      image: $(params.orka-tekton-runner-image)
+      script: |
+        #!/bin/sh
+        SCRIPT=$(mktemp)
+        # Safeguard against having to escape quotes / vars in script
+        cat > "$SCRIPT" << 'EOF'
+        $(params.script)
+        EOF
+        copy-script "$SCRIPT"
+    - name: build
+      image: $(params.orka-tekton-runner-image)
+      env:
+        - name: ORKA_API
+          valueFrom:
+            configMapKeyRef:
+              name: orka-tekton-config
+              key: ORKA_API
+        - name: VERBOSE
+          value: $(params.verbose)
+        - name: DELETE_VM
+          value: $(params.delete-vm)
+        - name: COPY_BUILD
+          value: $(params.copy-build)
+        - name: SSH_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: $(params.ssh-secret)
+              key: $(params.ssh-username-key)
+        - name: SSH_PASSFILE
+          value: /etc/$(params.ssh-secret)/$(params.ssh-password-key)
+        - name: SSH_KEY
+          value: $(params.ssh-key)
+        - name: SYSTEM_SERIAL
+          value: $(params.system-serial)
+        - name: VM_METADATA
+          value: $(params.vm-metadata)
+        - name: GPU_PASSTHROUGH
+          value: $(params.gpu-passthrough)
+        - name: TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: $(params.orka-token-secret)
+              key: $(params.orka-token-secret-key)
+        - name: VM_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: $(params.orka-vm-name-config)
+              key: $(params.orka-vm-name-config-key)
+      volumeMounts:
+        - name: ssh-creds
+          readOnly: true
+          mountPath: /etc/$(params.ssh-secret)
+      script: |
+        #!/bin/sh
+        set -x
+        orka-deploy
+  volumes:
+    - name: ssh-creds
+      secret:
+        secretName: $(params.ssh-secret)
+        items:
+          - key: $(params.ssh-password-key)
+            path: $(params.ssh-password-key)
+            mode: 256
+  workspaces:
+    - name: orka
