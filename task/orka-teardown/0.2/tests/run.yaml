@@ -1,0 +1,27 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: orka-teardown-test
+spec:
+  tasks:
+    - name: init
+      taskRef:
+        name: orka-init
+      params:
+        - name: base-image
+          value: base-image.img
+    - name: teardown
+      runAfter:
+        - init
+      taskRef:
+        name: orka-teardown
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: orka-teardown-test-run
+spec:
+  serviceAccountName: orka-svc
+  pipelineRef:
+    name: orka-teardown-test

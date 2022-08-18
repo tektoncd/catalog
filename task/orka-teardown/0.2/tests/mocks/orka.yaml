@@ -1,0 +1,40 @@
+---
+headers:
+  method: POST
+  path: /token
+response:
+  status: 200
+  output: '{"token": "abcd"}'
+  content-type: text/json
+---
+headers:
+  method: POST
+  path: /resources/vm/create
+response:
+  status: 200
+  output: '{"status": 200}'
+  content-type: text/json
+---
+headers:
+  method: DELETE
+  path: /resources/vm/delete
+response:
+  status: 200
+  output: '{"message": "Successfully deleted VM"}'
+  content-type: text/json
+---
+headers:
+  method: DELETE
+  path: /resources/vm/purge
+response:
+  status: 200
+  output: '{"message": "Successfully purged VM"}'
+  content-type: text/json
+---
+headers:
+  method: DELETE
+  path: /token
+response:
+  status: 200
+  output: '{"tokensRevoked": 1}'
+  content-type: text/json

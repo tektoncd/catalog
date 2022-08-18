@@ -1,0 +1,73 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: orka-teardown
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/categories: Cloud, Kubernetes
+    tekton.dev/pipelines.minVersion: "0.16.0"
+    tekton.dev/tags: "orka, macstadium, teardown, cleanup"
+    tekton.dev/displayName: "orka teardown"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    With this set of Tasks, you can use your Orka environment
+    to run macOS builds and macOS-related testing from your Tekton pipelines.
+
+    This Task cleans up the Orka environment after your workload completes.
+    This Task deletes the VM instances deployed with `orka-deploy` and their related templates.
+  params:
+    - name: orka-token-secret
+      type: string
+      description: |
+        The name of the secret holding the authentication token used to access the Orka API.
+      default: orka-token
+    - name: orka-token-secret-key
+      type: string
+      description: |
+        The name of the key in the Orka token secret, which holds the authentication token.
+      default: token
+    - name: orka-vm-name-config
+      type: string
+      description: |
+        The name of the config map, which stores the name of the generated VM configuration.
+      default: orka-vm-name
+    - name: orka-vm-name-config-key
+      type: string
+      description: |
+        The name of the key in the VM name config map, which stores the name of the generated VM configuration.
+      default: vm-name
+    - name: orka-tekton-runner-image
+      type: string
+      description: |
+        The name of the docker image which runs the task step.
+      default: ghcr.io/macstadium/orka-tekton-runner:2022-06-29-ec3440a7@sha256:d7cfb75ea082a927e36c131aa96e96bfcacd23f62fdaf33f5b37320b86baf50e
+  steps:
+    - name: teardown
+      image: $(params.orka-tekton-runner-image)
+      securityContext:
+        privileged: true
+      env:
+        - name: ORKA_API
+          valueFrom:
+            configMapKeyRef:
+              name: orka-tekton-config
+              key: ORKA_API
+        - name: TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: $(params.orka-token-secret)
+              key: $(params.orka-token-secret-key)
+        - name: VM_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: $(params.orka-vm-name-config)
+              key: $(params.orka-vm-name-config-key)
+      script: |
+        #!/bin/sh
+        set -x
+        orka-cleanup
+        kubectl delete secret "$(params.orka-token-secret)" --ignore-not-found
+        kubectl delete configmap "$(params.orka-vm-name-config)" --ignore-not-found
