@@ -13,7 +13,7 @@ The task provides test execution based on [pytest](https://pypi.org/project/pyte
 ### Install pytest
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/pytest/0.1/pytest.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/pytest/0.1/raw
 ```
 
 ## Parameters

@@ -5,7 +5,7 @@ This task runs [Robot Framework](https://robotframework.org/) tests that are pro
 ## Install the Task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/robot-framework/0.1/robot-framework.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/robot-framework/0.1/raw
 ```
 
 ## Workspaces

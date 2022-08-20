@@ -8,7 +8,7 @@ Task can also be customised with the various parameters that are passed as flags
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/datree/0.1/datree.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/datree/0.1/raw
 ```
 
 ## Parameters

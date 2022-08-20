@@ -1,0 +1,52 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: tkn
+  labels:
+    app.kubernetes.io/version: "0.4"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/categories: CLI
+    tekton.dev/tags: cli
+    tekton.dev/displayName: "Tekton CLI"
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
+spec:
+  workspaces:
+    - name: kubeconfig
+      description: >-
+        An optional workspace that allows you to provide a .kube/config
+        file for tkn to access the cluster. The file should be placed at
+        the root of the Workspace with name kubeconfig.
+      optional: true
+  description: >-
+    This task performs operations on Tekton resources using tkn
+
+  params:
+    - name: TKN_IMAGE
+      description: tkn CLI container image to run this task
+      default: gcr.io/tekton-releases/dogfooding/tkn@sha256:d17fec04f655551464a47dd59553c9b44cf660cc72dbcdbd52c0b8e8668c0579
+    - name: SCRIPT
+      description: tkn CLI script to execute
+      type: string
+      default: "tkn $@"
+    - name: ARGS
+      type: array
+      description: tkn CLI arguments to run
+      default: ["--help"]
+  steps:
+    - name: tkn
+      env:
+      - name: HOME
+        value: /tekton/home
+      image: "$(params.TKN_IMAGE)"
+      script: |
+        if [ "$(workspaces.kubeconfig.bound)" = "true" ] && [ -e $(workspaces.kubeconfig.path)/kubeconfig ]; then
+          export KUBECONFIG="$(workspaces.kubeconfig.path)"/kubeconfig
+        fi
+
+        eval "$(params.SCRIPT)"
+      args: ["$(params.ARGS)"]
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532

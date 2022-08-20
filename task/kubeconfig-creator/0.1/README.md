@@ -23,7 +23,7 @@ This task provides users variety of ways to authenticate:
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kubeconfig-creator/0.1/kubeconfig-creator.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/kubeconfig-creator/0.1/raw
 ```
 
 ## Workspace

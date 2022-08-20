@@ -1,0 +1,55 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: buildah-build-kn-create
+spec:
+  workspaces:
+  - name: source
+  params:
+  - name: ARGS
+    type: array
+    description: Arguments to pass to kn CLI
+    default:
+      - "help"
+  - name: GIT_URL
+    type: string
+    description: Git url to clone
+  - name: IMAGE
+    type: string
+    description: The application image to be built by Buildah and deployed by kn task.
+  tasks:
+  - name: fetch-repository
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: source
+    params:
+    - name: url
+      value: $(params.GIT_URL)
+    - name: subdirectory
+      value: ""
+    - name: deleteExisting
+      value: "true"
+  - name: buildah-build
+    taskRef:
+      name: buildah
+    runAfter:
+      - fetch-repository
+    workspaces:
+    - name: source
+      workspace: source
+    params:
+    - name: IMAGE
+      value: "$(params.IMAGE)"
+  - name: kn-service-create
+    taskRef:
+      name: kn
+    runAfter:
+      - buildah-build
+    params:
+    - name: kn-image
+      value: "gcr.io/knative-nightly/knative.dev/client/cmd/kn"
+    - name: ARGS
+      value:
+        - "$(params.ARGS)"

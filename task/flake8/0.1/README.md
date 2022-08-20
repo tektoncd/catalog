@@ -11,7 +11,7 @@ The task provides linting based on [flake8](https://pypi.org/project/flake8/) fo
 ### Install the flake8 task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/flake8/0.1/flake8.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/flake8/0.1/raw
 ```
 
 ## Parameters

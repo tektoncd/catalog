@@ -1,0 +1,31 @@
+# Define a ServiceAccount named kn-deployer-account that has permission to
+# manage Knative services.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kn-deployer-account
+  namespace: default
+---
+
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: kn-deployer
+rules:
+  - apiGroups: ["serving.knative.dev"]
+    resources: ["services", "revisions", "routes"]
+    verbs: ["get", "list", "create", "update", "delete", "patch", "watch"]
+---
+
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: kn-deployer-binding
+subjects:
+- kind: ServiceAccount
+  name: kn-deployer-account
+  namespace: default
+roleRef:
+  kind: ClusterRole
+  name: kn-deployer
+  apiGroup: rbac.authorization.k8s.io

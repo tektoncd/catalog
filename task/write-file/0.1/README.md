@@ -7,7 +7,7 @@ file. It can also set specific permissions on the file.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/write-file/0.1/write-file.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/write-file/0.1/raw
 ```
 
 ## Parameters

@@ -13,7 +13,7 @@ Task can also be used to upload `assets` including `binaries` of the released ve
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/create-gitlab-release/0.1/create-gitlab-release.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/create-gitlab-release/0.1/raw
 ```
 
 ## Parameters

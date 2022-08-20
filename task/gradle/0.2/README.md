@@ -5,7 +5,7 @@ This Task can be used to run a Gradle build on a gradle project.
 ## Install the Task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gradle/0.2/gradle.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/gradle/0.2/raw
 ```
 
 ## Parameters

@@ -14,7 +14,7 @@ The following task is used to create the cluster.
 ### **Install the Task**
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/openshift-install/0.1/openshift-install.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/openshift-install/0.1/raw
 ```
 
 ### **Parameters**

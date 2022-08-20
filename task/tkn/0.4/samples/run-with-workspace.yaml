@@ -1,0 +1,16 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: tkn-run-with-workspace
+spec:
+  taskRef:
+    name: tkn
+  workspaces:
+    - name: kubeconfig
+      secret:
+        secretName: kubeconfig
+  params:
+    - name: SCRIPT
+      value: |
+        tkn task list
+        tkn pipeline list

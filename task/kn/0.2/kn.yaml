@@ -1,0 +1,37 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: kn
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/displayName: "kn"
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: CLI
+    tekton.dev/tags: cli
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le,linux/arm64"
+spec:
+  description: >-
+    This Task performs operations on Knative resources
+    (services, revisions, routes) using kn CLI
+
+  params:
+  - name: kn-image
+    description: kn CLI container image to run this task
+    default: gcr.io/knative-releases/knative.dev/client/cmd/kn:latest
+  - name: ARGS
+    type: array
+    description: kn CLI arguments to run
+    default:
+    - "help"
+  steps:
+  - name: kn
+    env:
+    - name: HOME
+      value: /tekton/home
+    image: "$(params.kn-image)"
+    command: ["/ko-app/kn"]
+    args: ["$(params.ARGS)"]
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 65532

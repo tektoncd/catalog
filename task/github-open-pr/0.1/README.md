@@ -22,7 +22,7 @@ to open pull requests on Github. It is able to fill in a title and body of the p
 ### Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-open-pr/0.1/github-open-pr.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/github-open-pr/0.1/raw
 ```
 
 ### Parameters
