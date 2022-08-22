@@ -33,6 +33,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/an
 
 * **IMAGE_NAME:** Image to be scanned
 
+#PLATFORK
 ## Platforms
 
 The Task can be run on `linux/amd64` platform.
