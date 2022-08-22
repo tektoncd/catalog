@@ -24,7 +24,7 @@ spec:
       - name: shared-workspace
       - name: sslcertdir
         optional: true
-      - name: dockerconfig
+      - name: dockerconfig-ws
         optional: true
     tasks:
       - name: fetch-repository
