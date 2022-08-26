@@ -14,7 +14,7 @@ kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/blue-green-d
 ## Installing the ClusterRoleBinding
 
 ```
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/blue-green-deploy/0.1/support/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/blue-green-deploy/0.1/support/clusterrolebinding.yaml
 ```
 
 ## Workspaces

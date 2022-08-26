@@ -45,7 +45,7 @@ with permission to manage Knative resources.
 To create a `ServiceAccount` with these permissions, you can run:
 
 ```
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/kn/0.2/support/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kn/0.2/support/kn-deployer.yaml
 ```
 
 ### Running the Task
