@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: nexus-lifecycle-scan-task
+  name: nexus-lifecycle-scan
   labels:
     app.kubernetes.io/version: "0.1"
   annotations:
