@@ -35,17 +35,14 @@ review them:
               Paragraph(s) to describe the resource.
           ```
 
-_See [the contribution guide](https://github.com/tektoncd/catalog/blob/master/CONTRIBUTING.md)
-for more details._
-
----
+_See [the contribution guide](https://github.com/tektoncd/catalog/blob/master/CONTRIBUTING.md) for more details._
 
 [TEP]: https://github.com/tektoncd/community/blob/master/teps/0003-tekton-catalog-organization.md
 [example]: https://github.com/tektoncd/catalog/tree/master/task/git-clone/0.1
 [validation]: https://github.com/tektoncd/catalog/issues/413
 [authoring]: https://github.com/tektoncd/catalog/blob/main/recommendations.md
-[docs] https://github.com/tektoncd/community/blob/master/standards.md#docs
-[tests] https://github.com/tektoncd/community/blob/master/standards.md#tests
-[e2e] https://github.com/tektoncd/catalog/blob/main/CONTRIBUTING.md#end-to-end-testing
-[contributor] https://github.com/tektoncd/community/blob/main/standards.md
-[commit] https://github.com/tektoncd/community/blob/master/standards.md#commit-messages
+[docs]: https://github.com/tektoncd/community/blob/master/standards.md#docs
+[tests]: https://github.com/tektoncd/community/blob/master/standards.md#tests
+[e2e]: https://github.com/tektoncd/catalog/blob/main/CONTRIBUTING.md#end-to-end-testing
+[contributor]: https://github.com/tektoncd/community/blob/main/standards.md
+[commit]: https://github.com/tektoncd/community/blob/master/standards.md#commit-messages
