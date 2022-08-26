@@ -5,7 +5,8 @@ approvers:
 - ImJasonH
 - kimsterv
 - vdemeester
-- sbwsg
+# alumni:
+# sbwsg
 reviewers:
 - vdemeester
 - chmouel
