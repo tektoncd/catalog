@@ -8,7 +8,7 @@ metadata:
   annotations:
     tekton.dev/categories: Code Quality
     tekton.dev/pipelines.minVersion: "0.12.1"
-    tekton.dev/tags: python, pylint
+    tekton.dev/tags: python, pylint, linter
     tekton.dev/displayName: pylint
     tekton.dev/platforms: "linux/amd64"
 spec:
