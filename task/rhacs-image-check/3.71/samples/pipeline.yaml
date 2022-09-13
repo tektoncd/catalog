@@ -1,0 +1,100 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: rox-pipeline
+spec:
+
+  workspaces:
+    - name: shared-workspace
+
+  params:
+    - name: deployment-name
+      type: string
+      description: name of the deployment resource to be patched
+    - name: deployment
+      type: string
+      description: filename of the deployment to be patched
+    - name: git-url
+      type: string
+      description: url of the git repo for the code of deployment
+    - name: git-revision
+      type: string
+      description: revision to be used from repo of the code for deployment
+      default: main
+    - name: IMAGE
+      type: string
+      description: image to be build from the code
+
+  tasks:
+    # checkout source code
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      workspaces:
+      - name: output
+        workspace: shared-workspace
+      params:
+      - name: url
+        value: $(params.git-url)
+      - name: subdirectory
+        value: ""
+      - name: deleteExisting
+        value: "true"
+      - name: revision
+        value: $(params.git-revision)
+
+    # validate deployment against defined  RHACS policies
+    - name: police-deployment
+      taskRef:
+        name: rhacs-deployment-check
+        kind: Task
+      workspaces:
+      - name: source
+        workspace: shared-workspace
+      params:
+      - name: deployment
+        value: $(params.deployment)
+      - name: insecure-skip-tls-verify
+        value: "true"
+      runAfter:
+      - fetch-repository
+
+    - name: build-image
+      taskRef:
+        name: buildah
+        kind: ClusterTask
+      params:
+      - name: IMAGE
+        value: $(params.IMAGE)
+      workspaces:
+      - name: source
+        workspace: shared-workspace
+      runAfter:
+      - fetch-repository
+
+    # scan image for vulns using RHACS
+    - name: scan-image
+      taskRef:
+        name: rhacs-image-scan
+        kind: Task
+      params:
+      - name: image
+        value: "$(params.IMAGE)@$(tasks.build-image.results.IMAGE_DIGEST)"
+      - name: insecure-skip-tls-verify
+        value: "true" # stackrox to OCP image registry x509 fail...
+      runAfter:
+      - build-image
+
+    # validate image against RHACS policies
+    - name: police-image
+      taskRef:
+        name: rhacs-image-check
+        kind: Task
+      params:
+      - name: image
+        value: "$(params.IMAGE)@$(tasks.build-image.results.IMAGE_DIGEST)"
+      - name: insecure-skip-tls-verify
+        value: "true"
+      runAfter:
+      - scan-image
