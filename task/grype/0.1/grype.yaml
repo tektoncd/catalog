@@ -25,6 +25,7 @@ spec:
     - name: GRYPE_IMAGE
       default: docker.io/anchore/grype@sha256:40c41e43eff0eb979375ea705f0cf5f6f698941099f63c890c3eb90b6ef72db5 # v0.47.0
       description: Grype image to be used
+      type: string
   steps:
     - name: grype
       image: $(params.GRYPE_IMAGE)
