@@ -9,7 +9,7 @@ metadata:
     tekton.dev/categories: Image Build
     tekton.dev/tags: image-build
     tekton.dev/displayName: "Build and upload container image using Kaniko"
-    tekton.dev/platforms: "linux/amd64"
+    tekton.dev/platforms: "linux/amd64,linux/arm64,linux/ppc64le"
 spec:
   description: >-
     This Task builds a simple Dockerfile with kaniko and pushes to a registry.
@@ -58,7 +58,7 @@ spec:
       securityContext:
         runAsUser: 0
     - name: write-url
-      image: docker.io/library/bash:5.1.4@sha256:b208215a4655538be652b2769d82e576bc4d0a2bb132144c060efc5be8c3f5d6
+      image: docker.io/library/bash:5.1.4@sha256:c523c636b722339f41b6a431b44588ab2f762c5de5ec3bd7964420ff982fb1d9
       script: |
         set -e
         image="$(params.IMAGE)"
