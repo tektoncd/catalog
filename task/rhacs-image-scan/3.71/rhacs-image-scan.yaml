@@ -27,6 +27,9 @@ spec:
       type: string
       description: Name of secret containing the RHACS StackRox API token with CI permissions.
       default: rox-api-token
+    - name: rox_image
+      description: Image providing the roxctl tool.
+      default: quay.io/stackrox-io/roxctl:3.71.0
     - name: image
       type: string
       description: |
@@ -48,8 +51,7 @@ spec:
       default: "false"
   steps:
     - name: rox-image-scan
-      #image: registry.redhat.io/advanced-cluster-security/rhacs-roxctl-rhel8:3.71
-      image: quay.io/stackrox-io/roxctl:3.71.0
+      image: $(params.rox_image)
       env:
         - name: HOME
           value: /tekton/home
@@ -69,8 +71,6 @@ spec:
             secretKeyRef:
               name: $(params.rox_central_endpoint)
               key: rox_central_endpoint
-      command:
-        - /usr/bin/roxctl
       args:
         - image
         - scan

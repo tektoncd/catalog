@@ -26,6 +26,9 @@ spec:
       type: string
       description: Name of secret containing the RHACS StackRox API token with CI permissions.
       default: rox-api-token
+    - name: rox_image
+      description: Image providing the roxctl tool.
+      default: quay.io/stackrox-io/roxctl:3.71.0
     - name: deployment
       type: string
       description: |
@@ -50,8 +53,7 @@ spec:
       description: Output of `roxctl deployment check`
   steps:
     - name: rox-deploy-check
-      #image: registry.redhat.io/advanced-cluster-security/rhacs-roxctl-rhel8:3.71
-      image: quay.io/stackrox-io/roxctl:3.71.0
+      image: $(params.rox_image)
       workingDir: $(workspaces.source.path)
       env:
         - name: DEPLOYMENT
@@ -72,8 +74,6 @@ spec:
             secretKeyRef:
               name: $(params.rox_central_endpoint)
               key: rox_central_endpoint
-      command:
-        - /usr/bin/roxctl
       args:
         - deployment
         - check
