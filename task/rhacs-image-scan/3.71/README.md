@@ -1,4 +1,4 @@
-# StackRox/Red Hat Advanced Cluster Security Image Scan Task
+# Red Hat Advanced Cluster Security Image Scan Task
 
 Scan an image for vulnerabilities and metadata against RHACS build and deploy lifecycle policies to validate a pipeline run using `roxctl`.
 
