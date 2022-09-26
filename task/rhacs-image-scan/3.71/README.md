@@ -11,7 +11,7 @@ This task requires an active installation of [Red Hat Advanced Cluster Security 
 ## Install the Task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/rhacs-image-scan/3.71/rhacs-image-scan.yaml
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/rhacs-image-scan/3.71/raw
 ```
 
 ## Parameters
