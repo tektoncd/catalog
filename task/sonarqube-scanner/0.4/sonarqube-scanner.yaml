@@ -1,0 +1,157 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: sonarqube-scanner
+  labels:
+    app.kubernetes.io/version: "0.4"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/categories: Security
+    tekton.dev/tags: security
+    tekton.dev/displayName: "sonarqube scanner"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    The following task can be used to perform static analysis on the source code
+    provided the SonarQube server is hosted
+
+    SonarQube is the leading tool for continuously inspecting the Code Quality and Security
+    of your codebases, all while empowering development teams. Analyze over 25 popular
+    programming languages including C#, VB.Net, JavaScript, TypeScript and C++. It detects
+    bugs, vulnerabilities and code smells across project branches and pull requests.
+
+  workspaces:
+    - name: source
+      description: "Workspace containing the code which needs to be scanned by SonarQube"
+    - name: sonar-settings
+      description: "Optional workspace where SonarQube properties can be mounted"
+      optional: true
+    - name: sonar-credentials
+      description: |
+        A workspace containing a login or password for use within sonarqube.
+      optional: true
+  params:
+    - name: SONAR_HOST_URL
+      description: SonarQube server URL
+      default: ""
+    - name: SONAR_PROJECT_KEY
+      description: Project's unique key
+      default: ""
+    - name: PROJECT_VERSION
+      description: "Version of the project. Default: 1.0"
+      default: "1.0"
+    - name: SOURCE_TO_SCAN
+      description: "Comma-separated paths to directories containing main source files"
+      default: "."
+    - name: SONAR_ORGANIZATION
+      description: "The organization in sonarqube where the project exists"
+      default: ""
+    - name: SONAR_SCANNER_IMAGE
+      description: "The sonarqube scanner CLI image which will run the scan"
+      default: "docker.io/sonarsource/sonar-scanner-cli:4.6@sha256:7a976330a8bad1beca6584c1c118e946e7a25fdc5b664d5c0a869a6577d81b4f"
+    - name: SONAR_LOGIN_KEY
+      description: Name of the file of the login within the sonarqube credentials workspace
+      default: "login"
+    - name: SONAR_PASSWORD_KEY
+      description: Name of the file of the password within the sonarqube credentials workspace
+      default: "password"
+  steps:
+    - name: sonar-properties-create
+      image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
+      workingDir: $(workspaces.source.path)
+      env:
+        - name: SONAR_HOST_URL
+          value: $(params.SONAR_HOST_URL)
+        - name: SONAR_PROJECT_KEY
+          value: $(params.SONAR_PROJECT_KEY)
+        - name: PROJECT_VERSION
+          value: $(params.PROJECT_VERSION)
+        - name: SOURCE_TO_SCAN
+          value: $(params.SOURCE_TO_SCAN)
+        - name: SONAR_ORGANIZATION
+          value: $(params.SONAR_ORGANIZATION)
+      script: |
+        #!/usr/bin/env bash
+
+        replaceValues() {
+          filename=$1
+          thekey=$2
+          newvalue=$3
+
+          if ! grep -R "^[#]*\s*${thekey}=.*" $filename >/dev/null; then
+            echo "APPENDING because '${thekey}' not found"
+            echo "" >>$filename
+            echo "$thekey=$newvalue" >>$filename
+          else
+            echo "SETTING because '${thekey}' found already"
+            sed -ir "s|^[#]*\s*${thekey}=.*|$thekey=$newvalue|" $filename
+          fi
+        }
+
+        if [[ "$(workspaces.sonar-settings.bound)" == "true" ]]; then
+          if [[ -f $(workspaces.sonar-settings.path)/sonar-project.properties ]]; then
+            echo "using user provided sonar-project.properties file"
+            cp -RL $(workspaces.sonar-settings.path)/sonar-project.properties $(workspaces.source.path)/sonar-project.properties
+          fi
+        fi
+
+        if [[ -f $(workspaces.source.path)/sonar-project.properties ]]; then
+          if [[ -n "${SONAR_HOST_URL}" ]]; then
+            echo "replacing sonar host URL"
+            replaceValues $(workspaces.source.path)/sonar-project.properties sonar.host.url "${SONAR_HOST_URL}"
+          fi
+          if [[ -n "${SONAR_PROJECT_KEY}" ]]; then
+            echo "replacing sonar project key"
+            replaceValues $(workspaces.source.path)/sonar-project.properties sonar.projectKey "${SONAR_PROJECT_KEY}"
+          fi
+          echo "Values in sonar-project.properties file replaced successfully..."
+        else
+          echo "Creating sonar-project.properties file..."
+          touch sonar-project.properties
+          [[ -n "${SONAR_PROJECT_KEY}" ]] && {
+            echo "sonar.projectKey=${SONAR_PROJECT_KEY}" >> sonar-project.properties
+          } || {
+            echo "missing property SONAR_PROJECT_KEY"
+            exit 1
+          }
+
+          [[ -n "${SONAR_HOST_URL}" ]] && {
+            echo "sonar.host.url=${SONAR_HOST_URL}" >> sonar-project.properties
+          } || {
+            echo "missing property SONAR_HOST_URL"
+            exit 1
+          }
+
+          [[ -n "${PROJECT_VERSION}" ]] && {
+            echo "sonar.projectVersion=${PROJECT_VERSION}" >> sonar-project.properties
+          } || {
+            echo "missing property PROJECT_VERSION"
+            exit 1
+          }
+
+          [[ -n "${SONAR_ORGANIZATION}" ]] && {
+            echo "sonar.organization=${SONAR_ORGANIZATION}" >> sonar-project.properties
+          } || {
+            echo "missing property SONAR_ORGANIZATION"
+            exit 1
+          }
+          echo "sonar.sources=${SOURCE_TO_SCAN}" >> sonar-project.properties
+          echo "---------------------------"
+          cat $(workspaces.source.path)/sonar-project.properties
+        fi
+
+        if [[ "$(workspaces.sonar-credentials.bound)" == "true" ]]; then
+          if [[ -f $(workspaces.sonar-credentials.path)/$(params.SONAR_PASSWORD_KEY) ]]; then
+            SONAR_PASSWORD=`cat $(workspaces.sonar-credentials.path)/$(params.SONAR_PASSWORD_KEY)`
+            replaceValues $(workspaces.source.path)/sonar-project.properties sonar.password "${SONAR_PASSWORD}"
+          fi
+          if [[ -f $(workspaces.sonar-credentials.path)/$(params.SONAR_LOGIN_KEY) ]]; then
+            SONAR_LOGIN=`cat $(workspaces.sonar-credentials.path)/$(params.SONAR_LOGIN_KEY)`
+            replaceValues $(workspaces.source.path)/sonar-project.properties sonar.login "${SONAR_LOGIN}"
+          fi
+        fi
+    - name: sonar-scan
+      image: $(params.SONAR_SCANNER_IMAGE)
+      workingDir: $(workspaces.source.path)
+      command:
+        - sonar-scanner
