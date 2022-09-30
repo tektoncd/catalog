@@ -17,7 +17,7 @@
 ### Install the Docker Build Task
 
 ```
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/docker-build/0.1/raw
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/fossa-scanner/0.1/raw
 ```
 
 ### Parameters
