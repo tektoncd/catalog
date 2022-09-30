@@ -13,10 +13,10 @@ metadata:
     tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
-    fossa-cli is a zero-configuration polyglot dependency analysis tool. You can point fossa CLI at any codebase or build, 
+    fossa-cli is a zero-configuration polyglot dependency analysis tool. You can point fossa CLI at any codebase or build,
     and it will automatically detect dependencies being used by your project.
 
-    This task can be used to scan for dependency analysis, license scanning, vulnerability scanning, 
+    This task can be used to scan for dependency analysis, license scanning, vulnerability scanning,
     attribution report generation, and more on the source code in standalone mode.
   workspaces:
     - name: source
