@@ -52,11 +52,3 @@ spec:
         #!/usr/bin/env sh
           echo "Running fossa scan..."
           fossa analyze --endpoint "$(params.FOSSA_ENDPOINT)" --team "$(params.TEAM)" --unpack-archives --json --policy 'Critical Security Issues' > analyze.txt
-  
-
-
-
-
-
-
-
