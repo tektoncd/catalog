@@ -1,0 +1,11 @@
+# Artifact Hub repository metadata file
+repositoryID: 284df093-4c1f-4559-a389-ec567f48e580
+owners: # (optional, used to claim repository ownership)
+  - name: Vincent Demeester
+    email: vincent@sbr.pm
+  - name: zhangquan
+    email: zhangquan@google.com
+# ignore: # (optional, packages that should not be indexed by Artifact Hub)
+#   - name: package1
+#   - name: package2 # Exact match
+#     version: beta # Regular expression (when omitted, all versions are ignored)

@@ -120,7 +120,7 @@ See also: [`use-ssh-key`](https://github.com/tektoncd/catalog/blob/main/task/ork
 | Parameter | Description | Default |
 | --- | --- | ---: |
 | `base-image` | The Orka base image to use for the VM config. | --- |
-| `docker-image` | The docker image used to run the task steps. | ghcr.io/macstadium/orka-tekton-runner:2022-06-29-ec3440a7@sha256:d7cfb75ea082a927e36c131aa96e96bfcacd23f62fdaf33f5b37320b86baf50e |
+| `orka-tekton-runner-image` | The docker image used to run the task steps. | ghcr.io/macstadium/orka-tekton-runner:2022-06-29-ec3440a7@sha256:d7cfb75ea082a927e36c131aa96e96bfcacd23f62fdaf33f5b37320b86baf50e |
 | `cpu-count` | The number of CPU cores to dedicate for the VM. Must be 3, 4, 6, 8, 12, or 24. | 3 |
 | `vcpu-count` | The number of vCPUs for the VM. Must equal the number of CPUs, when CPU is less than or equal to 3. Otherwise, must equal half of or exactly the number of CPUs specified. | 3 |
 | `vnc-console` | Enables or disables VNC for the VM. | false |

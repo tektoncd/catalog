@@ -1,0 +1,83 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: rhacs-deployment-check
+  labels:
+    app.kubernetes.io/version: "3.71"
+  annotations:
+    tekton.dev/tags: security
+    tekton.dev/categories: Security
+    tekton.dev/displayName: "Policy check a deployment with Red Hat Advanced Cluster Security"
+    tekton.dev/platforms: "linux/amd64"
+    tekton.dev/pipelines.minVersion: "0.18.0"
+spec:
+  description: >-
+    Policy check a deployment with Red Hat Advanced Cluster Security.
+
+    This tasks allows you to check a Kubernetes deployment manifest against policies
+    and apply enforcement to fail pipelines.
+  params:
+    - name: rox_central_endpoint
+      type: string
+      description: Name of secret containing the address:port tuple for RHACS Stackrox Central.
+      default: rox-central-endpoint
+    - name: rox_api_token
+      type: string
+      description: Name of secret containing the RHACS StackRox API token with CI permissions.
+      default: rox-api-token
+    - name: rox_image
+      description: Image providing the roxctl tool.
+      default: quay.io/stackrox-io/roxctl:3.71.0
+    - name: deployment
+      type: string
+      description: |
+        Deployment filename to check.
+        Examples: 'deployment.yaml', '$(workspaces.source.path)/base/deployment.yaml'
+      default: '$(workspaces.source.path)/deployment.yaml'
+    - name: output_format
+      description: Results output format (csv | json | junit | table)
+      type: string
+      default: "table"
+    - name: insecure-skip-tls-verify
+      type: string
+      description: |
+        Do not verify TLS certificates.
+
+        When set to "true", skip verifying the TLS certs of the Central endpoint and registry.
+      default: "false"
+  workspaces:
+    - name: source
+  results:
+    - name: check_output
+      description: Output of `roxctl deployment check`
+  steps:
+    - name: rox-deploy-check
+      image: $(params.rox_image)
+      workingDir: $(workspaces.source.path)
+      env:
+        - name: DEPLOYMENT
+          value: $(params.deployment)
+        - name: HOME
+          value: /tekton/home
+        - name: INSECURE
+          value: $(params.insecure-skip-tls-verify)
+        - name: OUTPUT
+          value: $(params.output_format)
+        - name: ROX_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: $(params.rox_api_token)
+              key: rox_api_token
+        - name: ROX_CENTRAL_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name: $(params.rox_central_endpoint)
+              key: rox_central_endpoint
+      args:
+        - deployment
+        - check
+        - --endpoint=$(ROX_CENTRAL_ENDPOINT)
+        - --insecure-skip-tls-verify=$(INSECURE)
+        - --output=$(OUTPUT)
+        - --file=$(DEPLOYMENT)
