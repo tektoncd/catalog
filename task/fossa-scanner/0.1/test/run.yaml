@@ -1,0 +1,55 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: fossa-scan-springboot
+spec:
+  workspaces:
+    - name: source
+      persistentVolumeClaim:
+        claimName: my-source-repo
+  taskRef:
+    name: fossa-scanner
+  podTemplate:
+    securityContext:
+      runAsUser: 0
+  params:
+    - name: FOSSA_API_KEY
+      value: YOUR_FOSSA_API_KEY
+    - name: FOSSA_TELEMETRY_SCOPE
+      value: "off"
+    - name: TEAM
+      value: YOUR_TEAM
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: my-source-repo
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "local_path"
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-source-repo
+  namespace: tekton-pipelines
+spec:
+  resources:
+    requests:
+      storage: 5Gi
+  volumeMode: Filesystem
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce

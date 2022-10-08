@@ -1,0 +1,54 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: fossa-scanner
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Security
+    tekton.dev/tags: CLI, fossa
+    tekton.dev/displayName: "fossa scanner"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    fossa-cli is a zero-configuration polyglot dependency analysis tool. You can point fossa CLI at any codebase or build,
+    and it will automatically detect dependencies being used by your project.
+
+    This task can be used to scan for dependency analysis, license scanning, vulnerability scanning,
+    attribution report generation, and more on the source code in standalone mode.
+  workspaces:
+    - name: source
+      description: A workspace that contains the source code to scan.
+  params:
+    - name: FOSSA_API_KEY
+      description: API key to be passed to fossa cli.
+      type: string
+    - name: FOSSACLI_IMAGE
+      default: docker.io/nistal97/fossa-cli@sha256:b3dd65d1297e9436b9e0f176c355ea1fa9c6295d09f79032c830b6e7e3376293
+      description: fossa scanner image to be used
+      type: string
+    - name: FOSSA_ENDPOINT
+      description: fossa server endpoint to connect
+      default: https://fossa.com/
+      type: string
+    - name: FOSSA_TELEMETRY_SCOPE
+      description: scope of fossa analyze telemetry, could be "full" or "off"
+      type: string
+    - name: TEAM
+      description: team provided for this scan
+      type: string
+  steps:
+    - name: fossa-scan
+      image: $(params.FOSSACLI_IMAGE)
+      workingDir: $(workspaces.source.path)
+      env:
+        - name: FOSSA_API_KEY
+          value: $(params.FOSSA_API_KEY)
+        - name: FOSSA_TELEMETRY_SCOPE
+          value: $(params.FOSSA_TELEMETRY_SCOPE)
+      script: |
+        #!/usr/bin/env sh
+          echo "Running fossa scan..."
+          fossa analyze --endpoint "$(params.FOSSA_ENDPOINT)" --team "$(params.TEAM)" --unpack-archives --json --policy 'Critical Security Issues' > analyze.txt
