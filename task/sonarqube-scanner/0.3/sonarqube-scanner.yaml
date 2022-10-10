@@ -68,13 +68,13 @@ spec:
           thekey=$2
           newvalue=$3
 
-          if ! grep -R "^[#]*\s*${thekey}=.*" $filename >/dev/null; then
+          if ! grep -R "^[#]*\s*${thekey}=.*" "$filename" >/dev/null; then
             echo "APPENDING because '${thekey}' not found"
             echo "" >>$filename
-            echo "$thekey=$newvalue" >>$filename
+            echo "$thekey=$newvalue" >> "$filename"
           else
             echo "SETTING because '${thekey}' found already"
-            sed -ir "s|^[#]*\s*${thekey}=.*|$thekey=$newvalue|" $filename
+            sed -ir "s|^[#]*\s*${thekey}=.*|$thekey=$newvalue|" "$filename"
           fi
         }
 
