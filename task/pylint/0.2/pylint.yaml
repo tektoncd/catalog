@@ -20,7 +20,7 @@ spec:
   params:
     - name: image
       description: The container image with pylint
-      default: docker.io/cytopia/pylint@sha256:6e5b49b6d54cbd845b93139eeb3f4f558b07bf6a87001ce254782463df1443d2
+      default: registry.gitlab.com/pipeline-components/pylint:edge
     - name: path
       description: The path to the module which should be analysed by pylint
       default: "."
