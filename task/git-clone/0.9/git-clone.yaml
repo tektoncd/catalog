@@ -107,7 +107,7 @@ spec:
       description: |
         Absolute path to the user's home directory.
       type: string
-      default: "/tekton/home"
+      default: "/home/git"
   results:
     - name: commit
       description: The precise commit SHA that was fetched by this Task.
