@@ -1,0 +1,79 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: sparse-checkout-list-dir
+spec:
+  description: |
+    sparse-checkout-list-dir takes a git repository and a list of
+    directory patterns to match and lists all cloned files and directories.
+    This is an example pipeline demonstrating the following:
+      - Using the git-clone catalog Task to clone a specific set of
+        files based on directory patterns.
+      - Passing a cloned repo to subsequent Tasks using a Workspace.
+      - Ordering Tasks in a Pipeline using "runAfter" so that
+        git-clone completes before we try to read from the Workspace.
+      - Using a volumeClaimTemplate Volume as a Workspace.
+      - Avoiding hard-coded paths by using a Workspace's path
+        variable instead.
+  params:
+  - name: repo-url
+    type: string
+    description: The git repository URL to clone from.
+  - name: sparseCheckoutDirectories
+    type: string
+    description: directory patterns to clone
+  workspaces:
+  - name: shared-data
+    description: |
+      This workspace will receive the cloned git repo and be passed
+      to the next Task to list all cloned files and directories.
+  tasks:
+  - name: fetch-repo
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: shared-data
+    params:
+    - name: url
+      value: $(params.repo-url)
+    - name: sparseCheckoutDirectories
+      value: $(params.sparseCheckoutDirectories)
+  - name: list-dirs
+    runAfter: ["fetch-repo"]  # Wait until the clone is done before listing all files and directories cloned
+    workspaces:
+    - name: source
+      workspace: shared-data
+    taskSpec:
+      workspaces:
+      - name: source
+      steps:
+      - image: zshusers/zsh:4.3.15
+        script: |
+          #!/usr/bin/env zsh
+          ls -R $(workspaces.source.path)/
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: git-clone-sparse-checkout
+spec:
+  pipelineRef:
+    name: sparse-checkout-list-dir
+  podTemplate:
+    securityContext:
+      fsGroup: 65532
+  workspaces:
+  - name: shared-data
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+  params:
+  - name: repo-url
+    value: https://github.com/tektoncd/pipeline.git
+  - name: sparseCheckoutDirectories
+    value: /*,!/*/,/docs/,/cmd/
