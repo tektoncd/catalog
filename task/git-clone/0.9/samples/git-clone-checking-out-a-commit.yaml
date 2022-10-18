@@ -112,7 +112,7 @@ spec:
     taskPodTemplate:
       securityContext:
         runAsNonRoot: true
-        runAsUser: 65532 # nonroot user in git-init container
+        runAsUser: 65532  # nonroot user in git-init container
   params:
   - name: repo-url
     value: https://github.com/tektoncd/pipeline.git
