@@ -174,7 +174,7 @@ spec:
           set -x
         fi
         
-        git config --global --add safe.directory $WORKSPACE_OUTPUT_PATH
+        git config --global --add safe.directory "${WORKSPACE_OUTPUT_PATH}"
 
         if [ "${WORKSPACE_BASIC_AUTH_DIRECTORY_BOUND}" = "true" ] ; then
           cp "${WORKSPACE_BASIC_AUTH_DIRECTORY_PATH}/.git-credentials" "${PARAM_USER_HOME}/.git-credentials"
