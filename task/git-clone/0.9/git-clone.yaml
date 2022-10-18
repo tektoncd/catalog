@@ -173,7 +173,7 @@ spec:
         if [ "${PARAM_VERBOSE}" = "true" ] ; then
           set -x
         fi
-        
+
         git config --global --add safe.directory "${WORKSPACE_OUTPUT_PATH}"
 
         if [ "${WORKSPACE_BASIC_AUTH_DIRECTORY_BOUND}" = "true" ] ; then
