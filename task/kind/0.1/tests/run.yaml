@@ -12,7 +12,7 @@ spec:
           name: git-clone
         params:
           - name: url
-            value: https://github.com/wlynch/tekton-kind.git
+            value: https://github.com/vinamra28/tekton-kind.git
         workspaces:
           - name: output
             workspace: workspace
