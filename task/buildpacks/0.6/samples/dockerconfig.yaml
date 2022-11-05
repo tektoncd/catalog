@@ -1,0 +1,86 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dockerconfig-secret
+stringData:
+  config.json: |
+    {
+      "auths" : {
+        "icr.io" : {
+          "auth" : "iamapikey",
+          "identitytoken" : "test123test123"
+        }
+      }
+    }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dockerconfig-ws-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: dockerconfig-pipeline-run
+  labels:
+    description: A PipelineRun configured to demonstrate usage of dockerconfig workspace for referencing .docker/config.json file.
+spec:
+  pipelineSpec:
+    workspaces:
+      - name: source-ws
+      - name: cache-ws
+      - name: dockerconfig-ws
+    tasks:
+      - name: fetch-repository
+        taskRef:
+          name: git-clone
+        workspaces:
+          - name: output
+            workspace: source-ws
+        params:
+          - name: url
+            value: https://github.com/buildpacks/samples
+          - name: subdirectory
+            value: ""
+          - name: deleteExisting
+            value: "true"
+      - name: buildpacks
+        taskRef:
+          name: buildpacks
+        runAfter:
+          - fetch-repository
+        workspaces:
+          - name: source
+            workspace: source-ws
+          - name: cache
+            workspace: cache-ws
+          - name: dockerconfig
+            workspace: dockerconfig-ws
+        params:
+          - name: APP_IMAGE
+            value: <IMAGE_NAME>
+          - name: SOURCE_SUBPATH
+            value: apps
+          - name: BUILDER_IMAGE
+            value: docker.io/cnbs/sample-builder:alpine@sha256:62159ce68793aacc4dad3465b3fd6f2c9ca736229c9d9f7b464ab75d959a3b51
+          - name: PROCESS_TYPE
+            value: ""
+  workspaces:
+    - name: source-ws
+      subPath: source
+      persistentVolumeClaim:
+        claimName: dockerconfig-ws-pvc
+    - name: cache-ws
+      subPath: cache
+      persistentVolumeClaim:
+        claimName: dockerconfig-ws-pvc
+    - name: dockerconfig-ws
+      secret:
+        secretName: dockerconfig-secret
