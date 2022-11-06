@@ -52,7 +52,7 @@ spec:
   params:
   - name: charts_dir
     value: helm-sample-chart
-  - name: releases_version
+  - name: release_version
     value: v1.0.0
   - name: release_name
     value: helm-source-sample
