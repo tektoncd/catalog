@@ -1,0 +1,25 @@
+---
+headers:
+  method: GET
+  path: /api/v4/projects/{project:.+}
+response:
+  status: 201
+  content-type: application/json
+  output: |
+    {
+      "id": 8,
+      "star_count": 256
+    }
+---
+headers:
+  method: PUT
+  path: projects/{project:.+}/merge_requests/{merge_request_iid:.+}/merge
+response:
+  status: 200
+  content-type: application/json
+  output: |
+    {
+      "id": 1,
+      "iid": 1,
+      "web_url": "http://gitlab.example.com/my-group/my-project/merge_requests/1",
+    }

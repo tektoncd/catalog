@@ -1,0 +1,129 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: gitlab-jq
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Git
+    tekton.dev/tags: gitlab, git
+    tekton.dev/displayName: "Send a request to the Gitlab REST API and filter the response with jq."
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    This Task sends a request to the Gitlab REST API and filters the JSON response with jq.
+    By defining a jq filter expression, it's possible to select specific fields from the JSON response and format them as needed.
+    This Task stores the output of the jq command as a result.
+  params:
+    - name: PATH
+      description: >
+        Example: "projects/278964/merge_requests"
+    - name: FILTER
+      default: >-
+        if type == "array" then .[].web_url else .web_url end
+        // if type == "array" then .[].id else .id end
+      description: >
+        The jq filter expression. See the jq manual for syntax: https://stedolan.github.io/jq/manual.
+        By default outputs the web_url of the returned object(s). Outputs the id if web_url is not available.
+    - name: DATA
+      default: ""
+      description: JSON body to send, if any.
+    - name: METHOD
+      default: ""
+      description: The HTTP method. Uses curl default if empty.
+    - name: JQ_EXTRA_ARGS
+      default: ""
+      description: Extra parameters to the jq command.
+    - name: GITLAB_TOKEN_SECRET_NAME
+      description: |
+        The name of the Kubernetes secret that contains the GitLab token
+      type: string
+      default: gitlab-api-secret
+    - name: GITLAB_TOKEN_SECRET_KEY
+      description: |
+        The key within the Kubernetes secret that contains the GitLab token
+      type: string
+      default: token
+    - name: GITLAB_HOST_URL
+      description: |
+        The GitLab host URL
+      default: "https://gitlab.com"
+      type: string
+    - name: API_PATH_PREFIX
+      description: |
+        The API path prefix
+      default: "api/v4"
+      type: string
+    - name: SHELL_IMAGE
+      description: A image with a Bash shell.
+      default: docker.io/library/alpine@sha256:c0d488a800e4127c334ad20d61d7bc21b4097540327217dfab52262adc02380c
+    - name: CURL_IMAGE
+      description: The image to send the request to the API.
+      default: docker.io/curlimages/curl@sha256:d6a01c11f0633375a173960ad741eca7460cbc776bb3bc2370e5571478b99459
+    - name: JQ_IMAGE
+      description: The image to filter the API response.
+      default: docker.io/stedolan/jq@sha256:a61ed0bca213081b64be94c5e1b402ea58bc549f457c2682a86704dd55231e09
+    - name: REQUEST_BODY_PATH
+      description: Where to save the JSON request body before sending it to the API.
+      default: /workspace/request.json
+    - name: RESPONSE_BODY_PATH
+      description: Where to save the API response body before filtering it.
+      default: /workspace/gitlab_response.json
+  steps:
+    # Write DATA to file
+    - name: write-file
+      image: $(params.SHELL_IMAGE)
+      env:
+        - name: PATH
+          value: $(params.REQUEST_BODY_PATH)
+        - name: CONTENTS
+          value: $(params.DATA)
+      script: |
+        echo "Writing DATA to file..."
+        printf '%s' "${CONTENTS}" > "./${PATH}"
+    # Check that DATA is valid JSON
+    - name: validate-data
+      image: $(params.JQ_IMAGE)
+      script: |
+        #!/usr/bin/env bash
+        set -e
+        echo "Checking that DATA is valid JSON..."
+        [ -s "$(params.REQUEST_BODY_PATH)" ] && jq . "$(params.REQUEST_BODY_PATH)"
+    # Call the Gitlab REST API
+    - name: request
+      image: $(params.CURL_IMAGE)
+      env:
+        - name: REQUEST_URL
+          value: $(params.GITLAB_HOST_URL)/$(params.API_PATH_PREFIX)/$(params.PATH)
+        - name: GITLAB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: $(params.GITLAB_TOKEN_SECRET_NAME)
+              key: $(params.GITLAB_TOKEN_SECRET_KEY)
+      script: |
+        echo "Calling the Gitlab REST API..."
+        [ -n "$(params.METHOD)" ] && METHOD="-X $(params.METHOD)"
+        [ -s "$(params.REQUEST_BODY_PATH)" ] && DATA="--data @$(params.REQUEST_BODY_PATH)"
+        curl -s -L --fail-with-body \
+          --header "User-Agent: TektonCD, the peaceful cat" \
+          --header "Authorization: Bearer $GITLAB_TOKEN" \
+          --header "Content-Type: application/json" \
+          $METHOD $DATA "$REQUEST_URL" \
+          -o "$(params.RESPONSE_BODY_PATH)" \
+        || {
+          cat "$(params.RESPONSE_BODY_PATH)"
+          exit 1
+        }
+    # Filter the Gitlab API response
+    - name: filter
+      image: $(params.JQ_IMAGE)
+      script: |
+        #!/usr/bin/env bash
+        set -e
+        set -o pipefail
+        echo "Filtering the Gitlab API response..."
+        jq -r '$(params.FILTER)' "$(params.RESPONSE_BODY_PATH)" | tee "$(results.output.path)"
+  results:
+    - name: output
+      description: Output of the Gitlab API response filter.

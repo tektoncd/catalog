@@ -1,0 +1,56 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: gitlab-jq-test-pipeline-run
+spec:
+  pipelineSpec:
+    tasks:
+      - name: get-stars
+        taskRef:
+          name: gitlab-jq
+        params:
+          - name: GITLAB_HOST_URL
+            value: http://localhost:8080
+          - name: GITLAB_TOKEN_SECRET_NAME
+            value: gitlab-secret
+          - name: GITLAB_TOKEN_SECRET_KEY
+            value: token
+          - name: PATH
+            value: projects/8
+          - name: FILTER
+            value: >
+              .star_count
+      - name: check-output
+        params:
+          - name: received
+            value: $(tasks.get-stars.results.output)
+          - name: expected
+            value: "256"
+        taskSpec:
+          params:
+            - name: received
+            - name: expected
+          steps:
+            - name: check
+              image: docker.io/library/busybox
+              script: |
+                [ "$(params.received)" == "$(params.expected)" ] || exit 1
+      - name: merge
+        taskRef:
+          name: gitlab-jq
+        params:
+          - name: GITLAB_HOST_URL
+            value: http://localhost:8080
+          - name: GITLAB_TOKEN_SECRET_NAME
+            value: gitlab-secret
+          - name: GITLAB_TOKEN_SECRET_KEY
+            value: token
+          - name: PATH
+            value: projects/1/merge_requests/1/merge
+          - name: METHOD
+            value: PUT
+          - name: DATA
+            value: |
+              {
+                "merge_commit_message": "Merge Request Merged\n\nAnd that's it."
+              }
