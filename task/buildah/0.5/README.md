@@ -37,6 +37,7 @@ kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/buildah/0.5/
 * **source**: A [Workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md) containing the source to build.
 * **sslcertdir**: An [*optional* Workspace](https://github.com/tektoncd/pipeline/blob/v0.17.0/docs/workspaces.md#optional-workspaces) containing your custom SSL certificates to connect to the registry. Buildah will look for files ending with *.crt, *.cert, *.key into this workspace. See [this sample](./samples/openshift-internal-registry.yaml) for a complete example on how to use it with OpenShift internal registry.
 - **dockerconfig**: An [optional workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md#using-workspaces-in-tasks) that allows providing a `.docker/config.json` file for Buildah to access the container registry. The file should be placed at the root of the Workspace with name `config.json`. See [this sample](./samples/dockerconfig.yaml) for a complete example on how to use `dockerconfig` to access container registry. _(optional)_
+- **secrets**: An [optional workspace](https://github.com/tektoncd/pipeline/blob/main/docs/workspaces.md#using-workspaces-in-tasks) that allows secrets to be provided (either via passing a Secret as the workspace, or a projected volume containing multiple). They can then be securely consumed by using adding `--secret=id=id,src=path` to `BUILD_EXTRA_ARGS` and using `RUN --mount=type=secret` within the Dockerfile. _(optional)_
 
 ## Platforms
 

@@ -56,6 +56,13 @@ spec:
   - name: source
   - name: sslcertdir
     optional: true
+  - name: secrets
+    optional: true
+    description: >-
+      An optional workspace that allows secrets to be provided (either via passing
+      a Secret as the workspace, or a projected volume containing multiple). They
+      can then be securely consumed by using adding --secret=id=id,src=path to
+      BUILD_EXTRA_ARGS and using RUN --mount=type=secret within the Dockerfile
   - name: dockerconfig
     description: >-
       An optional workspace that allows providing a .docker/config.json file
