@@ -3,7 +3,7 @@ kind: Task
 metadata:
   name: skopeo-copy
   labels:
-    app.kubernetes.io/version: "0.2"
+    app.kubernetes.io/version: "0.3"
   annotations:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/categories: CLI
@@ -59,7 +59,8 @@ spec:
               cmd="$cmd \
                   $url"
             done
-            skopeo copy "$cmd" --src-tls-verify="$(params.srcTLSverify)" --dest-tls-verify="$(params.destTLSverify)"
+            read -ra sourceDest <<<"${cmd}"
+            skopeo copy "${sourceDest[@]}" --src-tls-verify="$(params.srcTLSverify)" --dest-tls-verify="$(params.destTLSverify)"
             echo "$cmd"
           done < "$filename"
         }
