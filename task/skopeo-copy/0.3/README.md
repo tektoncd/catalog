@@ -39,7 +39,7 @@ This `task` can be used to copy one or more than one images to-and fro various s
 ## Install the Task
 
 ```
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/skopeo-copy/0.2/raw
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/skopeo-copy/0.3/raw
 ```
 
 ## Parameters
@@ -58,7 +58,7 @@ kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/skopeo-copy/
 * `Secret` to provide the credentials of the source and destination registry where the image needs to be copied from and to.
 * `ConfigMap` to provide support for copying multiple images, this contains file `url.txt` which stores images registry URL's.
 
-  [This](../0.2/samples/quay-secret.yaml) example can help to use secrets for providing credentials of image registries.
+  [This](../0.3/samples/quay-secret.yaml) example can help to use secrets for providing credentials of image registries.
 
 ## Platforms
 
@@ -66,7 +66,7 @@ The Task can be run on `linux/amd64`, `linux/s390x`, `linux/arm64` and `linux/pp
 
 ## Usage
 
-This task will use the `Service Account` with access to the secrets containing source and destination image registry credentials, this will authorize it to the respective image registries. 
+This task will use the `Service Account` with access to the secrets containing source and destination image registry credentials, this will authorize it to the respective image registries.
 
 In case of multiple source and destination image registries that needs to be copied to and fro, a file named `url.txt` should be created containing all the source and destination image registries `URL` seperated by a space and each set of images should be written in the new line, as shown below.
 
@@ -84,9 +84,9 @@ In case there is only one source and destination image that needs to be copied t
 This will result in the image getting copied from the source registry to the destination registry.
 
 
-[This](../0.2/samples/serviceaccount.yaml) will guide the user to use service account for authorization to image registries.
+[This](../0.3/samples/serviceaccount.yaml) will guide the user to use service account for authorization to image registries.
 
-See [here](../0.2/samples/run.yaml) for example of `TaskRun`.
+See [here](../0.3/samples/run.yaml) for example of `TaskRun`.
 ### Note
 
 - `Source credentials` are only required, if the source image registry needs authentication to pull the image, whereas `Destination credentials` are always required.
