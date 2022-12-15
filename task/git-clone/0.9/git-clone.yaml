@@ -182,7 +182,7 @@ spec:
         fi
 
         if [ "${WORKSPACE_SSH_DIRECTORY_BOUND}" = "true" ] ; then
-          cp -R "${WORKSPACE_SSH_DIRECTORY_PATH}" "${PARAM_USER_HOME}"/.ssh
+          cp -LR "${WORKSPACE_SSH_DIRECTORY_PATH}"/* "${PARAM_USER_HOME}"/.ssh
           chmod 700 "${PARAM_USER_HOME}"/.ssh
           chmod -R 400 "${PARAM_USER_HOME}"/.ssh/*
         fi
