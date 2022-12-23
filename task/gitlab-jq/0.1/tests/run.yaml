@@ -5,6 +5,13 @@ metadata:
 spec:
   pipelineSpec:
     tasks:
+      - name: wait
+        taskSpec:
+          steps:
+            - name: sleep
+              image: docker.io/library/busybox
+              script: |
+                sleep 100
       - name: get-stars
         taskRef:
           name: gitlab-jq
