@@ -108,6 +108,7 @@ spec:
 
 * **commit**: The precise commit SHA that was fetched by this Task
 * **url**: The precise URL that was fetched by this Task
+* **committer-date**: The epoch timestamp of the commit that was fetched by this Task
 
 ## Platforms
 
