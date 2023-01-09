@@ -1,0 +1,27 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: rox-pipeline
+  namespace: pipeline-demo
+spec:
+  description: Rox demo pipeline
+  params:
+    - name: image
+      type: string
+      description: |
+        Full name of image to scan (example -- gcr.io/rox/sample:5.0-rc1)
+  tasks:
+    - name: image-scan
+      taskRef:
+        name: rox-image-scan
+        kind: ClusterTask
+      params:
+        - name: image
+          value: $(params.image)
+        - name: rox_api_token
+          value: roxsecrets
+        - name: rox_central_endpoint
+          value: roxsecrets
+        - name: output_format
+          value: pretty
