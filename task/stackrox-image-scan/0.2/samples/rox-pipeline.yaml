@@ -24,4 +24,4 @@ spec:
         - name: rox_central_endpoint
           value: roxsecrets
         - name: output_format
-          value: pretty
+          value: json
