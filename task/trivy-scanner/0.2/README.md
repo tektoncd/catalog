@@ -16,6 +16,8 @@ Trivy (tri pronounced like trigger, vy pronounced like envy) is a simple and com
 
 * **IMAGE_PATH**: The image or path to pass to `trivy` CLI for scanning. This parameter is required to run this task.
 
+* **AIR_GAPPED_ENABLED**: Optional parameter for enabling/disabling air-gapped mode, disabled by default. If set to true, the task will use the Trivy's air-gapped mode. You can learn more about the Air-Gapped installation support of the Trivy from [here](https://aquasecurity.github.io/trivy/v0.36/docs/advanced/air-gap/).
+
 ### Examples
 
 Run `trivy --help` for Trivy usage.
@@ -23,13 +25,13 @@ Run `trivy --help` for Trivy usage.
 Using the [Tekton CLI](https://github.com/tektoncd/cli/blob/main/docs/cmd/tkn_task_start.md) (`tkn`):
 
 ```shell
-tkn task start trivy-scanner -p ARGS="--help" -p IMAGE_PATH="" --workspace name=manifest-dir,emptyDir=""
+tkn task start trivy-scanner -p ARGS="--help" -p IMAGE_PATH="" -p AIR_GAPPED_ENABLED="true" --workspace name=manifest-dir,emptyDir=""
 ```
 
 Scan Alpine Image:
 
 ```shell
-tkn task start trivy-scanner -p ARGS="image,--exit-code,0" -p IMAGE_PATH="docker.io/alpine:3.13" --workspace name=manifest-dir,emptyDir=""
+tkn task start trivy-scanner -p ARGS="image,--exit-code,0" -p IMAGE_PATH="docker.io/alpine:3.13" -p AIR_GAPPED_ENABLED="true" --workspace name=manifest-dir,emptyDir=""
 ```
 
 For Pipeline Example See <https://github.com/MoOyeg/trivy-tekton-example>
