@@ -1,0 +1,48 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: pipeline-trivy-air-gapped-test
+spec:
+  workspaces:
+    - name: pipeline-pvc
+      optional: false
+  params:
+    - name: ARGS
+      type: array
+      description: The Arguments to be passed to Trivy command for config image.
+  description: Test Pipeline for Trivy
+  tasks:
+    - name: trivy-scan-local-image
+      taskRef:
+        name: trivy-scanner
+        kind: Task
+      params:
+        - name: ARGS
+          value: ["$(params.ARGS[*])"]
+        - name: IMAGE_PATH
+          value: "/usr/lib"
+        - name: AIR_GAPPED_ENABLED
+          value: "true"
+      workspaces:
+        - name: manifest-dir
+          workspace: pipeline-pvc
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: pipelinerun-trivy-air-gapped-test
+spec:
+  params:
+    - name: ARGS
+      value:
+        - "fs"
+        - "--exit-code"
+        - "0"
+  pipelineRef:
+    name: pipeline-trivy-air-gapped-test
+  timeout: 1h0m0s
+  workspaces:
+    - name: pipeline-pvc
+      persistentVolumeClaim:
+        claimName: pvc-trivy-test
