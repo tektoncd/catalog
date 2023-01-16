@@ -75,6 +75,12 @@ docker://quay.io/temp/kubeconfigwriter:v1 docker://quay.io/skopeotest/kube:v1
 docker://quay.io/temp/kubeconfigwriter:v2 docker://quay.io/skopeotest/kube:v2
 ```
 
+Each copy can be customized by adding *skopeo copy* parameters before images transport.
+
+```
+--all docker://quay.io/temp/kubeconfigwriter:v1 docker://quay.io/skopeotest/kube:v1
+```
+
 `ConfigMap` should be created using this file. Following `command` can be used to create configMap from the `file`.
 ```
 kubectl create configmap image-configmap --from-file=url.txt
