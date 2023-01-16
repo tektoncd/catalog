@@ -1,0 +1,60 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: rox-pipeline
+spec:
+  workspaces:
+    - name: shared-workspace
+
+  params:
+    - name: networkpolicy-dir
+      type: string
+      description: directory to hold generated networkpolicies
+      default: '$(workspaces.source.path)/networkpolicy'
+    - name: git-url
+      type: string
+      description: url of the git repo for the code of deployment
+    - name: git-revision
+      type: string
+      description: revision to be used from repo of the code for deployment
+    - name: manifests
+      type: string
+      description: Path to manifests to analyze and generate NetworkPolicies for.
+      default: '$(workspaces.source.path)'
+
+  tasks:
+    # checkout source code
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: $(params.git-url)
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+        - name: revision
+          value: $(params.git-revision)
+
+    # generate NetworkPolicies through static analysis
+    - name: generate-networkpolicy
+      taskRef:
+        name: rhacs-networkpolicy-generate
+        kind: Task
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: networkpolicy-dir
+          value: $(params.networkpolicy-dir)
+        - name: manifests
+          value: $(params.manifests)
+        - name: insecure-skip-tls-verify
+          value: "true"
+      runAfter:
+        - fetch-repository

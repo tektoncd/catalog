@@ -1,0 +1,30 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: rox-pipelinerun
+spec:
+  pipelineRef:
+    name: rox-pipeline
+
+  params:
+    - name: networkpolicy-dir
+      value: '$(workspaces.source.path)/networkpolicy'
+    - name: git-url
+      value: 'https://github.com/GoogleCloudPlatform/microservices-demo.git'
+    - name: manifests
+      value: 'kubernetes-manifests'
+    - name: git-revision
+      value: main
+    - name: insecure-skip-tls-verify
+      value: "true"
+
+  workspaces:
+    - name: shared-workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 50Mi

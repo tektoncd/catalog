@@ -1,0 +1,112 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: rhacs-networkpolicy-generate
+  labels:
+    app.kubernetes.io/version: "3.73"
+  annotations:
+    tekton.dev/tags: security
+    tekton.dev/categories: Security
+    tekton.dev/displayName: "Generate NetworkPolicy manifests with Red Hat Advanced Cluster Security"
+    tekton.dev/platforms: "linux/amd64"
+    tekton.dev/pipelines.minVersion: "0.18.0"
+spec:
+  description: >-
+    Generate NetworkPolicy manifests with Red Hat Advanced Cluster Security.
+
+    This tasks allows you to generate NetworkPolicy manifests from application manifests
+    using a technology preview feature of roxctl.
+    https://github.com/stackrox/stackrox/blob/master/roxctl/generate/README.md
+
+  params:
+    - name: rox_api_token
+      type: string
+      description: Name of secret containing the RHACS StackRox API token with CI permissions.
+      default: rox-api-token
+    - name: rox_central_endpoint
+      type: string
+      description: Name of secret containing the address:port tuple for RHACS Stackrox Central.
+      default: rox-central-endpoint
+    - name: rox_image
+      description: Image providing the roxctl tool.
+      default: quay.io/stackrox-io/roxctl:3.73.1
+    - name: manifests
+      type: string
+      description: |
+        Path to manifests to analyze and generate NetworkPolicies for.
+        Examples: '$(workspaces.source.path)/k8s'
+      default: '$(workspaces.source.path)'
+    - name: networkpolicy-dir
+      type: string
+      description: |
+        Directory to store generated NetworkPolicies in. One policy per file.
+        Examples: '$(workspaces.source.path)/networkpolicy'
+      default: '$(workspaces.source.path)/networkpolicy'
+    - name: insecure-skip-tls-verify
+      type: string
+      description: |
+        Do not verify TLS certificates.
+
+        When set to "true", skip verifying the TLS certs of the Central endpoint and registry.
+      default: "false"
+
+  workspaces:
+    - name: source
+
+  results:
+    - name: networkpolicy_dir
+      description: Location of output from `roxctl generate netpol --output-dir`
+
+  stepTemplate:
+    env:
+      - name: HOME
+        value: /tekton/home
+      - name: NETWORKPOLICY_DIR
+        value: $(params.networkpolicy-dir)
+
+  steps:
+    - name: rox-generate-netpol
+      workingDir: $(workspaces.source.path)
+      image: $(params.rox_image)
+      env:
+        - name: INSECURE
+          value: $(params.insecure-skip-tls-verify)
+        - name: MANIFESTS
+          value: $(params.manifests)
+        - name: ROX_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: $(params.rox_api_token)
+              key: rox_api_token
+        - name: ROX_CENTRAL_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name: $(params.rox_central_endpoint)
+              key: rox_central_endpoint
+      command: 
+        - /roxctl
+      args:
+        - generate
+        - netpol 
+        - --endpoint=$(ROX_CENTRAL_ENDPOINT)
+        - --fail
+        - --insecure-skip-tls-verify=$(INSECURE)
+        # - --output-file=$(NETWORKPOLICY_FILE)
+        - --output-dir=$(NETWORKPOLICY_DIR)
+        - --remove
+        - $(MANIFESTS)
+
+    - name: save-results
+      workingDir: $(workspaces.source.path)
+      image: ubi8:latest
+      script: |
+        #!/usr/bin/env bash
+        echo -n "NETWORKPOLICY_DIR="
+        echo $NETWORKPOLICY_DIR  | tee $(results.networkpolicy_dir.path) 
+        echo ''
+
+        for policy in $NETWORKPOLICY_DIR/*; do
+          echo '---'
+          cat "$policy"
+        done
