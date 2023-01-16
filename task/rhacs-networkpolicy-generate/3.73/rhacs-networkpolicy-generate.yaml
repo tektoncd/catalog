@@ -103,10 +103,10 @@ spec:
       script: |
         #!/usr/bin/env bash
         echo -n "NETWORKPOLICY_DIR="
-        echo $NETWORKPOLICY_DIR  | tee $(results.networkpolicy_dir.path) 
+        echo "$NETWORKPOLICY_DIR"  | tee "$(results.networkpolicy_dir.path)"
         echo ''
 
-        for policy in $NETWORKPOLICY_DIR/*; do
+        for policy in "$NETWORKPOLICY_DIR"/*; do
           echo '---'
           cat "$policy"
         done
