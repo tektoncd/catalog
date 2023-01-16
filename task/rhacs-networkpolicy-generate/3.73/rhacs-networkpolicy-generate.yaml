@@ -99,7 +99,7 @@ spec:
 
     - name: save-results
       workingDir: $(workspaces.source.path)
-      image: ubi8:latest
+      image: registry.access.redhat.com/ubi8/ubi-minimal@sha256:e7ac72a1704622c46ca2f21f6d2aac3770b9408fa3add45f9d37008dad8f24ec
       script: |
         #!/usr/bin/env bash
         echo -n "NETWORKPOLICY_DIR="
