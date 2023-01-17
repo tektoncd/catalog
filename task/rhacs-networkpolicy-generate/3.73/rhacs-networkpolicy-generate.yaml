@@ -84,11 +84,11 @@ spec:
             secretKeyRef:
               name: $(params.rox_central_endpoint)
               key: rox_central_endpoint
-      command: 
+      command:
         - /roxctl
       args:
         - generate
-        - netpol 
+        - netpol
         - --endpoint=$(ROX_CENTRAL_ENDPOINT)
         - --fail
         - --insecure-skip-tls-verify=$(INSECURE)
