@@ -1,0 +1,52 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: ko
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/categories: Image Build
+    tekton.dev/tags: image-build
+    tekton.dev/displayName: "Build and upload container image using ko"
+    tekton.dev/platforms: "linux/amd64,linux/arm64"
+spec:
+  description: >-
+    This Task builds source into a container image using ko.
+  params:
+    - name: ko-image
+      description: ko image to use for builds
+      default: "ghcr.io/ko-build/ko:latest"
+    - name: main
+      description: import path of package main
+      default: "."
+    - name: extra-args
+      description: additional arguments to ko build
+      type: array
+      default: []
+    - name: KO_DOCKER_REPO
+      description: ko environment variable which identifies where to push images
+      type: string
+    - name: KO_DEFAULTBASEIMAGE
+      description: base image for ko build
+      default: ""
+  workspaces:
+    - name: source
+      description: Go source code to build
+    - name: dockerconfig
+      description: Includes a docker `config.json`
+      optional: true
+      mountPath: /tekton/home/.docker
+  steps:
+    - name: build
+      image: $(params.ko-image)
+      workingDir: $(workspaces.source.path)
+      args:
+        - build
+        - $(params.main)
+        - $(params.extra-args[*])
+      env:
+        - name: KO_DOCKER_REPO
+          value: "$(params.KO_DOCKER_REPO)"
+        - name: KO_DEFAULTBASEIMAGE
+          value: "$(params.KO_DEFAULTBASEIMAGE)"

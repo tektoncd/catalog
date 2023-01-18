@@ -1,0 +1,49 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: ko-test-pipeline
+spec:
+  workspaces:
+  - name: shared-workspace
+  params:
+  - name: image
+    description: reference of the image to build
+  tasks:
+  - name: clone
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: shared-workspace
+    params:
+    - name: url
+      value: https://github.com/ko-build/ko
+    - name: revision
+      value: main
+  - name: ko
+    taskRef:
+      name: ko
+    runAfter:
+    - clone
+    workspaces:
+    - name: source
+      workspace: shared-workspace
+    params:
+    - name: KO_DOCKER_REPO
+      value: $(params.image)
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: ko-test-pipeline-run
+spec:
+  pipelineRef:
+    name: ko-test-pipeline
+  params:
+  - name: image
+    value: localhost:5000/ko-build
+  workspaces:
+  - name: shared-workspace
+    persistentvolumeclaim:
+      claimName: ko-source-pvc
