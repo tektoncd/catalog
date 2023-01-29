@@ -20,6 +20,8 @@ spec:
       value: ""
     - name: deleteExisting
       value: "true"
+    - name: revision
+      value: d4ee05fdc03e848ed6e7065d8fe8e833a3c8c0b2
   - name: upload-pypi-run
     params:
     - name: TWINE_REPOSITORY_URL
