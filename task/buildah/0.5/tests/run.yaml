@@ -36,6 +36,22 @@ spec:
       params:
       - name: IMAGE
         value: registry:5000/nocode
+    - name: test-buildah-results
+      params:
+        - name: OUTPUT_IMAGE
+          value: "$(tasks.buildah.results.IMAGE_URL)"
+        - name: ORIGINAL_IMAGE
+          value: registry:5000/nocode
+      taskSpec:
+        params:
+          - name: ORIGINAL_IMAGE
+          - name: OUTPUT_IMAGE
+        steps:
+          - name: evaluate
+            image: alpine
+            script: |
+              #!/usr/bin/env sh
+              [[ "$(params.ORIGINAL_IMAGE)" = "$(params.OUTPUT_IMAGE)" ]] && exit 0 || exit 1
   workspaces:
   - name: shared-workspace
     volumeClaimTemplate:
