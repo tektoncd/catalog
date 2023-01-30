@@ -92,7 +92,6 @@ spec:
         - --endpoint=$(ROX_CENTRAL_ENDPOINT)
         - --fail
         - --insecure-skip-tls-verify=$(INSECURE)
-        # - --output-file=$(NETWORKPOLICY_FILE)
         - --output-dir=$(NETWORKPOLICY_DIR)
         - --remove
         - $(MANIFESTS)
