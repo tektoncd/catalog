@@ -1,0 +1,66 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: pylint
+  labels:
+    app.kubernetes.io/version: "0.3"
+  annotations:
+    tekton.dev/categories: Code Quality
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/tags: python, pylint
+    tekton.dev/displayName: pylint
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    This task will run pylint on the provided input.
+
+  workspaces:
+    - name: source
+    - description: The workspace consisting of the custom pip settings.
+      name: pip-conf
+      optional: true
+  params:
+    - name: image
+      description: The container image with pylint
+      default: registry.gitlab.com/pipeline-components/pylint:0.12.0@sha256:051b701936dfab6fa27bd1ebd50ef56b19577565661bc0227e50dd1cf94a3d6e
+    - name: path
+      description: The path to the module which should be analysed by pylint
+      default: "."
+      type: string
+    - name: requirements_file
+      description: The name of the requirements file inside the source location
+      default: "requirements.txt"
+    - name: args
+      description: The arguments to pass to the pylint CLI.
+      type: array
+      default: []
+    - name: pip_conf_file
+      description: The name of the custom pip config file.
+      default: "pip.conf"
+  steps:
+    - name: pylint
+      image: $(params.image)
+      workingDir: $(workspaces.source.path)
+      env:
+        - name: HOME
+          value: /tmp/python
+        - name: PARAM_PIP_CONF_FILE
+          value: $(params.pip_conf_file)
+        - name: WORKSPACE_PIP_CONF_BOUND
+          value: $(workspaces.pip-conf.bound)
+        - name: WORKSPACE_PIP_CONF_PATH
+          value: $(workspaces.pip-conf.path)
+      script: |
+        export PATH=$PATH:$HOME/.local/bin
+
+        if [ "${WORKSPACE_PIP_CONF_BOUND}" = "true" ] ; then
+          export PIP_CONFIG_FILE="${WORKSPACE_PIP_CONF_PATH}/${PARAM_PIP_CONF_FILE}"
+        fi
+
+        if [ -n "$(params.requirements_file)" ] && [ -e "$(params.requirements_file)" ];then
+          python -mpip install --user -r "$(params.requirements_file)"
+        fi
+        pylint $@ "$(params.path)"
+      args:
+        - "$(params.args)"
