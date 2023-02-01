@@ -1,0 +1,49 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: python-test-pipeline-run
+spec:
+  pipelineSpec:
+    workspaces:
+      - name: shared-workspace
+      - name: python-config
+    tasks:
+      - name: fetch-repository
+        taskRef:
+          name: git-clone
+        workspaces:
+          - name: output
+            workspace: shared-workspace
+        params:
+          - name: url
+            value: https://github.com/wumaxd/pylint-pytest-example.git
+          - name: subdirectory
+            value: ""
+          - name: deleteExisting
+            value: "true"
+
+      - name: pylint
+        taskRef:
+          name: pylint
+        runAfter:
+          - fetch-repository
+        workspaces:
+          - name: source
+            workspace: shared-workspace
+          - name: pip-conf
+            workspace: python-config
+        params:
+          - name: args
+            value: ["-r", "y"]
+          - name: path
+            value: "src/"
+          - name: pip_conf_file
+            value: "custom-pip.conf"
+  workspaces:
+    - name: shared-workspace
+      persistentvolumeclaim:
+        claimName: python-source-pvc
+    - name: python-config
+      configmap:
+        name: python-config
