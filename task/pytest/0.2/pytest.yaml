@@ -1,0 +1,77 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: pytest
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/categories: Testing
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/tags: python, pytest
+    tekton.dev/displayName: pytest
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
+spec:
+  description: >-
+    This task will run pytest on the provided input.
+
+  workspaces:
+    - name: source
+    - description: The workspace consisting of the custom pip settings.
+      name: pip-conf
+      optional: true
+  params:
+    - name: PYTHON_IMAGE
+      description: The used Python image
+      type: string
+      default: "docker.io/python:3.11.1-bullseye"
+    - name: ARGS
+      description: The additional arguments to be used with pytest
+      type: string
+      default: ""
+    - name: SOURCE_PATH
+      description: The path to the source code
+      default: "."
+    - name: REQUIREMENTS_FILE
+      description: The name of the requirements file inside the source location, with fallback to the requirements file in the root location
+      default: "requirements.txt"
+    - name: PIP_CONF_FILE
+      description: The name of the custom pip config file.
+      default: "pip.conf"
+  steps:
+    - name: unit-test
+      image: $(params.PYTHON_IMAGE)
+      workingDir: $(workspaces.source.path)
+      env:
+        - name: PARAM_PIP_CONF_FILE
+          value: $(params.PIP_CONF_FILE)
+        - name: WORKSPACE_PIP_CONF_BOUND
+          value: $(workspaces.pip-conf.bound)
+        - name: WORKSPACE_PIP_CONF_PATH
+          value: $(workspaces.pip-conf.path)
+      script: |
+        export PATH=$PATH:$HOME/.local/bin
+
+        if [ "${WORKSPACE_PIP_CONF_BOUND}" = "true" ] ; then
+          export PIP_CONFIG_FILE="${WORKSPACE_PIP_CONF_PATH}/${PARAM_PIP_CONF_FILE}"
+        fi
+
+        if [ -e "$(params.SOURCE_PATH)"/"$(params.REQUIREMENTS_FILE)" ];
+        then
+          pip install -r "$(params.SOURCE_PATH)"/"$(params.REQUIREMENTS_FILE)"
+          pip show pytest || {
+            printf "###\nWarning: Pytest is missing in your test requirements file\n###";
+            pip install pytest
+          }
+        else
+          if [ -e "$(params.REQUIREMENTS_FILE)" ];
+          then
+            pip install -r "$(params.REQUIREMENTS_FILE)"
+          fi
+          pip install pytest
+        fi
+        if [ -z "$(params.ARGS)" ]; then
+          pytest "$(params.SOURCE_PATH)"
+        else
+          pytest "$(params.ARGS)" "$(params.SOURCE_PATH)"
+        fi
