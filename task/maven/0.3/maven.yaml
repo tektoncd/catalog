@@ -3,11 +3,12 @@ kind: Task
 metadata:
   name: maven
   labels:
-    app.kubernetes.io/version: "0.2"
+    app.kubernetes.io/version: "0.3"
   annotations:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/categories: Build Tools
     tekton.dev/tags: build-tool
+    tekton.dev/displayName: maven
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
 spec:
   description: >-
@@ -27,9 +28,16 @@ spec:
       default: gcr.io/cloud-builders/mvn@sha256:57523fc43394d6d9d2414ee8d1c85ed7a13460cbb268c3cd16d28cfb3859e641 #tag: latest
     - name: GOALS
       description: maven goals to run
-      type: array
-      default:
-        - "package"
+      type: string
+      default: "package"
+    - name: MVN_EXTRA_PARAMS
+      description: maven extra params
+      type: string
+      default: "--no-transfer-progress"
+    - name: MAVEN_SETTINGS_IMAGE
+      type: string
+      description: Maven settings image
+      default: registry.access.redhat.com/ubi8/ubi-minimal:8.2
     - name: MAVEN_MIRROR_URL
       description: The Maven repository mirror url
       type: string
@@ -72,9 +80,17 @@ spec:
         The context directory within the repository for sources on
         which we want to execute maven goals.
       default: "."
+    - name: MAVEN_COMMAND
+      description: Maven command to execute, you could use the maven wrapper over here.
+      type: string
+      default: "/usr/bin/mvn"
+    - name: USE_WRAPPER
+      description: Ability to specify if you want to use the maven wrapper or not
+      type: string
+      default: "no"
   steps:
     - name: mvn-settings
-      image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
+      image: $(params.MAVEN_SETTINGS_IMAGE)
       script: |
         #!/usr/bin/env bash
 
@@ -143,8 +159,16 @@ spec:
     - name: mvn-goals
       image: $(params.MAVEN_IMAGE)
       workingDir: $(workspaces.source.path)/$(params.CONTEXT_DIR)
-      command: ["/usr/bin/mvn"]
-      args:
-        - -s
-        - $(workspaces.maven-settings.path)/settings.xml
-        - "$(params.GOALS)"
+      env:
+      - name: HOME
+        value: /tekton/home
+      script: |
+        #!/usr/bin/env bash
+
+        if [ "$(params.USE_WRAPPER)" = "yes" ]; then
+          unset MAVEN_CONFIG
+          echo "Using Maven wrapper"
+          /bin/sh ./mvnw -s "$(workspaces.maven-settings.path)/settings.xml" "$(params.MVN_EXTRA_PARAMS)" "$(params.GOALS)"
+        else
+          $(params.MAVEN_COMMAND) -s "$(workspaces.maven-settings.path)/settings.xml" "$(params.MVN_EXTRA_PARAMS)" "$(params.GOALS)"
+        fi

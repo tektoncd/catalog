@@ -29,11 +29,10 @@ spec:
       params:
         - name: CONTEXT_DIR
           value: "apps/greeter/java/quarkus"
+        - name: MVN_EXTRA_PARAMS
+          value: "-DskipTests"
         - name: GOALS
-          value:
-            - -DskipTests
-            - clean
-            - package
+          value: "clean package"
       workspaces:
         - name: maven-settings
           workspace: maven-settings

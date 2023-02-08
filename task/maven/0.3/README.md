@@ -5,13 +5,15 @@ This Task can be used to run a Maven goals on a simple maven project or on a mul
 ## Install the Task
 
 ```bash
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/maven/0.2/raw
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/maven/0.3/raw
 ```
 
 ## Parameters
 
 - **MAVEN_IMAGE**: The base image for maven (_default_: `gcr.io/cloud-builders/mvn`)
 - **GOALS**: Maven `goals` to be executed
+- **MVN_EXTRA_PARAMS**: Extra parameters to be added to the Maven command.
+- **MAVEN_SETTINGS_IMAGE**: The image to use for the settings step. (_Default_: `registry.access.redhat.com/ubi8/ubi-minimal:8.2`)
 - **MAVEN_MIRROR_URL**: Maven mirror url (to be inserted into ~/.m2/settings.xml)
 - **SERVER_USER**: Username to authenticate to the server (to be inserted into ~/.m2/settings.xml)
 - **SERVER_PASSWORD**: Password to authenticate to the server (to be inserted into ~/.m2/settings.xml)
@@ -22,6 +24,8 @@ kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/maven/0.2/ra
 - **PROXY_PORT**: Port number on which the proxy port listens (to be inserted into ~/.m2/settings.xml)
 - **PROXY_PROTOCOL**: http or https protocol whichever is applicable (to be inserted into ~/.m2/settings.xml)
 - **CONTEXT_DIR**: The context directory within the repository for sources on which we want to execute maven goals. (_Default_: ".")
+- **MAVEN_COMMAND**: The maven command to execute. One could use a wrapper script here. (_Default_: `/usr/bin/mvn`)
+- **USE_WRAPPER**: Whether to use the maven wrapper script. (_Default_: "no")
 
 ## Workspaces
 
@@ -84,10 +88,7 @@ spec:
         - name: CONTEXT_DIR
           value: "apps/greeter/java/quarkus"
         - name: GOALS
-          value:
-            - -DskipTests
-            - clean
-            - package
+          value: "clean package"
       workspaces:
         - name: maven-settings
           workspace: maven-settings
@@ -147,10 +148,8 @@ spec:
         - name: CONTEXT_DIR
           value: "apps/greeter/java/quarkus"
         - name: GOALS
-          value:
-            - -DskipTests
-            - clean
-            - package
+          value: "clean package"
+        - MVN_EXTRA_PARAMS: "-DskipTests"
       workspaces:
         - name: maven-settings
           workspace: maven-settings
@@ -229,10 +228,8 @@ spec:
         - name: CONTEXT_DIR
           value: "apps/greeter/java/quarkus"
         - name: GOALS
-          value:
-            - -DskipTests
-            - clean
-            - package
+          value: "clean package"
+        - MVN_EXTRA_PARAMS: "-DskipTests"
       workspaces:
         - name: maven-settings
           workspace: maven-settings
