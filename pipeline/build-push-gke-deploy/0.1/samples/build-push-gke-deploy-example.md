@@ -66,7 +66,7 @@ Install the Tekton Pipelines CLI to view your logs by following the instructions
 
   ```bash
   IMAGE_REGISTRY_PROJECT=[PROJECT_ID]
-  sed -i "s/@IMAGE_REGISTRY_PROJECT@/$IMAGE_REGISTRY_PROJECT/g" gke-deploy/example/app/config/app.yaml
+  sed -i "s/@IMAGE_REGISTRY_PROJECT@/$IMAGE_REGISTRY_PROJECT/g" pipeline/build-push-gke-deploy/0.1/samples/app/config/app.yaml
   ```
 
 4. Commit and push your changes to a new branch.
