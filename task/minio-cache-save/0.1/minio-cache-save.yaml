@@ -1,0 +1,53 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: minio-cache-save
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Build Tools
+    tekton.dev/tags: build-tool
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
+spec:
+  description: >-
+    This Task can be used to cache dependencies into minio server
+  workspaces:
+    - name: secret
+  params:
+  - name: mc-image
+    default: bitnami/minio-client:2023
+  - name: server
+    description: minio server address
+    default: https://play.min.io/
+  - name: bucket
+    description: minio bucket name
+    default: "tektoncd-catalog-play"
+  - name: path
+    description: A list of files, directories, and wildcard patterns to cache
+  - name: key
+    description: An explicit key for a cache entry
+  steps:
+    - name: cache-save
+      image: $(params.mc-image)
+      script: |
+        #!/bin/bash
+        set -e
+
+        file=$(basename `pwd`).tar.gz
+        if [ -d "$(params.path)" ];then
+          tar -zcvf ${file} $(params.path)
+        fi
+
+        if [ -f "$(params.path)" ];then
+          file=`basename $(params.path)`.tar.gz
+          tar -zcvf ${file} $(params.path)
+        fi
+
+        accessKey=`cat $(workspaces.secret.path)/accessKey`
+        secretKey=`cat $(workspaces.secret.path)/secretKey`
+        mc alias set minio $(params.server) ${accessKey} ${secretKey}
+
+        mc mb -p minio/$(params.bucket)
+
+        mc cp ${file} minio/$(params.bucket)

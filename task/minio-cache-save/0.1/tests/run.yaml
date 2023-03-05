@@ -1,0 +1,23 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: minio-cache-save-run
+spec:
+  workspaces:
+    - name: secret
+      secret:
+        secretName: minio-secret
+  taskRef:
+    name: minio-cache-save
+    kind: Task
+  params:
+    - name: mc-image
+      value: bitnami/minio-client:2023
+    - name: server
+      value: http://minio.minio-cache-save-0-1.svc/
+    - name: bucket
+      value: "test"
+    - name: path
+      value: ./bin
+    - name: key
+      value: "20230305"
