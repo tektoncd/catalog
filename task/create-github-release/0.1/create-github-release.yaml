@@ -48,7 +48,7 @@ spec:
   steps:
     - name: create-release
       workingDir: $(workspaces.source.path)
-      image: quay.io/diagrawa/github-hub@sha256:a002e05e3c3362f49dc31b8c16c10d76c6dbd854fdb0f596eaae8ac8b792adfb #tag: latest
+      image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/diagrawa/github-hub:latest"
       script: |
         #!/usr/bin/env bash
         set -ex

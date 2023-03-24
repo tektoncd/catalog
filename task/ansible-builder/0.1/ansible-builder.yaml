@@ -34,15 +34,11 @@ spec:
       name: VERBOSITY
       type: string
       default: "2"
-    - name: BUILDER_IMAGE
-      description: The location of the ansible-builder image.
-      type: string
-      default: quay.io/ansible/ansible-builder:latest
   steps:
 
     - name: ansible-builder-create
       workingDir: $(workspaces.source.path)
-      image: $(params.BUILDER_IMAGE)
+      image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/ansible/ansible-builder:latest"
       script: |
         #!/bin/sh
         set -eux -o

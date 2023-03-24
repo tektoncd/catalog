@@ -52,7 +52,7 @@ spec:
       A workspace into which a kubeconfig file called `kubeconfig` will be written that will contain the information required to access the cluster. The `kubeconfig` will expect to use [aws-iam-authenticator](https://github.com/kubernetes-sigs/aws-iam-authenticator/) to authenticate, so in order for it to be used it must be run in a container which contains both `kubectl` and `aws-iam-authenticator`.
   steps:
   - name: write-kubeconfig
-    image: docker.io/weaveworks/eksctl:0.35.0@sha256:48c1fa508970a01fd87a73ac7932a7160479d678cd019a3c84533d911fc54327
+    image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/weaveworks/eksctl:0.35.0"
     script: |
       echo "Starting to create eks cluster"
       eksctl create cluster \

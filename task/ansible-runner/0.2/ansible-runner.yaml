@@ -31,16 +31,13 @@ spec:
     - name: user-home
       description: Absolute path to the user's home directory.
       default: /tekton/home
-    - name: image
-      description: Ansible runner image.
-      default: quay.io/ansible/ansible-runner:stable-2.12-latest #tag: stable-2.12-latest
   stepTemplate:
     env:
       - name: HOME
         value: $(params.user-home)
   steps:
     - name: requirements
-      image: $(params.image)
+      image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/ansible/ansible-runner:stable-2.12-latest"
       script: |
         #!/bin/bash
         set -e
@@ -61,7 +58,7 @@ spec:
       workingDir: '$(workspaces.runner-dir.path)/$(params.project-dir)'
 
     - name: run-playbook
-      image: $(params.image)
+      image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/ansible/ansible-runner:stable-2.12-latest"
       command: ['entrypoint']
       args:
         - ansible-runner

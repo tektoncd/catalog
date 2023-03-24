@@ -37,7 +37,7 @@ spec:
 
   steps:
     - name: codecov-run
-      image: gcr.io/tekton-releases/dogfooding/test-runner@sha256:44aa00796831a4ed5586152058dd96a6d14174b8a4ea9fcae663fb37f72c9454
+      image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/tekton-releases/dogfooding/test-runner:v20230321-c6cc7570d1"
       workingDir: $(workspaces.source.path)
       env:
         - name: CODECOV_TOKEN

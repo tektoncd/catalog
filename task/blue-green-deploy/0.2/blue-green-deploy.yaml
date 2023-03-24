@@ -34,13 +34,9 @@ spec:
     - name: NAMESPACE
       type: string
       description: Target namespace in which operation needs to be performed
-    - name: IMAGE
-      description: Image which has kubectl binary present
-      type: string
-      default: "quay.io/openshift/origin-cli:4.9"
   steps:
     - name: change-deployment
-      image: $(params.IMAGE)
+      image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/openshift/origin-cli:4.9"
       script: |
         #!/usr/bin/env bash
         set -u -o pipefail

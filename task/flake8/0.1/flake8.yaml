@@ -18,9 +18,6 @@ spec:
   workspaces:
     - name: source
   params:
-    - name: image
-      description: The container image with flake8
-      default: docker.io/alpine/flake8@sha256:bb280bf2af4a434be912f25bbcb6c79ea4d735ed3c8e259f96c405998920871f
     - name: path
       description: The path to the module which should be analysed by flake8
       default: "."
@@ -34,7 +31,7 @@ spec:
       default: []
   steps:
     - name: flake8
-      image: $(params.image)
+      image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/alpine/flake8:3.9"
       workingDir: $(workspaces.source.path)
       script: |
         export HOME=/tmp/python

@@ -40,7 +40,7 @@ spec:
       default: "tower-creds"
   steps:
     - name: config
-      image: quay.io/rcmendes/ansible-tower-cli@sha256:3a61778f410526db8d6e02e87715d58ee770c4a4faf57ac408cb5ec1a025ef2c #tag: latest
+      image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/rcmendes/ansible-tower-cli:v1"
       command:
         - '/bin/sh'
         - '-c'
@@ -64,7 +64,7 @@ spec:
               name: $(params.tower-secret)
               key: PASS
     - name: tower-cli
-      image: quay.io/rcmendes/ansible-tower-cli@sha256:3a61778f410526db8d6e02e87715d58ee770c4a4faf57ac408cb5ec1a025ef2c #tag: latest
+      image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/rcmendes/ansible-tower-cli:v1"
       command: ["/usr/bin/tower-cli"]
       args:
         - "$(params.ARGS)"

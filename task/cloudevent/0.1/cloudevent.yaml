@@ -33,7 +33,7 @@ spec:
     default: ""
   steps:
   - name: send
-    image: docker.io/iancoffey/sendevent-89c3de01c503ceb66b676a3e41c265ed@sha256:fc39998cba7ad8e54323b948b56b11b0b235996069349fb74776865fedf182a5
+    image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/iancoffey/sendevent:89c3de01c503ceb66b676a3e41c265ed"
     command: ["sendevent"]
     args:
     - "--event-id=$(params.eventID)"

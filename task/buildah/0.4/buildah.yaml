@@ -24,9 +24,6 @@ spec:
   params:
   - name: IMAGE
     description: Reference of the image buildah will produce.
-  - name: BUILDER_IMAGE
-    description: The location of the buildah builder image.
-    default: quay.io/buildah/stable:v1.23.3
   - name: STORAGE_DRIVER
     description: Set buildah storage driver
     default: overlay
@@ -63,7 +60,7 @@ spec:
     description: Image repository where the built image would be pushed to
   steps:
   - name: build
-    image: $(params.BUILDER_IMAGE)
+    image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/buildah/stable:v1.23.3"
     workingDir: $(workspaces.source.path)
     script: |
       [[ "$(workspaces.sslcertdir.bound)" == "true" ]] && CERT_DIR_FLAG="--cert-dir $(workspaces.sslcertdir.path)"

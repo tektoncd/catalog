@@ -29,13 +29,9 @@ spec:
       The path inside the credentials workspace to the GOOGLE_APPLICATION_CREDENTIALS key file.
    type: string
    default: ''
- - name: image
-   description: google cloud image that will be used in steps.
-   type: string
-   default: gcr.io/google.com/cloudsdktool/cloud-sdk:slim@sha256:70d3c9ef711c704259b06485f9ab3bab6e1b5c99e4a5c1ed37f9338004664c17 #tag: slim, 312.0.0-slim
  steps:
  - name: credential-setup
-   image: "$(params.image)"
+   image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/google.com/cloudsdktool/cloud-sdk:312.0.0-slim"
    script: |
      #!/usr/bin/env bash
      set -xe

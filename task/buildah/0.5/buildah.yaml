@@ -69,7 +69,7 @@ spec:
     description: Image repository where the built image would be pushed to
   steps:
   - name: build
-    image: $(params.BUILDER_IMAGE)
+    image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/buildah/stable:v1.23.3"
     workingDir: $(workspaces.source.path)
     script: |
       [[ "$(workspaces.sslcertdir.bound)" == "true" ]] && CERT_DIR_FLAG="--cert-dir $(workspaces.sslcertdir.path)"

@@ -24,9 +24,6 @@ spec:
   params:
   - name: IMAGE
     description: Reference of the image buildah will produce.
-  - name: BUILDER_IMAGE
-    description: The location of the buildah builder image.
-    default: quay.io/buildah/stable:v1.17.0
   - name: STORAGE_DRIVER
     description: Set buildah storage driver
     default: overlay
@@ -58,7 +55,7 @@ spec:
 
   steps:
   - name: build
-    image: $(params.BUILDER_IMAGE)
+    image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/buildah/stable:v1.17.0"
     workingDir: $(workspaces.source.path)
     script: |
       buildah --storage-driver=$(params.STORAGE_DRIVER) bud \
@@ -72,7 +69,7 @@ spec:
       privileged: true
 
   - name: push
-    image: $(params.BUILDER_IMAGE)
+    image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/buildah/stable:v1.17.0"
     workingDir: $(workspaces.source.path)
     script: |
       buildah --storage-driver=$(params.STORAGE_DRIVER) push \
@@ -86,7 +83,7 @@ spec:
       privileged: true
 
   - name: digest-to-results
-    image: $(params.BUILDER_IMAGE)
+    image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/buildah/stable:v1.17.0"
     script: cat $(workspaces.source.path)/image-digest | tee /tekton/results/IMAGE_DIGEST
 
   volumes:

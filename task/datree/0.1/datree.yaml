@@ -48,13 +48,9 @@ spec:
       description: Name of the secret key holding the datree token
       type: string
       default: "DATREE_TOKEN"
-    - name: datreeImage
-      description: Datree image to run datree. Ensure the image has the datree binary in /
-      type: string
-      default: docker.io/datree/datree:0.15.22@sha256:85cf78f16e67e08ea9df18ab6d3d823a576bfbcc5937f30629eb4859fdeb3fd1
   steps:
   - name: datree-test
-    image: $(params.datreeImage)
+    image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/datree/datree:0.15.22"
     securityContext:
       runAsUser: 0
       privileged: true

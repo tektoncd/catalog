@@ -27,8 +27,6 @@ spec:
   params:
     - name: APP_IMAGE
       description: The name of where to store the app image.
-    - name: BUILDER_IMAGE
-      description: The image on which builds will run (must include lifecycle and compatible buildpacks).
     - name: SOURCE_SUBPATH
       description: A subpath within the `source` input where the source to build is located.
       default: ""
@@ -54,9 +52,6 @@ spec:
     - name: PLATFORM_DIR
       description: The name of the platform directory.
       default: empty-dir
-    - name: LIFECYCLE_IMAGE
-      description: The image to use when executing sensitive phases.
-      default: docker.io/buildpacksio/lifecycle:0.10.2@sha256:1bf8d3fc41d2fdf0ee4abdad50038ab8902ef58c74f5bcfc432c26767d889ed0
     - name: USER_HOME
       description: Absolute path to the user's home directory.
       default: /tekton/home
@@ -74,7 +69,7 @@ spec:
 
   steps:
     - name: prepare
-      image: docker.io/library/bash:5.1.4@sha256:b208215a4655538be652b2769d82e576bc4d0a2bb132144c060efc5be8c3f5d6
+      image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/bash:5.1.4"
       args:
         - "--env-vars"
         - "$(params.ENV_VARS[*])"
@@ -128,7 +123,7 @@ spec:
 
     # Copy stack.toml so that it will be accessible to the exporter, since the lifecycle image will not contain it.
     - name: copy-stack-toml
-      image: $(params.BUILDER_IMAGE)
+      image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/cnbs/sample-builder:alpine"
       imagePullPolicy: Always
       command: ["/bin/sh"]
       args:
@@ -140,7 +135,7 @@ spec:
           mountPath: /layers
 
     - name: detect
-      image: $(params.BUILDER_IMAGE)
+      image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/cnbs/sample-builder:alpine"
       imagePullPolicy: Always
       command: ["/cnb/lifecycle/detector"]
       args:
@@ -156,7 +151,7 @@ spec:
           mountPath: /tekton/home
 
     - name: analyze
-      image: $(params.LIFECYCLE_IMAGE)
+      image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/buildpacksio/lifecycle:0.10.2"
       imagePullPolicy: Always
       command: ["/cnb/lifecycle/analyzer"]
       args:
@@ -172,7 +167,7 @@ spec:
           mountPath: /layers
 
     - name: restore
-      image: $(params.LIFECYCLE_IMAGE)
+      image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/buildpacksio/lifecycle:0.10.2"
       imagePullPolicy: Always
       command: ["/cnb/lifecycle/restorer"]
       args:
@@ -187,7 +182,7 @@ spec:
           mountPath: /layers
 
     - name: build
-      image: $(params.BUILDER_IMAGE)
+      image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/cnbs/sample-builder:alpine"
       imagePullPolicy: Always
       command: ["/cnb/lifecycle/builder"]
       args:
@@ -204,7 +199,7 @@ spec:
           mountPath: /tekton/home
 
     - name: export
-      image: $(params.LIFECYCLE_IMAGE)
+      image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/buildpacksio/lifecycle:0.10.2"
       imagePullPolicy: Always
       command: ["/cnb/lifecycle/exporter"]
       args:
@@ -225,7 +220,7 @@ spec:
           mountPath: /layers
 
     - name: results
-      image: docker.io/library/bash:5.1.4@sha256:b208215a4655538be652b2769d82e576bc4d0a2bb132144c060efc5be8c3f5d6
+      image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/bash:5.1.4"
       script: |
         #!/usr/bin/env bash
         set -e

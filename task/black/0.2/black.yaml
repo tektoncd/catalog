@@ -18,9 +18,6 @@ spec:
       description: >-
         The workspace containing python source code which we want to format.
   params:
-    - name: image
-      description: The container image to use black in
-      default: docker.io/cytopia/black:latest-0.2@sha256:2ec766f1c7e42e6b59c0873ce066fa0a2aa2bf8a80dbc1c40f1566bb539303e0
     - name: requirements_file
       description: The name of the requirements file inside the source location
       default: requirements.txt
@@ -30,7 +27,7 @@ spec:
       default: ["--help"]
   steps:
     - name: format-python-code
-      image: $(params.image)
+      image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/cytopia/black:latest-0.2"
       workingDir: $(workspaces.shared-workspace.path)
       script: |
         export HOME=/tmp/python

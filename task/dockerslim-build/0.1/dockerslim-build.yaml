@@ -19,15 +19,6 @@ spec:
   params:
   - name: image
     description: Reference of the image docker will produce.
-  - name: builder_image
-    description: The location of the docker builder image.
-    default: docker.io/dslim/docker-slim:1.37.2@sha256:fe0fb8114b66915eadfcff4c01959205a34a509e1ecbb291aa90980991d81727 #tag: 1.37.2
-  - name: push_image
-    description: The location of the docker push image.
-    default: docker.io/library/docker:stable@sha256:18ff92d3d31725b53fa6633d60bed323effb6d5d4588be7b547078d384e0d4bf #tag: stable
-  - name: dind_image
-    description: The location of the docker-in-docker image.
-    default: docker:dind
   - name: dockerfile
     description: Path to the Dockerfile to build.
     default: ./Dockerfile
@@ -58,7 +49,7 @@ spec:
     - --dockerfile-context
     - $(params.context)
     - $(params.image)
-    image: $(params.builder_image)
+    image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/dslim/docker-slim:1.37.2"
     env:
     # Connect to the sidecar over TCP, with TLS.
     - name: DOCKER_HOST
@@ -76,7 +67,7 @@ spec:
       - mountPath: /certs/client
         name: dind-certs
   - name: docker-push
-    image: $(params.push_image)
+    image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/library/docker:stable"
     env:
     # Connect to the sidecar over TCP, with TLS.
     - name: DOCKER_HOST
@@ -96,7 +87,7 @@ spec:
       - mountPath: /certs/client
         name: dind-certs
   sidecars:
-  - image: $(params.dind_image)
+  - image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/docker:dind"
     name: server
     args:
       - --storage-driver=vfs

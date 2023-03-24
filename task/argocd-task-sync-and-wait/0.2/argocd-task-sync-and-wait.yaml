@@ -28,9 +28,6 @@ spec:
     - name: flags
       default: --
       type: string
-    - name: argocd-version
-      default: v2.2.2
-      type: string
   stepTemplate:
     envFrom:
       - configMapRef:
@@ -39,7 +36,7 @@ spec:
           name: argocd-env-secret  # used for authentication (username/password or auth token)
   steps:
     - name: login
-      image: quay.io/argoproj/argocd:$(params.argocd-version)
+      image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/argoproj/argocd:v2.2.2"
       script: |
         if [ -z "$ARGOCD_AUTH_TOKEN" ]; then
           yes | argocd login "$ARGOCD_SERVER" --username="$ARGOCD_USERNAME" --password="$ARGOCD_PASSWORD";
