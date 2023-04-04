@@ -41,4 +41,4 @@ spec:
   - name: wget
     image: "$(params.wget-option)"
     command: [wget]
-    args: ["$(params.options[*])", "$(params.url)", "$(params.diroptions[*])", "$(workspaces.wget-workspace.path)/$(params.filename)"]
+    args: ["$(params.options[*])", "$(params.url)", "$(params.diroptions[*])", "-O $(workspaces.wget-workspace.path)/$(params.filename)"]
