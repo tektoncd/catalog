@@ -35,7 +35,7 @@ spec:
         same Region that your Amazon ECR registry exists in.
   steps:
     - name: get-login-password
-      image: docker.io/amazon/aws-cli:2.0.52@sha256:1506cec98a7101c935176d440a14302ea528b8f92fcaf4a6f1ea2d7ecef7edc4 #tag: 2.0.52
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/amazon/aws-cli:2.0.52" #tag: 2.0.52
       script: |
         aws ecr get-login-password --region $(params.region) > $(results.password.path)
   results:

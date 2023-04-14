@@ -28,7 +28,7 @@ spec:
     description: plain text message
   steps:
   - name: post
-    image: docker.io/curlimages/curl:7.70.0@sha256:031df77a11e5edded840bc761a845eab6e3c2edee22669fb8ad6d59484b6a1c4 #tag: 7.70.0
+    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/curlimages/curl:7.70.0" #tag: 7.70.0
     script: |
       #!/bin/sh
       /usr/bin/curl -X POST -H 'Content-type: application/json' -H 'Authorization: Bearer '$TOKEN --data '{"channel":"$(params.channel)", "text":"$(params.message)"}' https://slack.com/api/chat.postMessage

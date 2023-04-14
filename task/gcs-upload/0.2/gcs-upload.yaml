@@ -52,7 +52,7 @@ spec:
         value: "$(params.location)"
       - name: DELETE_EXTRA_FILES
         value: $(params.deleteExtraFiles)
-    image: gcr.io/google.com/cloudsdktool/cloud-sdk:379.0.0-slim@sha256:d844877c7aaa06a0072979230c68417ddb0f27087277f29747c7169d6ed0d2b9 #tag: 379.0.0-slim
+    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/google.com/cloudsdktool/cloud-sdk:379.0.0-slim" #tag: 379.0.0-slim
     script: |
       #!/usr/bin/env bash
       set -xe

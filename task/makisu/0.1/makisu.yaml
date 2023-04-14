@@ -36,7 +36,7 @@ spec:
       type: image
   steps:
   - name: build-and-push
-    image: gcr.io/uber-container-tools/makisu:v0.3.1@sha256:1b00578f5825143bdf83e7811bdca9d09aae3355f3968367a2668cdc5aaad29c #tag: v0.3.1
+    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/uber-container-tools/makisu:v0.3.1" #tag: v0.3.1
     workingDir: $(workspaces.source.path)
     command:
     - /makisu-internal/makisu

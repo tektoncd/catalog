@@ -34,7 +34,7 @@ spec:
       type: image
   steps:
   - name: build-and-push
-    image: gcr.io/cloud-builders/mvn@sha256:57523fc43394d6d9d2414ee8d1c85ed7a13460cbb268c3cd16d28cfb3859e641 #tag: latest
+    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/cloud-builders/mvn" #tag: latest
     # Make sh evaluate $HOME.
     script: |
       #!/bin/sh

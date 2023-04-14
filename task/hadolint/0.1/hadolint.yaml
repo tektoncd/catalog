@@ -33,7 +33,7 @@ spec:
       name: output-format
       type: string
   steps:
-    - image: 'ghcr.io/hadolint/hadolint:v2.8.0-debian@sha256:50b0e60aa2b4aba5a26eeb4ad08c96ed7a828fca996632e29114aabea18345f4'
+    - image: '"{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/ghcr.io/hadolint/hadolint:v2.8.0-debian"'
       name: lint-dockerfile
       script: |
         #!/bin/bash

@@ -64,7 +64,7 @@ spec:
 
   steps:
   - name: set-reviewers
-    image: docker.io/library/python:3.9-alpine3.13@sha256:437482dd314471f5f10967f7376489d9e7f67c111850c123cc725a1741b66aac
+    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/library/python:3.9-alpine3.13"
     script: |
       #!/usr/bin/env python
       import json

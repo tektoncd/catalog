@@ -27,7 +27,7 @@ spec:
       description: Go package to analyze.
   steps:
     - name: analyze-packages
-      image: gcr.io/kythe-public/golang-extractor:git-8697a6c4b15caf12b59d8e32b9ac0ee4aa9306bc@sha256:e56f0afbae2408288828065a40dddb6d864aef12dc84c412f48fd6e664184dc3
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/kythe-public/golang-extractor:git-8697a6c4b15caf12b59d8e32b9ac0ee4aa9306bc"
       workingDir: $(workspaces.output.path)
       args:
         - "$(params.package)"

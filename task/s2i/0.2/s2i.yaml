@@ -42,7 +42,7 @@ spec:
       description: Digest of the image just built.
   steps:
     - name: generate
-      image: quay.io/openshift-pipeline/s2i:nightly
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/quay.io/openshift-pipeline/s2i:nightly"
       workingDir: $(workspaces.source.path)
       command:
         - /usr/local/bin/s2i
@@ -56,7 +56,7 @@ spec:
         - mountPath: /gen-source
           name: gen-source
     - name: build
-      image: quay.io/buildah/stable:v1.17.0
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/"{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/quay.io/buildah/stable:v1.17.0""
       workingDir: /gen-source
       script: |
         [[ "$(workspaces.sslcertdir.bound)" == "true" ]] && CERT_DIR_FLAG="--cert-dir $(workspaces.sslcertdir.path)"
@@ -70,7 +70,7 @@ spec:
         - mountPath: /gen-source
           name: gen-source
     - name: push
-      image: quay.io/buildah/stable:v1.17.0
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/"{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/quay.io/buildah/stable:v1.17.0""
       script: |
         [[ "$(workspaces.sslcertdir.bound)" == "true" ]] && CERT_DIR_FLAG="--cert-dir $(workspaces.sslcertdir.path)"
         buildah ${CERT_DIR_FLAG} push --tls-verify=$(params.TLSVERIFY) --digestfile $(workspaces.source.path)/image-digest \

@@ -23,7 +23,7 @@ spec:
       default: ["--help"]
   steps:
     - name: lint-ruby
-      image: docker.io/pipelinecomponents/rubocop:0.19.0@sha256:81da232199b1df7f6caec4c7d67981fd00825d3d86c998c258de56207ae118e3 #tag: 0.19.0
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/pipelinecomponents/rubocop:0.19.0" #tag: 0.19.0
       workingDir: $(workspaces.shared-workspace.path)
       command:
         - rubocop

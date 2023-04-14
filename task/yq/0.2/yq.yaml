@@ -25,7 +25,7 @@ spec:
       description: The yq expression to apply. Can be used to replace yaml fields.
   steps:
     - name: replace-in-yaml
-      image: docker.io/mikefarah/yq:4@sha256:34f1d11ad51dc4639fc6d8dd5ade019fe57cf6084bb6a99a2f11ea522906033b #tag: 4, amd
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/mikefarah/yq:4" #tag: 4, amd
       workingDir: $(workspaces.source.path)
       args: ["$(params.files[*])"]
       script: |

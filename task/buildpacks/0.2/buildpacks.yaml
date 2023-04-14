@@ -68,7 +68,7 @@ spec:
   steps:
     - name: prepare
       # Latest alpine as of Oct 22, 2020
-      image: docker.io/alpine@sha256:203ee936961c0f491f72ce9d3c3c67d9440cdb1d61b9783cf340baa09308ffc1
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/alpine"
       imagePullPolicy: Always
       command: ["/bin/sh"]
       args:

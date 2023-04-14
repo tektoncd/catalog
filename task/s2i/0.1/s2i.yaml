@@ -47,7 +47,7 @@ spec:
     - $(params.BUILDER_IMAGE)
     - --as-dockerfile
     - /gen-source/Dockerfile.gen
-    image: quay.io/openshift-pipeline/s2i:nightly
+    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/quay.io/openshift-pipeline/s2i:nightly"
     volumeMounts:
     - mountPath: /gen-source
       name: gen-source
@@ -63,7 +63,7 @@ spec:
     - -t
     - $(resources.outputs.image.url)
     - .
-    image: quay.io/buildah/stable:v1.17.0
+    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/"{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/quay.io/buildah/stable:v1.17.0""
     securityContext:
       privileged: true
     volumeMounts:
@@ -79,7 +79,7 @@ spec:
     - --tls-verify=$(params.TLSVERIFY)
     - $(resources.outputs.image.url)
     - docker://$(resources.outputs.image.url)
-    image: quay.io/buildah/stable:v1.17.0
+    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/"{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/quay.io/buildah/stable:v1.17.0""
     securityContext:
       privileged: true
     volumeMounts:

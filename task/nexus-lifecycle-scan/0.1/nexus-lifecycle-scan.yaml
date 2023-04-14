@@ -106,7 +106,7 @@ spec:
           value: $(params.HELP)
         - name: TARGETS
           value: $(params.TARGETS)
-      image: 'docker.io/sonatype/nexus-iq-cli:1.136.0-01'
+      image: '"{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/sonatype/nexus-iq-cli:1.136.0-01"'
       name: ''
       resources: {}
       script: >

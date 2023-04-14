@@ -48,7 +48,7 @@ spec:
       default: quay.io/openshift/origin-upi-installer:4.6
   steps:
     - name: openshift-install-config
-      image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/registry.access.redhat.com/ubi8/ubi-minimal:8.2"
       workingDir: $(workspaces.install-dir.path)
       script: |
         #!/usr/bin/env bash

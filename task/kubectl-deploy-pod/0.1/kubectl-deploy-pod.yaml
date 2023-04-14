@@ -63,7 +63,7 @@ spec:
           fieldRef:
             fieldPath: metadata.uid
   - name: echo
-    image: docker.io/library/busybox:1.32.0@sha256:c9249fdf56138f0d929e2080ae98ee9cb2946f71498fc1484288e6a935b5e5bc #tag: 1.32.0
+    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/library/busybox:1.32.0" #tag: 1.32.0
     script: |
       #!/bin/sh
       if [ -e /tekton/results/job-name ]

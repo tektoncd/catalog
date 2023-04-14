@@ -24,7 +24,7 @@ spec:
   steps:
     - name: pluto
       workingDir: $(workspaces.source.path)
-      image: quay.io/fairwinds/pluto:v5 #tag: v5
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/quay.io/fairwinds/pluto:v5" #tag: v5
       command: ["/pluto"]
       args:
         - "$(params.ARGS)"

@@ -32,7 +32,7 @@ spec:
   steps:
   - name: helm-conftest
     workingDir: $(workspaces.source.path)
-    image: docker.io/instrumenta/helm-conftest@sha256:11cb9fd6d101d80af87931db359d4b3ad9a843cf0eb1ea0ab7173424eb379948
+    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/instrumenta/helm-conftest"
     command:
       - helm
       - conftest
