@@ -56,7 +56,7 @@ spec:
         - mountPath: /gen-source
           name: gen-source
     - name: build
-      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/"{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/quay.io/buildah/stable:v1.17.0""
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/quay.io/buildah/stable:v1.17.0"
       workingDir: /gen-source
       script: |
         [[ "$(workspaces.sslcertdir.bound)" == "true" ]] && CERT_DIR_FLAG="--cert-dir $(workspaces.sslcertdir.path)"
@@ -70,7 +70,7 @@ spec:
         - mountPath: /gen-source
           name: gen-source
     - name: push
-      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/"{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/quay.io/buildah/stable:v1.17.0""
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/quay.io/buildah/stable:v1.17.0"
       script: |
         [[ "$(workspaces.sslcertdir.bound)" == "true" ]] && CERT_DIR_FLAG="--cert-dir $(workspaces.sslcertdir.path)"
         buildah ${CERT_DIR_FLAG} push --tls-verify=$(params.TLSVERIFY) --digestfile $(workspaces.source.path)/image-digest \
