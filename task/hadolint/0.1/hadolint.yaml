@@ -6,10 +6,10 @@ metadata:
     tekton.dev/displayName: Hadolint
     tekton.dev/pipelines.minVersion: 0.12.1
     tekton.dev/platforms: linux/amd64
-    tekton.dev/tags: 'Kubernetes, Misconfiguration'
+    tekton.dev/tags: "Kubernetes, Misconfiguration"
   name: hadolint
   labels:
-    app.kubernetes.io/version: '0.1'
+    app.kubernetes.io/version: "0.1"
 spec:
   description: >-
     This task makes it possible to use Hadolint within Tekton Pipeline.
@@ -18,11 +18,11 @@ spec:
     images. The linter parses the Dockerfile into an AST and performs rules on
     top of the AST
   params:
-    - default: ''
+    - default: ""
       description: ignore rules.
       name: ignore-rules
       type: string
-    - default: './Dockerfile'
+    - default: "./Dockerfile"
       description: Dockerfile path.
       name: dockerfile-path
       type: string
@@ -33,7 +33,7 @@ spec:
       name: output-format
       type: string
   steps:
-    - image: '{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/"ghcr.io/hadolint/hadolint:v2.8.0-debian"'
+    - image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/ghcr.io/hadolint/hadolint:v2.8.0-debian"
       name: lint-dockerfile
       script: |
         #!/bin/bash
@@ -48,12 +48,12 @@ spec:
         fi
         $command_to_run "$DOCKERFILE" -f "$OFORMAT"
       env:
-      - name: RULES
-        value: "$(params.ignore-rules)"
-      - name: DOCKERFILE
-        value: "$(params.dockerfile-path)"
-      - name: OFORMAT
-        value: "$(params.output-format)"
+        - name: RULES
+          value: "$(params.ignore-rules)"
+        - name: DOCKERFILE
+          value: "$(params.dockerfile-path)"
+        - name: OFORMAT
+          value: "$(params.output-format)"
       workingDir: $(workspaces.source.path)
   workspaces:
     - description: A workspace that contains fetched git repo.

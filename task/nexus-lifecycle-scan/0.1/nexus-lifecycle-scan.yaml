@@ -13,15 +13,15 @@ spec:
   description: >-
     This task uses the Sonatype Nexus IQ CLI to invoke a Nexus Lifecycle scan.
   params:
-    - default: ''
+    - default: ""
       description: URL to the IQ Server that will evaluate policies
       name: SERVER_URL
       type: string
-    - default: ''
+    - default: ""
       description: Authentication credentials to use for the IQ Server
       name: AUTHENTICATION
       type: string
-    - default: ''
+    - default: ""
       description: Public ID of the application on the IQ Server
       name: APPLICATION_ID
       type: string
@@ -31,45 +31,45 @@ spec:
         stage-release | release | operate. Default: build
       name: STAGE
       type: string
-    - default: ''
+    - default: ""
       description: >-
         Path to a JSON file where the results of the policy evaluation will be
         stored in a machine-readable format. Default: none
       name: RESULT_FILE
       type: string
-    - default: ''
+    - default: ""
       description: >-
         Introduced in 1.125.0-04a: The format of the HTML evaluation report.
         Accepted values: summary | enhanced. Default: enhanced
       name: REPORT_FORMAT
       type: string
-    - default: ''
-      description: 'Fail on policy evaluation warnings. Default: false'
+    - default: ""
+      description: "Fail on policy evaluation warnings. Default: false"
       name: FAIL_ON_POLICY_WARNINGS
       type: string
-    - default: ''
-      description: 'Ignore system errors (IO, network, server, etc). Default: false'
+    - default: ""
+      description: "Ignore system errors (IO, network, server, etc). Default: false"
       name: IGNORE_SYSTEM_ERRORS
       type: string
-    - default: ''
-      description: 'Proxy to use. Default: none'
+    - default: ""
+      description: "Proxy to use. Default: none"
       name: PROXY
       type: string
-    - default: ''
-      description: 'Credentials to use for the proxy. Default: none'
+    - default: ""
+      description: "Credentials to use for the proxy. Default: none"
       name: PROXY_USER
       type: string
-    - default: ''
+    - default: ""
       description: >-
         Enable debug logs. WARNING: This may expose sensitive information in the
         log. Default: false
       name: DEBUG
       type: string
-    - default: ''
-      description: 'Show the help screen. Default: false'
+    - default: ""
+      description: "Show the help screen. Default: false"
       name: HELP
       type: string
-    - default: ''
+    - default: ""
       description: Scan targets
       name: TARGETS
       type: string
@@ -106,8 +106,8 @@ spec:
           value: $(params.HELP)
         - name: TARGETS
           value: $(params.TARGETS)
-      image: '{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/"docker.io/sonatype/nexus-iq-cli:1.136.0-01"'
-      name: ''
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/sonatype/nexus-iq-cli:1.136.0-01"
+      name: ""
       resources: {}
       script: >
         #!/usr/bin/env bash
