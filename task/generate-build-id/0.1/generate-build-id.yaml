@@ -27,14 +27,14 @@ spec:
       description: ID of the current build
   steps:
     - name: get-timestamp
-      image: docker.io/library/bash:5.0.18@sha256:879f94a9da53dc064779e7a68339aecd60a9028ff884cacaa47ae752ca690404 #tag: 5.0.18
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/library/bash:5.0.18" #tag: 5.0.18
       script: |
         #!/usr/bin/env bash
         ts=`date "+%Y%m%d-%H%M%S"`
         echo "Current Timestamp: ${ts}"
         echo ${ts} | tr -d "\n" | tee $(results.timestamp.path)
     - name: get-buildid
-      image: docker.io/library/bash:5.0.18@sha256:879f94a9da53dc064779e7a68339aecd60a9028ff884cacaa47ae752ca690404 #tag: 5.0.18
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/library/bash:5.0.18" #tag: 5.0.18
       script: |
         #!/usr/bin/env bash
         ts=`cat $(results.timestamp.path)`

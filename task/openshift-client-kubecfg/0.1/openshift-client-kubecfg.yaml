@@ -35,7 +35,7 @@ spec:
     - "help"
   steps:
     - name: oc
-      image: quay.io/openshift/origin-cli:4.6
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/quay.io/openshift/origin-cli:4.6"
       script: "$(params.SCRIPT)"
       args:
         - "--kubeconfig /workspace/$(resources.inputs.cluster.name)/kubeconfig --context $(resources.inputs.cluster.name)"

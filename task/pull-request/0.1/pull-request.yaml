@@ -37,7 +37,7 @@ spec:
   - name: pr
   steps:
   - name: pullrequest-init
-    image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/pullrequest-init@sha256:69633ecd0e948f6462c61bb9e008b940a05b143ef51c67e6e4093278a23dac53 #tag: v0.20.1
+    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/pullrequest-init" #tag: v0.20.1
     command: ["/ko-app/pullrequest-init"]
     env:
     - name: AUTH_TOKEN

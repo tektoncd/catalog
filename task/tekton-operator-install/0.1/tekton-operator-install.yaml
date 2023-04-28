@@ -37,7 +37,7 @@ spec:
       default: "false"
   steps:
     - name: install-operator
-      image: docker.io/lachlanevenson/k8s-kubectl@sha256:3a5e22a406a109f4f26ec06b5f1f6a66ae0cd0e185bc28499eb7b7a3bbf1fe09
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/lachlanevenson/k8s-kubectl"
       workingDir: $(workspaces.kubeconfig.path)
       script: |
         #!/bin/sh
@@ -91,7 +91,7 @@ spec:
         main "$@"
 
     - name: install-addon
-      image: docker.io/lachlanevenson/k8s-kubectl@sha256:3a5e22a406a109f4f26ec06b5f1f6a66ae0cd0e185bc28499eb7b7a3bbf1fe09
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/lachlanevenson/k8s-kubectl"
       workingDir: $(workspaces.kubeconfig.path)
       script: |
         #!/bin/sh

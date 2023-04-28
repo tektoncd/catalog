@@ -45,7 +45,7 @@ spec:
 
   steps:
     - name: get-token
-      image: quay.io/chmouel/github-app-token@sha256:bc45937ae588df876555ebb56c36350ed74592c7f55f2df255cabef39c926a88
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/quay.io/chmouel/github-app-token"
       env:
         - name: GITHUBAPP_KEY_PATH
           value: $(workspaces.secrets.path)/$(inputs.params.private_key_path)

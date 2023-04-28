@@ -31,7 +31,7 @@ spec:
   steps:
   - name: kubeval
     workingDir: $(workspaces.source.path)
-    image: docker.io/garethr/kubeval:0.15.0@sha256:6962d8ecbb7839637667f66e6703e6ebaae0c29dfe93a31d9968fba4324c7b8d #tag: 0.15.0
+    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/garethr/kubeval:0.15.0" #tag: 0.15.0
     command:
       - kubeval
       - -d

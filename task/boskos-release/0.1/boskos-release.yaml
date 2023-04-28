@@ -28,7 +28,7 @@ spec:
     description: A string that identifies the owner of the leased resource to request.
   steps:
   - name: boskosctl-release
-    image: gcr.io/k8s-staging-boskos/boskosctl@sha256:a7fc984732c5dd0b4e0fe0a92e2730fa4b6bddecd0f6f6c7c6b5501abe4ab105
+    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/k8s-staging-boskos/boskosctl"
     args:
     - "release"
     - "--server-url=$(params.server-url)"
@@ -36,7 +36,7 @@ spec:
     - "--name=$(params.leased-resource)"
     - "--target-state=dirty"
   - name: stop-boskosctl-heartbeat
-    image: docker.io/lachlanevenson/k8s-kubectl@sha256:3a5e22a406a109f4f26ec06b5f1f6a66ae0cd0e185bc28499eb7b7a3bbf1fe09
+    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/lachlanevenson/k8s-kubectl"
     args:
     - "delete"
     - "pod"

@@ -24,7 +24,7 @@ spec:
     - description: A normalized version for use in container images e.g. "0.1.0-tektonize.1-188"
       name: packageVersion
   steps:
-    - image: mcr.microsoft.com/dotnet/sdk:3.1-focal@sha256:1d31e2582f69920c3a6ea9498bb7da285baffbca7ea84d90d9e5b545604cc92d
+    - image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/mcr.microsoft.com/dotnet/sdk:3.1-focal"
       name: set-git-version
       workingDir: $(workspaces.source.path)
       securityContext:

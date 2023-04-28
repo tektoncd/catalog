@@ -20,73 +20,73 @@ spec:
     building and running the source code.
 
   params:
-  - name: BUILDER_IMAGE
-    description: The location of the s2i builder image.
-  - name: PATH_CONTEXT
-    description: The location of the path to run s2i from.
-    default: .
-  - name: TLSVERIFY
-    description: Verify the TLS on the registry endpoint (for push/pull to a non-TLS registry)
-    default: 'true'
-  - name: LOGLEVEL
-    description: Log level when running the S2I binary
-    default: '0'
+    - name: BUILDER_IMAGE
+      description: The location of the s2i builder image.
+    - name: PATH_CONTEXT
+      description: The location of the path to run s2i from.
+      default: .
+    - name: TLSVERIFY
+      description: Verify the TLS on the registry endpoint (for push/pull to a non-TLS registry)
+      default: "true"
+    - name: LOGLEVEL
+      description: Log level when running the S2I binary
+      default: "0"
   resources:
     outputs:
-    - name: image
-      type: image
+      - name: image
+        type: image
   workspaces:
-  - name: source
+    - name: source
   steps:
-  - name: generate
-    command:
-    - /usr/local/bin/s2i
-    - --loglevel=$(params.LOGLEVEL)
-    - build
-    - $(params.PATH_CONTEXT)
-    - $(params.BUILDER_IMAGE)
-    - --as-dockerfile
-    - /gen-source/Dockerfile.gen
-    image: quay.io/openshift-pipeline/s2i:nightly
-    volumeMounts:
-    - mountPath: /gen-source
-      name: gen-source
-    workingDir: $(workspaces.source.path)
-  - name: build
-    command:
-    - buildah
-    - bud
-    - --tls-verify=$(params.TLSVERIFY)
-    - --layers
-    - -f
-    - /gen-source/Dockerfile.gen
-    - -t
-    - $(resources.outputs.image.url)
-    - .
-    image: quay.io/buildah/stable:v1.17.0
-    securityContext:
-      privileged: true
-    volumeMounts:
-    - mountPath: /var/lib/containers
-      name: varlibcontainers
-    - mountPath: /gen-source
-      name: gen-source
-    workingDir: /gen-source
-  - name: push
-    command:
-    - buildah
-    - push
-    - --tls-verify=$(params.TLSVERIFY)
-    - $(resources.outputs.image.url)
-    - docker://$(resources.outputs.image.url)
-    image: quay.io/buildah/stable:v1.17.0
-    securityContext:
-      privileged: true
-    volumeMounts:
-    - mountPath: /var/lib/containers
-      name: varlibcontainers
+    - name: generate
+      command:
+        - /usr/local/bin/s2i
+        - --loglevel=$(params.LOGLEVEL)
+        - build
+        - $(params.PATH_CONTEXT)
+        - $(params.BUILDER_IMAGE)
+        - --as-dockerfile
+        - /gen-source/Dockerfile.gen
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/quay.io/openshift-pipeline/s2i:nightly"
+      volumeMounts:
+        - mountPath: /gen-source
+          name: gen-source
+      workingDir: $(workspaces.source.path)
+    - name: build
+      command:
+        - buildah
+        - bud
+        - --tls-verify=$(params.TLSVERIFY)
+        - --layers
+        - -f
+        - /gen-source/Dockerfile.gen
+        - -t
+        - $(resources.outputs.image.url)
+        - .
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/quay.io/buildah/stable:v1.17.0"
+      securityContext:
+        privileged: true
+      volumeMounts:
+        - mountPath: /var/lib/containers
+          name: varlibcontainers
+        - mountPath: /gen-source
+          name: gen-source
+      workingDir: /gen-source
+    - name: push
+      command:
+        - buildah
+        - push
+        - --tls-verify=$(params.TLSVERIFY)
+        - $(resources.outputs.image.url)
+        - docker://$(resources.outputs.image.url)
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/quay.io/buildah/stable:v1.17.0"
+      securityContext:
+        privileged: true
+      volumeMounts:
+        - mountPath: /var/lib/containers
+          name: varlibcontainers
   volumes:
-  - emptyDir: {}
-    name: varlibcontainers
-  - emptyDir: {}
-    name: gen-source
+    - emptyDir: {}
+      name: varlibcontainers
+    - emptyDir: {}
+      name: gen-source

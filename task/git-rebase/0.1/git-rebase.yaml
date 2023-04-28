@@ -82,7 +82,7 @@ spec:
   steps:
     - name: rebase
       workingDir: $(workspaces.source.path)
-      image: cgr.dev/chainguard/git:2.39@sha256:fdaef225e3fd5cf190520553ff765f186a4363390af3f19912897b0b28f87aeb
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/cgr.dev/chainguard/git:2.39"
       script: |
 
         # Setting up the config for the git.

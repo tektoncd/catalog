@@ -35,7 +35,7 @@ spec:
       default: --timeout=30m
     - name: image
       description: container image location for goreleaser
-      default: docker.io/goreleaser/goreleaser@sha256:2a949686d9886ac7c10582a6c29116fd29d3077d02755e87e111870d63607725
+      default: docker.io/goreleaser/goreleaser@sha256:7197bb7cb63defc1cd5ede16df876605b4535980fe9e09f6618ad2b1101f8576
   steps:
     - name: pull
       image: $(params.image)

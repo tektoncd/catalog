@@ -54,7 +54,7 @@ spec:
       default: "OFF"
   steps:
     - name: 42crunch-api-security-audit
-      image: "{{OZONE_PUBLIC_REGISTRY_PREFIX}}/42crunch/docker-api-security-audit:v3"
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/42crunch/docker-api-security-audit:v3"
       env:
         - name: "X42C_REPOSITORY_URL"
           value: $(params.x42c_repository_url)

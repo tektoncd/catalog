@@ -25,7 +25,7 @@ spec:
       default: "github"
   steps:
     - name: scorecard
-      image: gcr.io/openssf/scorecard@sha256:c16e433f68799fe69dc0f9675c7ba5d2553846b57262550c86c71165269a7961 # tag v1
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/openssf/scorecard" # tag v1
       script: |
         /go/src/github.com/ossf/scorecard/scorecard --repo=$(inputs.params.REPO)
 

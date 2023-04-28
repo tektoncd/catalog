@@ -47,7 +47,7 @@ spec:
       default: "docker.io/sonarsource/sonar-scanner-cli:4.6@sha256:7a976330a8bad1beca6584c1c118e946e7a25fdc5b664d5c0a869a6577d81b4f"
   steps:
     - name: sonar-properties-create
-      image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/registry.access.redhat.com/ubi8/ubi-minimal:8.2"
       workingDir: $(workspaces.source.path)
       env:
         - name: SONAR_HOST_URL

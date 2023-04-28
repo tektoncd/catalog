@@ -43,7 +43,7 @@ spec:
       default: "false"
   steps:
     - name: rox-image-scan
-      image: docker.io/centos@sha256:a1801b843b1bfaf77c501e7a6d3f709401a1e0c83863037fa3aab063a7fdb9dc
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/centos"
       env:
         - name: ROX_API_TOKEN
           valueFrom:

@@ -55,7 +55,7 @@ spec:
 
   steps:
     - name: add-label
-      image: registry.access.redhat.com/ubi8/ubi:8.2
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/registry.access.redhat.com/ubi8/ubi:8.2"
       args:
         - "$(params.LABELS)"
       script: |

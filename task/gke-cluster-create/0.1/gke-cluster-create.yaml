@@ -59,7 +59,7 @@ spec:
     description: The name of the cluster that was created.
   steps:
   - name: gcloud
-    image: gcr.io/google.com/cloudsdktool/cloud-sdk:slim@sha256:70d3c9ef711c704259b06485f9ab3bab6e1b5c99e4a5c1ed37f9338004664c17 #tag: slim, 312.0.0-slim
+    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/google.com/cloudsdktool/cloud-sdk:slim" #tag: slim, 312.0.0-slim
     script: |
       UNIQUE_STR=$(head /dev/urandom | tr -dc a-z0-9 | head -c 10 ; echo '')
       UNIQUE_NAME=$(params.identifier)-$UNIQUE_STR

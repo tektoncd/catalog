@@ -34,7 +34,7 @@ spec:
       type: image
   steps:
   - name: build-and-push
-    image: gcr.io/cloud-builders/gradle@sha256:797c9936cf33fc30d82a54437541d7ea7f7825c93e3237a89d254b9bc40b0898
+    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/cloud-builders/gradle"
     script: |
       #!/bin/sh
       set -o errexit

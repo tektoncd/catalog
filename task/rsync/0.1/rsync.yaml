@@ -38,7 +38,7 @@ spec:
       default: "root"
   steps:
     - name: rsync
-      image: docker.io/shaowenchen/rsync-sshpass:v1@sha256:934985f9a955f416c7378e22d847ac1320fcae1495ee70ad53c9f9fc08b99323
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/shaowenchen/rsync-sshpass:v1"
       env:
       - name: SSH_DIRECTORY_PATH
         value: $(workspaces.ssh-directory.path)

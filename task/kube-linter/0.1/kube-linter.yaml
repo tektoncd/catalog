@@ -55,7 +55,7 @@ spec:
       default: []
   steps:
     - name: fetch-config-file
-      image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/registry.access.redhat.com/ubi8/ubi-minimal:8.2"
       workingDir: $(workspaces.source.path)
       script: |
          #!/usr/bin/env bash
@@ -70,7 +70,7 @@ spec:
          fi
 
     - name: lint-yaml
-      image: docker.io/stackrox/kube-linter:0.2.2-2-g7d10a69154-alpine@sha256:e520e9d8d3a2dfa611914836536545b135845e7bda9f1df34b060e116232dbf0
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/stackrox/kube-linter:0.2.2-2-g7d10a69154-alpine"
       workingDir: $(workspaces.source.path)
       script: |
         mv ../../kube-linter ../../bin;

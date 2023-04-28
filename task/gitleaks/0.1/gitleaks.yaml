@@ -44,7 +44,7 @@ spec:
       default: []
   steps:
     - name: fetch-config-file
-      image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/registry.access.redhat.com/ubi8/ubi-minimal:8.2"
       workingDir: $(workspaces.source.path)
       script: |
          #!/usr/bin/env bash
@@ -58,7 +58,7 @@ spec:
          fi
 
     - name: detect-secret
-      image: docker.io/zricethezav/gitleaks:v7.5.0@sha256:55b2e1831c7395f17e9da3649924736b396b25be69efdc7a0137073fe0b0f456
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/zricethezav/gitleaks:v7.5.0"
       workingDir: $(workspaces.source.path)
       script: |
          #!/bin/bash
