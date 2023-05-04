@@ -1,0 +1,56 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: icr-scan
+spec:
+  description: >-
+    The following task can be used to perform analysis on the source code
+    and send the results to the iCR server specified by the parameter Server-URL
+  params:
+
+    - name: iCR-License
+      description: The license required to use the iCR to scan the source code.
+
+    - name: Git-Revision
+      description: Branch of the Git Repository
+      default: master
+
+    - name: Server-URL
+      description: The URL of the Server where data will be sent
+
+    - name: iCR-Username
+      description: The Username for the iCR Server
+      default: admin
+
+    - name: iCR-Password
+      description: The Password for the iCR Server 
+      default: admin   
+
+  steps:
+    - name: icr-scan
+      image: docker.io/munahaf/redhat-tekton:latest
+
+      resources:
+        requests:
+          memory: 8Gi
+          cpu: 1000m
+        limits:
+          memory: 8Gi
+          cpu: 2500m
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+      script: |
+        #!/usr/bin/env bash
+        echo "LICENSE_KEY $(params.iCR-License)" >> config
+        sed -i 's+/workspaceOR/source/+$(workspaces.source.path)+' config
+        sh configure_run.sh $(params.Git-Revision) $(params.Server-URL) $(params.iCR-Username) $(params.iCR-Password) 
+        EXIT_STATUS=$?
+        if [ $EXIT_STATUS -eq 0 ]; then
+          echo "The task was successful. Sent scan results to the server"
+        else
+          echo "The task failed with an exit status of $EXIT_STATUS."
+        fi
+  workspaces:
+    - name: source
+      description: The workspace

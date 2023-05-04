@@ -1,0 +1,110 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: icr-scan
+spec:
+  description: |
+    This pipeline clones a git repo, then scans the source code using Intelligent Code Repair(iCR)
+  params:
+    - name: repo-url
+      type: string
+      description: The git repo URL to clone from.
+
+    - name: iCR-License
+      type: string
+      description: License Necessary to run iCR Container
+
+    - name: Git-Revision
+      type: string
+      description: Branch of the git repo
+
+    - name: Server-URL
+      type: string
+      description: The url of the server where the data will be sent 
+
+    - name: iCR-Username
+      type: string
+      description: The Username for iCR
+
+    - name: iCR-Password
+      type: string
+      description: The passphrase for iCR    
+
+  workspaces:
+    - name: iCRWorkspace
+      description: |
+        This workspace contains the cloned repo files, so they can be read by the
+        next task.
+
+  tasks:
+    - name: fetch-source
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: iCRWorkspace
+      params:
+        - name: url
+          value: $(params.repo-url)
+
+        - name: revision
+          value: $(params.Git-Revision)
+
+    - name: icr-scan
+      taskRef:
+        name: icr-scan
+      workspaces:
+        - name: source
+          workspace: iCRWorkspace
+
+      runAfter:
+        - fetch-source
+      params:
+        - name: iCR-License
+          value: $(params.iCR-License)
+
+        - name: Git-Revision
+          value: $(params.Git-Revision)
+          
+        - name: Server-URL
+          value: $(params.Server-URL)
+
+        - name: iCR-Username
+          value: $(params.iCR-Username)
+
+        - name: iCR-Password
+          value: $(params.iCR-Password)   
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: icr-scan-
+spec:
+  pipelineRef:
+    name: icr-scan
+
+  workspaces:
+    - name: iCRWorkspace
+      persistentVolumeClaim:
+        claimName: icrpvc
+
+  params:
+    - name: repo-url
+      value: https://github.com/jaintapauljp/Baritone
+      
+    - name: iCR-License
+      value: GUAT-WX2S-5HHK-7MGX
+      
+    - name: Git-Revision
+      value: benchmark
+
+    - name: Server-URL
+      value: https://194.195.112.253:3001
+
+    - name: iCR-Username
+      value: admin
+
+    - name: iCR-Password
+      value: admin    
