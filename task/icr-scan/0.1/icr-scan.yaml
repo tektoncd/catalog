@@ -28,7 +28,7 @@ spec:
 
   steps:
     - name: icr-scan
-      image: docker.io/munahaf/redhat-tekton:latest
+      image: docker.io/munahaf/redhat-tekton@sha256:d47534a332af1c410ae9651d728d689d9808bc6dd0f54092cc4252d7288f270f
 
       resources:
         requests:
