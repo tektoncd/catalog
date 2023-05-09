@@ -21,7 +21,7 @@ spec:
 
     - name: Server-URL
       type: string
-      description: The url of the server where the data will be sent 
+      description: The url of the server where the data will be sent
 
     - name: iCR-Username
       type: string
@@ -29,7 +29,7 @@ spec:
 
     - name: iCR-Password
       type: string
-      description: The passphrase for iCR    
+      description: The passphrase for iCR
 
   workspaces:
     - name: iCRWorkspace
@@ -66,7 +66,7 @@ spec:
 
         - name: Git-Revision
           value: $(params.Git-Revision)
-          
+
         - name: Server-URL
           value: $(params.Server-URL)
 
@@ -74,7 +74,7 @@ spec:
           value: $(params.iCR-Username)
 
         - name: iCR-Password
-          value: $(params.iCR-Password)   
+          value: $(params.iCR-Password)
 
 ---
 apiVersion: tekton.dev/v1beta1
@@ -93,10 +93,10 @@ spec:
   params:
     - name: repo-url
       value: https://github.com/jaintapauljp/Baritone
-      
+
     - name: iCR-License
       value: GUAT-WX2S-5HHK-7MGX
-      
+
     - name: Git-Revision
       value: benchmark
 
@@ -107,4 +107,4 @@ spec:
       value: admin
 
     - name: iCR-Password
-      value: admin    
+      value: admin

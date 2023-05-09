@@ -2,6 +2,14 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: icr-scan
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/categories: Security
+    tekton.dev/tags: security
+    tekton.dev/displayName: "icr scanner"
+    tekton.dev/platforms: "linux/amd64"
 spec:
   description: >-
     The following task can be used to perform analysis on the source code
@@ -23,12 +31,12 @@ spec:
       default: admin
 
     - name: iCR-Password
-      description: The Password for the iCR Server 
-      default: admin   
+      description: The Password for the iCR Server
+      default: admin
 
   steps:
     - name: icr-scan
-      image: docker.io/munahaf/redhat-tekton@sha256:d47534a332af1c410ae9651d728d689d9808bc6dd0f54092cc4252d7288f270f
+      image: docker.io/openrefactory/icr-java-tekton@sha256:d47534a332af1c410ae9651d728d689d9808bc6dd0f54092cc4252d7288f270f
 
       resources:
         requests:
@@ -43,8 +51,8 @@ spec:
       script: |
         #!/usr/bin/env bash
         echo "LICENSE_KEY $(params.iCR-License)" >> config
-        sed -i 's+/workspaceOR/source/+$(workspaces.source.path)+' config
-        sh configure_run.sh $(params.Git-Revision) $(params.Server-URL) $(params.iCR-Username) $(params.iCR-Password) 
+        sed -i "s+/workspaceOR/source/+$(workspaces.source.path)+" config
+        sh configure_run.sh "$(params.Git-Revision)" "$(params.Server-URL)" "$(params.iCR-Username)" "$(params.iCR-Password)"
         EXIT_STATUS=$?
         if [ $EXIT_STATUS -eq 0 ]; then
           echo "The task was successful. Sent scan results to the server"
