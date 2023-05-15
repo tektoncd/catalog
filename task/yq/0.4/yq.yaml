@@ -45,7 +45,7 @@ spec:
         /usr/bin/env sh
         set -e
 
-        SCRIPT=$(cat <<EOF
+        SCRIPT=$(cat <<'EOF'
         $(params.SCRIPT)
 
         EOF
