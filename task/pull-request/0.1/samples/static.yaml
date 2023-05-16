@@ -16,7 +16,7 @@ spec:
       set -xe
 
       NUM=$(ls $(workspaces.pr.path)/comments | wc -l )
-      echo -n $NUM > /tekton/results/count
+      echo -n $NUM > $(results.count.path)
 ---
 # TODO(pipeline#1986) Once we have some kind of "auto workspace mode" we can avoid
 # having to manually create a PVC and manually clear it repeatedly
