@@ -107,4 +107,4 @@ spec:
         --allow=tcp:22,tcp:80,tcp:8080,tcp:30000-32767,udp:30000-32767 \
         --target-tags=$INSTANCE_TAG
 
-      printf $UNIQUE_NAME > /tekton/results/cluster-name
+      printf $UNIQUE_NAME > $(results.cluster-name.path)
