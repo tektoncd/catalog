@@ -4,6 +4,10 @@ Intelligent Code Repair(iCR) is a code analysis tool that performs static analys
 
 The following task initiates a static analysis for the named source code which is fetched from a GitHub repository. The results including detected errors and synthesized corrections are sent to a named server. 
 
+## Disclaimer
+
+The task is very resource intensive. Please see the resource requests in the `icr-scan.yaml` file.
+
 ## Install the Task
 
 ```
