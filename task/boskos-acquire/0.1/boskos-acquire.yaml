@@ -41,12 +41,12 @@ spec:
         --state=free \
         --target-state=busy)
       echo $RESOURCE > /workspace/full-resource-output.json
-      echo $RESOURCE | jq -rj ".name" > /tekton/results/leased-resource
+      echo $RESOURCE | jq -rj ".name" > $(results.leased-resource.path)
   - name: create-heartbeat-pod-yaml
     image: docker.io/lachlanevenson/k8s-kubectl@sha256:3a5e22a406a109f4f26ec06b5f1f6a66ae0cd0e185bc28499eb7b7a3bbf1fe09
     script: |
       FULL_RESOURCE_OUTPUT=$(cat /workspace/full-resource-output.json)
-      LEASED_RESOURCE=$(cat /tekton/results/leased-resource)
+      LEASED_RESOURCE=$(cat $(results.leased-resource.path))
       cat <<EOF | kubectl apply -f -
       apiVersion: v1
       kind: Pod

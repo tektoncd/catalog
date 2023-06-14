@@ -101,7 +101,7 @@ spec:
 
   - name: digest-to-results
     image: $(params.BUILDER_IMAGE)
-    script: cat $(workspaces.source.path)/$(params.DIRECTORY)/image-digest | tee /tekton/results/IMAGE_DIGEST
+    script: cat $(workspaces.source.path)/$(params.DIRECTORY)/image-digest | tee $(results.IMAGE_DIGEST.path)
 
   volumes:
   - name: empty-dir-volume

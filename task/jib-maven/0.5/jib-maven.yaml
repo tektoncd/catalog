@@ -1,0 +1,104 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: jib-maven
+  labels:
+    app.kubernetes.io/version: "0.5"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/categories: Image Build
+    tekton.dev/tags: image-build
+    tekton.dev/displayName: "jib maven"
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
+spec:
+  description: >-
+    This Task builds Java/Kotlin/Groovy/Scala source into a container image using Google's Jib tool.
+
+    Jib works with Maven and Gradle projects, and this template is for Maven projects.
+
+  params:
+  - name: IMAGE
+    description: Name of the image to build
+  - name: MAVEN_IMAGE
+    type: string
+    description: Maven base image
+    default: gcr.io/cloud-builders/mvn@sha256:57523fc43394d6d9d2414ee8d1c85ed7a13460cbb268c3cd16d28cfb3859e641  # tag: latest
+  - name: DIRECTORY
+    description: The directory containing the app, relative to the source repository root
+    default: .
+  - name: CACHE
+    description: The name of the volume for caching Maven artifacts and base image layers
+    default: empty-dir-volume
+  - name: INSECUREREGISTRY
+    description: Whether to allow insecure registry
+    default: "false"
+  - name: CACERTFILE
+    description: CA cert file name for insecure registry service
+    default: "service-ca.crt"
+  workspaces:
+  - name: source
+  - name: sslcertdir
+    optional: true
+    mountPath: /tekton-custom-certs
+
+  results:
+  - name: IMAGE_DIGEST
+    description: Digest of the image just built.
+
+  steps:
+  - name: build-and-push
+    image: $(params.MAVEN_IMAGE)
+    # Make sh evaluate $HOME.
+    script: |
+      #!/bin/bash
+
+      # Delete the truststore created on exit
+      function cleanup {
+        rm $(workspaces.source.path)/truststore.jks
+      }
+
+      certParams=""
+
+      if [[ -f /tekton-custom-certs/$(params.CACERTFILE) ]]; then
+        # create the truststore with existing certs available
+        keytool -importkeystore -srckeystore $JAVA_HOME/lib/security/cacerts -srcstoretype JKS -destkeystore $(workspaces.source.path)/truststore.jks -storepass "changeit" -srcstorepass "changeit" > /tmp/logs 2>&1
+        if [ $? -ne 0 ]; then
+          cat /tmp/logs
+          exit 1
+        fi
+        # add your certs to the new truststore created
+        keytool -import -keystore $(workspaces.source.path)/truststore.jks -storepass "changeit" -file /tekton-custom-certs/$(params.CACERTFILE) -noprompt
+        # pass truststore details to the mvn command
+        certParams="-Djavax.net.ssl.trustStore=$(workspaces.source.path)/truststore.jks -Djavax.net.ssl.trustStorePassword=changeit"
+        # clean truststore on exit
+        trap cleanup EXIT
+      fi
+
+      mvn -B \
+        -Duser.home=$HOME \
+        -Djib.allowInsecureRegistries=$(params.INSECUREREGISTRY) \
+        -Djib.to.image=$(params.IMAGE) \
+        $certParams \
+        compile \
+        com.google.cloud.tools:jib-maven-plugin:build
+    workingDir: $(workspaces.source.path)/$(params.DIRECTORY)
+    env:
+    - name: HOME
+      value: /workspace
+    - name: "DOCKER_CONFIG"
+      value: $(credentials.path)/.docker/
+    volumeMounts:
+    - name: $(params.CACHE)
+      mountPath: /workspace/.m2
+      subPath: m2-cache
+    - name: $(params.CACHE)
+      mountPath: /workspace/.cache
+      subPath: jib-cache
+
+  - name: digest-to-results
+    image: $(params.MAVEN_IMAGE)
+    script: cat $(workspaces.source.path)/$(params.DIRECTORY)/target/jib-image.digest | tee $(results.IMAGE_DIGEST.path)
+
+  volumes:
+  - name: empty-dir-volume
+    emptyDir: {}

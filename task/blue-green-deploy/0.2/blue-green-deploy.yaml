@@ -1,0 +1,153 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: blue-green-deploy
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/categories: Deployment
+    tekton.dev/tags: deployment
+    tekton.dev/displayName: "blue green deployment"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    This task can be used to do Blue-Green deployment
+  workspaces:
+    - name: manifest-dir
+      description: Consisting of kubernetes manifests
+      optional: true
+    - name: kubeconfig-dir
+      description: Can be used in case kubeconfig file is mounted
+      optional: true
+  params:
+    - name: SERVICE_NAME
+      type: string
+      description: Name of the service which is pointing to existing deployment
+    - name: NEW_VERSION
+      type: string
+      description: The version of newer deployment which is to be patched to existing service
+    - name: MANIFEST
+      type: string
+      default: "."
+      description: The newer version of the deployment to be deployed in another zone
+    - name: NAMESPACE
+      type: string
+      description: Target namespace in which operation needs to be performed
+    - name: IMAGE
+      description: Image which has kubectl binary present
+      type: string
+      default: "quay.io/openshift/origin-cli:4.9"
+  steps:
+    - name: change-deployment
+      image: $(params.IMAGE)
+      script: |
+        #!/usr/bin/env bash
+        set -u -o pipefail
+
+        [[ "$(workspaces.manifest-dir.bound)" == "true" ]] && cd $(workspaces.manifest-dir.path)
+
+        if [[ "$(workspaces.kubeconfig-dir.bound)" == "true" ]] && [[ -f $(workspaces.kubeconfig-dir.path)/kubeconfig ]]; then
+          export KUBECONFIG=$(workspaces.kubeconfig-dir.path)/kubeconfig
+        fi
+
+        getReasons() {
+          local deploy_name=$1
+          kubectl -n $(params.NAMESPACE) get deploy "$deploy_name" \
+            -o jsonpath='{range .status.conditions[*]}{.reason}{"\n"}{end}'
+        }
+
+        # Getting the status at particular index
+        getStatusAtIndex() {
+          local deploy_name=$1
+          local index=$2
+          kubectl -n $(params.NAMESPACE) get deploy "$deploy_name" \
+            -o jsonpath='{range .status.conditions['$index']}{.status}{"\n"}{end}'
+        }
+
+        # Checking for unavailable pods in case the deployment is
+        # patched with a newer image
+        checkUnavailableReplicas() {
+          local deploy_name=$1
+          local replicasUnavailable=$(kubectl -n $(params.NAMESPACE) get deploy "$deploy_name" -o jsonpath='{.status.unavailableReplicas}')
+          [[ "$replicasUnavailable" == "" ]] && return 0 || return 1
+        }
+
+        getMinimumReplicaStatus() {
+          local deploy_name=$1
+          local INDEX=0
+          for reason in $(getReasons $deploy_name); do
+            if [[ "$reason" == "MinimumReplicasAvailable" ]]; then
+              local ready=$(getStatusAtIndex $deploy_name ${INDEX})
+              [[ "$ready" != "True" ]] && return 1 || return 0
+            fi
+            ((INDEX++))
+          done
+          return 1
+        }
+
+        checkProgressDeadline() {
+          local deploy_name=$1
+          local INDEX=0
+          for reason in $(getReasons $deploy_name); do
+            if [[ "$reason" == "ProgressDeadlineExceeded" ]]; then
+              local status=$(getStatusAtIndex $deploy_name ${INDEX})
+              [[ "$status" == "True" ]] && return 0 || return 1
+            fi
+            ((INDEX++))
+          done
+          return 1
+        }
+
+        switchService() {
+          kubectl -n $(params.NAMESPACE) patch svc ${service} \
+            -p "{\"spec\":{\"selector\": {\"app\": \"${service}\", \"version\": \"${version}\"}}}"
+        }
+
+        main() {
+          local deploy_name=$(params.SERVICE_NAME)-$(params.NEW_VERSION)
+          local service=$(params.SERVICE_NAME)
+          local version=$(params.NEW_VERSION)
+
+          kubectl -n $(params.NAMESPACE) apply -f $(params.MANIFEST)
+
+          # Wait until the Deployment is ready by checking the
+          # MinimumReplicasAvailable condition.
+          # Also checking for the ProgressDeadlineExceeded
+          # condition
+          while true; do
+            getMinimumReplicaStatus ${deploy_name}
+            [[ $? -eq 0 ]] && break
+            checkProgressDeadline ${deploy_name}
+            [[ $? -eq 0 ]] && break
+            sleep 5
+          done
+          # If ProgressDeadlineExceeded then break from the main
+          # and avoid checking for the next condition
+          checkProgressDeadline ${deploy_name}
+          if [[ $? -eq 0 ]]; then
+            echo "Failed to change the service" && break
+          fi
+          # If MinimumReplicas are available then check
+          # for the unavailable Pods
+          # Also checking for the ProgressDeadlineExceeded condition
+          while true; do
+            checkUnavailableReplicas ${deploy_name}
+            [[ $? -eq 0 ]] && break
+            checkProgressDeadline ${deploy_name}
+            [[ $? -eq 0 ]] && break
+            sleep 5
+          done
+
+          # Update the service selector with the new version
+          # if ProgressDeadline not exceeded
+          checkProgressDeadline ${deploy_name}
+          if [[ $? -eq 0 ]]; then
+            echo "Failed to change the service"
+          else
+            switchService ${service} ${version}
+            [[ $? -eq 0 ]] && echo "Done." || exit 1
+          fi
+        }
+
+        main "$@"
