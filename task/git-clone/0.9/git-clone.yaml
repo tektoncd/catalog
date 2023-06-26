@@ -220,7 +220,7 @@ spec:
         test -z "${PARAM_HTTPS_PROXY}" || export HTTPS_PROXY="${PARAM_HTTPS_PROXY}"
         test -z "${PARAM_NO_PROXY}" || export NO_PROXY="${PARAM_NO_PROXY}"
 
-        git config --global --add safe.directory "${WORKSPACE_OUTPUT_PATH}"
+        git config --global --add safe.directory "${CHECKOUT_DIR}"
         /ko-app/git-init \
           -url="${PARAM_URL}" \
           -revision="${PARAM_REVISION}" \
