@@ -1,0 +1,27 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: catlin-run-multiple-ignore-warning
+spec:
+  taskRef:
+    name: catlin-validate
+  params:
+    - name: inputFile
+      # file in catlin input workspace that contains newline delimited paths to task yaml files on which catlin validate will be applied
+      value: input.txt
+    - name: ignoreWarnings
+      value: "true"
+  workspaces:
+    - name: catlin-output
+      emptyDir: {}
+    - name: catlin-input
+      configmap:
+        name: catlin-input-multiple
+    - name: source
+      configmap:
+        name: source-multiple
+        items:
+        - key: "hello.yaml"
+          path: "task/hello/0.1/hello.yaml"
+        - key: "bye.yaml"
+          path: "task/bye/0.1/bye.yaml"

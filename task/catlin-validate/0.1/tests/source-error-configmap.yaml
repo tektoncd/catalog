@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: source-error
+data:
+  hello.yaml: |
+    apiVersion: tekton.dev/v1beta1
+    kind: Task
+    metadata:
+      name: hello
+    spec:
+      steps:
+        - name: echo
+          image: alpine
+          script: |
+            #!/bin/sh
+            echo "Hello World"   
