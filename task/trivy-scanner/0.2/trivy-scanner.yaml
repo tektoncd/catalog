@@ -26,7 +26,7 @@ spec:
       description: The Arguments to be passed to Trivy command.
       type: array
     - name: TRIVY_IMAGE
-      default: docker.io/aquasec/trivy@sha256:dea76d4b50c75125cada676a87ac23de2b7ba4374752c6f908253c3b839201d9
+      default: docker.io/aquasec/trivy@sha256:9dd4bf7c34436c567f38de19290ad78143529446e3b46f396129c5e159e9b040
       description: Trivy scanner image to be used
     - name: IMAGE_PATH
       description: Image or Path to be scanned by trivy.
