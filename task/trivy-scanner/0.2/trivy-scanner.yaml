@@ -50,7 +50,7 @@ spec:
             rm -rf "$TRIVY_TEMP_DIR"
             mkdir -p "$HOME"/.cache/trivy/db
             tar xvf ./db.tar.gz -C "$HOME"/.cache/trivy/db
-            cmd+="--skip-update "
+            cmd="${cmd}--skip-update "
           fi
           cmd+="$(params.IMAGE_PATH)"
           echo "Running trivy task with command below"
