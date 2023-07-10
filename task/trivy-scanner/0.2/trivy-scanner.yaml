@@ -52,7 +52,7 @@ spec:
             tar xvf ./db.tar.gz -C "$HOME"/.cache/trivy/db
             cmd="${cmd}--skip-update "
           fi
-          cmd+="$(params.IMAGE_PATH)"
+          cmd="${cmd}$(params.IMAGE_PATH)"
           echo "Running trivy task with command below"
           echo "$cmd"
           eval "$cmd"
