@@ -82,7 +82,7 @@ spec:
     - name: deleteExisting
       description: Clean out the contents of the destination directory if it already exists before cloning.
       type: string
-      default: "false"
+      default: "true"
     - name: httpProxy
       description: HTTP proxy server for non-SSL requests.
       type: string
