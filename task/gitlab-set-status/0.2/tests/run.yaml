@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: gitlab-set-status
+spec:
+  pipelineSpec:
+    tasks:
+      - name: set-status
+        taskRef:
+          name: gitlab-set-status
+        params:
+          - name: GITLAB_HOST_URL
+            value: http://localhost:8080
+          - name: REPO_FULL_NAME
+            value: tektoncd/catalog
+          - name: SHA
+            value: 1234567890abcdef
+          - name: TARGET_URL
+            value: http://localhost:8080/this-could-be-your-pipeline-dashboard
+          - name: DESCRIPTION
+            value: An update to Gitlab about our pipeline status
+          - name: STATE
+            value: success
+          - name: COVERAGE
+            value: "100.0"
+          - name: GITLAB_TOKEN_SECRET_NAME
+            value: gitlab-secret
+          - name: GITLAB_TOKEN_SECRET_KEY
+            value: token
