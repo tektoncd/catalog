@@ -10,7 +10,7 @@ metadata:
     tekton.dev/categories: Security
     tekton.dev/tags: CLI, trivy
     tekton.dev/displayName: "trivy scanner"
-    tekton.dev/platforms: "linux/amd64"
+    tekton.dev/platforms: "linux/amd64,linux/arm64,linux/ppc64le,linux/390x"
 spec:
   description: >-
     Trivy is a simple and comprehensive scanner for
