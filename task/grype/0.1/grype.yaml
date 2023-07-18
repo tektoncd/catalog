@@ -10,7 +10,7 @@ metadata:
     tekton.dev/categories: Security
     tekton.dev/tags: CLI, grype
     tekton.dev/displayName: "grype"
-    tekton.dev/platforms: "linux/amd64,linux/arm64"
+    tekton.dev/platforms: "linux/amd64,linux/arm64,linux/ppc64le,linux/390x"
 spec:
   description: >-
     A vulnerability scanner for container images and filesystems.
