@@ -10,7 +10,7 @@ metadata:
     tekton.dev/categories: Security
     tekton.dev/tags: CLI, syft
     tekton.dev/displayName: syft
-    tekton.dev/platforms: "linux/amd64,linux/arm64"
+    tekton.dev/platforms: "linux/amd64,linux/arm64,linux/ppc64le,linux/390x"
 spec:
   description: >-
    CLI tool and library for generating a Software Bill of Materials from container images and filesystems
@@ -22,7 +22,7 @@ spec:
       description: The Arguments to be passed to Syft command.
       type: array
     - name: SYFT_IMAGE
-      default: docker.io/anchore/syft@sha256:42ede68d8a8762e42715692221a212cba262ce3a252ed962abf3d44ce3e68a52 # v0.55.0
+      default: docker.io/anchore/syft@sha256:dd40bc09ff2bf3b860c399e7cf5c2db088e84c85937ac05fdeca3cd88fe2a728  # v0.85.0
       description: Syft image to be used
       type: string
   steps:

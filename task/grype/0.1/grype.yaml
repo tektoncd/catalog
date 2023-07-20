@@ -10,7 +10,7 @@ metadata:
     tekton.dev/categories: Security
     tekton.dev/tags: CLI, grype
     tekton.dev/displayName: "grype"
-    tekton.dev/platforms: "linux/amd64,linux/arm64"
+    tekton.dev/platforms: "linux/amd64,linux/arm64,linux/ppc64le,linux/390x"
 spec:
   description: >-
     A vulnerability scanner for container images and filesystems.
@@ -23,7 +23,7 @@ spec:
       description: The Arguments to be passed to Grype command.
       type: array
     - name: GRYPE_IMAGE
-      default: docker.io/anchore/grype@sha256:40c41e43eff0eb979375ea705f0cf5f6f698941099f63c890c3eb90b6ef72db5 # v0.47.0
+      default: docker.io/anchore/grype@sha256:06d97d03bded18b392e08177a84f3436376d18b6c22fd8fde45c2f38f04fd6ed  # v0.64.2
       description: Grype image to be used
       type: string
   steps:
