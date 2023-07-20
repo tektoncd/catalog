@@ -10,7 +10,7 @@ metadata:
     tekton.dev/categories: Security
     tekton.dev/tags: CLI, trivy
     tekton.dev/displayName: "trivy scanner"
-    tekton.dev/platforms: "linux/amd64"
+    tekton.dev/platforms: "linux/amd64,linux/arm64,linux/ppc64le,linux/390x"
 spec:
   description: >-
     Trivy is a simple and comprehensive scanner for
@@ -26,7 +26,7 @@ spec:
       description: The Arguments to be passed to Trivy command.
       type: array
     - name: TRIVY_IMAGE
-      default: docker.io/aquasec/trivy@sha256:dea76d4b50c75125cada676a87ac23de2b7ba4374752c6f908253c3b839201d9
+      default: docker.io/aquasec/trivy@sha256:944a044451791617cc0ed2ee4d1942a4f66b790d527fcd0575a6b399ccbc05a1
       description: Trivy scanner image to be used
     - name: IMAGE_PATH
       description: Image or Path to be scanned by trivy.
