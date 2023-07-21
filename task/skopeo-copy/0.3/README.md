@@ -58,7 +58,7 @@ kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/skopeo-copy/
 * `Secret` to provide the credentials of the source and destination registry where the image needs to be copied from and to.
 * `ConfigMap` to provide support for copying multiple images, this contains file `url.txt` which stores images registry URL's.
 
-  [This](../0.2/samples/quay-secret.yaml) example can help to use secrets for providing credentials of image registries.
+  [This](../0.3/samples/quay-secret.yaml) example can help to use secrets for providing credentials of image registries.
 
 ## Platforms
 
