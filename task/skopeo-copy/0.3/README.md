@@ -92,7 +92,7 @@ This will result in the image getting copied from the source registry to the des
 
 [This](../0.2/samples/serviceaccount.yaml) will guide the user to use service account for authorization to image registries.
 
-See [here](../0.2/samples/run.yaml) for example of `TaskRun`.
+See [here](../0.3/samples/run.yaml) for example of `TaskRun`.
 ### Note
 
 - `Source credentials` are only required, if the source image registry needs authentication to pull the image, whereas `Destination credentials` are always required.
