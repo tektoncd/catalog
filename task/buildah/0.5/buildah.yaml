@@ -84,7 +84,7 @@ spec:
         --digestfile /tmp/image-digest $(params.IMAGE) \
         docker://$(params.IMAGE)
       cat /tmp/image-digest | tee $(results.IMAGE_DIGEST.path)
-      echo "$(params.IMAGE)" | tee $(results.IMAGE_URL.path)
+      echo -n "$(params.IMAGE)" | tee $(results.IMAGE_URL.path)
     volumeMounts:
     - name: varlibcontainers
       mountPath: /var/lib/containers

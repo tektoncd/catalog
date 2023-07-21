@@ -1,0 +1,26 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: 42audit-run
+spec:
+  pipelineRef:
+    name: 42crunch-pipeline-test
+  workspaces:
+    - name: audit-workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteMany
+          resources:
+            requests:
+              storage: 1Gi
+    - name: git-credentials
+      secret:
+        secretName: git-credentials
+  params:
+    - name: repo-url
+      value: "{{SSH url of the repository containing OpenAPI files}}"
+    - name: branch
+      value: "origin/main"
+    - name: x42c_secret_name
+      value: "42crunch-api-token"

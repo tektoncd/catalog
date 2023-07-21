@@ -11,6 +11,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.19.0"
     tekton.dev/tags: Security
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/deprecated: "true"
 spec:
   description: >-
     The REST API Static Security Testing task performs a static analysis of the OpenAPI definitions.

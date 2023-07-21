@@ -1,6 +1,6 @@
 # trivy-scanner
 
-This task allows the use of the trivy vulnerlability scanner for Tekton Pipelines.See <https://github.com/aquasecurity/trivy>
+This task allows the use of the Trivy vulneralability scanner for Tekton Pipelines. See <https://github.com/aquasecurity/trivy>
 
 ## What's Trivy?
 

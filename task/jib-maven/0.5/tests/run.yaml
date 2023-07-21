@@ -1,0 +1,75 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: jib-maven-test-pipeline
+spec:
+  workspaces:
+  - name: shared-workspace
+  - name: ssl-certs
+  tasks:
+  - name: fetch-repository
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: shared-workspace
+    params:
+    - name: url
+      value: https://github.com/che-samples/console-java-simple
+    - name: subdirectory
+      value: ""
+    - name: deleteExisting
+      value: "true"
+  - name: jib-maven
+    taskRef:
+      name: jib-maven
+    runAfter:
+    - fetch-repository
+    workspaces:
+    - name: source
+      workspace: shared-workspace
+    - name: sslcertdir
+      workspace: ssl-certs
+    params:
+    - name: IMAGE
+      value: registry:5000/console-java-simple
+    - name: CACERTFILE
+      value: "ca.crt"
+  - name: verify-digest
+    runAfter:
+    - jib-maven
+    params:
+    - name: digest
+      value: $(tasks.jib-maven.results.IMAGE_DIGEST)
+    taskSpec:
+      params:
+      - name: digest
+      steps:
+      - name: bash
+        image: ubuntu
+        script: |
+          echo $(params.digest)
+          case .$(params.digest) in
+            ".sha"*) exit 0 ;;
+            *)       echo "Digest value is not correct" && exit 1 ;;
+          esac
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: jib-maven-test-pipeline-run
+spec:
+  pipelineRef:
+    name: jib-maven-test-pipeline
+  workspaces:
+  - name: shared-workspace
+    persistentVolumeClaim:
+      claimName: jib-maven-source-pvc
+  - name: ssl-certs
+    configMap:
+      name: sslcert
+      defaultMode: 420
+      items:
+        - key: ca.crt
+          path: ca.crt

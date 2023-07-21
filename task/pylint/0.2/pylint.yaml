@@ -20,7 +20,7 @@ spec:
   params:
     - name: image
       description: The container image with pylint
-      default: registry.gitlab.com/pipeline-components/pylint:edge
+      default: registry.gitlab.com/pipeline-components/pylint:0.12.0@sha256:051b701936dfab6fa27bd1ebd50ef56b19577565661bc0227e50dd1cf94a3d6e
     - name: path
       description: The path to the module which should be analysed by pylint
       default: "."

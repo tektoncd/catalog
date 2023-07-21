@@ -1,0 +1,45 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: 42crunch-pipeline-test
+spec:
+  params:
+    - name: repo-url
+      type: string
+    - name: branch
+      type: string
+    - name: x42c_secret_name
+      type: string
+  workspaces:
+    - name: audit-workspace
+      description: |
+        This workspace contains the cloned repo files, so they can be read by the
+        next task.
+    - name: git-credentials
+      description: ssh credentials for git
+  tasks:
+    - name: fetch-source
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: audit-workspace
+        - name: ssh-directory
+          workspace: git-credentials
+      params:
+        - name: url
+          value: $(params.repo-url)
+    - name: audit
+      runAfter: ["fetch-source"]
+      taskRef:
+        name: 42crunch-api-security-audit
+      workspaces:
+        - name: workdir
+          workspace: audit-workspace
+      params:
+        - name: x42c_repository_url
+          value: $(params.repo-url)
+        - name: x42c_branch_name
+          value: $(params.branch)
+        - name: x42c_secret_name
+          value: $(params.x42c_secret_name)

@@ -213,7 +213,7 @@ spec:
         }
 
         if [ "${PARAM_DELETE_EXISTING}" = "true" ] ; then
-          cleandir
+          cleandir || true
         fi
 
         test -z "${PARAM_HTTP_PROXY}" || export HTTP_PROXY="${PARAM_HTTP_PROXY}"

@@ -77,7 +77,7 @@ spec:
 
   - name: digest-to-results
     image: $(params.MAVEN_IMAGE)
-    script: cat $(workspaces.source.path)/target/jib-image.digest | tee /tekton/results/IMAGE_DIGEST
+    script: cat $(workspaces.source.path)/target/jib-image.digest | tee $(results.IMAGE_DIGEST.path)
 
   volumes:
   - name: empty-dir-volume

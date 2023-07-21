@@ -1,0 +1,108 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+
+metadata:
+  name: 42crunch-api-security-audit
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/displayName: "42Crunch REST API Static Security Testing"
+    tekton.dev/categories: Security
+    tekton.dev/pipelines.minVersion: "0.19.0"
+    tekton.dev/tags: Security
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    The REST API Static Security Testing task performs a static analysis of the OpenAPI definitions.
+
+    Task includes more than 300 checks on best practices and potential vulnerabilities on how the API
+    defines authentication, authorization, transport, and data coming in and going out.
+  workspaces:
+    - name: workdir
+  params:
+    - name: x42c_repository_url
+      description: Source control repository URL. Needed to identify API collection on 42Crunch Platform.
+    - name: x42c_branch_name
+      description: Source control branch name.
+      default: ""
+    - name: x42c_tag_name
+      description: Source control tag name.
+      default: ""
+    - name: x42c_pr_id
+      description: Source control PR ID.
+      default: ""
+    - name: x42c_pr_target_branch
+      description: Source control PR target branch name.
+      default: ""
+    - name: x42c_secret_name
+      description: Name of the secret that contains the API token to access 42Crunch Platform.
+      default: "42crunch-api-token"
+    - name: x42c_root_directory
+      description: "The root directory that contains the 42c-conf.yaml configuration file and the APIs. If not specified, the current working directory of the task is used."
+      default: ""
+    - name: x42c_min_score
+      description: Minimum score for OpenAPI files.
+      default: "75"
+    - name: x42c_platform_url
+      description: 42Crunch Platform URL.
+      default: "https://platform.42crunch.com"
+    - name: x42c_default_collection_name
+      description: The default collection name used when creating collections for discovered apis.
+      default: ""
+    - name: x42c_log_level
+      description: Log level, one of FATAL, ERROR, WARN, INFO, DEBUG.
+      default: "INFO"
+    - name: x42c_share_everyone
+      description: Share new API collections with everyone, one of OFF, READ_ONLY, READ_WRITE
+      default: "OFF"
+    - name: x42c_api_tags
+      default: ""
+    - name: x42c_skip_local_checks
+      default: "false"
+    - name: x42c_ignore_network_errors
+      default: "false"
+    - name: x42c_ignore_failures
+      default: "false"
+    - name: x42c_json_report
+      default: ""
+  steps:
+    - name: 42crunch-api-security-audit
+      image: docker.io/42crunch/docker-api-security-audit:v3.3@sha256:2b6064ac01fbfcaba8ad16a33f52150f9061d930f59ea9258d4d2f6a1a9d6002
+      env:
+        - name: "X42C_REPOSITORY_URL"
+          value: $(params.x42c_repository_url)
+        - name: "X42C_BRANCH_NAME"
+          value: $(params.x42c_branch_name)
+        - name: "X42C_TAG_NAME"
+          value: $(params.x42c_tag_name)
+        - name: "X42C_PR_ID"
+          value: $(params.x42c_pr_id)
+        - name: "X42C_PR_TARGET_BRANCH"
+          value: $(params.x42c_pr_target_branch)
+        - name: "X42C_ROOT_DIRECTORY"
+          value: $(params.x42c_root_directory)
+        - name: "X42C_MIN_SCORE"
+          value: $(params.x42c_min_score)
+        - name: "X42C_PLATFORM_URL"
+          value: $(params.x42c_platform_url)
+        - name: "X42C_DEFAULT_COLLECTION_NAME"
+          value: $(params.x42c_default_collection_name)
+        - name: "X42C_LOG_LEVEL"
+          value: $(params.x42c_log_level)
+        - name: "X42C_SHARE_EVERYONE"
+          value: $(params.x42c_share_everyone)
+        - name: "X42C_SKIP_LOCAL_CHECKS"
+          value: $(params.x42c_skip_local_checks)
+        - name: "X42C_IGNORE_NETWORK_ERRORS"
+          value: $(params.x42c_ignore_network_errors)
+        - name: "X42C_IGNORE_FAILURES"
+          value: $(params.x42c_ignore_failures)
+        - name: "X42C_JSON_REPORT"
+          value: $(params.x42c_json_report)
+        - name: "X42C_API_TAGS"
+          value: $(params.x42c_api_tags)
+
+      envFrom:
+        - secretRef:
+            name: $(params.x42c_secret_name)
+      workingDir: $(workspaces.workdir.path)
