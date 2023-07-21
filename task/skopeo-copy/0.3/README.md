@@ -90,7 +90,7 @@ In case there is only one source and destination image that needs to be copied t
 This will result in the image getting copied from the source registry to the destination registry.
 
 
-[This](../0.2/samples/serviceaccount.yaml) will guide the user to use service account for authorization to image registries.
+[This](../0.3/samples/serviceaccount.yaml) will guide the user to use service account for authorization to image registries.
 
 See [here](../0.3/samples/run.yaml) for example of `TaskRun`.
 ### Note
