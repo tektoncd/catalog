@@ -1,0 +1,87 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: cat-readme
+spec:
+  description: |
+    cat-readme takes a git repository and
+    prints the README.md file from main branch. This is an example
+    Pipeline demonstrating the following:
+      - Using the git-clone catalog Task to clone a main branch for the repo which uses custom CAs for HTTPS
+      - Passing a cloned repo to subsequent Tasks using a Workspace.
+      - Ordering Tasks in a Pipeline using "runAfter" so that
+        git-clone completes before we try to read from the Workspace.
+      - Using a volumeClaimTemplate Volume as a Workspace.
+      - Avoiding hard-coded paths by using a Workspace's path
+        variable instead.
+  params:
+  - name: repo-url
+    type: string
+    description: The git repository URL to clone from.
+  workspaces:
+  - name: shared-data
+    description: |
+      This workspace will receive the cloned git repo and be passed
+      to the next Task for the repo's README.md file to be read.
+  - name: ssl-ca-dir
+    description: |
+      This workspace contains CA certificates, this will be used by Git to
+      verify the peer with when fetching or pushing over HTTPS.
+  tasks:
+  - name: fetch-repo
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: shared-data
+    - name: ssl-ca-directory
+      workspace: ssl-ca-dir
+    params:
+    - name: url
+      value: $(params.repo-url)
+  - name: cat-readme
+    runAfter: ["fetch-repo"]  # Wait until the clone is done before reading the readme.
+    workspaces:
+    - name: source
+      workspace: shared-data
+    taskSpec:
+      workspaces:
+      - name: source
+      steps:
+      - image: zshusers/zsh:4.3.15
+        script: |
+          #!/usr/bin/env zsh
+          cat $(workspaces.source.path)/README.md
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: git-clone-checking-out-a-branch
+spec:
+  pipelineRef:
+    name: cat-branch-readme
+  podTemplate:
+    securityContext:
+      fsGroup: 65532
+  workspaces:
+  - name: shared-data
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+  - name: ssl-ca-dir
+    secret:
+      secretName: my-ssl-credentials
+  params:
+  - name: repo-url
+    value: https://github.com/tektoncd/pipeline.git
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: my-ssl-credentials
+data:
+  ca-bundle.crt: jdsfjshfj122w  # base64-encoded crt ... If key/filename is other than ca-bundle.crt then set crtFileName param as explained under Parameters section.
