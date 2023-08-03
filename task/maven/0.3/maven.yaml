@@ -20,9 +20,6 @@ spec:
       description: >-
         The workspace consisting of the custom maven settings
         provided by the user.
-    - name: maven-local-repo
-      description: Local repo (m2) workspace
-      optional: true
   params:
     - name: MAVEN_IMAGE
       type: string
@@ -151,4 +148,4 @@ spec:
         - -s
         - $(workspaces.maven-settings.path)/settings.xml
         - "$(params.GOALS)"
-        - '-Dmaven.repo.local=$(workspaces.maven-local-repo.path)/.m2'
+        - '-Dmaven.repo.local=$(workspaces.maven-settings.path)/.m2'

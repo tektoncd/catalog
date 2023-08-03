@@ -7,7 +7,6 @@ spec:
   workspaces:
     - name: shared-workspace
     - name: maven-settings
-    - name: maven-local-m2
   tasks:
     - name: fetch-repository
       taskRef:
@@ -40,8 +39,6 @@ spec:
           workspace: maven-settings
         - name: source
           workspace: shared-workspace
-        - name: maven-local-repo
-          workspace: maven-local-m2
     - name: maven-run-build-2
       taskRef:
         name: maven
@@ -60,8 +57,6 @@ spec:
           workspace: maven-settings
         - name: source
           workspace: shared-workspace
-        - name: maven-local-repo
-          workspace: maven-local-m2
 ---
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
@@ -76,6 +71,3 @@ spec:
     - name: shared-workspace
       persistentvolumeclaim:
         claimName: maven-source-pvc
-    - name: maven-local-m2
-      persistentvolumeclaim:
-        claimName: maven-local-m2-pvc
