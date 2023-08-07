@@ -29,20 +29,20 @@ spec:
         task/git-clone/0.9/git-clone.yaml
         task/git-clone/0.1/git-comment.yaml
         it will run catlin on the above paths in the source workspace one after another and store its output in catlin-output workspace
-        final command run will be 
+        final command run will be
         'catlin validate $(workspaces.source.path)/task/git-clone/0.9/git-clone.yaml >> $(workspaces.catlin-output.path)/output.txt'
         'catlin validate $(workspaces.source.path)/task/git-clone/0.1/git-comment.yaml >> $(workspaces.catlin-output.path)/output.txt'
       type: string
     - name: ignoreWarnings
       description: |
-        Ignores any warnings in catlin output. 
+        Ignores any warnings in catlin output.
         If catlin output has only success and warnings, all warnings are ignored and final catlin output will be success
       type: string
       default: "false"
   results:
     - name: catlin-status
       description: |
-        final status of catlin command. If all catlin validate command succeeds status will be set to 'success', if any one command validate command fails 
+        final status of catlin command. If all catlin validate command succeeds status will be set to 'success', if any one command validate command fails
         status will be set to 'failure', If there is no failure and atleast one catline validate command is warning the status will be set to 'warning'
   workspaces:
   - name: source
@@ -87,7 +87,6 @@ spec:
         STR=$(cat "$CATLIN_OUTPUT_WORKSPACE_PATH"/"$OUTPUT_FILE")
         ERROR='ERROR'
         WARN='WARN'
-        
         if [[ "$IGNORE_WARNINGS" == "true" ]]; then
           echo "Ignore Warnings is set to true, any warnings in catlin output will be ignored"
         fi
@@ -106,7 +105,3 @@ spec:
           echo ""
           echo "Final output of catlin validate is success."
         fi
-       
-
-
-      

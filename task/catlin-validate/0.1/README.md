@@ -12,7 +12,7 @@
 * Without downloading catlin or having any knowledge on how to run catlin you can check if your task passes all catlin checks by simply running a taskrun
 * A working taskrun is provided in the [tests](../0.1/tests/taskrun-success.yaml) folder. 
 * [This](../0.1/tests/taskrun-success.yaml) taskrun validates a sample hello task. 
-* The hello task yaml which we want to validate is injected in the source workspace in the appropriate folder structure using  [this](../0.1/tests/source-success-configmap.yaml) configMap.
+* The hello task yaml which we want to validate is injected in the source workspace in the appropriate folder structure using  [this](../0.1/tests/source-success-task-configmap.yaml) configMap.
 * The filepath of the hello.yaml is supplied as a catlin-input using [this](../0.1/tests/input-configmap.yaml) configMap
 * Thus without knowing anything about how to run catlin validate you can quickly lint your task yaml by simply following above steps
 
@@ -43,7 +43,7 @@ Ignores any warnings in catlin output. If catlin output has only success and war
 ## Workspaces
 
 ### source
-This workspace contains files on which catlin will be run. This can be the git repo of your tekton catalog. task yamls in this folder should have a path that follows tekton-catalog folder structure. Check [this](../0.1/tests/source-success-configmap.yaml) configmap and how it is injected into the cource workspace in [this](../0.1/tests/taskrun-success.yaml) taskrun as an example
+This workspace contains files on which catlin will be run. This can be the git repo of your tekton catalog. task yamls in this folder should have a path that follows tekton-catalog folder structure. Check [this](../0.1/tests/source-success-task-configmap.yaml) configmap and how it is injected into the cource workspace in [this](../0.1/tests/taskrun-success.yaml) taskrun as an example
 ### catlin-input
 A workspace that contains [$(params.inputFile)](#inputfile) Check [this](../0.1/tests/input-configmap.yaml) configmap and how it is injected onto the catlin-input workspace in [this](../0.1/tests/taskrun-success.yaml) taskrun as an example
 ### catlin-output
@@ -73,7 +73,7 @@ The Task can be run on `linux/amd64` platform.
 git clone https://github.com/tektoncd/catalog.git
 cd catalog/task/catlin-validate/0.1/tests
 kubectl apply -f input-configmap.yaml
-kubectl apply -f source-success-configmap.yaml
+kubectl apply -f source-success-task-configmap.yaml
 kubectl create -f taskrun-success.yaml
 kubectl logs catlin-run-pod 
 ```
@@ -94,7 +94,7 @@ FILE: /workspace/source/task/hello/0.1/hello.yaml
 git clone https://github.com/tektoncd/catalog.git
 cd catalog/task/catlin-validate/0.1/tests
 kubectl apply -f input-configmap.yaml
-kubectl apply -f source-warn-configmap.yaml
+kubectl apply -f source-warn-task-configmap.yaml
 kubectl create -f taskrun-warn.yaml
 kubectl logs catlin-run-pod 
 ```
@@ -114,9 +114,9 @@ WARN : Step "echo" uses image "$(params.image)" that contains variables; skippin
 * **Note** Error will result in [catlin-status](#catlin-status) having the value as failure.
 ```
 git clone https://github.com/tektoncd/catalog.git
-cd catalog/task/catlin-validate/0.1/tests
+cd catalog/task/catlin-validate/0.1/samples
 kubectl apply -f input-configmap.yaml
-kubectl apply -f source-error-configmap.yaml
+kubectl apply -f source-error-task-configmap.yaml
 kubectl create -f taskrun-error.yaml
 kubectl logs catlin-run-pod 
 ```

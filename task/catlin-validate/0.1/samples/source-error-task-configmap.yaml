@@ -14,4 +14,4 @@ data:
           image: alpine
           script: |
             #!/bin/sh
-            echo "Hello World"   
+            echo "Hello World"
