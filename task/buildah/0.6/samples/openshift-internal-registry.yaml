@@ -1,0 +1,87 @@
+# Your custom CA, on OpenShift to be able to get the internal registry custom
+# certificates you can just import it to your namespace with :
+# oc get configmaps \
+#   -n openshift-controller-manager openshift-service-ca -o yaml | \
+#   sed '/namespace/d'|kubectl apply -f-
+---
+kind: ConfigMap
+metadata:
+  name: openshift-service-ca
+apiVersion: v1
+data:
+  service-ca.crt: |
+    -----BEGIN CERTIFICATE-----
+    MIIDUTCCAjmgAwIB................................................
+    ................................................................
+    ................................................................
+    ................................................................
+    ................................................................
+    ................................................................
+    ................................................................
+    ................................................................
+    ................................................................
+    ................................................................
+    ................................................................
+    ................................................................
+    ................................................................
+    ................................................................
+    ................................................................
+    ................................................................
+    ................................................................
+    ................................................................
+    ....................................................
+    -----END CERTIFICATE-----
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: buildah-custom-ca-
+spec:
+  workspaces:
+  - name: shared-workspace
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+  # Make sure the path ends up as ca.crt or buildah would not be able to find
+  # it.
+  - name: sslcertdir
+    configMap:
+      name: openshift-service-ca
+      defaultMode: 420
+      items:
+      - key: service-ca.crt
+        path: ca.crt
+      namespace: openshift-controller-manager
+  pipelineSpec:
+    workspaces:
+    - name: shared-workspace
+    - name: sslcertdir
+      optional: true
+    tasks:
+      - name: fetch-repository
+        taskRef:
+          name: git-clone
+        workspaces:
+        - name: output
+          workspace: shared-workspace
+        params:
+        - name: url
+          value: https://github.com/kelseyhightower/nocode
+      - name: buildah
+        taskRef:
+          name: buildah
+        runAfter:
+        - fetch-repository
+        workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: sslcertdir
+          workspace: sslcertdir
+        params:
+        # This will push to the openshift internal registry
+        - name: IMAGE
+          value: image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/$(context.pipelineRun.name)
