@@ -44,7 +44,7 @@ spec:
       env:
       - name: HOME
         value: /tekton/home
-      image: quay.io/skopeo/stable:v1.9.0
+      image: quay.io/skopeo/stable:v1
       script: |
         # Function to copy multiple images.
         #

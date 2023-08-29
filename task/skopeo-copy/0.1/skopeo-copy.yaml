@@ -41,7 +41,7 @@ spec:
       default: "true"
   steps:
     - name: skopeo-copy
-      image: quay.io/skopeo/stable:v1.3.0
+      image: quay.io/skopeo/stable:v1
       script: |
         # Function to copy multiple images.
         #
