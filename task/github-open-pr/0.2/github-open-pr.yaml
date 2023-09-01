@@ -107,9 +107,10 @@ spec:
         import sys
         import http.client
 
-        github_token = open("/etc/github-open-pr/$(params.GITHUB_TOKEN_SECRET_KEY)", "r").read()
+        with open("/etc/github-open-pr/$(params.GITHUB_TOKEN_SECRET_KEY)", "r", encoding="utf-8") as file:
+            github_token = file.read()
 
-        open_pr_url = "$(params.API_PATH_PREFIX)" + "/repos/$(params.REPO_FULL_NAME)/pulls"
+        open_pr_url = "$(params.API_PATH_PREFIX)/repos/$(params.REPO_FULL_NAME)/pulls"
 
         data = {
             "head": "$(params.HEAD)",
@@ -120,7 +121,7 @@ spec:
         print("Sending this data to GitHub: ")
         print(data)
 
-        authHeader = "$(params.AUTH_TYPE) " + github_token
+        authHeader = f"$(params.AUTH_TYPE) {github_token}"
 
         # This is for our fake github server
         if "$(params.GITHUB_HOST_URL)".startswith("http://"):
@@ -137,18 +138,22 @@ spec:
                 "User-Agent": "TektonCD, the peaceful cat",
                 "Authorization": authHeader,
                 "Accept": "application/vnd.github.v3+json ",
+                "Content-Type": "application/vnd.github.v3+json",
             })
         resp = conn.getresponse()
         if not str(resp.status).startswith("2"):
-            print("Error: %d" % (resp.status))
+            print(f"Error: {resp.status}")
             print(resp.read())
             sys.exit(1)
         else:
             # https://docs.github.com/en/rest/reference/pulls#create-a-pull-request
             body = json.loads(resp.read().decode())
 
-            open(os.environ.get('PULLREQUEST_NUMBER_PATH'), 'w').write(f'{body["number"]}')
-            open(os.environ.get('PULLREQUEST_URL_PATH'), 'w').write(body["html_url"])
+            with open(os.environ.get('PULLREQUEST_NUMBER_PATH'), 'w', encoding="utf-8") as f:
+                f.write(f'{body["number"]}')
+
+            with open(os.environ.get('PULLREQUEST_URL_PATH'), 'w', encoding="utf-8") as f:
+                f.write(body["html_url"])
 
             print("GitHub pull request created for $(params.REPO_FULL_NAME): "
                   f'number={body["number"]} url={body["html_url"]}')
