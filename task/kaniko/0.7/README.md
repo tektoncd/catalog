@@ -15,15 +15,13 @@ attest and sign the image.
 
 ## Changelog
 
-- Added `IMAGE_DIGEST` to the `Results` which get populated with the digest of a built image
-- Added `IMAGE_URL` to the `Results` which get populated with the URL of a built image
-
-Both these results are needed in order for Chains to sign the image. See Chains documentation for more information: https://github.com/tektoncd/chains/blob/main/docs/config.md#chains-type-hinting
+- Added `CACHE` argument to enable/disable caching. Default is `false`.
+- Added `CACHE_REPO` argument to specify the cache repository. Default is `""`.
 
 ## Install the Task
 
 ```
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/kaniko/0.6/raw
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/kaniko/0.7/raw
 ```
 
 ## Parameters
@@ -33,6 +31,8 @@ kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/kaniko/0.6/r
 * **CONTEXT**: The build context used by Kaniko (_default:_ `./`)
 * **EXTRA_ARGS**: Additional args to pass to the Kaniko executor.
 * **BUILDER_IMAGE**: The Kaniko executor image to use (_default:_ `gcr.io/kaniko-project/executor:v1.5.1`)
+* **CACHE**: Enable/disable caching (_default:_ `false`)
+* **CACHE_REPO**: The cache repository (_default:_ `""`)
 
 ## Workspaces
 
