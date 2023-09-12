@@ -1,0 +1,60 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+
+metadata:
+  name: redhat-dependency-analytics
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/categories: Security
+    tekton.dev/pipelines.minVersion: "0.37.5"
+    tekton.dev/tags: Security, Vulnenrability, CVE
+    tekton.dev/displayName: "Red Hat Dependency Analytics"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    The Red Hat Dependency Analytics task is an interface between Tekton and Red Hat Dependency Analytics (RHDA) platform.
+    It provides vulnerability and compliance analysis for application dependencies in your software supply chain.
+
+  workspaces:
+    - name: output
+      description: Volume backing this workspace is used for input/output of the task.
+
+  params:
+    - name: manifest-file-path
+      description: Path to target manifest file within the project directory.
+
+    - name: project-directory-path
+      description: Path to directory within workspace, where the project is installed.
+      default: project-package
+
+    - name: output-file-path
+      description: Path to file within workspace, where the analysis report is saved.
+      default: redhat-dependency-analytics-report.json
+
+    - name: image
+      description: Image where Exhort Javascript API and required dependencies are installed.
+      default: quay.io/ecosystem-appeng/exhort-javascript-api:0.7.0-alpha
+
+  steps:
+    - name: redhat-dependency-analytics
+      image: $(params.image)
+      workingDir: $(workspaces.output.path)
+      env:
+        - name: EXHORT_SNYK_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: exhort
+              key: EXHORT_SNYK_TOKEN
+      script: |
+        #!/bin/sh
+
+        project_directory="$(params.project-directory-path)"
+        manifest_file="$(params.manifest-file-path)"
+        output_file="$(params.output-file-path)"
+
+        if [ -n "$project_directory" ]; then
+          sh /exhort.sh "$project_directory/$manifest_file" "$output_file"
+        else
+          sh /exhort.sh "$manifest_file" "$output_file"
+        fi
