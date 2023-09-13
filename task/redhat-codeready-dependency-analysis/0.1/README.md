@@ -1,4 +1,9 @@
+# ⛔️ DEPRECATED
+
+THIS TEKTON TASK IS NOW DEPRECATED. Please consider using the [redhat-dependency-analytics](https://hub.tekton.dev/tekton/task/redhat-dependency-analytics) Tekton Task instead.
+
 # `redhat-codeready-dependency-analysis`
+
 **Please Note: this Task is only compatible with Tekton Pipelines versions 0.19.0 and greater!**
 
 ## Overview
