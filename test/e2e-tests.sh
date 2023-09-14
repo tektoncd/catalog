@@ -30,7 +30,9 @@ trap clean EXIT
 [[ -z ${LOCAL_CI_RUN} ]] && {
 
     # Initialize cluster
-    initialize "$@"
+    if [ "${E2E_SKIP_CLUSTER_CREATION}" != "true" ]; then
+        initialize "$@"
+    fi
 
     # Install the latest Tekton CRDs.
     install_pipeline_crd
