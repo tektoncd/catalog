@@ -14,7 +14,6 @@ spec:
       # we need all branches available for git-version
       - name: GIT_SCRIPT
         value: |
-          rm -r ./*
           git clone https://github.com/GijsvanDulmen/git-version-test.git .
           git fetch --all
       workspaces:
