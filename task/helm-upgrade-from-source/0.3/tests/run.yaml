@@ -15,7 +15,7 @@ spec:
           workspace: shared-workspace
       params:
         - name: url
-          value: https://github.com/fhopfensperger/tekton-helm-sample.git
+          value: https://github.com/helm/examples
         - name: subdirectory
           value: ""
         - name: deleteExisting
@@ -30,7 +30,7 @@ spec:
           workspace: shared-workspace
       params:
         - name: charts_dir
-          value: helm-sample-chart
+          value: charts/hello-world
         - name: release_version
           value: v1.0.0
         - name: release_name
