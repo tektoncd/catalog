@@ -4,36 +4,21 @@ kind: Pipeline
 metadata:
   name: helm-upgrade-test-pipeline
 spec:
-  workspaces:
-    - name: shared-workspace
   tasks:
     - name: helm-upgrade-from-repo
       taskRef:
         name: helm-upgrade-from-repo
       params:
         - name: helm_repo
-          value: https://charts.helm.sh/stable
+          value: https://dunefro.github.io/sample-charts/
         - name: chart_name
-          value: stable/envoy
+          value: sample-charts/sample-nginx
         - name: release_version
           value: v1.0.0
         - name: release_name
           value: helm-repo-sample
         - name: overwrite_values
-          value: autoscaling.enabled=true,autoscaling.maxReplicas=3
-    - name: fetch-repository
-      taskRef:
-        name: git-clone
-      workspaces:
-        - name: output
-          workspace: shared-workspace
-      params:
-        - name: url
-          value: https://github.com/fhopfensperger/tekton-helm-sample.git
-        - name: subdirectory
-          value: ""
-        - name: deleteExisting
-          value: "true"
+          value: autoscaling.enabled=false,autoscaling.maxReplicas=3
 ---
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
@@ -43,7 +28,3 @@ spec:
   serviceAccountName: helm-pipeline-run-sa
   pipelineRef:
     name: helm-upgrade-test-pipeline
-  workspaces:
-    - name: shared-workspace
-      persistentvolumeclaim:
-        claimName: helm-source-pvc
