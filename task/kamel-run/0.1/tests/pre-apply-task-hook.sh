@@ -7,4 +7,4 @@ tar -xvf camel-k-client-2.0.0-linux-amd64.tar.gz
 ./kamel install --registry localhost:5000 --registry-insecure --wait
 
 # Add git-clone
-add_task git-clone 0.7
+add_task git-clone latest
