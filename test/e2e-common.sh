@@ -202,6 +202,7 @@ function show_failure() {
     ${KUBECTL_CMD} get -n ${tns} taskrun -o yaml
     echo "--- Container Logs"
     for pod in $(${KUBECTL_CMD} get pod -o name -n ${tns}); do
+        echo "----POD_NAME: ${pod}---"
         ${KUBECTL_CMD} logs --all-containers -n ${tns} ${pod} || true
     done
     exit 1
