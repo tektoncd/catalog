@@ -145,7 +145,7 @@ function install_pipeline_crd() {
       fail_test "Build pipeline installation failed"
 
   # Make sure thateveything is cleaned up in the current namespace.
-  for res in pipelineresources tasks pipelines taskruns pipelineruns; do
+  for res in tasks pipelines taskruns pipelineruns; do
     ${KUBECTL_CMD} delete --ignore-not-found=true ${res}.tekton.dev --all
   done
 
