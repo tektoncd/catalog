@@ -69,18 +69,21 @@ spec:
   - name: IMAGE_URL
     description: Image repository where the built image would be pushed to
   steps:
-  - name: build
+  - name: build-and-push
     image: $(params.BUILDER_IMAGE)
     workingDir: $(workspaces.source.path)
     script: |
+      #!/usr/bin/env sh
+      # shellcheck disable=SC2046
+      CERT_DIR_FLAG=""
       [ "$(workspaces.sslcertdir.bound)" = "true" ] && CERT_DIR_FLAG="--cert-dir=$(workspaces.sslcertdir.path)"
       [ "$(workspaces.dockerconfig.bound)" = "true" ] && DOCKER_CONFIG="$(workspaces.dockerconfig.path)" && export DOCKER_CONFIG
-      # shellcheck disable=SC2046
+      # build the image
       buildah "${CERT_DIR_FLAG}" "--storage-driver=$(params.STORAGE_DRIVER)" bud $(params.BUILD_EXTRA_ARGS) \
         "--format=$(params.FORMAT)" "--tls-verify=$(params.TLSVERIFY)" --no-cache \
         -f "$(params.DOCKERFILE)" -t "$(params.IMAGE)" "$(params.CONTEXT)"
       [ "$(params.SKIP_PUSH)" = "true" ] && echo "Push skipped" && exit 0
-      # shellcheck disable=SC2046
+      # push the image
       buildah "${CERT_DIR_FLAG}" "--storage-driver=$(params.STORAGE_DRIVER)" push $(params.PUSH_EXTRA_ARGS) \
         "--tls-verify=$(params.TLSVERIFY)" --digestfile /tmp/image-digest "$(params.IMAGE)" \
         "docker://$(params.IMAGE)"
