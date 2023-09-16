@@ -5,6 +5,6 @@
 add_sidecar_registry ${TMPF}
 
 # Add dependency tasks
-add_task git-clone 0.7
+add_task git-clone latest
 add_task buildpacks latest
 add_task buildpacks-phases latest
