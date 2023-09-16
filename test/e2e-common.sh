@@ -176,10 +176,13 @@ function test_yaml_can_install() {
             [[ ${ignore} == "${testname}" ]] && skipit=True
         done
 
+        # don't test the tasks which are deprecated
+        cat ${runtest} | grep 'tekton.dev/deprecated: \"true\"' && skipit=True
+
         # In case if PLATFORM env variable is specified, do the tests only for matching tasks
         [[ -n ${PLATFORM} ]] && [[ $(grep "tekton.dev/platforms" ${runtest} 2>/dev/null) != *"${PLATFORM}"* ]]  && skipit=True
 
-        [[ -n ${skipit} ]] && break
+        [[ -n ${skipit} ]] && continue
         echo "Checking ${testname}"
         ${KUBECTL_CMD} -n ${ns} apply -f <(sed "s/namespace:.*/namespace: task-ns/" "${runtest}")
     done
