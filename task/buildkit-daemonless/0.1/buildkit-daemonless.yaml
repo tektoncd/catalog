@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: image-build
     tekton.dev/displayName: "buildkit daemonless"
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/deprecated: "true"
 spec:
   description: >-
     This Task builds source into a container image using Moby BuildKit.
