@@ -6,7 +6,6 @@ metadata:
 spec:
   workspaces:
     - name: source-ws
-    - name: cache-ws
   tasks:
     - name: fetch-repository
       taskRef:
@@ -29,8 +28,6 @@ spec:
       workspaces:
         - name: source
           workspace: source-ws
-        - name: cache
-          workspace: cache-ws
       params:
         - name: APP_IMAGE
           value: localhost:5000/buildpacks-app
@@ -51,8 +48,3 @@ spec:
       subPath: source
       persistentVolumeClaim:
         claimName: buildpacks-pvc
-    - name: cache-ws
-      subPath: cache
-      persistentVolumeClaim:
-        claimName: buildpacks-pvc
----
