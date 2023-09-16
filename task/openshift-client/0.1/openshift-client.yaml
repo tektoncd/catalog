@@ -11,6 +11,7 @@ metadata:
     tekton.dev/tags: cli
     tekton.dev/displayName: "openshift client"
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/deprecated: "true"
 spec:
   description: >-
     This task runs commands against the cluster where the task run is

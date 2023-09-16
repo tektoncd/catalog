@@ -107,8 +107,7 @@ spec:
         - name: TARGETS
           value: $(params.TARGETS)
       image: 'docker.io/sonatype/nexus-iq-cli:1.136.0-01'
-      name: ''
-      resources: {}
+      name: 'nexus-lifecycle-scan'
       script: >
         #!/usr/bin/env bash
 
