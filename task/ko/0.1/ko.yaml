@@ -16,7 +16,7 @@ spec:
   params:
     - name: ko-image
       description: ko image to use for builds
-      default: "ghcr.io/ko-build/ko:latest"
+      default: "ghcr.io/ko-build/ko:5a95f8abc540475366126d6c34baf7014794315c"
     - name: main
       description: import path of package main
       default: "."
