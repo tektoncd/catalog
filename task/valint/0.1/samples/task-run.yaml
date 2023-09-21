@@ -1,0 +1,12 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: scribe-security-task-run-10
+spec:
+  taskRef:
+    name: valint
+  params:
+    - name: args
+      value:
+        - bom
+        - alpine:latest

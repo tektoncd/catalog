@@ -1,0 +1,82 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: basic-tests
+spec:
+  workspaces:
+  - name: shared-workspace
+  tasks:
+  - name: valint-bom
+    taskRef:
+      name: valint
+    workspaces:
+    - name: output
+      workspace: shared-workspace
+    params:
+    - name: args
+      value:
+        - bom
+        - alpine:latest
+        - -o=statement
+
+  - name: valint-verify-bom
+    taskRef:
+      name: valint
+    workspaces:
+    - name: output
+      workspace: shared-workspace
+    runAfter:
+    - valint-bom
+    params:
+    - name: args
+      value:
+        - verify
+        - alpine:latest
+        - -i=statement
+
+  - name: valint-slsa
+    taskRef:
+      name: valint
+    workspaces:
+    - name: output
+      workspace: shared-workspace
+    runAfter:
+    - valint-verify-bom
+    params:
+    - name: args
+      value:
+        - slsa
+        - alpine:latest
+        - -o=statement
+
+  - name: valint-verify-slsa
+    taskRef:
+      name: valint
+    workspaces:
+    - name: output
+      workspace: shared-workspace
+    runAfter:
+    - valint-slsa
+    params:
+    - name: args
+      value:
+        - verify
+        - alpine:latest
+        - -i=statement-slsa
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: basic-tests
+spec:
+  pipelineRef:
+    name: basic-tests
+  workspaces:
+  - name: shared-workspace
+    persistentvolumeclaim:
+      claimName: test-pvc-output
+  podTemplate:
+    volumes:
+    - name: shared-workspace
+      persistentVolumeClaim:
+        claimName: test-pvc-output
