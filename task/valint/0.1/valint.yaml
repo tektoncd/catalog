@@ -1,0 +1,69 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: valint
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Security
+    tekton.dev/tags: CLI, valint
+    tekton.dev/displayName: valint
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    Valint task empowers supply chain stakeholders to ensure supply chain integrity, verify compliance, and generate and manage evidence.
+  workspaces:
+    - name: source-dir
+      optional: true
+    - name: dockerconfig
+      description: Includes a docker `config.json`
+      optional: true
+      mountPath: /root/.docker
+    - name: output
+      description: Output directory for evidence store.
+  params:
+    - name: args
+      description: extra args that needs to be appended
+      type: array
+    - name: scribe-secret
+      description: Scribe secret name
+      default: scribe-secret
+      type: string
+    - name: version
+      description: valint CLI version run this task
+      default: "v0.4.2"
+  steps:
+    - name: valint
+      image: docker.io/scribesecurity/valint:$(params.version)
+      workingDir: $(workspaces.source-dir.path)
+      args:
+        - "$(params.args)"
+        - "--context-type=tekton"
+        - "--output-directory=$(workspaces.output.path)"
+      env:
+        - name: VALINT_SCRIBE_AUTH_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: $(params.scribe-secret)
+              key: scribe_client_id
+              optional: true
+        - name: VALINT_SCRIBE_AUTH_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: $(params.scribe-secret)
+              key: scribe_client_secret
+              optional: true
+        - name: VALINT_SCRIBE_ENABLE
+          valueFrom:
+            secretKeyRef:
+              name: $(params.scribe-secret)
+              key: scribe_enable
+              optional: true
+        - name: TEKTON_TASK_RUN_UID
+          value: context.taskRun.uid
+        - name: TEKTON_TASK_RUN_NAME
+          value: context.taskRun.name
+        - name: TEKTON_TASK_RUN_NAMESPACE
+          value: context.taskRun.namespace
