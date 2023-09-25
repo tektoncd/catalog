@@ -45,11 +45,13 @@ spec:
     script: |
       #!/usr/bin/env bash
 
-      KAMEL_RUN_ARGS="$(params.filename)"
-      [[ ! "$(params.namespace)" == "" ]] && KAMEL_RUN_ARGS="$KAMEL_RUN_ARGS -n $(params.namespace)"
-      [[ ! "$(params.container-image)" == "" ]] && KAMEL_RUN_ARGS="$KAMEL_RUN_ARGS -t container.image=$(params.container-image)"
-      [[ "$(params.wait)" == "true" ]] && KAMEL_RUN_ARGS="$KAMEL_RUN_ARGS --wait"
-      kamel_output=$(kamel run "$KAMEL_RUN_ARGS")
+      KAMEL_RUN_ARGS=()
+
+      KAMEL_RUN_ARGS+=("$(params.filename)")
+      [[ ! "$(params.namespace)" == "" ]] && KAMEL_RUN_ARGS+=(-n "$(params.namespace)")
+      [[ ! "$(params.container-image)" == "" ]] && KAMEL_RUN_ARGS+=(-t "container.image=$(params.container-image)")
+      [[ "$(params.wait)" == "true" ]] && KAMEL_RUN_ARGS+=(--wait)
+      kamel_output=$(kamel run "${KAMEL_RUN_ARGS[@]}")
       echo "$kamel_output"
       # Let's use the output produced to scrape the integration name and phase
       echo "$kamel_output" | grep -oP 'Integration ".*?" (updated|created|unchanged)' | awk -F ' ' '{print $2}' | sed "s/\"//g" | tr -d '\n' | tee "$(results.integration-name.path)"
