@@ -8,3 +8,5 @@ tar -xvf camel-k-client-2.0.0-linux-amd64.tar.gz
 
 # Add git-clone
 add_task git-clone latest
+add_task buildah latest
+add_task maven latest
