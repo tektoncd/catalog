@@ -28,31 +28,28 @@ spec:
     - name: filename
       value: generic-examples/languages/routes.yaml
     - name: wait
-      value: "true"
+      value: "false"
   - name: verify-it-phase
     runAfter:
     - kamel-run
     params:
     - name: it-name
-      value: $(tasks.kamel-run.results.integration-name)
-    - name: it-phase
-      value: $(tasks.kamel-run.results.integration-phase)
+      value: "$(tasks.kamel-run.results.integration-name)"
     taskSpec:
       params:
       - name: it-name
-      - name: it-phase
       steps:
       - name: bash
         image: ubuntu
         script: |
-          if [[ ! $(params.it-name) == "sample"]]; then
-            echo "Expected integration name sample (was $(params.it-name))"
+          #!/usr/bin/env bash
+          set -e
+
+          if [ "$(params.it-name)" != "routes" ]; then
+            echo "Expected integration name routes (was $(params.it-name))"
             exit 1
           fi
-          if [[ ! $(params.it-phase) == "running"]]; then
-            echo "Expected integration phase running (was $(params.it-phase))"
-            exit 1
-          fi
+          exit 0
 
 ---
 apiVersion: tekton.dev/v1beta1

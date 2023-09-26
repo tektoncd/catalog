@@ -55,4 +55,4 @@ spec:
       echo "$kamel_output"
       # Let's use the output produced to scrape the integration name and phase
       echo "$kamel_output" | grep -oP 'Integration ".*?" (updated|created|unchanged)' | awk -F ' ' '{print $2}' | sed "s/\"//g" | tr -d '\n' | tee "$(results.integration-name.path)"
-      kamel get "$(cat "$(results.integration-name.path)")" 2>/dev/null | tail -n +2 | awk -F ' ' '{print $2}' | tee "$(results.integration-phase.path)"
+      kamel get "$(cat "$(results.integration-name.path)")" 2>/dev/null | tail -n +2 | awk -F ' ' '{print $2}' | tr -d '\n' | tee "$(results.integration-phase.path)"
