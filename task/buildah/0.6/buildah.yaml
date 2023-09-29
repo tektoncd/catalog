@@ -73,18 +73,17 @@ spec:
     image: $(params.BUILDER_IMAGE)
     workingDir: $(workspaces.source.path)
     script: |
-      #!/usr/bin/env sh
-      # shellcheck disable=SC2046
-      CERT_DIR_FLAG=""
       [ "$(workspaces.sslcertdir.bound)" = "true" ] && CERT_DIR_FLAG="--cert-dir=$(workspaces.sslcertdir.path)"
       [ "$(workspaces.dockerconfig.bound)" = "true" ] && DOCKER_CONFIG="$(workspaces.dockerconfig.path)" && export DOCKER_CONFIG
-      # build the image
-      buildah "${CERT_DIR_FLAG}" "--storage-driver=$(params.STORAGE_DRIVER)" bud $(params.BUILD_EXTRA_ARGS) \
+      # build the image (CERT_DIR_FLAG should be omitted if empty and BUILD_EXTRA_ARGS can contain multiple args)
+      # shellcheck disable=SC2046,SC2086
+      buildah ${CERT_DIR_FLAG} "--storage-driver=$(params.STORAGE_DRIVER)" bud $(params.BUILD_EXTRA_ARGS) \
         "--format=$(params.FORMAT)" "--tls-verify=$(params.TLSVERIFY)" --no-cache \
         -f "$(params.DOCKERFILE)" -t "$(params.IMAGE)" "$(params.CONTEXT)"
       [ "$(params.SKIP_PUSH)" = "true" ] && echo "Push skipped" && exit 0
-      # push the image
-      buildah "${CERT_DIR_FLAG}" "--storage-driver=$(params.STORAGE_DRIVER)" push $(params.PUSH_EXTRA_ARGS) \
+      # push the image (CERT_DIR_FLAG should be omitted if empty and PUSH_EXTRA_ARGS can contain multiple args)
+      # shellcheck disable=SC2046,SC2086
+      buildah ${CERT_DIR_FLAG} "--storage-driver=$(params.STORAGE_DRIVER)" push $(params.PUSH_EXTRA_ARGS) \
         "--tls-verify=$(params.TLSVERIFY)" --digestfile /tmp/image-digest "$(params.IMAGE)" \
         "docker://$(params.IMAGE)"
       tee "$(results.IMAGE_DIGEST.path)" < /tmp/image-digest
