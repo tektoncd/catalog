@@ -3,7 +3,7 @@ kind: Task
 metadata:
   name: argocd-task-sync-and-wait
   labels:
-    app.kubernetes.io/version: "0.2"
+    app.kubernetes.io/version: "0.3"
   annotations:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/categories: Deployment
@@ -26,10 +26,15 @@ spec:
       default: HEAD
       type: string
     - name: flags
-      default: --
+      description: common flags for sync and wait
+      default: ""
+      type: string
+    - name: extra-sync-flags
+      description: flags for sync other than revision
+      default: ""
       type: string
     - name: argocd-version
-      default: v2.2.2
+      default: latest
       type: string
   stepTemplate:
     envFrom:
@@ -44,5 +49,5 @@ spec:
         if [ -z "$ARGOCD_AUTH_TOKEN" ]; then
           yes | argocd login "$ARGOCD_SERVER" --username="$ARGOCD_USERNAME" --password="$ARGOCD_PASSWORD";
         fi
-        argocd app sync "$(params.application-name)" --revision "$(params.revision)" "$(params.flags)"
-        argocd app wait "$(params.application-name)" --health "$(params.flags)"
+        argocd app sync "$(params.application-name)" --revision "$(params.revision)" $(params.flags) $(params.extra-sync-flags)
+        argocd app wait "$(params.application-name)" --health $(params.flags)
