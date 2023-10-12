@@ -14,7 +14,9 @@ kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/argocd-task-
 
 * **revision:** The revision to sync to (_default:_ `HEAD`)
 
-* **flags:** Flags to append after commands, e.g. `--insecure` (_default:_ `--`)
+* **flags:** Common flags to append after commands for sync and wait, e.g. `--insecure`
+
+* **extra-sync-flags:** Sync flags to append after commands, e.g. `--prune --resouce apps:Deployment:test`
 
 ## Platforms
 
@@ -61,6 +63,8 @@ spec:
           value: some-application
         - name: flags
           value: --insecure # needed in this example only because the Argo CD server is locally hosted
+        - name: extra-sync-flags
+          value: --prune
 ```
 
 For the `Secret`, choose one of username/password or auth token for logging in. Either of the following are acceptable:
