@@ -11,6 +11,7 @@ kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/maven/0.3/ra
 ## Parameters
 
 - **MAVEN_IMAGE**: The base image for maven (_default_: `gcr.io/cloud-builders/mvn`)
+- **MAVEN_COMMAND**: Maven command to execute, you could use the maven wrapper over here (_default_: `/usr/bin/mvn`)
 - **GOALS**: Maven `goals` to be executed
 - **MAVEN_MIRROR_URL**: Maven mirror url (to be inserted into ~/.m2/settings.xml)
 - **SERVER_USER**: Username to authenticate to the server (to be inserted into ~/.m2/settings.xml)
