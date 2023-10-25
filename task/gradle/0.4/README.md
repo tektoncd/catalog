@@ -1,11 +1,12 @@
 # Gradle
 
 This Task can be used to run a Gradle build on a gradle project.
+If the project contains a gradle wrapper, the wrapper will be invoked instead of the gradle executable provided by the image.
 
 ## Install the Task
 
 ```bash
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/gradle/0.3/raw
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/gradle/0.4/raw
 ```
 
 ## Parameters
