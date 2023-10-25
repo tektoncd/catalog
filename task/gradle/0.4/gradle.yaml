@@ -3,7 +3,7 @@ kind: Task
 metadata:
   name: gradle
   labels:
-    app.kubernetes.io/version: "0.3"
+    app.kubernetes.io/version: "0.4"
   annotations:
     tekton.dev/pipelines.minVersion: "0.17.0"
     tekton.dev/displayName: Gradle
@@ -54,7 +54,12 @@ spec:
           fi
         fi
 
-        cmd="gradle $*"
+        if [[ -f gradlew ]]; then
+          cmd="./gradlew $*"
+        else
+          cmd="gradle $*"
+        fi
+
         echo "Running gradle task with command below"
         echo "$cmd"
         eval "$cmd"
