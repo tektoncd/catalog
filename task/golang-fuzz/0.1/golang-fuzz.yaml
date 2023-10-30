@@ -67,6 +67,6 @@ spec:
         mkdir -p "$SRC_PATH"
         cp -R "${WORKSPACE_SOURCE_PATH}"/* "$SRC_PATH"
         cd "$SRC_PATH" || exit
-        go get golang.org/dl/gotip
+        go install golang.org/dl/gotip@latest
         "${GOPATH}"/bin/gotip download dev.fuzz
         "${GOPATH}"/bin/gotip test -fuzz="${TARGET}" ${FLAGS}
