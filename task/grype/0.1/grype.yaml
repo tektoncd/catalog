@@ -11,6 +11,8 @@ metadata:
     tekton.dev/tags: CLI, grype
     tekton.dev/displayName: "grype"
     tekton.dev/platforms: "linux/amd64,linux/arm64,linux/ppc64le,linux/390x"
+    tekton.dev/platforms: "linux/amd64,linux/arm64"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     A vulnerability scanner for container images and filesystems.

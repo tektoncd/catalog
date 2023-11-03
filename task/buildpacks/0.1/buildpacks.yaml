@@ -12,6 +12,7 @@ metadata:
     tekton.dev/deprecated: "true"
     tekton.dev/displayName: "buildpacks"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     The Buildpacks task builds source into a container image and pushes it to a registry,

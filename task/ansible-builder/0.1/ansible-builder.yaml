@@ -10,6 +10,7 @@ metadata:
     tekton.dev/categories: Build Tools
     tekton.dev/tags: ansible, ansible-builder, build-tool, automation
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     Creates a build context (including a Containerfile) from an execution environment spec.

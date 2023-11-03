@@ -11,6 +11,7 @@ metadata:
     tekton.dev/tags: github
     tekton.dev/displayName: "create github deployment"
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     This Task will create a GitHub deployment for a repository.

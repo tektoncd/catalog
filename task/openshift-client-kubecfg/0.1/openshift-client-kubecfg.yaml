@@ -11,6 +11,7 @@ metadata:
     tekton.dev/displayName: "openshift client kubecfg"
     tekton.dev/platforms: "linux/amd64"
     tekton.dev/deprecated: "true"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     This task runs commands against any cluster that is provided to
@@ -25,15 +26,15 @@ spec:
       - name: cluster
         type: cluster
   params:
-  - name: SCRIPT
-    description: The OpenShift CLI arguments to run
-    type: string
-    default: "oc $@"
-  - name: ARGS
-    description: The OpenShift CLI arguments to run
-    type: array
-    default:
-    - "help"
+    - name: SCRIPT
+      description: The OpenShift CLI arguments to run
+      type: string
+      default: "oc $@"
+    - name: ARGS
+      description: The OpenShift CLI arguments to run
+      type: array
+      default:
+        - "help"
   steps:
     - name: oc
       image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/quay.io/openshift/origin-cli:4.6"

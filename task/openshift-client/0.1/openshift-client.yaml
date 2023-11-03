@@ -12,6 +12,7 @@ metadata:
     tekton.dev/displayName: "openshift client"
     tekton.dev/platforms: "linux/amd64"
     tekton.dev/deprecated: "true"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     This task runs commands against the cluster where the task run is
@@ -22,19 +23,19 @@ spec:
     and configuration applications on OpenShift.
 
   params:
-  - name: SCRIPT
-    description: The OpenShift CLI arguments to run
-    type: string
-    default: "oc $@"
-  - name: ARGS
-    description: The OpenShift CLI arguments to run
-    type: array
-    default:
-    - "help"
-  - name: VERSION
-    description: The OpenShift Version to use
-    type: string
-    default: "4.6"
+    - name: SCRIPT
+      description: The OpenShift CLI arguments to run
+      type: string
+      default: "oc $@"
+    - name: ARGS
+      description: The OpenShift CLI arguments to run
+      type: array
+      default:
+        - "help"
+    - name: VERSION
+      description: The OpenShift Version to use
+      type: string
+      default: "4.6"
   resources:
     inputs:
       - name: source

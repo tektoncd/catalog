@@ -11,6 +11,7 @@ metadata:
     tekton.dev/tags: gate, prometheus
     tekton.dev/displayName: prometheus gate
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     A gate task which will query the prometheus API in a loop and await a matching status for N length of time.

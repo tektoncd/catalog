@@ -9,6 +9,8 @@ metadata:
     tekton.dev/categories: Kubernetes
     tekton.dev/tags: deploy, delete
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/displayName: "kubectl-deploy-pod"
+    ozone-in2tive-ai/imgurl: ""
   namespace: default
 spec:
   description: >-

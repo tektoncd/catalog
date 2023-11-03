@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: pluto
     tekton.dev/displayName: "Fairwinds Pluto"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     Pluto is a utility to help users find deprecated Kubernetes apiVersions in their code repositories and their helm releases.

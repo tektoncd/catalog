@@ -10,6 +10,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: cli
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     This task allows operations on BentoML services

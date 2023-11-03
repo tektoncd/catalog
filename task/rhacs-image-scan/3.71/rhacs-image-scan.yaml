@@ -11,6 +11,7 @@ metadata:
     tekton.dev/displayName: "Scan an image for vulnerabilities with Red Hat Advanced Cluster Security"
     tekton.dev/platforms: "linux/amd64"
     tekton.dev/pipelines.minVersion: "0.18.0"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     Scan an image with Red Hat Advanced Cluster Security.

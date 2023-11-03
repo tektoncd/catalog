@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: CLI
     tekton.dev/tags: search
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     Send a build status to Gitlab/GitHub.

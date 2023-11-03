@@ -10,6 +10,8 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: image-build
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/displayName: "buildah"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     Buildah task builds source into a container image and

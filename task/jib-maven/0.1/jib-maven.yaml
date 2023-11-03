@@ -11,6 +11,7 @@ metadata:
     tekton.dev/displayName: "jib maven"
     tekton.dev/platforms: "linux/amd64"
     tekton.dev/deprecated: "true"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     This Task builds Java/Kotlin/Groovy/Scala source into a container image using Google’s Jib tool.
@@ -18,47 +19,47 @@ spec:
     Jib works with Maven and Gradle projects, and this template is for Maven projects.
 
   params:
-  - name: DIRECTORY
-    description: The directory containing the app, relative to the source repository root
-    default: .
-  - name: CACHE
-    description: The name of the volume for caching Maven artifacts and base image layers
-    default: empty-dir-volume
-  - name: INSECUREREGISTRY
-    description: Whether to allow insecure registry
-    default: "false"
+    - name: DIRECTORY
+      description: The directory containing the app, relative to the source repository root
+      default: .
+    - name: CACHE
+      description: The name of the volume for caching Maven artifacts and base image layers
+      default: empty-dir-volume
+    - name: INSECUREREGISTRY
+      description: Whether to allow insecure registry
+      default: "false"
   workspaces:
-  - name: source
+    - name: source
   resources:
     outputs:
-    - name: image
-      type: image
+      - name: image
+        type: image
   steps:
-  - name: build-and-push
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/cloud-builders/mvn" #tag: latest
-    # Make sh evaluate $HOME.
-    script: |
-      #!/bin/sh
-      mvn -B \
-        -Duser.home=$HOME \
-        -Djib.allowInsecureRegistries=$(params.INSECUREREGISTRY) \
-        -Djib.to.image=$(resources.outputs.image.url) \
-        compile \
-        com.google.cloud.tools:jib-maven-plugin:build
-    workingDir: $(workspaces.source.path)/$(params.DIRECTORY)
-    env:
-    - name: HOME
-      value: /workspace
-    - name: "DOCKER_CONFIG"
-      value: $(credentials.path)/.docker/
-    volumeMounts:
-    - name: $(params.CACHE)
-      mountPath: /workspace/.m2
-      subPath: m2-cache
-    - name: $(params.CACHE)
-      mountPath: /workspace/.cache
-      subPath: jib-cache
+    - name: build-and-push
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/cloud-builders/mvn" #tag: latest
+      # Make sh evaluate $HOME.
+      script: |
+        #!/bin/sh
+        mvn -B \
+          -Duser.home=$HOME \
+          -Djib.allowInsecureRegistries=$(params.INSECUREREGISTRY) \
+          -Djib.to.image=$(resources.outputs.image.url) \
+          compile \
+          com.google.cloud.tools:jib-maven-plugin:build
+      workingDir: $(workspaces.source.path)/$(params.DIRECTORY)
+      env:
+        - name: HOME
+          value: /workspace
+        - name: "DOCKER_CONFIG"
+          value: $(credentials.path)/.docker/
+      volumeMounts:
+        - name: $(params.CACHE)
+          mountPath: /workspace/.m2
+          subPath: m2-cache
+        - name: $(params.CACHE)
+          mountPath: /workspace/.cache
+          subPath: jib-cache
 
   volumes:
-  - name: empty-dir-volume
-    emptyDir: {}
+    - name: empty-dir-volume
+      emptyDir: {}

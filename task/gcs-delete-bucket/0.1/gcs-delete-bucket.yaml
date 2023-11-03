@@ -9,6 +9,8 @@ metadata:
     tekton.dev/categories: Cloud, Storage
     tekton.dev/tags: cloud, gcs
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/displayName: "gcs-delete-bucket"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     A Task that deletes a GCS bucket.

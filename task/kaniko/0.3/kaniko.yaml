@@ -9,6 +9,8 @@ metadata:
     tekton.dev/categories: Image Build
     tekton.dev/tags: image-build
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/displayName: "Build and upload container image using Kaniko"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     This Task builds source into a container image using Google's kaniko tool.

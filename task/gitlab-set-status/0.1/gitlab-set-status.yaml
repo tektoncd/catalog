@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: gitlab, git
     tekton.dev/displayName: "Set Gitlab commit status"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     This task will set the status of the CI job to the specified value along

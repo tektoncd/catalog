@@ -10,6 +10,8 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: helm
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le,linux/arm64"
+    tekton.dev/displayName: "helm-upgrade-from-repo"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     These tasks will install / upgrade a helm chart into your Kubernetes /

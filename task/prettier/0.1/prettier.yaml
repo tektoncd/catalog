@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Code Quality
     tekton.dev/tags: editor
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     This Task is for running Prettier code formatter against the provided

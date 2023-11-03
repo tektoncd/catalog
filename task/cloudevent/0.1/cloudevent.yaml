@@ -9,6 +9,8 @@ metadata:
     tekton.dev/categories: Networking
     tekton.dev/tags: cloud
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/displayName: "cloudevent"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     This Task send a single CloudEvent to a specified sink.

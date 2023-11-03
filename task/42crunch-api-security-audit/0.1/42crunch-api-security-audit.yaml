@@ -12,6 +12,7 @@ metadata:
     tekton.dev/tags: Security
     tekton.dev/platforms: "linux/amd64"
     tekton.dev/deprecated: "true"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     The REST API Static Security Testing task performs a static analysis of the OpenAPI definitions.
