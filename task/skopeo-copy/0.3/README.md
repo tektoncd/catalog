@@ -68,7 +68,7 @@ The Task can be run on `linux/amd64`, `linux/s390x`, `linux/arm64` and `linux/pp
 
 This task will use the `Service Account` with access to the secrets containing source and destination image registry credentials, this will authorize it to the respective image registries.
 
-In case of multiple source and destination image registries that needs to be copied to and fro, a file named `url.txt` should be created containing all the source and destination image registries `URL` seperated by a space and each set of images should be written in the new line, as shown below.
+In case of multiple source and destination image registries that needs to be copied to and from a file named `url.txt` should be created containing all the source and destination image registries `URL` seperated by a space and each set of images should be written in the new line, as shown below.
 
 ```
 docker://quay.io/temp/kubeconfigwriter:v1 docker://quay.io/skopeotest/kube:v1
