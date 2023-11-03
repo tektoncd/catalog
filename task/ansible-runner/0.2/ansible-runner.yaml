@@ -12,6 +12,7 @@ metadata:
     tekton.dev/tags: cli
     tekton.dev/displayName: 'Ansible Runner'
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     Task to run Ansible playbooks using Ansible Runner

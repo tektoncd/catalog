@@ -9,6 +9,8 @@ metadata:
     tekton.dev/categories: Automation
     tekton.dev/tags: operator, tekton, deploy
     tekton.dev/displayName: "Tekton Operator Install"
+    tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     This task can be used to install Tekton pipelines and also it's

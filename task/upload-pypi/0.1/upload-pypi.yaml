@@ -11,6 +11,7 @@ metadata:
     tekton.dev/tags: build
     tekton.dev/displayName: "upload pypi"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     This Task publishes Python packages to PyPI index using Twine utility module.

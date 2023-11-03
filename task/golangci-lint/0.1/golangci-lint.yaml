@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: lint
     tekton.dev/displayName: "golangci lint"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     This Task is Golang task to validate Go projects.

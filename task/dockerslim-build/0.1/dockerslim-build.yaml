@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: dockerslim, dslim, build-image, push-image, dind
     tekton.dev/displayName: dockerslim-build
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     This task will build and push an image using dockerslim.

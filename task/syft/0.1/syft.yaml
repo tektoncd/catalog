@@ -11,6 +11,7 @@ metadata:
     tekton.dev/tags: CLI, syft
     tekton.dev/displayName: syft
     tekton.dev/platforms: "linux/amd64,linux/arm64"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
    CLI tool and library for generating a Software Bill of Materials from container images and filesystems

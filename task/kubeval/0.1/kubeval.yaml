@@ -9,6 +9,8 @@ metadata:
     tekton.dev/categories: Code Quality, Kubernetes
     tekton.dev/tags: test
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/displayName: "kubeval"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     This task makes it possible to use Kubeval within your Tekton pipelines.

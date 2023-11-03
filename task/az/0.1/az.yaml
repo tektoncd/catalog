@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: cli
     tekton.dev/displayName: "azure cli"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     This task performs operations on Microsoft Azure resources using az.

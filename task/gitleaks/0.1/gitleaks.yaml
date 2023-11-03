@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: Security, Secrets
     tekton.dev/displayName: "Gitleaks"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     This task makes it possible to use Gitleaks within your Tekton pipelines.

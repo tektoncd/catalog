@@ -11,6 +11,7 @@ metadata:
     tekton.dev/categories: Git
     tekton.dev/tags: git
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     This task can be used to create a version from git history

@@ -9,6 +9,8 @@ metadata:
     tekton.dev/categories: Messaging
     tekton.dev/tags: messaging
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
+    tekton.dev/displayName: "send-to-webex-room"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     This task posts a text message to a webex room.

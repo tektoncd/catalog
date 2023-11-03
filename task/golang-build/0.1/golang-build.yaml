@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: build-tool
     tekton.dev/displayName: "golang build"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     This Task is Golang task to build Go projects.

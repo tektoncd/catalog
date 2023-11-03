@@ -9,6 +9,9 @@ metadata:
     tekton.dev/categories: Cloud, Kubernetes
     tekton.dev/pipelines.minVersion: "0.16.0"
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/tags: 
+    tekton.dev/displayName: "orka full"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     With this Task, you can use your Orka environment

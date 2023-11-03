@@ -11,6 +11,7 @@ metadata:
     tekton.dev/tags: aws, ecr
     tekton.dev/displayName: "Amazon ECR Login"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     This task retrieves an `authentication token` using the GetAuthorizationToken API

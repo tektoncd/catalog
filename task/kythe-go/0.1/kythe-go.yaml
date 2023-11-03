@@ -11,6 +11,7 @@ metadata:
     tekton.dev/displayName: "kythe go"
     tekton.dev/platforms: "linux/amd64"
     tekton.dev/deprecated: "true"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     This task generates annotations for source code.

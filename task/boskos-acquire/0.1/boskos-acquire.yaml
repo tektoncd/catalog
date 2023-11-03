@@ -9,6 +9,8 @@ metadata:
     tekton.dev/categories: Cloud
     tekton.dev/tags: "boskos,test"
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/displayName: "bosko-acquire"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: |
     Acquire a project using Boskos.

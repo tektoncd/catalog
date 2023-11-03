@@ -11,6 +11,7 @@ metadata:
     tekton.dev/displayName: "sonarqube scanner"
     tekton.dev/platforms: "linux/amd64"
     tekton.dev/deprecated: "true"
+    ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-
     The following task can be used to perform static analysis on the source code
