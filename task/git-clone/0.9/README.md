@@ -1,6 +1,6 @@
 # `git-clone`
 
-**Note: this Task is only compatible with Tekton Pipelines versions 0.29.0 and greater!**
+**Note: this Task is only compatible with Tekton Pipelines versions 0.38.0 and greater!**
 
 **Note: this Task is not backwards compatible with the previous versions as it is now run as a non-root user!**
 

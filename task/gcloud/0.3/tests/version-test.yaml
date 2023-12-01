@@ -2,7 +2,6 @@ apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: version-test
-  description: Confirms that setting version param results in correct version.
 spec:
   taskRef:
     name: gcloud

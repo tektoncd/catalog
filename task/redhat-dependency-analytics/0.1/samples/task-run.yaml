@@ -1,0 +1,24 @@
+# Stand alone redhat-dependency-analytics TaskRun.
+# Make sure that you have attached the Workspace containing the manifest file and created the required Secret within your environment.
+
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: redhat-dependency-analytics-taskrun
+spec:
+  taskRef:
+    name: redhat-dependency-analytics
+  workspaces:
+    # Volume backing this workspace is used for input/output of the task.
+    - name: output
+      persistentvolumeclaim:
+        claimName: output
+  params:
+    - name: manifest-file-path
+      value: {{MANIFEST_FILE_PATH}} # Replace with path to target manifest file within the project directory (e.g., "pom.xml" or "src/pom.xml")
+    - name: project-directory-path
+      value: project-package
+    - name: output-file-path
+      value: redhat-dependency-analytics-report.json
+    - name: image
+      value: quay.io/ecosystem-appeng/exhort-javascript-api:0.7.0-alpha # Replace with base image where Exhort Javascript API and required dependencies are installed.

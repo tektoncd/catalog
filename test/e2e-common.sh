@@ -145,7 +145,7 @@ function install_pipeline_crd() {
       fail_test "Build pipeline installation failed"
 
   # Make sure thateveything is cleaned up in the current namespace.
-  for res in pipelineresources tasks pipelines taskruns pipelineruns; do
+  for res in tasks pipelines taskruns pipelineruns; do
     ${KUBECTL_CMD} delete --ignore-not-found=true ${res}.tekton.dev --all
   done
 
@@ -176,10 +176,13 @@ function test_yaml_can_install() {
             [[ ${ignore} == "${testname}" ]] && skipit=True
         done
 
+        # don't test the tasks which are deprecated
+        cat ${runtest} | grep 'tekton.dev/deprecated: \"true\"' && skipit=True
+
         # In case if PLATFORM env variable is specified, do the tests only for matching tasks
         [[ -n ${PLATFORM} ]] && [[ $(grep "tekton.dev/platforms" ${runtest} 2>/dev/null) != *"${PLATFORM}"* ]]  && skipit=True
 
-        [[ -n ${skipit} ]] && break
+        [[ -n ${skipit} ]] && continue
         echo "Checking ${testname}"
         ${KUBECTL_CMD} -n ${ns} apply -f <(sed "s/namespace:.*/namespace: task-ns/" "${runtest}")
     done
@@ -199,6 +202,7 @@ function show_failure() {
     ${KUBECTL_CMD} get -n ${tns} taskrun -o yaml
     echo "--- Container Logs"
     for pod in $(${KUBECTL_CMD} get pod -o name -n ${tns}); do
+        echo "----POD_NAME: ${pod}---"
         ${KUBECTL_CMD} logs --all-containers -n ${tns} ${pod} || true
     done
     exit 1

@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: cli
     tekton.dev/displayName: "openshift client kubecfg"
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/deprecated: "true"
 spec:
   description: >-
     This task runs commands against any cluster that is provided to

@@ -1,0 +1,98 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: buildah
+  labels:
+    app.kubernetes.io/version: "0.6"
+  annotations:
+    tekton.dev/categories: Image Build
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/tags: image-build
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le,linux/arm64"
+    tekton.dev/displayName: buildah
+spec:
+  description: >-
+    Buildah task builds source into a container image and
+    then pushes it to a container registry.
+
+    Buildah Task builds source into a container image using Project Atomic's
+    Buildah build tool.It uses Buildah's support for building from Dockerfiles,
+    using its buildah bud command.This command executes the directives in the
+    Dockerfile to assemble a container image, then pushes that image to a
+    container registry.
+
+  params:
+  - name: IMAGE
+    description: Reference of the image buildah will produce.
+  - name: BUILDER_IMAGE
+    description: The location of the buildah builder image.
+    default: quay.io/buildah/stable:v1
+  - name: STORAGE_DRIVER
+    description: Set buildah storage driver
+    default: overlay
+  - name: DOCKERFILE
+    description: Path to the Dockerfile to build.
+    default: ./Dockerfile
+  - name: CONTEXT
+    description: Path to the directory to use as context.
+    default: .
+  - name: TLSVERIFY
+    description: Verify the TLS on the registry endpoint (for push/pull to a non-TLS registry)
+    default: "true"
+  - name: FORMAT
+    description: The format of the built container, oci or docker
+    default: "oci"
+  - name: BUILD_EXTRA_ARGS
+    description: Extra parameters passed for the build command when building images.
+    default: ""
+  - name: PUSH_EXTRA_ARGS
+    description: Extra parameters passed for the push command when pushing images.
+    type: string
+    default: ""
+  - name: SKIP_PUSH
+    description: Skip pushing the built image
+    default: "false"
+  workspaces:
+  - name: source
+  - name: sslcertdir
+    optional: true
+  - name: dockerconfig
+    description: >-
+      An optional workspace that allows providing a .docker/config.json file
+      for Buildah to access the container registry.
+      The file should be placed at the root of the Workspace with name config.json.
+    optional: true
+  results:
+  - name: IMAGE_DIGEST
+    description: Digest of the image just built.
+  - name: IMAGE_URL
+    description: Image repository where the built image would be pushed to
+  steps:
+  - name: build-and-push
+    image: $(params.BUILDER_IMAGE)
+    workingDir: $(workspaces.source.path)
+    script: |
+      [ "$(workspaces.sslcertdir.bound)" = "true" ] && CERT_DIR_FLAG="--cert-dir=$(workspaces.sslcertdir.path)"
+      [ "$(workspaces.dockerconfig.bound)" = "true" ] && DOCKER_CONFIG="$(workspaces.dockerconfig.path)" && export DOCKER_CONFIG
+      # build the image (CERT_DIR_FLAG should be omitted if empty and BUILD_EXTRA_ARGS can contain multiple args)
+      # shellcheck disable=SC2046,SC2086
+      buildah ${CERT_DIR_FLAG} "--storage-driver=$(params.STORAGE_DRIVER)" bud $(params.BUILD_EXTRA_ARGS) \
+        "--format=$(params.FORMAT)" "--tls-verify=$(params.TLSVERIFY)" --no-cache \
+        -f "$(params.DOCKERFILE)" -t "$(params.IMAGE)" "$(params.CONTEXT)"
+      [ "$(params.SKIP_PUSH)" = "true" ] && echo "Push skipped" && exit 0
+      # push the image (CERT_DIR_FLAG should be omitted if empty and PUSH_EXTRA_ARGS can contain multiple args)
+      # shellcheck disable=SC2046,SC2086
+      buildah ${CERT_DIR_FLAG} "--storage-driver=$(params.STORAGE_DRIVER)" push $(params.PUSH_EXTRA_ARGS) \
+        "--tls-verify=$(params.TLSVERIFY)" --digestfile /tmp/image-digest "$(params.IMAGE)" \
+        "docker://$(params.IMAGE)"
+      tee "$(results.IMAGE_DIGEST.path)" < /tmp/image-digest
+      printf '%s' "$(params.IMAGE)" | tee "$(results.IMAGE_URL.path)"
+    volumeMounts:
+    - name: varlibcontainers
+      mountPath: /var/lib/containers
+    securityContext:
+      privileged: true
+  volumes:
+  - name: varlibcontainers
+    emptyDir: {}

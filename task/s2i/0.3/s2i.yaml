@@ -71,7 +71,7 @@ spec:
         [[ "$(workspaces.dockerconfig.bound)" == "true" ]] && export DOCKER_CONFIG="$(workspaces.dockerconfig.path)"
         buildah ${CERT_DIR_FLAG} push --tls-verify=$(params.TLSVERIFY) --digestfile $(workspaces.source.path)/image-digest \
           $(params.IMAGE) docker://$(params.IMAGE)
-        cat $(workspaces.source.path)/image-digest | tee /tekton/results/IMAGE_DIGEST
+        cat $(workspaces.source.path)/image-digest | tee $(results.IMAGE_DIGEST.path)
       volumeMounts:
       - name: varlibcontainers
         mountPath: /var/lib/containers

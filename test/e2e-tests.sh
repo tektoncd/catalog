@@ -17,10 +17,12 @@
 # Configure the number of parallel tests running at the same time, start from 0
 MAX_NUMBERS_OF_PARALLEL_TASKS=7 # => 8
 
-export RELEASE_YAML=https://github.com/tektoncd/pipeline/releases/download/v0.45.0/release.yaml
+export RELEASE_YAML=https://github.com/tektoncd/pipeline/releases/download/v0.51.0/release.yaml
 
 source $(dirname $0)/../vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
 source $(dirname $0)/e2e-common.sh
+
+E2E_SKIP_CLUSTER_CREATION=${E2E_SKIP_CLUSTER_CREATION:="false"}
 
 TMPF=$(mktemp /tmp/.mm.XXXXXX)
 clean() { rm -f ${TMPF}; }
@@ -30,7 +32,9 @@ trap clean EXIT
 [[ -z ${LOCAL_CI_RUN} ]] && {
 
     # Initialize cluster
-    initialize "$@"
+    if [ "${E2E_SKIP_CLUSTER_CREATION}" != "true" ]; then
+        initialize "$@"
+    fi
 
     # Install the latest Tekton CRDs.
     install_pipeline_crd

@@ -1,0 +1,27 @@
+# PipelineRun for starting pipeline.
+# Prior to running the pipeline, ensure that you have attached the Workspace, created the required Secret, and deployed the 'git-clone' task within your environment.
+# Refer to https://hub.tekton.dev/tekton/task/git-clone for guidance on implementing the 'git-clone' task.
+
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: redhat-dependency-analytics-pipelinerun
+spec:
+  pipelineRef:
+    name: redhat-dependency-analytics-pipeline
+  workspaces:
+    # Volume backing this workspace is used for input/output of the task.
+    - name: output
+      persistentvolumeclaim:
+        claimName: output
+  params:
+    - name: github-url
+      value: {{GITHUB_URL}} # Replace with Github URL to project repository.
+    - name: manifest-file-path
+      value: {{MANIFEST_FILE_PATH}} # Replace with path to target manifest file within the project directory (e.g., "pom.xml" or "src/pom.xml")
+    - name: project-directory-path
+      value: project-package
+    - name: output-file-path
+      value: redhat-dependency-analytics-report.json
+    - name: image
+      value: quay.io/ecosystem-appeng/exhort-javascript-api:0.7.0-alpha # Replace with base image where Exhort Javascript API and required dependencies are installed.

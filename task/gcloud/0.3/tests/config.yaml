@@ -2,7 +2,6 @@ apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
   name: gcloud-config-test
-  description: This simple smoke test confirms that Cloud SDK is functional.
 spec:
   taskRef:
     name: gcloud

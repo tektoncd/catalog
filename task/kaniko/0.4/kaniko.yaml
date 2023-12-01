@@ -77,4 +77,4 @@ spec:
     workingDir: $(workspaces.source.path)
     image: $(params.JQ_IMAGE)
     script: |
-      cat $(params.CONTEXT)/image-digested | jq '.[0].value' -rj | tee /tekton/results/IMAGE-DIGEST
+      cat $(params.CONTEXT)/image-digested | jq '.[0].value' -rj | tee $(results.IMAGE-DIGEST.path)
