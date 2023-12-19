@@ -1,6 +1,6 @@
 # Sonatype
 
-Contains all the tasks which use the Sonatype Nexus Lifecycle CLI.
+Contains all the tasks which use the Sonatype Lifecycle CLI.
 
 ## Tasks
 
