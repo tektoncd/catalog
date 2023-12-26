@@ -8,7 +8,7 @@ metadata:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/categories: Developer Tools
     tekton.dev/tags: yq
-    tekton.dev/displayName: "YQ"
+    tekton.dev/displayName: "YQ replace"
     tekton.dev/platforms: "linux/amd64"
     ozone-in2tive-ai/imgurl: ""
 spec:

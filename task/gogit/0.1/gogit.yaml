@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: CLI
     tekton.dev/tags: search
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/displayName: gogit
     ozone-in2tive-ai/imgurl: ""
 spec:
   description: >-

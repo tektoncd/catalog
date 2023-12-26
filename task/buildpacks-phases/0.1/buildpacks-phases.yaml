@@ -9,7 +9,7 @@ metadata:
     tekton.dev/categories: Image Build, Security
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: image-build
-    tekton.dev/displayName: "buildpacks-phases"
+    tekton.dev/displayName: "Buildpacks (phases)"
     tekton.dev/platforms: "linux/amd64"
     tekton.dev/deprecated: "true"
     ozone-in2tive-ai/imgurl: ""
