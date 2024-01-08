@@ -11,7 +11,7 @@ metadata:
     tekton.dev/displayName: "argocd"
     tekton.dev/platforms: "linux/amd64"
     tekton.dev/deprecated: "true"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This task syncs (deploys) an Argo CD application and waits for it to be healthy.
@@ -32,9 +32,9 @@ spec:
   stepTemplate:
     envFrom:
       - configMapRef:
-          name: argocd-env-configmap  # used for server address
+          name: argocd-env-configmap # used for server address
       - secretRef:
-          name: argocd-env-secret  # used for authentication (username/password or auth token)
+          name: argocd-env-secret # used for authentication (username/password or auth token)
   steps:
     - name: login
       image: docker.io/argoproj/argocd:$(params.argocd-version)

@@ -11,7 +11,7 @@ metadata:
     tekton.dev/platforms: "linux/amd64"
     tekton.dev/deprecated: "true"
     tekton.dev/displayName: "s2i"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     Source-to-Image (S2I) is a toolkit and workflow for building reproducible

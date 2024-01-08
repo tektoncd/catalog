@@ -10,7 +10,7 @@ metadata:
     tekton.dev/tags: "gke,test"
     tekton.dev/displayName: "GKE Cluster Create"
     tekton.dev/platforms: "linux/amd64"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: |
     Create a GKE cluster.
@@ -21,91 +21,91 @@ spec:
     and NodePorts.
 
   params:
-  - name: project-name
-    description: The name of the GCP project in which to create the GKE cluster.
-  - name: private-key-path
-    description: The path to the private key within the gcp-service-account workspace.
-  - name: identifier
-    description: A string which identifies the purpose for which this cluster is being created. Used to name other resources created.
-  - name: min-nodes
-    description: The minimum number of nodes in the cluster.
-    default: "1"
-  - name: max-nodes
-    description: The maximum number of nodes in the cluster.
-    default: "3"
-  - name: region
-    description: The region to create the cluster in.
-    default: us-central1
-  - name: machine-type
-    description: The machine type to create, from https://cloud.google.com/compute/docs/machine-types.
-    default: n1-standard-4
-  - name: image-type
-    description: The type of image to create the nodes, from https://cloud.google.com/kubernetes-engine/docs/concepts/node-images.
-    default: cos
-  - name: cluster-version
-    description: |
-      The GKE version to install, in a format that can be used as the `--cluster-version` argument to
-      https://cloud.google.com/sdk/gcloud/reference/beta/container/clusters/create
-    default: latest
+    - name: project-name
+      description: The name of the GCP project in which to create the GKE cluster.
+    - name: private-key-path
+      description: The path to the private key within the gcp-service-account workspace.
+    - name: identifier
+      description: A string which identifies the purpose for which this cluster is being created. Used to name other resources created.
+    - name: min-nodes
+      description: The minimum number of nodes in the cluster.
+      default: "1"
+    - name: max-nodes
+      description: The maximum number of nodes in the cluster.
+      default: "3"
+    - name: region
+      description: The region to create the cluster in.
+      default: us-central1
+    - name: machine-type
+      description: The machine type to create, from https://cloud.google.com/compute/docs/machine-types.
+      default: n1-standard-4
+    - name: image-type
+      description: The type of image to create the nodes, from https://cloud.google.com/kubernetes-engine/docs/concepts/node-images.
+      default: cos
+    - name: cluster-version
+      description: |
+        The GKE version to install, in a format that can be used as the `--cluster-version` argument to
+        https://cloud.google.com/sdk/gcloud/reference/beta/container/clusters/create
+      default: latest
   workspaces:
-  - name: gcp-service-account
-    description: A Secret or volume containing the private key of a GCP service account that can create GKE clusters in the project
-  - name: kubeconfig
-    description: |
-      A workspace into which a kubeconfig file called `kubeconfig` will be written that will contain the information
-      required to access the cluster. The `kubeconfig` will expect to use gcloud to authenticate, so in order for it to
-      be used it must be run in a container which contains both kubectl and gcloud.
+    - name: gcp-service-account
+      description: A Secret or volume containing the private key of a GCP service account that can create GKE clusters in the project
+    - name: kubeconfig
+      description: |
+        A workspace into which a kubeconfig file called `kubeconfig` will be written that will contain the information
+        required to access the cluster. The `kubeconfig` will expect to use gcloud to authenticate, so in order for it to
+        be used it must be run in a container which contains both kubectl and gcloud.
   results:
-  - name: cluster-name
-    description: The name of the cluster that was created.
+    - name: cluster-name
+      description: The name of the cluster that was created.
   steps:
-  - name: gcloud
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/google.com/cloudsdktool/cloud-sdk:slim" #tag: slim, 312.0.0-slim
-    script: |
-      UNIQUE_STR=$(head /dev/urandom | tr -dc a-z0-9 | head -c 10 ; echo '')
-      UNIQUE_NAME=$(params.identifier)-$UNIQUE_STR
+    - name: gcloud
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/google.com/cloudsdktool/cloud-sdk:slim" #tag: slim, 312.0.0-slim
+      script: |
+        UNIQUE_STR=$(head /dev/urandom | tr -dc a-z0-9 | head -c 10 ; echo '')
+        UNIQUE_NAME=$(params.identifier)-$UNIQUE_STR
 
-      # Configure gcloud to use the provided service account
-      gcloud auth activate-service-account --key-file=$(workspaces.gcp-service-account.path)/$(params.private-key-path)
+        # Configure gcloud to use the provided service account
+        gcloud auth activate-service-account --key-file=$(workspaces.gcp-service-account.path)/$(params.private-key-path)
 
-      # Create a network and a new cluster
-      gcloud compute networks create $UNIQUE_NAME --project $(params.project-name) --subnet-mode=auto
-      gcloud container clusters create \
-        --quiet \
-        --enable-autoscaling \
-        --scopes=cloud-platform \
-        --enable-basic-auth \
-        --no-issue-client-certificate \
-        --project=$(params.project-name) \
-        --cluster-version=$(params.cluster-version) \
-        --min-nodes=$(params.min-nodes) \
-        --max-nodes=$(params.max-nodes) \
-        --region=$(params.region) \
-        --machine-type=$(params.machine-type) \
-        --image-type=$(params.image-type) \
-        --num-nodes=1 \
-        --network=$UNIQUE_NAME\
-        $UNIQUE_NAME
+        # Create a network and a new cluster
+        gcloud compute networks create $UNIQUE_NAME --project $(params.project-name) --subnet-mode=auto
+        gcloud container clusters create \
+          --quiet \
+          --enable-autoscaling \
+          --scopes=cloud-platform \
+          --enable-basic-auth \
+          --no-issue-client-certificate \
+          --project=$(params.project-name) \
+          --cluster-version=$(params.cluster-version) \
+          --min-nodes=$(params.min-nodes) \
+          --max-nodes=$(params.max-nodes) \
+          --region=$(params.region) \
+          --machine-type=$(params.machine-type) \
+          --image-type=$(params.image-type) \
+          --num-nodes=1 \
+          --network=$UNIQUE_NAME\
+          $UNIQUE_NAME
 
-      # Write the kubeconfig for connecting to the new cluster to the provided workspace
-      KUBECONFIG=$(workspaces.kubeconfig.path)/kubeconfig gcloud container clusters get-credentials \
-        --project=$(params.project-name) \
-        --region=$(params.region) \
-        $UNIQUE_NAME
+        # Write the kubeconfig for connecting to the new cluster to the provided workspace
+        KUBECONFIG=$(workspaces.kubeconfig.path)/kubeconfig gcloud container clusters get-credentials \
+          --project=$(params.project-name) \
+          --region=$(params.region) \
+          $UNIQUE_NAME
 
-      # Get the tag used for the instances created and use that to apply firewall rules to them
-      INSTANCE_TAG=$(gcloud compute instances list \
-        --project=$(params.project-name) \
-        --filter=metadata.cluster-name=$UNIQUE_NAME \
-        --limit=1 \
-        --format=get\(tags.items\) | tr -d '\n')
+        # Get the tag used for the instances created and use that to apply firewall rules to them
+        INSTANCE_TAG=$(gcloud compute instances list \
+          --project=$(params.project-name) \
+          --filter=metadata.cluster-name=$UNIQUE_NAME \
+          --limit=1 \
+          --format=get\(tags.items\) | tr -d '\n')
 
-      # This firewall rule allows the cluster to expose SSH, TCP services running on 80 or 8080,
-      # and services exposed via the NodePort default range (https://kubernetes.io/docs/concepts/services-networking/service/#nodeport)
-      gcloud compute firewall-rules create ports-$UNIQUE_STR \
-        --project=$(params.project-name) \
-        --network=$UNIQUE_NAME \
-        --allow=tcp:22,tcp:80,tcp:8080,tcp:30000-32767,udp:30000-32767 \
-        --target-tags=$INSTANCE_TAG
+        # This firewall rule allows the cluster to expose SSH, TCP services running on 80 or 8080,
+        # and services exposed via the NodePort default range (https://kubernetes.io/docs/concepts/services-networking/service/#nodeport)
+        gcloud compute firewall-rules create ports-$UNIQUE_STR \
+          --project=$(params.project-name) \
+          --network=$UNIQUE_NAME \
+          --allow=tcp:22,tcp:80,tcp:8080,tcp:30000-32767,udp:30000-32767 \
+          --target-tags=$INSTANCE_TAG
 
-      printf $UNIQUE_NAME > $(results.cluster-name.path)
+        printf $UNIQUE_NAME > $(results.cluster-name.path)

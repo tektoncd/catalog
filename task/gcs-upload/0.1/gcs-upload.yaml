@@ -10,7 +10,7 @@ metadata:
     tekton.dev/tags: cloud, gcs
     tekton.dev/displayName: "Upload to GCS"
     tekton.dev/platforms: "linux/amd64"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     A Task that uploads a GCS bucket.
@@ -18,42 +18,42 @@ spec:
     This task uploads files or directories from a Workspace to a GCS bucket.
 
   workspaces:
-  - name: credentials
-    description: A secret with a service account key to use as GOOGLE_APPLICATION_CREDENTIALS.
-  - name: source
-    description: A workspace where files will be uploaded from.
+    - name: credentials
+      description: A secret with a service account key to use as GOOGLE_APPLICATION_CREDENTIALS.
+    - name: source
+      description: A workspace where files will be uploaded from.
   params:
-  - name: path
-    description: The path to files or directories relative to the source workspace that you'd like to upload.
-    type: string
-  - name: location
-    description: The address (including "gs://") where you'd like to upload files to.
-    type: string
-  - name: serviceAccountPath
-    description: The path inside the credentials workspace to the GOOGLE_APPLICATION_CREDENTIALS key file.
-    type: string
-    default: service_account.json
+    - name: path
+      description: The path to files or directories relative to the source workspace that you'd like to upload.
+      type: string
+    - name: location
+      description: The address (including "gs://") where you'd like to upload files to.
+      type: string
+    - name: serviceAccountPath
+      description: The path inside the credentials workspace to the GOOGLE_APPLICATION_CREDENTIALS key file.
+      type: string
+      default: service_account.json
   steps:
-  - name: upload
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/google.com/cloudsdktool/cloud-sdk:310.0.0" #tag: 310.0.0
-    script: |
-      #!/usr/bin/env bash
-      set -xe
+    - name: upload
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/google.com/cloudsdktool/cloud-sdk:310.0.0" #tag: 310.0.0
+      script: |
+        #!/usr/bin/env bash
+        set -xe
 
-      CRED_PATH="$(workspaces.credentials.path)/$(params.serviceAccountPath)"
-      SOURCE="$(workspaces.source.path)/$(params.path)"
+        CRED_PATH="$(workspaces.credentials.path)/$(params.serviceAccountPath)"
+        SOURCE="$(workspaces.source.path)/$(params.path)"
 
-      if [[ -f "$CRED_PATH" ]]; then
-        GOOGLE_APPLICATION_CREDENTIALS="$CRED_PATH"
-      fi
+        if [[ -f "$CRED_PATH" ]]; then
+          GOOGLE_APPLICATION_CREDENTIALS="$CRED_PATH"
+        fi
 
-      if [[ "${GOOGLE_APPLICATION_CREDENTIALS}" != "" ]]; then
-        echo GOOGLE_APPLICATION_CREDENTIALS is set, activating Service Account...
-        gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
-      fi
+        if [[ "${GOOGLE_APPLICATION_CREDENTIALS}" != "" ]]; then
+          echo GOOGLE_APPLICATION_CREDENTIALS is set, activating Service Account...
+          gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
+        fi
 
-      if [[ -d "$SOURCE" ]]; then
-        gsutil -m rsync -d -r "$SOURCE" "$(params.location)"
-      else
-        gsutil cp "$SOURCE" "$(params.location)"
-      fi
+        if [[ -d "$SOURCE" ]]; then
+          gsutil -m rsync -d -r "$SOURCE" "$(params.location)"
+        else
+          gsutil cp "$SOURCE" "$(params.location)"
+        fi

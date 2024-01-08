@@ -11,7 +11,7 @@ metadata:
     tekton.dev/tags: git
     tekton.dev/displayName: "git cli"
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This task can be used to perform git operations.
@@ -96,20 +96,20 @@ spec:
       image: $(params.BASE_IMAGE)
       workingDir: $(workspaces.source.path)
       env:
-      - name: PARAM_VERBOSE
-        value: $(params.VERBOSE)
-      - name: PARAM_USER_HOME
-        value: $(params.USER_HOME)
-      - name: WORKSPACE_OUTPUT_PATH
-        value: $(workspaces.output.path)
-      - name: WORKSPACE_SSH_DIRECTORY_BOUND
-        value: $(workspaces.ssh-directory.bound)
-      - name: WORKSPACE_SSH_DIRECTORY_PATH
-        value: $(workspaces.ssh-directory.path)
-      - name: WORKSPACE_BASIC_AUTH_DIRECTORY_BOUND
-        value: $(workspaces.basic-auth.bound)
-      - name: WORKSPACE_BASIC_AUTH_DIRECTORY_PATH
-        value: $(workspaces.basic-auth.path)
+        - name: PARAM_VERBOSE
+          value: $(params.VERBOSE)
+        - name: PARAM_USER_HOME
+          value: $(params.USER_HOME)
+        - name: WORKSPACE_OUTPUT_PATH
+          value: $(workspaces.output.path)
+        - name: WORKSPACE_SSH_DIRECTORY_BOUND
+          value: $(workspaces.ssh-directory.bound)
+        - name: WORKSPACE_SSH_DIRECTORY_PATH
+          value: $(workspaces.ssh-directory.path)
+        - name: WORKSPACE_BASIC_AUTH_DIRECTORY_BOUND
+          value: $(workspaces.basic-auth.bound)
+        - name: WORKSPACE_BASIC_AUTH_DIRECTORY_PATH
+          value: $(workspaces.basic-auth.path)
       script: |
         #!/usr/bin/env sh
         set -eu

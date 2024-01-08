@@ -10,7 +10,7 @@ metadata:
     tekton.dev/tags: messaging
     tekton.dev/displayName: "Send message to Microsoft Teams Channel"
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     These tasks post a simple message to a Microsoft Teams Channel.
@@ -18,28 +18,28 @@ spec:
     This task uses the Incoming Webhook functionality of Microsoft Teams
 
   params:
-  - name: webhook-url-secret
-    type: string
-    description: Name of the secret with incoming webhook URL
-  - name: webhook-url-secret-key
-    type: string
-    description: Key in the secret
-  - name: message
-    type: string
-    description: The message to notify about
+    - name: webhook-url-secret
+      type: string
+      description: Name of the secret with incoming webhook URL
+    - name: webhook-url-secret-key
+      type: string
+      description: Key in the secret
+    - name: message
+      type: string
+      description: The message to notify about
   steps:
-  - name: post
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/curlimages/curl:7.70.0" #tag: 7.70.0
-    script: |
-      #!/usr/bin/env sh
-      MESSAGE=$(echo "${MESSAGE}" | sed -e 's/\"/\\\\"/g')
-      JSON="{\"text\": \"${MESSAGE}\" }"
-      curl -X POST -H 'Content-Type: application/json' -d "${JSON}" "${WEBHOOK_URL}"
-    env:
-    - name: WEBHOOK_URL
-      valueFrom:
-        secretKeyRef:
-          name: $(params.webhook-url-secret)
-          key: $(params.webhook-url-secret-key)
-    - name: MESSAGE
-      value: $(params.message)
+    - name: post
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/curlimages/curl:7.70.0" #tag: 7.70.0
+      script: |
+        #!/usr/bin/env sh
+        MESSAGE=$(echo "${MESSAGE}" | sed -e 's/\"/\\\\"/g')
+        JSON="{\"text\": \"${MESSAGE}\" }"
+        curl -X POST -H 'Content-Type: application/json' -d "${JSON}" "${WEBHOOK_URL}"
+      env:
+        - name: WEBHOOK_URL
+          valueFrom:
+            secretKeyRef:
+              name: $(params.webhook-url-secret)
+              key: $(params.webhook-url-secret-key)
+        - name: MESSAGE
+          value: $(params.message)

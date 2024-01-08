@@ -11,29 +11,29 @@ metadata:
     tekton.dev/tags: github
     tekton.dev/displayName: "close github issue"
     tekton.dev/platforms: "linux/amd64"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This Task will close a pull request or an issue.
 
   params:
-  - name: GITHUB_HOST_URL
-    description: |
-      The GitHub host, adjust this if you run a GitHub enteprise.
-    default: "api.github.com"
-    type: string
+    - name: GITHUB_HOST_URL
+      description: |
+        The GitHub host, adjust this if you run a GitHub enteprise.
+      default: "api.github.com"
+      type: string
 
-  - name: API_PATH_PREFIX
-    description: |
-      The API path prefix, GitHub Enterprise has a prefix e.g. /api/v3
-    default: ""
-    type: string
+    - name: API_PATH_PREFIX
+      description: |
+        The API path prefix, GitHub Enterprise has a prefix e.g. /api/v3
+      default: ""
+      type: string
 
-  - name: REQUEST_URL
-    description: |
-      The GitHub issue or pull request URL where we want to add a new
-      comment.
-    type: string
+    - name: REQUEST_URL
+      description: |
+        The GitHub issue or pull request URL where we want to add a new
+        comment.
+      type: string
   steps:
     - name: close-issue
       env:

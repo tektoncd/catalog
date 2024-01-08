@@ -1,58 +1,58 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
- name: gcs-generic
- labels:
-  app.kubernetes.io/version: "0.1"
- annotations:
-  tekton.dev/pipelines.minVersion: "0.12.1"
-  tekton.dev/categories: Cloud, Storage
-  tekton.dev/tags: cloud, gcs
-  tekton.dev/platforms: "linux/amd64"
-  tekton.dev/displayName: "gcs-generic"
-  ozone-in2tive-ai/imgurl: ""
+  name: gcs-generic
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Cloud, Storage
+    tekton.dev/tags: cloud, gcs
+    tekton.dev/platforms: "linux/amd64"
+    tekton.dev/displayName: "gcs-generic"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
- description: >-
-  A Task that allows users to customize and extend the gsutil
-  command line based on their needs.
+  description: >-
+    A Task that allows users to customize and extend the gsutil
+    command line based on their needs.
 
- workspaces:
- - name: credentials
-   description: A secret with a service account key to use as GOOGLE_APPLICATION_CREDENTIALS.
- params:
- - name: command
-   description: The command line that you would like to enter.
-   type: string
- - name: options
-   description: The extended command line that you would like to enter.
-   type: array
- - name: serviceAccountPath
-   description: |
-      The path inside the credentials workspace to the GOOGLE_APPLICATION_CREDENTIALS key file.
-   type: string
-   default: ''
- - name: image
-   description: google cloud image that will be used in steps.
-   type: string
-   default: gcr.io/google.com/cloudsdktool/cloud-sdk:slim@sha256:70d3c9ef711c704259b06485f9ab3bab6e1b5c99e4a5c1ed37f9338004664c17 #tag: slim, 312.0.0-slim
- steps:
- - name: credential-setup
-   image: "$(params.image)"
-   script: |
-     #!/usr/bin/env bash
-     set -xe
+  workspaces:
+    - name: credentials
+      description: A secret with a service account key to use as GOOGLE_APPLICATION_CREDENTIALS.
+  params:
+    - name: command
+      description: The command line that you would like to enter.
+      type: string
+    - name: options
+      description: The extended command line that you would like to enter.
+      type: array
+    - name: serviceAccountPath
+      description: |
+        The path inside the credentials workspace to the GOOGLE_APPLICATION_CREDENTIALS key file.
+      type: string
+      default: ""
+    - name: image
+      description: google cloud image that will be used in steps.
+      type: string
+      default: gcr.io/google.com/cloudsdktool/cloud-sdk:slim@sha256:70d3c9ef711c704259b06485f9ab3bab6e1b5c99e4a5c1ed37f9338004664c17 #tag: slim, 312.0.0-slim
+  steps:
+    - name: credential-setup
+      image: "$(params.image)"
+      script: |
+        #!/usr/bin/env bash
+        set -xe
 
-      CRED_PATH="$(workspaces.credentials.path)/$(params.serviceAccountPath)"
+         CRED_PATH="$(workspaces.credentials.path)/$(params.serviceAccountPath)"
 
-      if [[ -f "$CRED_PATH" ]]; then
-        GOOGLE_APPLICATION_CREDENTIALS="$CRED_PATH"
-      fi
+         if [[ -f "$CRED_PATH" ]]; then
+           GOOGLE_APPLICATION_CREDENTIALS="$CRED_PATH"
+         fi
 
-      if [[ "${GOOGLE_APPLICATION_CREDENTIALS}" != "" ]]; then
-        echo "GOOGLE_APPLICATION_CREDENTIALS is set, activating Service Account..."
-        gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
-      fi
- - name: run-gsutil
-   image: "$(params.image)"
-   command: [gsutil]
-   args: ["$(params.command)", "$(params.options[*])"]
+         if [[ "${GOOGLE_APPLICATION_CREDENTIALS}" != "" ]]; then
+           echo "GOOGLE_APPLICATION_CREDENTIALS is set, activating Service Account..."
+           gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
+         fi
+    - name: run-gsutil
+      image: "$(params.image)"
+      command: [gsutil]
+      args: ["$(params.command)", "$(params.options[*])"]

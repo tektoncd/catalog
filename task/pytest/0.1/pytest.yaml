@@ -11,7 +11,7 @@ metadata:
     tekton.dev/tags: python, pytest
     tekton.dev/displayName: pytest
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This task will run pytest on the provided input.

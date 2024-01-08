@@ -10,7 +10,7 @@ metadata:
     tekton.dev/tags: cli
     tekton.dev/displayName: "azure cli"
     tekton.dev/platforms: "linux/amd64"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This task performs operations on Microsoft Azure resources using az.
@@ -21,14 +21,14 @@ spec:
     this task.
 
   params:
-  - name: az-image
-    description: Azure CLI container image to run this task
-    default: mcr.microsoft.com/azure-cli:2.0.78
-  - name: ARGS
-    type: array
-    description: Azure CLI arguments to run
+    - name: az-image
+      description: Azure CLI container image to run this task
+      default: mcr.microsoft.com/azure-cli:2.0.78
+    - name: ARGS
+      type: array
+      description: Azure CLI arguments to run
   steps:
-  - name: az
-    image: "$(params.az-image)"
-    command: ["az"]
-    args: ["$(params.ARGS)"]
+    - name: az
+      image: "$(params.az-image)"
+      command: ["az"]
+      args: ["$(params.ARGS)"]

@@ -10,7 +10,7 @@ metadata:
     tekton.dev/categories: Build Tools
     tekton.dev/tags: build-tool
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This Task can be used to run a Gradle build.
@@ -28,7 +28,7 @@ spec:
       type: string
       default: "."
     - name: TASKS
-      description: 'The gradle tasks to run (default: build)'
+      description: "The gradle tasks to run (default: build)"
       type: array
       default:
         - build

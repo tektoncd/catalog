@@ -10,7 +10,7 @@ metadata:
     tekton.dev/tags: cloud, gcs
     tekton.dev/platforms: "linux/amd64"
     tekton.dev/displayName: "gcs-download"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     A Task that downloads a GCS bucket.
@@ -19,47 +19,47 @@ spec:
     puts them on a Workspace.
 
   workspaces:
-  - name: credentials
-    description: A secret with a service account key to use as GOOGLE_APPLICATION_CREDENTIALS.
-  - name: output
-    description: The workspace where files will be copied to from GCS.
+    - name: credentials
+      description: A secret with a service account key to use as GOOGLE_APPLICATION_CREDENTIALS.
+    - name: output
+      description: The workspace where files will be copied to from GCS.
   params:
-  - name: path
-    description: The path to the file or directory that will be written to the output workspace.
-    type: string
-  - name: location
-    description: The address (including "gs://") of the bucket you'd like to copy from.
-    type: string
-  - name: typeDir
-    description: Set this to "true" if the location you are copying from is a directory.
-    type: string
-    default: "false"
-  - name: serviceAccountPath
-    description: The path inside the credentials workspace to the GOOGLE_APPLICATION_CREDENTIALS key file.
-    type: string
-    default: service_account.json
+    - name: path
+      description: The path to the file or directory that will be written to the output workspace.
+      type: string
+    - name: location
+      description: The address (including "gs://") of the bucket you'd like to copy from.
+      type: string
+    - name: typeDir
+      description: Set this to "true" if the location you are copying from is a directory.
+      type: string
+      default: "false"
+    - name: serviceAccountPath
+      description: The path inside the credentials workspace to the GOOGLE_APPLICATION_CREDENTIALS key file.
+      type: string
+      default: service_account.json
   steps:
-  - name: copy
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/google.com/cloudsdktool/cloud-sdk:310.0.0" #tag: 310.0.0
-    script: |
-      #!/usr/bin/env bash
-      set -xe
+    - name: copy
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/google.com/cloudsdktool/cloud-sdk:310.0.0" #tag: 310.0.0
+      script: |
+        #!/usr/bin/env bash
+        set -xe
 
-      CRED_PATH="$(workspaces.credentials.path)/$(params.serviceAccountPath)"
-      DESTINATION="$(workspaces.output.path)/$(params.path)"
+        CRED_PATH="$(workspaces.credentials.path)/$(params.serviceAccountPath)"
+        DESTINATION="$(workspaces.output.path)/$(params.path)"
 
-      if [[ -f "$CRED_PATH" ]]; then
-        GOOGLE_APPLICATION_CREDENTIALS="$CRED_PATH"
-      fi
+        if [[ -f "$CRED_PATH" ]]; then
+          GOOGLE_APPLICATION_CREDENTIALS="$CRED_PATH"
+        fi
 
-      if [[ "${GOOGLE_APPLICATION_CREDENTIALS}" != "" ]]; then
-        echo GOOGLE_APPLICATION_CREDENTIALS is set, activating Service Account...
-        gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
-      fi
+        if [[ "${GOOGLE_APPLICATION_CREDENTIALS}" != "" ]]; then
+          echo GOOGLE_APPLICATION_CREDENTIALS is set, activating Service Account...
+          gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
+        fi
 
-      if [[ "$(params.typeDir)" == "true" ]]; then
-        mkdir -p "$DESTINATION"
-        gsutil -m rsync -d -r "$(params.location)" "$DESTINATION"
-      else
-        gsutil cp $(params.location) "$DESTINATION"
-      fi
+        if [[ "$(params.typeDir)" == "true" ]]; then
+          mkdir -p "$DESTINATION"
+          gsutil -m rsync -d -r "$(params.location)" "$DESTINATION"
+        else
+          gsutil cp $(params.location) "$DESTINATION"
+        fi

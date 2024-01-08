@@ -11,7 +11,7 @@ metadata:
     tekton.dev/tags: scorecard
     tekton.dev/displayName: OSSF scorecard
     tekton.dev/platforms: "linux/amd64"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This task can be used to calculate the scorecard results for a repository

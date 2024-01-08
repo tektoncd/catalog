@@ -10,7 +10,7 @@ metadata:
     tekton.dev/tags: git
     tekton.dev/displayName: "git batch merge"
     tekton.dev/platforms: "linux/amd64"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This task takes a set of refspecs, fetches them and performs git operations

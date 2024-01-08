@@ -9,7 +9,7 @@ metadata:
     tekton.dev/categories: Continuous Integration, Security
     tekton.dev/tags: sonatype, nexus, iq, sbom
     tekton.dev/displayName: "Sonatype Nexus Lifecycle Scan"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This task uses the Sonatype Nexus IQ CLI to invoke a Nexus Lifecycle scan.

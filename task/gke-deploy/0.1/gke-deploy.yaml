@@ -10,22 +10,22 @@ metadata:
     tekton.dev/tags: deploy
     tekton.dev/displayName: "gke deploy"
     tekton.dev/platforms: "linux/amd64"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This Task deploys an application to a Google Kubernetes Engine
     cluster using gke-deploy
 
   workspaces:
-  - name: source
+    - name: source
   params:
-  - name: ARGS
-    type: array
-    description: gke-deploy CLI arguments to run
-    default: ["--help"]
+    - name: ARGS
+      type: array
+      description: gke-deploy CLI arguments to run
+      default: ["--help"]
   steps:
-  - name: gke-deploy
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/cloud-builders/gke-deploy"
-    command: ["/gke-deploy"]
-    workingDir: $(workspaces.source.path)
-    args: ["$(params.ARGS)"]
+    - name: gke-deploy
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/cloud-builders/gke-deploy"
+      command: ["/gke-deploy"]
+      workingDir: $(workspaces.source.path)
+      args: ["$(params.ARGS)"]

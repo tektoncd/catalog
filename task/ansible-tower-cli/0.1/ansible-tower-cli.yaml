@@ -10,7 +10,7 @@ metadata:
     tekton.dev/tags: ansible, cli
     tekton.dev/displayName: "ansible tower cli"
     tekton.dev/platforms: "linux/amd64"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     Ansible-tower-cli task simplifies starting jobs, workflow jobs,
@@ -43,16 +43,16 @@ spec:
     - name: config
       image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/quay.io/rcmendes/ansible-tower-cli" #tag: latest
       command:
-        - '/bin/sh'
-        - '-c'
+        - "/bin/sh"
+        - "-c"
       args:
         - |-
-            echo -e "verify_ssl = $(params.SSLVERIFY)\nverbose = true\nhost = $(params.HOST)\nusername = $USER\npassword = $PASS" > ~/.tower_cli.cfg
-            chmod 600 ~/.tower_cli.cfg
-            echo "Generated tower_cli.cfg file"
-            echo "-----------------------------"
-            ls -lah ~/ | grep tower_cli
-            echo "-----------------------------"
+          echo -e "verify_ssl = $(params.SSLVERIFY)\nverbose = true\nhost = $(params.HOST)\nusername = $USER\npassword = $PASS" > ~/.tower_cli.cfg
+          chmod 600 ~/.tower_cli.cfg
+          echo "Generated tower_cli.cfg file"
+          echo "-----------------------------"
+          ls -lah ~/ | grep tower_cli
+          echo "-----------------------------"
       env:
         - name: USER
           valueFrom:

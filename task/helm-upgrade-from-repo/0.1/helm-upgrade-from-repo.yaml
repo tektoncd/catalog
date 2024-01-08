@@ -11,7 +11,7 @@ metadata:
     tekton.dev/tags: helm
     tekton.dev/platforms: "linux/amd64"
     tekton.dev/displayName: "helm-upgrade-from-repo"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     These tasks will install / upgrade a helm chart into your Kubernetes /

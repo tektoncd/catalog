@@ -10,31 +10,31 @@ metadata:
     tekton.dev/tags: "aws, eks"
     tekton.dev/displayName: "EKS Cluster Teardown"
     tekton.dev/platforms: "linux/amd64"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: |
     Teardown an EKS cluster.
 
     This Task can be used to teardown an EKS cluster in an AWS account.
   params:
-  - name: cluster-name
-    description: The name of the EKS cluster which will be teared down.
-  - name: region
-    default: us-west-2
-    description: The region where the cluster is in.
+    - name: cluster-name
+      description: The name of the EKS cluster which will be teared down.
+    - name: region
+      default: us-west-2
+      description: The region where the cluster is in.
   workspaces:
-  - name: secrets
-    mountPath: /tekton/home/.aws
-    description: The service account with the AWS keys
+    - name: secrets
+      mountPath: /tekton/home/.aws
+      description: The service account with the AWS keys
   steps:
-  - name: delete-cluster
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/weaveworks/eksctl:0.35.0"
-    script: |
-      echo "Tearing down the eks cluster"
-      eksctl delete cluster \
-        --name $(params.cluster-name) \
-        --region $(params.region)
-      if [ $? -eq 0 ]
-      then
-        echo "Successfully teared down eks cluster $(params.cluster-name)"
-      fi
+    - name: delete-cluster
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/weaveworks/eksctl:0.35.0"
+      script: |
+        echo "Tearing down the eks cluster"
+        eksctl delete cluster \
+          --name $(params.cluster-name) \
+          --region $(params.region)
+        if [ $? -eq 0 ]
+        then
+          echo "Successfully teared down eks cluster $(params.cluster-name)"
+        fi

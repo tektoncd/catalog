@@ -10,7 +10,7 @@ metadata:
     tekton.dev/tags: "boskos,test"
     tekton.dev/platforms: "linux/amd64"
     tekton.dev/displayName: "bosko-release"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: |
     Release a project acquired using Boskos.
@@ -21,25 +21,25 @@ spec:
     It will mark the resource as dirty so that the boskos Janitor will clean it (by deleting
     any state created).
   params:
-  - name: server-url
-    description: The URL of the running boskos server
-    default: "http://boskos.test-pods.svc.cluster.local"
-  - name: leased-resource
-    description: A string that identifies the leased resource to release.
-  - name: owner-name
-    description: A string that identifies the owner of the leased resource to request.
+    - name: server-url
+      description: The URL of the running boskos server
+      default: "http://boskos.test-pods.svc.cluster.local"
+    - name: leased-resource
+      description: A string that identifies the leased resource to release.
+    - name: owner-name
+      description: A string that identifies the owner of the leased resource to request.
   steps:
-  - name: boskosctl-release
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/k8s-staging-boskos/boskosctl"
-    args:
-    - "release"
-    - "--server-url=$(params.server-url)"
-    - "--owner-name=$(params.owner-name)"
-    - "--name=$(params.leased-resource)"
-    - "--target-state=dirty"
-  - name: stop-boskosctl-heartbeat
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/lachlanevenson/k8s-kubectl"
-    args:
-    - "delete"
-    - "pod"
-    - "boskos-heartbeat-$(params.leased-resource)"
+    - name: boskosctl-release
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/k8s-staging-boskos/boskosctl"
+      args:
+        - "release"
+        - "--server-url=$(params.server-url)"
+        - "--owner-name=$(params.owner-name)"
+        - "--name=$(params.leased-resource)"
+        - "--target-state=dirty"
+    - name: stop-boskosctl-heartbeat
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/lachlanevenson/k8s-kubectl"
+      args:
+        - "delete"
+        - "pod"
+        - "boskos-heartbeat-$(params.leased-resource)"

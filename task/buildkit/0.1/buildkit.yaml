@@ -11,7 +11,7 @@ metadata:
     tekton.dev/platforms: "linux/amd64"
     tekton.dev/deprecated: "true"
     tekton.dev/displayName: "buildkit"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This Task builds source into a container image using Moby BuildKit.

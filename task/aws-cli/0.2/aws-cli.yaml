@@ -10,7 +10,7 @@ metadata:
     tekton.dev/tags: cli
     tekton.dev/displayName: "aws cli"
     tekton.dev/platforms: "linux/amd64"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This task performs operations on Amazon Web Services resources using aws.

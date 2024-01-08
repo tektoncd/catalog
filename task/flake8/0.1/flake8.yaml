@@ -11,7 +11,7 @@ metadata:
     tekton.dev/tags: python, flake8, linter
     tekton.dev/displayName: flake8
     tekton.dev/platforms: "linux/amd64"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This task will run flake8 on the provided input.

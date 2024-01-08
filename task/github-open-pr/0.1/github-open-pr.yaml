@@ -11,67 +11,67 @@ metadata:
     tekton.dev/tags: github
     tekton.dev/displayName: "open github pull request"
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This task will open a PR on Github based on several parameters.
     This could be useful in GitOps repositories for example.
 
   params:
-  - name: GITHUB_HOST_URL
-    description: |
-      The GitHub host, adjust this if you run a GitHub enteprise.
-    default: "api.github.com"
-    type: string
+    - name: GITHUB_HOST_URL
+      description: |
+        The GitHub host, adjust this if you run a GitHub enteprise.
+      default: "api.github.com"
+      type: string
 
-  - name: API_PATH_PREFIX
-    description: |
-      The API path prefix, GitHub Enterprise has a prefix e.g. /api/v3
-    default: ""
-    type: string
+    - name: API_PATH_PREFIX
+      description: |
+        The API path prefix, GitHub Enterprise has a prefix e.g. /api/v3
+      default: ""
+      type: string
 
-  - name: REPO_FULL_NAME
-    description: |
-      The GitHub repository full name, e.g.: tektoncd/catalog
-    type: string
+    - name: REPO_FULL_NAME
+      description: |
+        The GitHub repository full name, e.g.: tektoncd/catalog
+      type: string
 
-  - name: GITHUB_TOKEN_SECRET_NAME
-    description: |
-      The name of the kubernetes secret that contains the GitHub token, default: github
-    type: string
-    default: github
+    - name: GITHUB_TOKEN_SECRET_NAME
+      description: |
+        The name of the kubernetes secret that contains the GitHub token, default: github
+      type: string
+      default: github
 
-  - name: GITHUB_TOKEN_SECRET_KEY
-    description: |
-      The key within the kubernetes secret that contains the GitHub token, default: token
-    type: string
-    default: token
+    - name: GITHUB_TOKEN_SECRET_KEY
+      description: |
+        The key within the kubernetes secret that contains the GitHub token, default: token
+      type: string
+      default: token
 
-  - name: AUTH_TYPE
-    description: |
-      The type of authentication to use. You could use the less secure "Basic" for example
-    type: string
-    default: Bearer
+    - name: AUTH_TYPE
+      description: |
+        The type of authentication to use. You could use the less secure "Basic" for example
+      type: string
+      default: Bearer
 
-  - name: HEAD
-    description: |
-      The name of the branch where your changes are implemented.
-    type: string
+    - name: HEAD
+      description: |
+        The name of the branch where your changes are implemented.
+      type: string
 
-  - name: BASE
-    description: |
-      The name of the branch you want the changes pulled into.
-    type: string
+    - name: BASE
+      description: |
+        The name of the branch you want the changes pulled into.
+      type: string
 
-  - name: BODY
-    description: |
-      The body description of the pull request.
-    type: string
+    - name: BODY
+      description: |
+        The body description of the pull request.
+      type: string
 
-  - name: TITLE
-    description: |
-      The title of the pull request.
-    type: string
+    - name: TITLE
+      description: |
+        The title of the pull request.
+      type: string
 
   results:
     - name: NUMBER
@@ -81,9 +81,9 @@ spec:
       description: URL of the created deployment.
 
   volumes:
-  - name: githubtoken
-    secret:
-      secretName: $(params.GITHUB_TOKEN_SECRET_NAME)
+    - name: githubtoken
+      secret:
+        secretName: $(params.GITHUB_TOKEN_SECRET_NAME)
 
   steps:
     - name: open-pr

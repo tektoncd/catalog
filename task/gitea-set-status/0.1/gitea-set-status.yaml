@@ -11,7 +11,7 @@ metadata:
     tekton.dev/tags: gitea
     tekton.dev/displayName: "set gitea status"
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This task will set the status of the CI job to the specified value along
@@ -25,81 +25,81 @@ spec:
     statuses or a direct link to the full log.
 
   params:
-  - name: GITEA_HOST_URL
-    description: |
-      The Gitea host, e.g: git.yourcompany.com. Can include port.
-    type: string
+    - name: GITEA_HOST_URL
+      description: |
+        The Gitea host, e.g: git.yourcompany.com. Can include port.
+      type: string
 
-  - name: GITEA_HTTPS_OR_HTTP
-    description: |
-      If we should connect with HTTP or HTTPS. Use "http" or "https" here.
-    type: string
-    default: https
+    - name: GITEA_HTTPS_OR_HTTP
+      description: |
+        If we should connect with HTTP or HTTPS. Use "http" or "https" here.
+      type: string
+      default: https
 
-  - name: API_PATH_PREFIX
-    description: |
-      The API path prefix of Gitea, default: /api/v1
-    default: "/api/v1"
-    type: string
+    - name: API_PATH_PREFIX
+      description: |
+        The API path prefix of Gitea, default: /api/v1
+      default: "/api/v1"
+      type: string
 
-  - name: REPO_FULL_NAME
-    description: |
-      The Gitea repository full name, e.g.: tektoncd/catalog
-    type: string
+    - name: REPO_FULL_NAME
+      description: |
+        The Gitea repository full name, e.g.: tektoncd/catalog
+      type: string
 
-  - name: GITEA_TOKEN_SECRET_NAME
-    description: |
-      The name of the kubernetes secret that contains the Gitea token, default: gitea
-    type: string
-    default: gitea
+    - name: GITEA_TOKEN_SECRET_NAME
+      description: |
+        The name of the kubernetes secret that contains the Gitea token, default: gitea
+      type: string
+      default: gitea
 
-  - name: GITEA_TOKEN_SECRET_KEY
-    description: |
-      The key within the kubernetes secret that contains the Gitea token, default: token
-    type: string
-    default: token
+    - name: GITEA_TOKEN_SECRET_KEY
+      description: |
+        The key within the kubernetes secret that contains the Gitea token, default: token
+      type: string
+      default: token
 
-  - name: SHA
-    description: |
-      Commit SHA to set the status for.
-    type: string
+    - name: SHA
+      description: |
+        Commit SHA to set the status for.
+      type: string
 
-  - name: TARGET_URL
-    description: |
-      The target URL to associate with this status. This URL will be linked
-      from the Gitea UI to allow users to easily see the source of the
-      status.
-    type: string
+    - name: TARGET_URL
+      description: |
+        The target URL to associate with this status. This URL will be linked
+        from the Gitea UI to allow users to easily see the source of the
+        status.
+      type: string
 
-  - name: DESCRIPTION
-    description: |
-      A short description of the status.
-    type: string
+    - name: DESCRIPTION
+      description: |
+        A short description of the status.
+      type: string
 
-  - name: CONTEXT
-    description: |
-      The Gitea context, A string label to differentiate this status from
-      the status of other systems. ie: "continuous-integration/tekton"
-    default: "continuous-integration/tekton"
-    type: string
+    - name: CONTEXT
+      description: |
+        The Gitea context, A string label to differentiate this status from
+        the status of other systems. ie: "continuous-integration/tekton"
+      default: "continuous-integration/tekton"
+      type: string
 
-  - name: STATE
-    description: |
-      The state of the status. Can be one of the following `error`,
-      `failure`, `pending`, `warning` or `success`.
-    type: string
+    - name: STATE
+      description: |
+        The state of the status. Can be one of the following `error`,
+        `failure`, `pending`, `warning` or `success`.
+      type: string
 
-  - name: IMAGE
-    description: |
-      Image providing the python binary which this task uses.
-    type: string
-    default: python:3.10.1-alpine3.15@sha256:affe0faa14e7553fc570beec3864e74b5e36f8c19b2bb49ae8ba79c0e9e7236e
+    - name: IMAGE
+      description: |
+        Image providing the python binary which this task uses.
+      type: string
+      default: python:3.10.1-alpine3.15@sha256:affe0faa14e7553fc570beec3864e74b5e36f8c19b2bb49ae8ba79c0e9e7236e
 
-  - name: SHEBANG
-    description: |
-      Python path. Depends on the image.
-    type: string
-    default: /usr/bin/env python
+    - name: SHEBANG
+      description: |
+        Python path. Depends on the image.
+      type: string
+      default: /usr/bin/env python
 
   volumes:
     - name: giteatoken

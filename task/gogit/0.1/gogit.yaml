@@ -10,42 +10,42 @@ metadata:
     tekton.dev/tags: search
     tekton.dev/platforms: "linux/amd64"
     tekton.dev/displayName: gogit
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     Send a build status to Gitlab/GitHub.
   params:
-  - name: provider
-    description: provider name of git
-    type: string
-    default: github
-  - name: repo
-    description: git repository name
-    type: string
-  - name: username
-    description: username of git provider
-    type: string
-  - name: token
-    description: personal access token of git provider
-    type: string
-  - name: pull_request_number
-    description: pull request number
-    type: string
-  - name: gogit-image
-    description: option of gogit image
-    type: string
-    default: "ghcr.io/linuxsuren/gogit:v0.0.1@sha256:33e06228b645dd46102c0870c11d420a213cdab84b7a0700dcb6da6ce8b530d6"
+    - name: provider
+      description: provider name of git
+      type: string
+      default: github
+    - name: repo
+      description: git repository name
+      type: string
+    - name: username
+      description: username of git provider
+      type: string
+    - name: token
+      description: personal access token of git provider
+      type: string
+    - name: pull_request_number
+      description: pull request number
+      type: string
+    - name: gogit-image
+      description: option of gogit image
+      type: string
+      default: "ghcr.io/linuxsuren/gogit:v0.0.1@sha256:33e06228b645dd46102c0870c11d420a213cdab84b7a0700dcb6da6ce8b530d6"
   steps:
-  - name: gogit
-    image: "$(params.gogit-image)"
-    args:
-    - --provider
-    - $(params.provider)
-    - --repo
-    - $(params.repo)
-    - --username
-    - $(params.username)
-    - --token
-    - $(params.token)
-    - --pr
-    - $(params.pull_request_number)
+    - name: gogit
+      image: "$(params.gogit-image)"
+      args:
+        - --provider
+        - $(params.provider)
+        - --repo
+        - $(params.repo)
+        - --username
+        - $(params.username)
+        - --token
+        - $(params.token)
+        - --pr
+        - $(params.pull_request_number)

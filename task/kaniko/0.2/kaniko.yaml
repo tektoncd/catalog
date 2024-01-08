@@ -10,7 +10,7 @@ metadata:
     tekton.dev/tags: image-build
     tekton.dev/platforms: "linux/amd64"
     tekton.dev/displayName: "Build and upload container image using Kaniko"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This Task builds source into a container image using Google's kaniko tool.
@@ -21,57 +21,57 @@ spec:
     securely run a Docker daemon, such as a standard Kubernetes cluster.
 
   params:
-  - name: IMAGE
-    description: Name (reference) of the image to build.
-  - name: DOCKERFILE
-    description: Path to the Dockerfile to build.
-    default: ./Dockerfile
-  - name: CONTEXT
-    description: The build context used by Kaniko.
-    default: ./
-  - name: EXTRA_ARGS
-    default: ""
-  - name: BUILDER_IMAGE
-    description: The image on which builds will run (default is v1.5.1)
-    default: gcr.io/kaniko-project/executor:v1.5.1@sha256:c6166717f7fe0b7da44908c986137ecfeab21f31ec3992f6e128fff8a94be8a5
+    - name: IMAGE
+      description: Name (reference) of the image to build.
+    - name: DOCKERFILE
+      description: Path to the Dockerfile to build.
+      default: ./Dockerfile
+    - name: CONTEXT
+      description: The build context used by Kaniko.
+      default: ./
+    - name: EXTRA_ARGS
+      default: ""
+    - name: BUILDER_IMAGE
+      description: The image on which builds will run (default is v1.5.1)
+      default: gcr.io/kaniko-project/executor:v1.5.1@sha256:c6166717f7fe0b7da44908c986137ecfeab21f31ec3992f6e128fff8a94be8a5
   workspaces:
-  - name: source
+    - name: source
   results:
-  - name: IMAGE-DIGEST
-    description: Digest of the image just built.
+    - name: IMAGE-DIGEST
+      description: Digest of the image just built.
 
   steps:
-  - name: build-and-push
-    workingDir: $(workspaces.source.path)
-    image: $(params.BUILDER_IMAGE)
-    # specifying DOCKER_CONFIG is required to allow kaniko to detect docker credential
-    # https://github.com/tektoncd/pipeline/pull/706
-    env:
-    - name: DOCKER_CONFIG
-      value: /tekton/home/.docker
-    args:
-    - $(params.EXTRA_ARGS)
-    - --dockerfile=$(params.DOCKERFILE)
-    - --context=$(workspaces.source.path)/$(params.CONTEXT)  # The user does not need to care the workspace and the source.
-    - --destination=$(params.IMAGE)
-    - --oci-layout-path=$(workspaces.source.path)/$(params.CONTEXT)/image-digest
-    # kaniko assumes it is running as root, which means this example fails on platforms
-    # that default to run containers as random uid (like OpenShift). Adding this securityContext
-    # makes it explicit that it needs to run as root.
-    securityContext:
-      runAsUser: 0
-  - name: write-digest
-    workingDir: $(workspaces.source.path)
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/imagedigestexporter:v0.16.2"
-    # output of imagedigestexport [{"key":"digest","value":"sha256:eed29..660","resourceRef":{"name":"myrepo/myimage"}}]
-    command: ["/ko-app/imagedigestexporter"]
-    args:
-    - -images=[{"name":"$(params.IMAGE)","type":"image","url":"$(params.IMAGE)","digest":"","OutputImageDir":"$(workspaces.source.path)/$(params.CONTEXT)/image-digest"}]
-    - -terminationMessagePath=$(params.CONTEXT)/image-digested
-    securityContext:
-      runAsUser: 0
-  - name: digest-to-results
-    workingDir: $(workspaces.source.path)
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/stedolan/jq"
-    script: |
-      cat $(params.CONTEXT)/image-digested | jq '.[0].value' -rj | tee $(results.IMAGE-DIGEST.path)
+    - name: build-and-push
+      workingDir: $(workspaces.source.path)
+      image: $(params.BUILDER_IMAGE)
+      # specifying DOCKER_CONFIG is required to allow kaniko to detect docker credential
+      # https://github.com/tektoncd/pipeline/pull/706
+      env:
+        - name: DOCKER_CONFIG
+          value: /tekton/home/.docker
+      args:
+        - $(params.EXTRA_ARGS)
+        - --dockerfile=$(params.DOCKERFILE)
+        - --context=$(workspaces.source.path)/$(params.CONTEXT) # The user does not need to care the workspace and the source.
+        - --destination=$(params.IMAGE)
+        - --oci-layout-path=$(workspaces.source.path)/$(params.CONTEXT)/image-digest
+      # kaniko assumes it is running as root, which means this example fails on platforms
+      # that default to run containers as random uid (like OpenShift). Adding this securityContext
+      # makes it explicit that it needs to run as root.
+      securityContext:
+        runAsUser: 0
+    - name: write-digest
+      workingDir: $(workspaces.source.path)
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/imagedigestexporter:v0.16.2"
+      # output of imagedigestexport [{"key":"digest","value":"sha256:eed29..660","resourceRef":{"name":"myrepo/myimage"}}]
+      command: ["/ko-app/imagedigestexporter"]
+      args:
+        - -images=[{"name":"$(params.IMAGE)","type":"image","url":"$(params.IMAGE)","digest":"","OutputImageDir":"$(workspaces.source.path)/$(params.CONTEXT)/image-digest"}]
+        - -terminationMessagePath=$(params.CONTEXT)/image-digested
+      securityContext:
+        runAsUser: 0
+    - name: digest-to-results
+      workingDir: $(workspaces.source.path)
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/stedolan/jq"
+      script: |
+        cat $(params.CONTEXT)/image-digested | jq '.[0].value' -rj | tee $(results.IMAGE-DIGEST.path)

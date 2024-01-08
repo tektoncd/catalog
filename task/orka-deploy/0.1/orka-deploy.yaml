@@ -11,7 +11,7 @@ metadata:
     tekton.dev/tags: "orka, macstadium, deploy, build"
     tekton.dev/displayName: "MacStadium Orka Deploy"
     tekton.dev/platforms: "linux/amd64"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     With this set of Tasks, you can use your Orka environment

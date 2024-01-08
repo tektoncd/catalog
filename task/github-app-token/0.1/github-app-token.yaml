@@ -10,7 +10,7 @@ metadata:
     tekton.dev/tags: github
     tekton.dev/displayName: "github app token"
     tekton.dev/platforms: "linux/amd64"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     Retrive a user token from a GitHub application

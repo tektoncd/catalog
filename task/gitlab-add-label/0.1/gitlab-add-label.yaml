@@ -10,7 +10,7 @@ metadata:
     tekton.dev/tags: gitlab
     tekton.dev/displayName: "gitlab add label"
     tekton.dev/platforms: "linux/amd64"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This Task will add a label to an issue in Gitlab.
@@ -20,39 +20,39 @@ spec:
     secret `gitlab`with a GitLab token in the key `token`.
 
   params:
-  - name: GITLAB_HOST_URL
-    description: |
-      The Gitlab host url
-    default: "gitlab.com"
-    type: string
+    - name: GITLAB_HOST_URL
+      description: |
+        The Gitlab host url
+      default: "gitlab.com"
+      type: string
 
-  - name: API_PATH_PREFIX
-    description: |
-      The API path prefix
-    default: "/api/v4"
-    type: string
+    - name: API_PATH_PREFIX
+      description: |
+        The API path prefix
+      default: "/api/v4"
+      type: string
 
-  - name: REQUEST_URL
-    description: |
-      The Gitlab issue or merge request URL where we want to add a label.
-    type: string
+    - name: REQUEST_URL
+      description: |
+        The Gitlab issue or merge request URL where we want to add a label.
+      type: string
 
-  - name: LABELS
-    description: |
-      The actual labels to add.
-    type: array
+    - name: LABELS
+      description: |
+        The actual labels to add.
+      type: array
 
-  - name: GITLAB_TOKEN_SECRET
-    description: |
-      Name of the secret holding the gitlab-token.
-    type: string
-    default: gitlab
+    - name: GITLAB_TOKEN_SECRET
+      description: |
+        Name of the secret holding the gitlab-token.
+      type: string
+      default: gitlab
 
-  - name: GITLAB_TOKEN_SECRET_KEY
-    description: |
-      Name of the secret key holding the gitlab-token.
-    type: string
-    default: token
+    - name: GITLAB_TOKEN_SECRET_KEY
+      description: |
+        Name of the secret key holding the gitlab-token.
+      type: string
+      default: token
 
   steps:
     - name: add-label

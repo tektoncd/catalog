@@ -10,7 +10,7 @@ metadata:
     tekton.dev/tags: canary deployment, istio
     tekton.dev/displayName: "istio canary release"
     tekton.dev/platforms: "linux/amd64"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This task can be used to perform deployment of an application

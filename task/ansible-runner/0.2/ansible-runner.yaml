@@ -4,15 +4,15 @@ kind: Task
 metadata:
   name: ansible-runner
   labels:
-    app.kubernetes.io/version: '0.2'
-    app.kubernetes.io/ansible-version: '2.12.5'
+    app.kubernetes.io/version: "0.2"
+    app.kubernetes.io/ansible-version: "2.12.5"
   annotations:
-    tekton.dev/pipelines.minVersion: '0.12.1'
+    tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/categories: CLI
     tekton.dev/tags: cli
-    tekton.dev/displayName: 'Ansible Runner'
+    tekton.dev/displayName: "Ansible Runner"
     tekton.dev/platforms: "linux/amd64"
-    ozone-in2tive-ai/imgurl: ""
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     Task to run Ansible playbooks using Ansible Runner
@@ -23,7 +23,7 @@ spec:
   params:
     - name: project-dir
       description: The project directory under the workspace runner-dir
-      default: 'project'
+      default: "project"
     - name: args
       description: The arguments to pass ansible-runner
       type: array
@@ -59,14 +59,14 @@ spec:
           ansible-galaxy collection install -vv \
             -r requirements.yml
         fi
-      workingDir: '$(workspaces.runner-dir.path)/$(params.project-dir)'
+      workingDir: "$(workspaces.runner-dir.path)/$(params.project-dir)"
 
     - name: run-playbook
       image: $(params.image)
-      command: ['entrypoint']
+      command: ["entrypoint"]
       args:
         - ansible-runner
         - run
         - $(params.args)
         - $(params.project-dir)
-      workingDir: '$(workspaces.runner-dir.path)'
+      workingDir: "$(workspaces.runner-dir.path)"
