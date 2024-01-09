@@ -1,4 +1,3 @@
----
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
@@ -14,19 +13,19 @@ metadata:
 spec:
   description: >-
     The Anchore CLI provides a command line interface on top of the Anchore Engine REST API.
-    Using the Anchore CLI users can manage and inspect images, policies, subscriptions and registries
+    Using the Anchore CLI users can manage and inspect images, policies, subscriptions, and registries
   workspaces:
     - name: manifest-dir
   params:
     - name: ARGS
-      description: The Arguments to be passed to anchore command.
+      description: The Arguments to be passed to the Anchore command.
       type: array
     - name: ANCHORE_CLI_IMAGE
       default: anchore/engine-cli:latest
-      description: Anchore cli image to be used      
+      description: Anchore CLI image to be used
     - name: ANCHORE_CLI_URL
       default: http://localhost:8228/v1/
-      description: Anchore engine URL.      
+      description: Anchore Engine URL
     - name: IMAGE_NAME
       default: openjdk:7-jre-alpine:latest
       description: Image to be scanned
@@ -37,12 +36,13 @@ spec:
       workingDir: $(workspaces.manifest-dir.path)
       script: |
         #!/usr/bin/env sh
-        export ANCHORE_CLI_URL=$(params.ANCHORE_CLI_URL)
-        anchore-cli image add $(params.IMAGE_NAME) > /dev/null 2>&1
-        anchore-cli image vuln $(params.IMAGE_NAME) > /dev/null 2>&1
-        status=`anchore-cli evaluate check $(params.IMAGE_NAME)`
-        if echo $status | grep  -q 'fail'; then
-          echo " Image Vulnerable. Status Failed"
+        ANCHORE_CLI_URL=$(params.ANCHORE_CLI_URL)
+        export ANCHORE_CLI_URL
+        anchore-cli image add "$(params.IMAGE_NAME)" > /dev/null 2>&1
+        anchore-cli image vuln "$(params.IMAGE_NAME)" > /dev/null 2>&1
+        status=$(anchore-cli evaluate check "$(params.IMAGE_NAME)")
+        if echo "$status" | grep -q 'fail'; then
+          echo "Image Vulnerable. Status Failed"
           exit
         else
           echo "Image not Vulnerable. Status Success"
