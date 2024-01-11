@@ -48,23 +48,14 @@ specifying the command you would like to run as the `ARGS` or `SCRIPT` param.
 The `ARGS` param takes an array of aws subcommands that will be executed as
 part of this task and the `SCRIPT` param takes the multiple commands that you would like to run on aws CLI.
 
+Secret` give an example of how to give credentials for logging in.
 
-The `ConfigMap` and `Secret` give an example of how to define the Anchore server address and give credentials for logging in.
 
----
-
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: anchorecli-env-configmap
-data:
-  ANCHORE_SERVER: <Anchore server address>
-  
-
----
     
-To create a secret you can use the following command
+To create a secret you can use the following command 
 kubectl create secret generic tower-creds --from-literal=username=ANCHORE_CLI_PASS --from-literal=password=ANCHORE_CLI_USER
+
+or apply below manifest which is in samples folder
 
 ---
 kind: Secret
