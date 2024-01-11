@@ -1,0 +1,36 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: terrascan-install
+spec:
+  description: "Install Terrascan CLI"
+  workspaces:
+    - name: tools
+  params:
+    - name: TERRASCAN_VERSION
+      description: "Terrascan version to install"
+      type: string
+      default: "v1.10.0"
+  steps:
+    - name: install-terrascan
+      image: alpine:latest
+      command:
+        - /bin/sh
+      args:
+        - -c
+        - |
+          apk add --update --no-cache curl tar
+          TERRASCAN_URL="https://github.com/accurics/terrascan/releases/download/${TERRASCAN_VERSION}/terrascan_${TERRASCAN_VERSION}_Linux_x86_64.tar.gz"
+          curl -L -o terrascan.tar.gz "${TERRASCAN_URL}"
+          tar xvzf terrascan.tar.gz
+          mv terrascan /usr/local/bin/
+          rm terrascan.tar.gz
+      workingDir: /workspace/tools
+    - name: verify-terrascan-installation
+      image: alpine:latest
+      command:
+        - /bin/sh
+      args:
+        - -c
+        - |
+          terrascan --version
