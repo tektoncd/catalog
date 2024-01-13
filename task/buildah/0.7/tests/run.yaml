@@ -1,0 +1,126 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: buildah-test-pipeline-run
+spec:
+  pipelineSpec:
+    workspaces:
+    - name: shared-workspace
+    - name: sslcertdir
+      optional: true
+    tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+      - name: output
+        workspace: shared-workspace
+      params:
+      - name: url
+        value: https://github.com/kelseyhightower/nocode
+      - name: subdirectory
+        value: ""
+      - name: deleteExisting
+        value: "true"
+    - name: buildah
+      taskRef:
+        name: buildah
+      runAfter:
+      - fetch-repository
+      workspaces:
+      - name: source
+        workspace: shared-workspace
+      - name: sslcertdir
+        workspace: sslcertdir
+      params:
+      - name: IMAGE
+        value: registry:5000/nocode
+    - name: test-buildah-results
+      params:
+        - name: OUTPUT_IMAGE
+          value: "$(tasks.buildah.results.IMAGE_URL)"
+        - name: ORIGINAL_IMAGE
+          value: registry:5000/nocode
+      taskSpec:
+        params:
+          - name: ORIGINAL_IMAGE
+          - name: OUTPUT_IMAGE
+        steps:
+          - name: evaluate
+            image: alpine
+            script: |
+              #!/usr/bin/env sh
+              [[ "$(params.ORIGINAL_IMAGE)" = "$(params.OUTPUT_IMAGE)" ]] && exit 0 || exit 1
+  workspaces:
+  - name: shared-workspace
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Mi
+  - name: sslcertdir
+    configMap:
+      name: sslcert
+      defaultMode: 420
+      items:
+      - key: ca.crt
+        path: ca.crt
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: buildah-test-skip-push-pipeline-run
+spec:
+  pipelineSpec:
+    workspaces:
+    - name: shared-workspace
+    - name: sslcertdir
+      optional: true
+    tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+      - name: output
+        workspace: shared-workspace
+      params:
+      - name: url
+        value: https://github.com/kelseyhightower/nocode
+      - name: subdirectory
+        value: ""
+      - name: deleteExisting
+        value: "true"
+    - name: buildah
+      taskRef:
+        name: buildah
+      runAfter:
+      - fetch-repository
+      workspaces:
+      - name: source
+        workspace: shared-workspace
+      - name: sslcertdir
+        workspace: sslcertdir
+      params:
+      - name: IMAGE
+        value: registry:5000/nocode
+      - name: SKIP_PUSH
+        value: "true"
+  workspaces:
+  - name: shared-workspace
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Mi
+  - name: sslcertdir
+    configMap:
+      name: sslcert
+      defaultMode: 420
+      items:
+      - key: ca.crt
+        path: ca.crt

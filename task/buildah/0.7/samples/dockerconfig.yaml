@@ -1,0 +1,67 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dockerconfig-secret
+stringData:
+  config.json: |
+    {
+      "auths" : {
+        "icr.io" : {
+          "auth" : "iamapikey",
+          "identitytoken" : "test123test123"
+        }
+      }
+    }
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: buildah-test-pipeline-run
+spec:
+  pipelineSpec:
+    workspaces:
+      - name: shared-workspace
+      - name: sslcertdir
+        optional: true
+      - name: dockerconfig-ws
+        optional: true
+    tasks:
+      - name: fetch-repository
+        taskRef:
+          name: git-clone
+        workspaces:
+          - name: output
+            workspace: shared-workspace
+        params:
+          - name: url
+            value: https://github.com/sclorg/nodejs-ex
+          - name: subdirectory
+            value: ""
+          - name: deleteExisting
+            value: "true"
+      - name: buildah
+        taskRef:
+          name: buildah
+        runAfter:
+        - fetch-repository
+        workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: dockerconfig
+          workspace: dockerconfig-ws
+        params:
+        - name: IMAGE
+          value: <IMAGE_NAME>
+  workspaces:
+    - name: shared-workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 100Mi
+    - name: dockerconfig-ws
+      secret:
+        secretName: dockerconfig-secret
