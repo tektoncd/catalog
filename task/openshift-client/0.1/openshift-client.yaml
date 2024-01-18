@@ -12,7 +12,7 @@ metadata:
     tekton.dev/displayName: "openshift client"
     tekton.dev/platforms: "linux/amd64"
     tekton.dev/deprecated: "true"
-    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/openshift.svg"
 spec:
   description: >-
     This task runs commands against the cluster where the task run is

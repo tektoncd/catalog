@@ -8,7 +8,7 @@ metadata:
     tekton.dev/tags: "asciidoctor, Publishing, PDF, EPUB"
     tekton.dev/displayName: "asciidoctor text processor"
     tekton.dev/platforms: "linux/amd64"
-    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/asciidoc.svg"
   name: asciidoctor
   labels:
     app.kubernetes.io/version: "0.1"

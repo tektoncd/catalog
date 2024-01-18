@@ -10,7 +10,7 @@ metadata:
     tekton.dev/tags: deploy
     tekton.dev/displayName: "argocd"
     tekton.dev/platforms: "linux/amd64"
-    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/argocd.svg"
 spec:
   description: >-
     This task syncs (deploys) an Argo CD application and waits for it to be healthy.

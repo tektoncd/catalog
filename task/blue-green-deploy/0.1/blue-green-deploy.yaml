@@ -10,7 +10,7 @@ metadata:
     tekton.dev/tags: deployment
     tekton.dev/displayName: "blue green deployment"
     tekton.dev/platforms: "linux/amd64"
-    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/kubernetes.svg"
 spec:
   description: >-
     This task can be used to do Blue-Green deployment

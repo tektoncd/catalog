@@ -10,7 +10,7 @@ metadata:
     tekton.dev/tags: ansible, cli
     tekton.dev/displayName: "ansible tower cli"
     tekton.dev/platforms: "linux/amd64"
-    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/ansible.svg"
 spec:
   description: >-
     Ansible-tower-cli task simplifies starting jobs, workflow jobs,

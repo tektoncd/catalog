@@ -10,7 +10,7 @@ metadata:
     tekton.dev/tags: editor
     tekton.dev/platforms: "linux/amd64"
     tekton.dev/displayName: prettier
-    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/prettier.svg"
 spec:
   description: >-
     This Task is for running Prettier code formatter against the provided

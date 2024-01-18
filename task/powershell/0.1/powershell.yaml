@@ -11,7 +11,7 @@ metadata:
     tekton.dev/tags: powershell, pwsh
     tekton.dev/displayName: powershell
     tekton.dev/platforms: "linux/amd64"
-    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/powershell.svg"
 spec:
   description: >-
     This task will run powershell commands

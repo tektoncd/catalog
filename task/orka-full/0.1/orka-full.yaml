@@ -11,7 +11,7 @@ metadata:
     tekton.dev/platforms: "linux/amd64"
     tekton.dev/tags: orka
     tekton.dev/displayName: "orka full"
-    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/orka.svg"
 spec:
   description: >-
     With this Task, you can use your Orka environment

@@ -10,7 +10,7 @@ metadata:
     tekton.dev/tags: formatter, python
     tekton.dev/displayName: "Python Black"
     tekton.dev/platforms: "linux/amd64"
-    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/python.svg"
 spec:
   description: >-
     This task can be used to format Python code

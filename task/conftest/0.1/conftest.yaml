@@ -10,7 +10,7 @@ metadata:
     tekton.dev/tags: test
     tekton.dev/platforms: "linux/amd64"
     tekton.dev/displayName: "conftest"
-    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/conftest.svg"
 spec:
   description: >-
     These tasks make it possible to use Conftest within your Tekton pipelines
