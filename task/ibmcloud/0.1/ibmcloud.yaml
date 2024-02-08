@@ -9,19 +9,21 @@ metadata:
     tekton.dev/categories: Cloud
     tekton.dev/tags: cloud
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/displayName: "ibmcloud"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This task performs operations on IBM Cloud using the ibmcloud.
 
   params:
-  - name: ibmcloud-image
-    description: IBM Cloud CLI container image to run this task
-    default: docker.io/ibmcom/ibm-cloud-developer-tools-amd64:1.2.3@sha256:d755714b208f9cb6162c6d9cef09337d6de88bbde8ee534b6973721ec3284102 #tag: 1.2.3
-  - name: ARGS
-    type: array
-    description: IBM Cloud CLI arguments to run
+    - name: ibmcloud-image
+      description: IBM Cloud CLI container image to run this task
+      default: docker.io/ibmcom/ibm-cloud-developer-tools-amd64:1.2.3@sha256:d755714b208f9cb6162c6d9cef09337d6de88bbde8ee534b6973721ec3284102 #tag: 1.2.3
+    - name: ARGS
+      type: array
+      description: IBM Cloud CLI arguments to run
   steps:
-  - name: ibmcloud
-    image: "$(params.ibmcloud-image)"
-    command: ["ibmcloud"]
-    args: ["$(params.ARGS)"]
+    - name: ibmcloud
+      image: "$(params.ibmcloud-image)"
+      command: ["ibmcloud"]
+      args: ["$(params.ARGS)"]

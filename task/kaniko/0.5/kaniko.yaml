@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: image-build
     tekton.dev/displayName: "Build and upload container image using Kaniko"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This Task builds source into a container image using Google's kaniko tool.
@@ -20,43 +21,43 @@ spec:
     securely run a Docker daemon, such as a standard Kubernetes cluster.
 
   params:
-  - name: IMAGE
-    description: Name (reference) of the image to build.
-  - name: DOCKERFILE
-    description: Path to the Dockerfile to build.
-    default: ./Dockerfile
-  - name: CONTEXT
-    description: The build context used by Kaniko.
-    default: ./
-  - name: EXTRA_ARGS
-    type: array
-    default: []
-  - name: BUILDER_IMAGE
-    description: The image on which builds will run (default is v1.5.1)
-    default: gcr.io/kaniko-project/executor:v1.5.1@sha256:c6166717f7fe0b7da44908c986137ecfeab21f31ec3992f6e128fff8a94be8a5
+    - name: IMAGE
+      description: Name (reference) of the image to build.
+    - name: DOCKERFILE
+      description: Path to the Dockerfile to build.
+      default: ./Dockerfile
+    - name: CONTEXT
+      description: The build context used by Kaniko.
+      default: ./
+    - name: EXTRA_ARGS
+      type: array
+      default: []
+    - name: BUILDER_IMAGE
+      description: The image on which builds will run (default is v1.5.1)
+      default: gcr.io/kaniko-project/executor:v1.5.1@sha256:c6166717f7fe0b7da44908c986137ecfeab21f31ec3992f6e128fff8a94be8a5
   workspaces:
-  - name: source
-    description: Holds the context and docker file
-  - name: dockerconfig
-    description: Includes a docker `config.json`
-    optional: true
-    mountPath: /kaniko/.docker
+    - name: source
+      description: Holds the context and docker file
+    - name: dockerconfig
+      description: Includes a docker `config.json`
+      optional: true
+      mountPath: /kaniko/.docker
   results:
-  - name: IMAGE-DIGEST
-    description: Digest of the image just built.
+    - name: IMAGE-DIGEST
+      description: Digest of the image just built.
 
   steps:
-  - name: build-and-push
-    workingDir: $(workspaces.source.path)
-    image: $(params.BUILDER_IMAGE)
-    args:
-    - $(params.EXTRA_ARGS[*])
-    - --dockerfile=$(params.DOCKERFILE)
-    - --context=$(workspaces.source.path)/$(params.CONTEXT)  # The user does not need to care the workspace and the source.
-    - --destination=$(params.IMAGE)
-    - --digest-file=$(results.IMAGE-DIGEST.path)
-    # kaniko assumes it is running as root, which means this example fails on platforms
-    # that default to run containers as random uid (like OpenShift). Adding this securityContext
-    # makes it explicit that it needs to run as root.
-    securityContext:
-      runAsUser: 0
+    - name: build-and-push
+      workingDir: $(workspaces.source.path)
+      image: $(params.BUILDER_IMAGE)
+      args:
+        - $(params.EXTRA_ARGS[*])
+        - --dockerfile=$(params.DOCKERFILE)
+        - --context=$(workspaces.source.path)/$(params.CONTEXT) # The user does not need to care the workspace and the source.
+        - --destination=$(params.IMAGE)
+        - --digest-file=$(results.IMAGE-DIGEST.path)
+      # kaniko assumes it is running as root, which means this example fails on platforms
+      # that default to run containers as random uid (like OpenShift). Adding this securityContext
+      # makes it explicit that it needs to run as root.
+      securityContext:
+        runAsUser: 0

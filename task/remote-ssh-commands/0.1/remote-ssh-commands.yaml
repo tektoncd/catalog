@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: ssh, ssh remote
     tekton.dev/displayName: "ssh remote commands"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     The following task can be used to execute commands on remote machine.

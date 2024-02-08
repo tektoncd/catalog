@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: yq
     tekton.dev/displayName: "YQ replace"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This task can be used to replace fields in YAML files. For example for altering helm charts on GitOps repos.

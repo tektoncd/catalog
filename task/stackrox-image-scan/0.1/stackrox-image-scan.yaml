@@ -11,6 +11,7 @@ metadata:
     tekton.dev/displayName: "Scan an image with StackRox/RHACS"
     tekton.dev/platforms: "linux/amd64"
     tekton.dev/pipelines.minVersion: "0.18.0"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/stackrox.svg"
 spec:
   description: >-
     Scan an image with StackRox/RHACS

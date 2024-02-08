@@ -9,39 +9,41 @@ metadata:
     tekton.dev/categories: Cloud, Storage
     tekton.dev/tags: cloud, gcs
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/displayName: "gcs-delete-bucket"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     A Task that deletes a GCS bucket.
 
   workspaces:
-  - name: credentials
-    description: A secret with a service account key to use as GOOGLE_APPLICATION_CREDENTIALS.
+    - name: credentials
+      description: A secret with a service account key to use as GOOGLE_APPLICATION_CREDENTIALS.
   params:
-  - name: bucketName
-    description: |
-      The name (including "gs://") of the bucket to delete.
-    type: string
-  - name: serviceAccountPath
-    description: |
-      The path inside the credentials workspace to the GOOGLE_APPLICATION_CREDENTIALS key file.
-    type: string
-    default: service_account.json
+    - name: bucketName
+      description: |
+        The name (including "gs://") of the bucket to delete.
+      type: string
+    - name: serviceAccountPath
+      description: |
+        The path inside the credentials workspace to the GOOGLE_APPLICATION_CREDENTIALS key file.
+      type: string
+      default: service_account.json
   steps:
-  - name: delete-bucket
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/google.com/cloudsdktool/cloud-sdk:310.0.0" #tag: 310.0.0
-    script: |
-      #!/usr/bin/env bash
-      set -xe
+    - name: delete-bucket
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/google.com/cloudsdktool/cloud-sdk:310.0.0" #tag: 310.0.0
+      script: |
+        #!/usr/bin/env bash
+        set -xe
 
-      CRED_PATH="$(workspaces.credentials.path)/$(params.serviceAccountPath)"
+        CRED_PATH="$(workspaces.credentials.path)/$(params.serviceAccountPath)"
 
-      if [[ -f "$CRED_PATH" ]]; then
-        GOOGLE_APPLICATION_CREDENTIALS="$CRED_PATH"
-      fi
+        if [[ -f "$CRED_PATH" ]]; then
+          GOOGLE_APPLICATION_CREDENTIALS="$CRED_PATH"
+        fi
 
-      if [[ "${GOOGLE_APPLICATION_CREDENTIALS}" != "" ]]; then
-        echo GOOGLE_APPLICATION_CREDENTIALS is set, activating Service Account...
-        gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
-      fi
+        if [[ "${GOOGLE_APPLICATION_CREDENTIALS}" != "" ]]; then
+          echo GOOGLE_APPLICATION_CREDENTIALS is set, activating Service Account...
+          gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
+        fi
 
-      gsutil rm -r "$(params.bucketName)"
+        gsutil rm -r "$(params.bucketName)"

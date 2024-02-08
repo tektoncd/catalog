@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: linter, mypy
     tekton.dev/displayName: "Mypy(Python) linter"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/pylinter.svg"
 spec:
   description: >-
     This task can be used to perform lint check on python files

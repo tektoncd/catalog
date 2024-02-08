@@ -11,6 +11,7 @@ metadata:
     tekton.dev/displayName: "jib gradle"
     tekton.dev/platforms: "linux/amd64"
     tekton.dev/deprecated: "true"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This Task builds Java/Kotlin/Groovy/Scala source into a container image using Google’s Jib tool.
@@ -18,74 +19,74 @@ spec:
     Jib works with Gradle and Maven projects, and this template is for Gradle projects.
 
   params:
-  - name: DIRECTORY
-    description: The directory containing the app, relative to the source repository root
-    default: .
-  - name: CACHE
-    description: The name of the volume for caching Gradle artifacts, local Maven repository, and base image layers
-    default: empty-dir-volume
-  - name: INSECUREREGISTRY
-    description: Whether to allow insecure registry
-    default: "false"
+    - name: DIRECTORY
+      description: The directory containing the app, relative to the source repository root
+      default: .
+    - name: CACHE
+      description: The name of the volume for caching Gradle artifacts, local Maven repository, and base image layers
+      default: empty-dir-volume
+    - name: INSECUREREGISTRY
+      description: Whether to allow insecure registry
+      default: "false"
   workspaces:
-  - name: source
+    - name: source
   resources:
     outputs:
-    - name: image
-      type: image
+      - name: image
+        type: image
   steps:
-  - name: build-and-push
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/cloud-builders/gradle"
-    script: |
-      #!/bin/sh
-      set -o errexit
-      # Adds Gradle init script that applies the Jib Gradle plugin.
-      echo "initscript {
-              repositories { maven { url 'https://plugins.gradle.org/m2' } }
-              dependencies { classpath 'gradle.plugin.com.google.cloud.tools:jib-gradle-plugin:+' }
-            }
-            rootProject {
-              afterEvaluate {
-                if (!project.plugins.hasPlugin('com.google.cloud.tools.jib')) {
-                  project.apply plugin: com.google.cloud.tools.jib.gradle.JibPlugin
-                }
+    - name: build-and-push
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/cloud-builders/gradle"
+      script: |
+        #!/bin/sh
+        set -o errexit
+        # Adds Gradle init script that applies the Jib Gradle plugin.
+        echo "initscript {
+                repositories { maven { url 'https://plugins.gradle.org/m2' } }
+                dependencies { classpath 'gradle.plugin.com.google.cloud.tools:jib-gradle-plugin:+' }
               }
-            }" > $HOME/init-script.gradle
-      # Runs the Gradle Jib build.
-      gradle jib \
-        --stacktrace --console=plain \
-        --init-script=$HOME/init-script.gradle \
-        --gradle-user-home=$HOME/.gradle \
-        -Dgradle.user.home=$HOME/.gradle \
-        -Duser.home=$HOME \
-        -Djib.allowInsecureRegistries=$(params.INSECUREREGISTRY) \
-        -Djib.to.image=$(resources.outputs.image.url)
-    workingDir: $(workspaces.source.path)/$(params.DIRECTORY)
-    env:
-    - name: HOME
-      value: /workspace
-    - name: "DOCKER_CONFIG"
-      value: $(credentials.path)/.docker/
-    volumeMounts:
-    # empty volume required to make the Gradle home globally writable
-    - name: empty-dir-volume
-      mountPath: /workspace/.gradle
-      subPath: gradle-user-home
-    - name: $(params.CACHE)
-      mountPath: /workspace/.gradle/caches
-      subPath: gradle-caches
-    - name: $(params.CACHE)
-      mountPath: /workspace/.gradle/wrapper
-      subPath: gradle-wrapper
-    - name: $(params.CACHE)
-      mountPath: /workspace/.m2
-      subPath: m2-cache
-    - name: $(params.CACHE)
-      mountPath: /workspace/.cache
-      subPath: jib-cache
-    securityContext:
-      runAsUser: 0
+              rootProject {
+                afterEvaluate {
+                  if (!project.plugins.hasPlugin('com.google.cloud.tools.jib')) {
+                    project.apply plugin: com.google.cloud.tools.jib.gradle.JibPlugin
+                  }
+                }
+              }" > $HOME/init-script.gradle
+        # Runs the Gradle Jib build.
+        gradle jib \
+          --stacktrace --console=plain \
+          --init-script=$HOME/init-script.gradle \
+          --gradle-user-home=$HOME/.gradle \
+          -Dgradle.user.home=$HOME/.gradle \
+          -Duser.home=$HOME \
+          -Djib.allowInsecureRegistries=$(params.INSECUREREGISTRY) \
+          -Djib.to.image=$(resources.outputs.image.url)
+      workingDir: $(workspaces.source.path)/$(params.DIRECTORY)
+      env:
+        - name: HOME
+          value: /workspace
+        - name: "DOCKER_CONFIG"
+          value: $(credentials.path)/.docker/
+      volumeMounts:
+        # empty volume required to make the Gradle home globally writable
+        - name: empty-dir-volume
+          mountPath: /workspace/.gradle
+          subPath: gradle-user-home
+        - name: $(params.CACHE)
+          mountPath: /workspace/.gradle/caches
+          subPath: gradle-caches
+        - name: $(params.CACHE)
+          mountPath: /workspace/.gradle/wrapper
+          subPath: gradle-wrapper
+        - name: $(params.CACHE)
+          mountPath: /workspace/.m2
+          subPath: m2-cache
+        - name: $(params.CACHE)
+          mountPath: /workspace/.cache
+          subPath: jib-cache
+      securityContext:
+        runAsUser: 0
 
   volumes:
-  - name: empty-dir-volume
-    emptyDir: {}
+    - name: empty-dir-volume
+      emptyDir: {}

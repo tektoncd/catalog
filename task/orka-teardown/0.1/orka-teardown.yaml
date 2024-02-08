@@ -11,6 +11,7 @@ metadata:
     tekton.dev/tags: "orka, macstadium, teardown, cleanup"
     tekton.dev/displayName: "MacStadium Orka Teardown"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/orka.svg"
 spec:
   description: >-
     With this set of Tasks, you can use your Orka environment

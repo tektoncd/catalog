@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: Kubernetes, Misconfiguration
     tekton.dev/displayName: "Kube-Linter"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This task makes it possible to use kube-linter within Tekton Pipeline.
@@ -58,16 +59,16 @@ spec:
       image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/registry.access.redhat.com/ubi8/ubi-minimal:8.2"
       workingDir: $(workspaces.source.path)
       script: |
-         #!/usr/bin/env bash
-         set -e
+        #!/usr/bin/env bash
+        set -e
 
-         if [ -n "$(params.config_file_url)" ]
-         then
-          curl "$(params.config_file_url)" --output "$(params.config_file_path)"
-          echo "Fetched the config file from given ($(params.config_file_url)) URL and successfully saved at $(workspaces.source.path)/$(params.config_file_path)"
-         else
-          echo "No config file url was set"
-         fi
+        if [ -n "$(params.config_file_url)" ]
+        then
+         curl "$(params.config_file_url)" --output "$(params.config_file_path)"
+         echo "Fetched the config file from given ($(params.config_file_url)) URL and successfully saved at $(workspaces.source.path)/$(params.config_file_path)"
+        else
+         echo "No config file url was set"
+        fi
 
     - name: lint-yaml
       image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/stackrox/kube-linter:0.2.2-2-g7d10a69154-alpine"
@@ -87,4 +88,4 @@ spec:
           fi
         fi
       args:
-      - $(params.args)
+        - $(params.args)

@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: "Kubernetes, Misconfiguration"
     tekton.dev/displayName: Datree
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     The Datree task is used to scan Kubernetes manifests for misconfigurations using the open source tool Datree(datree.io).
@@ -53,57 +54,57 @@ spec:
       type: string
       default: docker.io/datree/datree:0.15.22@sha256:85cf78f16e67e08ea9df18ab6d3d823a576bfbcc5937f30629eb4859fdeb3fd1
   steps:
-  - name: datree-test
-    image: $(params.datreeImage)
-    securityContext:
-      runAsUser: 0
-      privileged: true
-    workingDir: $(workspaces.source.path)
-    env:
-      - name: DATREE_TOKEN
-        valueFrom:
-          secretKeyRef:
-            name: $(params.DATREE_TOKEN_SECRET)
-            key: $(params.DATREE_TOKEN_SECRET_KEY)
-      - name: WORKSPACE_PATH
-        value: $(workspaces.source.path)
-      - name: PARAM_YAMLSRC
-        value: $(params.yamlSrc)
-      - name: PARAM_OUTPUT
-        value: $(params.output)
-      - name: PARAM_SCHEMA_VERSION
-        value: $(params.schemaVersion)
-      - name: PARAM_IGNORE_MISSING_SCHEMAS
-        value: $(params.ignoreMissingSchemas)
-      - name: PARAM_POLICY
-        value: $(params.policy)
-      - name: PARAM_K8S_FILES
-        value: $(params.onlyK8sFiles)
-    script: |
-      #!/usr/bin/env sh
-      OUTPUT_FLAG=""
-      SCHEMA_VERSION_FLAG=""
-      IGNORE_MISSING_SCHEMAS_FLAG=""
-      POLICY_FLAG=""
-      K8S_FLAG=""
-      if [ "${PARAM_OUTPUT}" != "" ] ; then
-        OUTPUT_FLAG="--output $PARAM_OUTPUT"
-      fi
+    - name: datree-test
+      image: $(params.datreeImage)
+      securityContext:
+        runAsUser: 0
+        privileged: true
+      workingDir: $(workspaces.source.path)
+      env:
+        - name: DATREE_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: $(params.DATREE_TOKEN_SECRET)
+              key: $(params.DATREE_TOKEN_SECRET_KEY)
+        - name: WORKSPACE_PATH
+          value: $(workspaces.source.path)
+        - name: PARAM_YAMLSRC
+          value: $(params.yamlSrc)
+        - name: PARAM_OUTPUT
+          value: $(params.output)
+        - name: PARAM_SCHEMA_VERSION
+          value: $(params.schemaVersion)
+        - name: PARAM_IGNORE_MISSING_SCHEMAS
+          value: $(params.ignoreMissingSchemas)
+        - name: PARAM_POLICY
+          value: $(params.policy)
+        - name: PARAM_K8S_FILES
+          value: $(params.onlyK8sFiles)
+      script: |
+        #!/usr/bin/env sh
+        OUTPUT_FLAG=""
+        SCHEMA_VERSION_FLAG=""
+        IGNORE_MISSING_SCHEMAS_FLAG=""
+        POLICY_FLAG=""
+        K8S_FLAG=""
+        if [ "${PARAM_OUTPUT}" != "" ] ; then
+          OUTPUT_FLAG="--output $PARAM_OUTPUT"
+        fi
 
-      if [ "${PARAM_SCHEMA_VERSION}" != "" ] ; then
-        SCHEMA_VERSION_FLAG="--schema-version $PARAM_SCHEMA_VERSION"
-      fi
+        if [ "${PARAM_SCHEMA_VERSION}" != "" ] ; then
+          SCHEMA_VERSION_FLAG="--schema-version $PARAM_SCHEMA_VERSION"
+        fi
 
-      if [ "${PARAM_IGNORE_MISSING_SCHEMAS}" = "true" ] ; then
-        IGNORE_MISSING_SCHEMAS_FLAG="--ignore-missing-schemas"
-      fi
+        if [ "${PARAM_IGNORE_MISSING_SCHEMAS}" = "true" ] ; then
+          IGNORE_MISSING_SCHEMAS_FLAG="--ignore-missing-schemas"
+        fi
 
-      if [ "${PARAM_POLICY}" != "" ] ; then
-        POLICY_FLAG="--policy $PARAM_POLICY"
-      fi
+        if [ "${PARAM_POLICY}" != "" ] ; then
+          POLICY_FLAG="--policy $PARAM_POLICY"
+        fi
 
-      if [ "${PARAM_K8S_FILES}" = "true" ] ; then
-        K8S_FLAG="--only-k8s-files"
-      fi
+        if [ "${PARAM_K8S_FILES}" = "true" ] ; then
+          K8S_FLAG="--only-k8s-files"
+        fi
 
-      /datree test $WORKSPACE_PATH/$PARAM_YAMLSRC $OUTPUT_FLAG $SCHEMA_VERSION_FLAG $IGNORE_MISSING_SCHEMAS_FLAG $POLICY_FLAG $K8S_FLAG
+        /datree test $WORKSPACE_PATH/$PARAM_YAMLSRC $OUTPUT_FLAG $SCHEMA_VERSION_FLAG $IGNORE_MISSING_SCHEMAS_FLAG $POLICY_FLAG $K8S_FLAG

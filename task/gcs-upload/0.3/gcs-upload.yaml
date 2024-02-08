@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: cloud, gcs
     tekton.dev/displayName: "Upload to GCS"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     A Task that uploads a GCS bucket.
@@ -17,87 +18,87 @@ spec:
     This task uploads files or directories from a Workspace to a GCS bucket.
 
   workspaces:
-  - name: credentials
-    description: A secret with a service account key to use as GOOGLE_APPLICATION_CREDENTIALS.
-  - name: source
-    description: A workspace where files will be uploaded from.
+    - name: credentials
+      description: A secret with a service account key to use as GOOGLE_APPLICATION_CREDENTIALS.
+    - name: source
+      description: A workspace where files will be uploaded from.
   params:
-  - name: path
-    description: The path to files or directories relative to the source workspace that you'd like to upload.
-    type: string
-  - name: location
-    description: The address (including "gs://") where you'd like to upload files to.
-    type: string
-  - name: deleteExtraFiles
-    description: |
-      When "true", delete extra files under location not found under path.
-      By default extra files are not deleted.
+    - name: path
+      description: The path to files or directories relative to the source workspace that you'd like to upload.
+      type: string
+    - name: location
+      description: The address (including "gs://") where you'd like to upload files to.
+      type: string
+    - name: deleteExtraFiles
+      description: |
+        When "true", delete extra files under location not found under path.
+        By default extra files are not deleted.
 
-      NOTE: this option can delete data quickly if you specify the wrong
-      source/destination combination. "BE CAREFUL WHEN USING THIS OPTION!".
+        NOTE: this option can delete data quickly if you specify the wrong
+        source/destination combination. "BE CAREFUL WHEN USING THIS OPTION!".
 
-      NOTE: this option is implemented via "gsutil rsync". If the target bucket
-      contains a large number of files, it may take a long time for gsutil to
-      fetch the remote metadata for sync.
+        NOTE: this option is implemented via "gsutil rsync". If the target bucket
+        contains a large number of files, it may take a long time for gsutil to
+        fetch the remote metadata for sync.
 
-      NOTE: setting this option to "true" is not compatible with replaceExistingFiles="false"
-    default: "false"
-    type: string
-  - name: replaceExistingFiles
-    description: |
-      When "false", files that already exists are skipped. Default: "true"
+        NOTE: setting this option to "true" is not compatible with replaceExistingFiles="false"
+      default: "false"
+      type: string
+    - name: replaceExistingFiles
+      description: |
+        When "false", files that already exists are skipped. Default: "true"
 
-      NOTE: setting this option to "false" is not compatible with deleteExtraFiles="true"
-    default: "true"
-  - name: serviceAccountPath
-    description: The path inside the credentials workspace to the GOOGLE_APPLICATION_CREDENTIALS key file.
-    type: string
-    default: service_account.json
+        NOTE: setting this option to "false" is not compatible with deleteExtraFiles="true"
+      default: "true"
+    - name: serviceAccountPath
+      description: The path inside the credentials workspace to the GOOGLE_APPLICATION_CREDENTIALS key file.
+      type: string
+      default: service_account.json
   steps:
-  - name: upload
-    env:
-      - name: CRED_PATH
-        value: "$(workspaces.credentials.path)/$(params.serviceAccountPath)"
-      - name: SOURCE
-        value: "$(workspaces.source.path)/$(params.path)"
-      - name: LOCATION
-        value: "$(params.location)"
-      - name: DELETE_EXTRA_FILES
-        value: $(params.deleteExtraFiles)
-      - name: REPLACE_EXISTING_FILES
-        value: $(params.replaceExistingFiles)
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/google.com/cloudsdktool/cloud-sdk:379.0.0-slim" #tag: 379.0.0-slim
-    script: |
-      #!/usr/bin/env bash
-      set -xe
+    - name: upload
+      env:
+        - name: CRED_PATH
+          value: "$(workspaces.credentials.path)/$(params.serviceAccountPath)"
+        - name: SOURCE
+          value: "$(workspaces.source.path)/$(params.path)"
+        - name: LOCATION
+          value: "$(params.location)"
+        - name: DELETE_EXTRA_FILES
+          value: $(params.deleteExtraFiles)
+        - name: REPLACE_EXISTING_FILES
+          value: $(params.replaceExistingFiles)
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/google.com/cloudsdktool/cloud-sdk:379.0.0-slim" #tag: 379.0.0-slim
+      script: |
+        #!/usr/bin/env bash
+        set -xe
 
-      if [[ -f "$CRED_PATH" ]]; then
-        GOOGLE_APPLICATION_CREDENTIALS="$CRED_PATH"
-      fi
-
-      if [[ "${GOOGLE_APPLICATION_CREDENTIALS}" != "" ]]; then
-        echo GOOGLE_APPLICATION_CREDENTIALS is set, activating Service Account...
-        gcloud auth activate-service-account --key-file="${GOOGLE_APPLICATION_CREDENTIALS}"
-      fi
-
-      CP_PARAMS=""
-      if [[ "$REPLACE_EXISTING_FILES" == "false" ]]; then
-          CP_PARAMS="-n"
-      fi
-
-      if [[ -d "$SOURCE" ]]; then
-        # Copying one folder
-        if [[ "$DELETE_EXTRA_FILES" == "true" ]]; then
-            if [[ "$REPLACE_EXISTING_FILES" == "false" ]]; then
-              echo "\"deleteExtraFiles\"" can be used only when \"replaceExistingFiles\"" is true"
-              exit 1
-            fi
-          # When deleteExtraFiles is requested, use rsync
-          gsutil -m rsync -d -r "${SOURCE}" "${LOCATION}"
-        else
-          gsutil -m cp ${CP_PARAMS} -r "${SOURCE}" "${LOCATION}"
+        if [[ -f "$CRED_PATH" ]]; then
+          GOOGLE_APPLICATION_CREDENTIALS="$CRED_PATH"
         fi
-      else
-        # Copying one file
-        gsutil cp ${CP_PARAMS} "${SOURCE}" "${LOCATION}"
-      fi
+
+        if [[ "${GOOGLE_APPLICATION_CREDENTIALS}" != "" ]]; then
+          echo GOOGLE_APPLICATION_CREDENTIALS is set, activating Service Account...
+          gcloud auth activate-service-account --key-file="${GOOGLE_APPLICATION_CREDENTIALS}"
+        fi
+
+        CP_PARAMS=""
+        if [[ "$REPLACE_EXISTING_FILES" == "false" ]]; then
+            CP_PARAMS="-n"
+        fi
+
+        if [[ -d "$SOURCE" ]]; then
+          # Copying one folder
+          if [[ "$DELETE_EXTRA_FILES" == "true" ]]; then
+              if [[ "$REPLACE_EXISTING_FILES" == "false" ]]; then
+                echo "\"deleteExtraFiles\"" can be used only when \"replaceExistingFiles\"" is true"
+                exit 1
+              fi
+            # When deleteExtraFiles is requested, use rsync
+            gsutil -m rsync -d -r "${SOURCE}" "${LOCATION}"
+          else
+            gsutil -m cp ${CP_PARAMS} -r "${SOURCE}" "${LOCATION}"
+          fi
+        else
+          # Copying one file
+          gsutil cp ${CP_PARAMS} "${SOURCE}" "${LOCATION}"
+        fi

@@ -10,20 +10,21 @@ metadata:
     tekton.dev/tags: gcp
     tekton.dev/platforms: "linux/amd64"
     tekton.dev/displayName: "gcloud"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This task performs operations on Google Cloud Platform resources using gcloud.
 
   params:
-  - name: gcloud-image
-    description: gcloud CLI container image to run this task
-    default: gcr.io/google.com/cloudsdktool/cloud-sdk:slim@sha256:88cc5b95f90ed70d0827b21fb12091f2e30a5d7a585ecafe5f71cdd5d6caa88d #tag: slim, 374.0.0-slim
-  - name: ARGS
-    type: array
-    description: gcloud CLI arguments to run
-    default: ["help"]
+    - name: gcloud-image
+      description: gcloud CLI container image to run this task
+      default: gcr.io/google.com/cloudsdktool/cloud-sdk:slim@sha256:88cc5b95f90ed70d0827b21fb12091f2e30a5d7a585ecafe5f71cdd5d6caa88d #tag: slim, 374.0.0-slim
+    - name: ARGS
+      type: array
+      description: gcloud CLI arguments to run
+      default: ["help"]
   steps:
-  - name: gcloud
-    image: "$(params.gcloud-image)"
-    command: ["/usr/bin/gcloud"]
-    args: ["$(params.ARGS)"]
+    - name: gcloud
+      image: "$(params.gcloud-image)"
+      command: ["/usr/bin/gcloud"]
+      args: ["$(params.ARGS)"]

@@ -11,52 +11,53 @@ metadata:
     tekton.dev/tags: gate, prometheus
     tekton.dev/displayName: prometheus gate
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/prometheus.svg"
 spec:
   description: >-
     A gate task which will query the prometheus API in a loop and await a matching status for N length of time.
 
   params:
-  - name: prometheus_endpoint
-    type: string
-    description: Prometheus API endpoint
-  - name: range_query
-    type: string
-    description: range query to use to define SLO
-  - name: range_time
-    type: string
-    description: time we want to assert fits the SLO
-    default: "-10m"
-  - name: target_value
-    type: string
-    description: value we will use as threshold
-    default: "1"
-  - name: target_strategy
-    type: string
-    description: The target_strategy is min,max or equal
-    default: "min"
-  - name: timeout
-    type: string
-    description: timeout of the gate
-    default: "3600"
-  - name: tick_time
-    type: string
-    description: how often to draw data from prometheus
-    default: "1m"
+    - name: prometheus_endpoint
+      type: string
+      description: Prometheus API endpoint
+    - name: range_query
+      type: string
+      description: range query to use to define SLO
+    - name: range_time
+      type: string
+      description: time we want to assert fits the SLO
+      default: "-10m"
+    - name: target_value
+      type: string
+      description: value we will use as threshold
+      default: "1"
+    - name: target_strategy
+      type: string
+      description: The target_strategy is min,max or equal
+      default: "min"
+    - name: timeout
+      type: string
+      description: timeout of the gate
+      default: "3600"
+    - name: tick_time
+      type: string
+      description: how often to draw data from prometheus
+      default: "1m"
   steps:
-  - name: gate
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/iancoffey/prometheus-gate-cf7c3e662ede0a4e9bc24d37d2af86d6"
-    env:
-    - name: "PROMETHEUS_ENDPOINT"
-      value: $(params.prometheus_endpoint)
-    - name: "RANGE_QUERY"
-      value: $(params.range_query)
-    - name: "RANGE_TIME"
-      value: $(params.range_time)
-    - name: "TARGET_VALUE"
-      value: $(params.target_value)
-    - name: "TARGET_STRATEGY"
-      value: $(params.target_strategy)
-    - name: "TIMEOUT"
-      value: $(params.timeout)
-    - name: "TICK_TIME"
-      value: $(params.tick_time)
+    - name: gate
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/iancoffey/prometheus-gate-cf7c3e662ede0a4e9bc24d37d2af86d6"
+      env:
+        - name: "PROMETHEUS_ENDPOINT"
+          value: $(params.prometheus_endpoint)
+        - name: "RANGE_QUERY"
+          value: $(params.range_query)
+        - name: "RANGE_TIME"
+          value: $(params.range_time)
+        - name: "TARGET_VALUE"
+          value: $(params.target_value)
+        - name: "TARGET_STRATEGY"
+          value: $(params.target_strategy)
+        - name: "TIMEOUT"
+          value: $(params.timeout)
+        - name: "TICK_TIME"
+          value: $(params.tick_time)

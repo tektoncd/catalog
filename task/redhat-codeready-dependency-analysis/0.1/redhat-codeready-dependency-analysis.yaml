@@ -12,6 +12,7 @@ metadata:
     tekton.dev/tags: Security, Vulnenrability, CVE
     tekton.dev/displayName: "RedHat CodeReady Dependency Analysis"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/redhat.svg"
 spec:
   description: >-
     The RedHat CodeReady Dependency Analysis task is an interface between Tekton and Red Hat CodeReady Dependency Analytics platform.

@@ -11,6 +11,7 @@ metadata:
     tekton.dev/tags: cli
     tekton.dev/displayName: "terraform cli"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/terraform.svg"
 spec:
   description: >-
     Terraform is an open-source infrastructure as code software tool created by HashiCorp.
@@ -20,33 +21,33 @@ spec:
 
     This Task will do a terraform init before it executes the actual configured ARGS from parameter.
   workspaces:
-  - name: source
+    - name: source
   params:
-  - name: ARGS
-    description: The terraform cli commands to tun
-    type: array
-    default:
-    - "--help"
-  - name: terraform-secret
-    description: The terraform secret with credentials
-    type: string
-    default: "terraform-creds"
-  - name: image
-    description: the terraform image to use
-    type: string
-    default: docker.io/hashicorp/terraform:light
-  - name: httpProxy
-    description: HTTP proxy server for non-SSL requests
-    type: string
-    default: ""
-  - name: httpsProxy
-    description: HTTPS proxy server for SSL requests
-    type: string
-    default: ""
-  - name: noProxy
-    description: no proxy - opt out of proxying HTTP/HTTPS requests
-    type: string
-    default: ""
+    - name: ARGS
+      description: The terraform cli commands to tun
+      type: array
+      default:
+        - "--help"
+    - name: terraform-secret
+      description: The terraform secret with credentials
+      type: string
+      default: "terraform-creds"
+    - name: image
+      description: the terraform image to use
+      type: string
+      default: docker.io/hashicorp/terraform:light
+    - name: httpProxy
+      description: HTTP proxy server for non-SSL requests
+      type: string
+      default: ""
+    - name: httpsProxy
+      description: HTTPS proxy server for SSL requests
+      type: string
+      default: ""
+    - name: noProxy
+      description: no proxy - opt out of proxying HTTP/HTTPS requests
+      type: string
+      default: ""
   steps:
     - name: init
       image: $(params.image)

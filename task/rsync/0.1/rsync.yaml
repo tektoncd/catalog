@@ -11,9 +11,10 @@ metadata:
     tekton.dev/categories: CLI
     tekton.dev/displayName: "rsync"
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le,linux/arm64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
-        This task can be used to synchronize local and remote files.
+    This task can be used to synchronize local and remote files.
   workspaces:
     - name: source
       description: The directory you want to sync.
@@ -40,18 +41,18 @@ spec:
     - name: rsync
       image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/shaowenchen/rsync-sshpass:v1"
       env:
-      - name: SSH_DIRECTORY_PATH
-        value: $(workspaces.ssh-directory.path)
+        - name: SSH_DIRECTORY_PATH
+          value: $(workspaces.ssh-directory.path)
       workingDir: $(workspaces.source.path)
       script: |
-          cp -R "${SSH_DIRECTORY_PATH}" "$HOME"/.ssh
-          chmod 700 "$HOME"/.ssh
-          chmod -R 400 "$HOME"/.ssh/*
+        cp -R "${SSH_DIRECTORY_PATH}" "$HOME"/.ssh
+        chmod 700 "$HOME"/.ssh
+        chmod -R 400 "$HOME"/.ssh/*
 
-          if [ "$(params.direction)" = "remote-to-local" ] ; then
-            echo "remote to local"
-            rsync -ratlzv -e "ssh -o StrictHostKeyChecking=no -i $HOME/.ssh/id_rsa" "$(params.remote-username)"@"$(params.remote-ip)":"$(params.remote-path)"/ "$(params.local-path)"
-          else
-            echo "local to remote"
-            rsync -ratlzv -e "ssh -o StrictHostKeyChecking=no -i $HOME/.ssh/id_rsa" "$(params.local-path)" "$(params.remote-username)"@"$(params.remote-ip)":"$(params.remote-path)"/
-          fi
+        if [ "$(params.direction)" = "remote-to-local" ] ; then
+          echo "remote to local"
+          rsync -ratlzv -e "ssh -o StrictHostKeyChecking=no -i $HOME/.ssh/id_rsa" "$(params.remote-username)"@"$(params.remote-ip)":"$(params.remote-path)"/ "$(params.local-path)"
+        else
+          echo "local to remote"
+          rsync -ratlzv -e "ssh -o StrictHostKeyChecking=no -i $HOME/.ssh/id_rsa" "$(params.local-path)" "$(params.remote-username)"@"$(params.remote-ip)":"$(params.remote-path)"/
+        fi

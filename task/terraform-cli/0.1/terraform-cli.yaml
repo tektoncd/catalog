@@ -11,6 +11,7 @@ metadata:
     tekton.dev/tags: cli
     tekton.dev/displayName: "terraform cli"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/terraform.svg"
 spec:
   description: >-
     Terraform is an open-source infrastructure as codesoftware tool created by HashiCorp.
@@ -19,17 +20,17 @@ spec:
     configuration language known as Hashicorp Configuration Language (HCL), or optionally JSON
 
   workspaces:
-  - name: source
+    - name: source
   params:
-  - name: ARGS
-    description: The terraform cli commands to tun
-    type: array
-    default:
-    - "--help"
-  - name: terraform-secret
-    description: The terraform secret with credentials
-    type: string
-    default: "terraform-creds"
+    - name: ARGS
+      description: The terraform cli commands to tun
+      type: array
+      default:
+        - "--help"
+    - name: terraform-secret
+      description: The terraform secret with credentials
+      type: string
+      default: "terraform-creds"
   steps:
     - name: init
       image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/quay.io/rcmendes/terraform-cli" #tag: latest

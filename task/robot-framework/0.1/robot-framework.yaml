@@ -11,6 +11,7 @@ metadata:
     tekton.dev/tags: python, robot-framework
     tekton.dev/displayName: robot-framework
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/robotframework.svg"
 spec:
   description: >-
     This task will run Robot Framework tests in the source workspace.

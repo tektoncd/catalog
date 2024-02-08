@@ -9,6 +9,8 @@ metadata:
     tekton.dev/categories: Code Quality, Kubernetes
     tekton.dev/tags: test
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/displayName: "kubeval"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This task makes it possible to use Kubeval within your Tekton pipelines.
@@ -18,24 +20,24 @@ spec:
     files and validate them against the Kubernetes schemas.
 
   workspaces:
-  - name: source
+    - name: source
   params:
-  - name: files
-    default: "."
-  - name: output
-    default: "stdout"
-  - name: args
-    type: array
-    default: []
+    - name: files
+      default: "."
+    - name: output
+      default: "stdout"
+    - name: args
+      type: array
+      default: []
 
   steps:
-  - name: kubeval
-    workingDir: $(workspaces.source.path)
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/garethr/kubeval:0.15.0" #tag: 0.15.0
-    command:
-      - kubeval
-      - -d
-      - $(params.files)
-      - -o
-      - $(params.output)
-      - $(params.args)
+    - name: kubeval
+      workingDir: $(workspaces.source.path)
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/garethr/kubeval:0.15.0" #tag: 0.15.0
+      command:
+        - kubeval
+        - -d
+        - $(params.files)
+        - -o
+        - $(params.output)
+        - $(params.args)

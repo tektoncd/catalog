@@ -9,6 +9,8 @@ metadata:
     tekton.dev/categories: Cloud
     tekton.dev/tags: "boskos,test"
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/displayName: "bosko-acquire"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: |
     Acquire a project using Boskos.
@@ -17,49 +19,49 @@ spec:
     server-url. If successful, it will start a pod that will run the boskosctl heartbeat
     command. When you are done with the resource, release it with boskos-release.
   params:
-  - name: server-url
-    description: The URL of the running boskos server
-    default: "http://boskos.test-pods.svc.cluster.local"
-  - name: type
-    description: |
-      The type of resource to request. Resource types are specified in the resource
-      ConfigMap provided to the Boskos server.
-    default: gke-project
-  - name: owner-name
-    description: A string that identifies the owner of the leased resource to request.
+    - name: server-url
+      description: The URL of the running boskos server
+      default: "http://boskos.test-pods.svc.cluster.local"
+    - name: type
+      description: |
+        The type of resource to request. Resource types are specified in the resource
+        ConfigMap provided to the Boskos server.
+      default: gke-project
+    - name: owner-name
+      description: A string that identifies the owner of the leased resource to request.
   results:
-  - name: leased-resource
-    description: The name of the leased resource
+    - name: leased-resource
+      description: The name of the leased resource
   steps:
-  - name: boskosctl-acquire
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/k8s-staging-boskos/boskosctl"
-    script: |
-      RESOURCE=$(boskosctl acquire \
-        --server-url=$(params.server-url) \
-        --owner-name=$(params.owner-name) \
-        --type=$(params.type) \
-        --state=free \
-        --target-state=busy)
-      echo $RESOURCE > /workspace/full-resource-output.json
-      echo $RESOURCE | jq -rj ".name" > $(results.leased-resource.path)
-  - name: create-heartbeat-pod-yaml
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/lachlanevenson/k8s-kubectl"
-    script: |
-      FULL_RESOURCE_OUTPUT=$(cat /workspace/full-resource-output.json)
-      LEASED_RESOURCE=$(cat $(results.leased-resource.path))
-      cat <<EOF | kubectl apply -f -
-      apiVersion: v1
-      kind: Pod
-      metadata:
-        name: boskos-heartbeat-$LEASED_RESOURCE
-      spec:
-        containers:
-        - name: heartbeat
-          image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/k8s-staging-boskos/boskosctl"
-          args:
-          - heartbeat
-          - --server-url=$(params.server-url)
-          - --owner-name=$(params.owner-name)
-          - --resource=$FULL_RESOURCE_OUTPUT
-          - --period=5m
-      EOF
+    - name: boskosctl-acquire
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/k8s-staging-boskos/boskosctl"
+      script: |
+        RESOURCE=$(boskosctl acquire \
+          --server-url=$(params.server-url) \
+          --owner-name=$(params.owner-name) \
+          --type=$(params.type) \
+          --state=free \
+          --target-state=busy)
+        echo $RESOURCE > /workspace/full-resource-output.json
+        echo $RESOURCE | jq -rj ".name" > $(results.leased-resource.path)
+    - name: create-heartbeat-pod-yaml
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/lachlanevenson/k8s-kubectl"
+      script: |
+        FULL_RESOURCE_OUTPUT=$(cat /workspace/full-resource-output.json)
+        LEASED_RESOURCE=$(cat $(results.leased-resource.path))
+        cat <<EOF | kubectl apply -f -
+        apiVersion: v1
+        kind: Pod
+        metadata:
+          name: boskos-heartbeat-$LEASED_RESOURCE
+        spec:
+          containers:
+          - name: heartbeat
+            image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/gcr.io/k8s-staging-boskos/boskosctl"
+            args:
+            - heartbeat
+            - --server-url=$(params.server-url)
+            - --owner-name=$(params.owner-name)
+            - --resource=$FULL_RESOURCE_OUTPUT
+            - --period=5m
+        EOF

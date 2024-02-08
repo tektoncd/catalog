@@ -7,9 +7,11 @@ metadata:
     app.kubernetes.io/version: "0.1"
   annotations:
     tekton.dev/categories: Automation, Integration & Delivery
+    tekton.dev/displayName: "bentoml"
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: cli
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This task allows operations on BentoML services
@@ -21,22 +23,22 @@ spec:
     CI/CD pipelines. This task offers a new pattern for data scientists.
 
   params:
-  - name: ARGS
-    type: array
-    description: BentoML CLI arguments to run
-  - name: YATAISERVICE
-    type: string
-    description: BentoML CLI arguments to run
-    default: ""
+    - name: ARGS
+      type: array
+      description: BentoML CLI arguments to run
+    - name: YATAISERVICE
+      type: string
+      description: BentoML CLI arguments to run
+      default: ""
   steps:
-  - name: bento
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/iancoffey/bentoml-python3" #tag: latest
-    command: ["bentoml"]
-    args: ["$(inputs.params.ARGS)"]
-    env:
-      - name: "BENTOML__YATAI_SERVICE__URL"
-        value: "$(inputs.params.YATAISERVICE)"
+    - name: bento
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/iancoffey/bentoml-python3" #tag: latest
+      command: ["bentoml"]
+      args: ["$(inputs.params.ARGS)"]
+      env:
+        - name: "BENTOML__YATAI_SERVICE__URL"
+          value: "$(inputs.params.YATAISERVICE)"
   workspaces:
-  - name: bentoml
-    description: The folder where bentoml will write state to
-    mountPath: /workspace/bentoml
+    - name: bentoml
+      description: The folder where bentoml will write state to
+      mountPath: /workspace/bentoml

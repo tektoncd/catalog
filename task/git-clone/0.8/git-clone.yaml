@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: git
     tekton.dev/displayName: "git clone"
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le,linux/arm64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     These Tasks are Git tasks to work with repositories used by other tasks
@@ -117,52 +118,52 @@ spec:
     - name: clone
       image: "$(params.gitInitImage)"
       env:
-      - name: HOME
-        value: "$(params.userHome)"
-      - name: PARAM_URL
-        value: $(params.url)
-      - name: PARAM_REVISION
-        value: $(params.revision)
-      - name: PARAM_REFSPEC
-        value: $(params.refspec)
-      - name: PARAM_SUBMODULES
-        value: $(params.submodules)
-      - name: PARAM_DEPTH
-        value: $(params.depth)
-      - name: PARAM_SSL_VERIFY
-        value: $(params.sslVerify)
-      - name: PARAM_CRT_FILENAME
-        value: $(params.crtFileName)
-      - name: PARAM_SUBDIRECTORY
-        value: $(params.subdirectory)
-      - name: PARAM_DELETE_EXISTING
-        value: $(params.deleteExisting)
-      - name: PARAM_HTTP_PROXY
-        value: $(params.httpProxy)
-      - name: PARAM_HTTPS_PROXY
-        value: $(params.httpsProxy)
-      - name: PARAM_NO_PROXY
-        value: $(params.noProxy)
-      - name: PARAM_VERBOSE
-        value: $(params.verbose)
-      - name: PARAM_SPARSE_CHECKOUT_DIRECTORIES
-        value: $(params.sparseCheckoutDirectories)
-      - name: PARAM_USER_HOME
-        value: $(params.userHome)
-      - name: WORKSPACE_OUTPUT_PATH
-        value: $(workspaces.output.path)
-      - name: WORKSPACE_SSH_DIRECTORY_BOUND
-        value: $(workspaces.ssh-directory.bound)
-      - name: WORKSPACE_SSH_DIRECTORY_PATH
-        value: $(workspaces.ssh-directory.path)
-      - name: WORKSPACE_BASIC_AUTH_DIRECTORY_BOUND
-        value: $(workspaces.basic-auth.bound)
-      - name: WORKSPACE_BASIC_AUTH_DIRECTORY_PATH
-        value: $(workspaces.basic-auth.path)
-      - name: WORKSPACE_SSL_CA_DIRECTORY_BOUND
-        value: $(workspaces.ssl-ca-directory.bound)
-      - name: WORKSPACE_SSL_CA_DIRECTORY_PATH
-        value: $(workspaces.ssl-ca-directory.path)
+        - name: HOME
+          value: "$(params.userHome)"
+        - name: PARAM_URL
+          value: $(params.url)
+        - name: PARAM_REVISION
+          value: $(params.revision)
+        - name: PARAM_REFSPEC
+          value: $(params.refspec)
+        - name: PARAM_SUBMODULES
+          value: $(params.submodules)
+        - name: PARAM_DEPTH
+          value: $(params.depth)
+        - name: PARAM_SSL_VERIFY
+          value: $(params.sslVerify)
+        - name: PARAM_CRT_FILENAME
+          value: $(params.crtFileName)
+        - name: PARAM_SUBDIRECTORY
+          value: $(params.subdirectory)
+        - name: PARAM_DELETE_EXISTING
+          value: $(params.deleteExisting)
+        - name: PARAM_HTTP_PROXY
+          value: $(params.httpProxy)
+        - name: PARAM_HTTPS_PROXY
+          value: $(params.httpsProxy)
+        - name: PARAM_NO_PROXY
+          value: $(params.noProxy)
+        - name: PARAM_VERBOSE
+          value: $(params.verbose)
+        - name: PARAM_SPARSE_CHECKOUT_DIRECTORIES
+          value: $(params.sparseCheckoutDirectories)
+        - name: PARAM_USER_HOME
+          value: $(params.userHome)
+        - name: WORKSPACE_OUTPUT_PATH
+          value: $(workspaces.output.path)
+        - name: WORKSPACE_SSH_DIRECTORY_BOUND
+          value: $(workspaces.ssh-directory.bound)
+        - name: WORKSPACE_SSH_DIRECTORY_PATH
+          value: $(workspaces.ssh-directory.path)
+        - name: WORKSPACE_BASIC_AUTH_DIRECTORY_BOUND
+          value: $(workspaces.basic-auth.bound)
+        - name: WORKSPACE_BASIC_AUTH_DIRECTORY_PATH
+          value: $(workspaces.basic-auth.path)
+        - name: WORKSPACE_SSL_CA_DIRECTORY_BOUND
+          value: $(workspaces.ssl-ca-directory.bound)
+        - name: WORKSPACE_SSL_CA_DIRECTORY_PATH
+          value: $(workspaces.ssl-ca-directory.path)
       securityContext:
         runAsNonRoot: true
         runAsUser: 65532

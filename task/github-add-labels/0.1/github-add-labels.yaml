@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: github
     tekton.dev/displayName: "add github label"
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This Task will add a label to an issue in Github.
@@ -19,34 +20,34 @@ spec:
     secret `github` with a Github token in the key `token`.
 
   params:
-  - name: GITHUB_HOST_URL
-    description: |
-      The GitHub host, adjust this if you run a GitHub enteprise.
-    default: "api.github.com"
-    type: string
-  - name: API_PATH_PREFIX
-    description: |
-      The API path prefix, GitHub Enterprise has a prefix e.g. /api/v3
-    default: ""
-    type: string
-  - name: REQUEST_URL
-    description: |
-      The GitHub issue or pull request URL where we want to add labels.
-    type: string
-  - name: LABELS
-    description: |
-      The actual labels to add.
-    type: array
-  - name: GITHUB_TOKEN_SECRET
-    description: |
-      Name of the secret holding the github-token.
-    type: string
-    default: github
-  - name: GITHUB_TOKEN_SECRET_KEY
-    description: |
-      Name of the secret key holding the github-token.
-    type: string
-    default: token
+    - name: GITHUB_HOST_URL
+      description: |
+        The GitHub host, adjust this if you run a GitHub enteprise.
+      default: "api.github.com"
+      type: string
+    - name: API_PATH_PREFIX
+      description: |
+        The API path prefix, GitHub Enterprise has a prefix e.g. /api/v3
+      default: ""
+      type: string
+    - name: REQUEST_URL
+      description: |
+        The GitHub issue or pull request URL where we want to add labels.
+      type: string
+    - name: LABELS
+      description: |
+        The actual labels to add.
+      type: array
+    - name: GITHUB_TOKEN_SECRET
+      description: |
+        Name of the secret holding the github-token.
+      type: string
+      default: github
+    - name: GITHUB_TOKEN_SECRET_KEY
+      description: |
+        Name of the secret key holding the github-token.
+      type: string
+      default: token
   steps:
     - name: add-labels
       image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/registry.access.redhat.com/ubi8/ubi:8.2"

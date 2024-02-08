@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: gitlab
     tekton.dev/displayName: "create gitlab release"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/gitlab.svg"
 spec:
   description: >-
     This `task` can be used to make a gitlab release.

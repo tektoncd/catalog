@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: image-build
     tekton.dev/displayName: "Build and upload container image using Kaniko"
     tekton.dev/platforms: "linux/amd64,linux/arm64,linux/ppc64le"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This Task builds a simple Dockerfile with kaniko and pushes to a registry.

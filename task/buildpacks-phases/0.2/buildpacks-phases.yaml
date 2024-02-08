@@ -11,6 +11,7 @@ metadata:
     tekton.dev/tags: image-build
     tekton.dev/displayName: "Buildpacks (phases)"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     The Buildpacks-Phases task builds source into a container image and pushes it to

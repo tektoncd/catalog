@@ -11,6 +11,7 @@ metadata:
     tekton.dev/tags: build
     tekton.dev/displayName: "upload pypi"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This Task publishes Python packages to PyPI index using Twine utility module.
@@ -19,52 +20,52 @@ spec:
     artifacts for both new and existing projects.
 
   params:
-  - name: TWINE_REPOSITORY_URL
-    description: The repository (package index) to upload the package to.
-    default: "https://upload.pypi.org/legacy/"
-    type: string
+    - name: TWINE_REPOSITORY_URL
+      description: The repository (package index) to upload the package to.
+      default: "https://upload.pypi.org/legacy/"
+      type: string
 
   workspaces:
-  - name: source
+    - name: source
 
   steps:
-  - name: build-package
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/quay.io/thoth-station/twine" #tag: latest
-    workingDir: $(workspaces.source.path)
-    script: |
-      python setup.py sdist bdist_wheel
+    - name: build-package
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/quay.io/thoth-station/twine" #tag: latest
+      workingDir: $(workspaces.source.path)
+      script: |
+        python setup.py sdist bdist_wheel
 
-  - name: upload-package
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/quay.io/thoth-station/twine" #tag: latest
-    workingDir: $(workspaces.source.path)
-    env:
-    - name: TWINE_REPOSITORY_URL
-      value: $(params.TWINE_REPOSITORY_URL)
-    - name: TWINE_USERNAME
-      valueFrom:
-        secretKeyRef:
-          name: pypi-secret
-          key: username
-    - name: TWINE_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: pypi-secret
-          key: password
-    script: |
-      twine upload --disable-progress-bar dist/*
-      # Now write out all our results, stripping newlines.
-      # sdist files are .tar.gz's
-      sha256sum dist/*.tar.gz | tr -d '\n' | tee $(results.sdist_sha.path)
-      # bdist files are .whls's
-      sha256sum dist/*.whl | tr -d '\n' | tee $(results.bdist_sha.path)
-      python setup.py --name | tr -d '\n' | tee $(results.package_name.path)
-      python setup.py --version | tr -d '\n' | tee $(results.package_version.path)
+    - name: upload-package
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/quay.io/thoth-station/twine" #tag: latest
+      workingDir: $(workspaces.source.path)
+      env:
+        - name: TWINE_REPOSITORY_URL
+          value: $(params.TWINE_REPOSITORY_URL)
+        - name: TWINE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: pypi-secret
+              key: username
+        - name: TWINE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pypi-secret
+              key: password
+      script: |
+        twine upload --disable-progress-bar dist/*
+        # Now write out all our results, stripping newlines.
+        # sdist files are .tar.gz's
+        sha256sum dist/*.tar.gz | tr -d '\n' | tee $(results.sdist_sha.path)
+        # bdist files are .whls's
+        sha256sum dist/*.whl | tr -d '\n' | tee $(results.bdist_sha.path)
+        python setup.py --name | tr -d '\n' | tee $(results.package_name.path)
+        python setup.py --version | tr -d '\n' | tee $(results.package_version.path)
   results:
-  - name: sdist_sha
-    description: sha256 (and filename) of the sdist package
-  - name: bdist_sha
-    description: sha256 (and filename) of the bdist package
-  - name: package_name
-    description: name of the uploaded package
-  - name: package_version
-    description: version of the uploaded package
+    - name: sdist_sha
+      description: sha256 (and filename) of the sdist package
+    - name: bdist_sha
+      description: sha256 (and filename) of the bdist package
+    - name: package_name
+      description: name of the uploaded package
+    - name: package_version
+      description: version of the uploaded package

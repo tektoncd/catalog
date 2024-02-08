@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: test
     tekton.dev/displayName: "helm conftest"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     These tasks make it possible to use Conftest within your Tekton pipelines
@@ -17,28 +18,28 @@ spec:
     Conftest is a tool for testing configuration files using Open Policy Agent.
 
   workspaces:
-  - name: source
+    - name: source
   params:
-  - name: chart
-    default: "."
-  - name: policy
-    default: "policy"
-  - name: output
-    default: "stdout"
-  - name: args
-    type: array
-    default: []
+    - name: chart
+      default: "."
+    - name: policy
+      default: "policy"
+    - name: output
+      default: "stdout"
+    - name: args
+      type: array
+      default: []
 
   steps:
-  - name: helm-conftest
-    workingDir: $(workspaces.source.path)
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/instrumenta/helm-conftest"
-    command:
-      - helm
-      - conftest
-      - $(params.chart)
-      - -p
-      - $(params.policy)
-      - -o
-      - $(params.output)
-      - $(params.args)
+    - name: helm-conftest
+      workingDir: $(workspaces.source.path)
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/instrumenta/helm-conftest"
+      command:
+        - helm
+        - conftest
+        - $(params.chart)
+        - -p
+        - $(params.policy)
+        - -o
+        - $(params.output)
+        - $(params.args)

@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: security
     tekton.dev/displayName: "sonarqube scanner"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/sonarqube.svg"
 spec:
   description: >-
     The following task can be used to perform static analysis on the source code

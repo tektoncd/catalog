@@ -9,6 +9,8 @@ metadata:
     tekton.dev/categories: Messaging
     tekton.dev/tags: messaging
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
+    tekton.dev/displayName: "send-to-telegram"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/telegram.svg"
 spec:
   description: >-
     These tasks post a simple message to a telegram chat.
@@ -16,30 +18,30 @@ spec:
     This task uses the Bot API of telegram to send a message.
 
   params:
-  - name: bot-token-secret
-    type: string
-    description: Token of the bot through
-  - name: chat-id
-    type: string
-    description: ID of the chat to send the message towards
-  - name: message
-    type: string
-    description: The message to notify about
+    - name: bot-token-secret
+      type: string
+      description: Token of the bot through
+    - name: chat-id
+      type: string
+      description: ID of the chat to send the message towards
+    - name: message
+      type: string
+      description: The message to notify about
   steps:
-  - name: post
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/curlimages/curl:7.70.0" #tag: 7.70.0
-    script: |
-      #!/bin/sh
-      MESSAGE=`echo $MESSAGE | sed -e 's/\"/\\\\"/g'`
-      JSON="{\"chat_id\": ${CHAT_ID}, \"text\": \"${MESSAGE}\" }"
-      curl -X POST -H 'Content-Type: application/json' -d "${JSON}" https://api.telegram.org/bot${BOT_TOKEN}/sendMessage
-    env:
-    - name: BOT_TOKEN
-      valueFrom:
-        secretKeyRef:
-          name: $(params.bot-token-secret)
-          key: token
-    - name: CHAT_ID
-      value: $(params.chat-id)
-    - name: MESSAGE
-      value: $(params.message)
+    - name: post
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/curlimages/curl:7.70.0" #tag: 7.70.0
+      script: |
+        #!/bin/sh
+        MESSAGE=`echo $MESSAGE | sed -e 's/\"/\\\\"/g'`
+        JSON="{\"chat_id\": ${CHAT_ID}, \"text\": \"${MESSAGE}\" }"
+        curl -X POST -H 'Content-Type: application/json' -d "${JSON}" https://api.telegram.org/bot${BOT_TOKEN}/sendMessage
+      env:
+        - name: BOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: $(params.bot-token-secret)
+              key: token
+        - name: CHAT_ID
+          value: $(params.chat-id)
+        - name: MESSAGE
+          value: $(params.message)

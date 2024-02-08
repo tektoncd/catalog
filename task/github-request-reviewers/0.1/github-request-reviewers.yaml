@@ -11,6 +11,7 @@ metadata:
     tekton.dev/tags: github
     tekton.dev/displayName: "request github reviewers"
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This Task will request reviewers for a GitHub PR
@@ -63,53 +64,53 @@ spec:
       default: token
 
   steps:
-  - name: set-reviewers
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/library/python:3.9-alpine3.13"
-    script: |
-      #!/usr/bin/env python
-      import json
-      import http.client
+    - name: set-reviewers
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/library/python:3.9-alpine3.13"
+      script: |
+        #!/usr/bin/env python
+        import json
+        import http.client
 
-      # Load the GitHub Token
-      github_token = ""
-      with open("$(workspaces.github.path)/$(params.GITHUB_TOKEN_FILE)", "r") as gh:
-        github_token = gh.read()
+        # Load the GitHub Token
+        github_token = ""
+        with open("$(workspaces.github.path)/$(params.GITHUB_TOKEN_FILE)", "r") as gh:
+          github_token = gh.read()
 
-      # Implement the request reviewers GitHub API
-      # https://docs.github.com/en/rest/reference/pulls#request-reviewers-for-a-pull-request
-      reviewers_url = "{prefix}/repos/{package}/pulls/{pull_number}/requested_reviewers".format(
-        prefix="$(params.API_PATH_PREFIX)", package="$(params.PACKAGE)",
-        pull_number="$(params.PULL_REQUEST_NUMBER)")
+        # Implement the request reviewers GitHub API
+        # https://docs.github.com/en/rest/reference/pulls#request-reviewers-for-a-pull-request
+        reviewers_url = "{prefix}/repos/{package}/pulls/{pull_number}/requested_reviewers".format(
+          prefix="$(params.API_PATH_PREFIX)", package="$(params.PACKAGE)",
+          pull_number="$(params.PULL_REQUEST_NUMBER)")
 
-      reviewers = "$(params.REVIEWERS)".split(",")
-      team_reviewers = "$(params.TEAM_REVIEWERS)".split(",")
+        reviewers = "$(params.REVIEWERS)".split(",")
+        team_reviewers = "$(params.TEAM_REVIEWERS)".split(",")
 
-      data = dict()
-      if reviewers:
-        data["reviewers"] = reviewers
-      if team_reviewers:
-        data["team_reviewers"] = team_reviewers
+        data = dict()
+        if reviewers:
+          data["reviewers"] = reviewers
+        if team_reviewers:
+          data["team_reviewers"] = team_reviewers
 
-      print("Sending this data to GitHub: ")
-      print(data)
+        print("Sending this data to GitHub: ")
+        print(data)
 
-      if "$(params.GITHUB_HOST_URL)".startswith("http://"):
-        conn = http.client.HTTPConnection("$(params.GITHUB_HOST_URL)".replace("http://", ""))
-      else:
-        conn = http.client.HTTPSConnection("$(params.GITHUB_HOST_URL)")
-      r = conn.request(
-          "POST",
-          reviewers_url,
-          body=json.dumps(data),
-          headers={
-              "User-Agent": "TektonCD, the peaceful cat",
-              "Authorization": "Bearer " + github_token,
-              "Accept": "application/vnd.github.v3+json ",
-          })
-      resp = conn.getresponse()
-      if not str(resp.status).startswith("2"):
-          print("Error: %d" % (resp.status))
-          print(resp.read())
-      else:
-        print("Reviewers {}, {} have been requested for PR {} on {}".format(
-          reviewers, team_reviewers, $(params.PULL_REQUEST_NUMBER), "$(params.PACKAGE)"))
+        if "$(params.GITHUB_HOST_URL)".startswith("http://"):
+          conn = http.client.HTTPConnection("$(params.GITHUB_HOST_URL)".replace("http://", ""))
+        else:
+          conn = http.client.HTTPSConnection("$(params.GITHUB_HOST_URL)")
+        r = conn.request(
+            "POST",
+            reviewers_url,
+            body=json.dumps(data),
+            headers={
+                "User-Agent": "TektonCD, the peaceful cat",
+                "Authorization": "Bearer " + github_token,
+                "Accept": "application/vnd.github.v3+json ",
+            })
+        resp = conn.getresponse()
+        if not str(resp.status).startswith("2"):
+            print("Error: %d" % (resp.status))
+            print(resp.read())
+        else:
+          print("Reviewers {}, {} have been requested for PR {} on {}".format(
+            reviewers, team_reviewers, $(params.PULL_REQUEST_NUMBER), "$(params.PACKAGE)"))

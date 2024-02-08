@@ -9,6 +9,8 @@ metadata:
     tekton.dev/categories: Image Build
     tekton.dev/tags: image-build
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/displayName: "s2i"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     Source-to-Image (S2I) is a toolkit and workflow for building reproducible
@@ -73,10 +75,10 @@ spec:
           $(params.IMAGE) docker://$(params.IMAGE)
         cat $(workspaces.source.path)/image-digest | tee $(results.IMAGE_DIGEST.path)
       volumeMounts:
-      - name: varlibcontainers
-        mountPath: /var/lib/containers
-      - mountPath: /gen-source
-        name: gen-source
+        - name: varlibcontainers
+          mountPath: /var/lib/containers
+        - mountPath: /gen-source
+          name: gen-source
       securityContext:
         privileged: true
   volumes:

@@ -9,8 +9,9 @@ metadata:
     tekton.dev/categories: Cloud, Kubernetes
     tekton.dev/pipelines.minVersion: "0.16.0"
     tekton.dev/tags: "orka, macstadium, init, setup"
-    tekton.dev/displayName: "orka init"
+    tekton.dev/displayName: "MacStadium Orka Init"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/orka.svg"
 spec:
   description: >-
     With this set of Tasks, you can use your Orka environment

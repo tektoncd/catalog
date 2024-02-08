@@ -9,6 +9,8 @@ metadata:
     tekton.dev/categories: Automation, Continuous Integration
     tekton.dev/tags: jenkins, build
     tekton.dev/displayName: "trigger jenkins job"
+    tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/jenkins.svg"
 spec:
   description: >-
     The following task can be used to trigger a Jenkins job using

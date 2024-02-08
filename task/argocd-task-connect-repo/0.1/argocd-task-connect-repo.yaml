@@ -11,6 +11,7 @@ metadata:
     tekton.dev/tags: generic
     tekton.dev/displayName: "argocd-repository"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/argocd.svg"
 spec:
   description: >-
     This task adds an http repo in Argo CD.
@@ -37,9 +38,9 @@ spec:
   stepTemplate:
     envFrom:
       - configMapRef:
-          name: argocd-env-configmap  # used for server address
+          name: argocd-env-configmap # used for server address
       - secretRef:
-          name: argocd-env-secret  # used for authentication (username/password or auth token)
+          name: argocd-env-secret # used for authentication (username/password or auth token)
   steps:
     - name: connect-repo
       image: quay.io/argoproj/argocd:$(params.argocd-version)

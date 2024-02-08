@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: "aws, eks"
     tekton.dev/displayName: "EKS Cluster Create"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: |
     Create an EKS cluster.
@@ -17,56 +18,56 @@ spec:
     This Task can be used to create an EKS cluster in an AWS account and fetch a kubeconfig that
     can be used (in a context with kubectl) to make requests to the cluster.
   params:
-  - name: cluster-name
-    description: The name of the EKS cluster you want to spin.
-  - name: version
-    default: "1.17"
-    description: The EKS version to install.
-  - name: region
-    default: us-west-2
-    description: The region where the cluster is in.
-  - name: zones
-    default: us-west-2a,us-west-2b,us-west-2c
-    description: The zones where the cluster is in.
-  - name: nodegroup-name
-    default: linux-nodes
-    description: The name of the nodegroup of the cluster.
-  - name: node-type
-    default: m5.xlarge
-    description: The type of the EC2 instaces for the nodegroup of the cluster.
-  - name: desired-nodes
-    default: "4"
-    description: The desired number of nodes in the cluster.
-  - name: min-nodes
-    default: "1"
-    description: The minimum number of nodes in the cluster.
-  - name: max-nodes
-    default: "4"
-    description: The maximum number of nodes in the cluster.
+    - name: cluster-name
+      description: The name of the EKS cluster you want to spin.
+    - name: version
+      default: "1.17"
+      description: The EKS version to install.
+    - name: region
+      default: us-west-2
+      description: The region where the cluster is in.
+    - name: zones
+      default: us-west-2a,us-west-2b,us-west-2c
+      description: The zones where the cluster is in.
+    - name: nodegroup-name
+      default: linux-nodes
+      description: The name of the nodegroup of the cluster.
+    - name: node-type
+      default: m5.xlarge
+      description: The type of the EC2 instaces for the nodegroup of the cluster.
+    - name: desired-nodes
+      default: "4"
+      description: The desired number of nodes in the cluster.
+    - name: min-nodes
+      default: "1"
+      description: The minimum number of nodes in the cluster.
+    - name: max-nodes
+      default: "4"
+      description: The maximum number of nodes in the cluster.
   workspaces:
-  - name: secrets
-    mountPath: /tekton/home/.aws
-    description: The secret with the AWS keys
-  - name: kubeconfig
-    description: |
-      A workspace into which a kubeconfig file called `kubeconfig` will be written that will contain the information required to access the cluster. The `kubeconfig` will expect to use [aws-iam-authenticator](https://github.com/kubernetes-sigs/aws-iam-authenticator/) to authenticate, so in order for it to be used it must be run in a container which contains both `kubectl` and `aws-iam-authenticator`.
+    - name: secrets
+      mountPath: /tekton/home/.aws
+      description: The secret with the AWS keys
+    - name: kubeconfig
+      description: |
+        A workspace into which a kubeconfig file called `kubeconfig` will be written that will contain the information required to access the cluster. The `kubeconfig` will expect to use [aws-iam-authenticator](https://github.com/kubernetes-sigs/aws-iam-authenticator/) to authenticate, so in order for it to be used it must be run in a container which contains both `kubectl` and `aws-iam-authenticator`.
   steps:
-  - name: write-kubeconfig
-    image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/weaveworks/eksctl:0.35.0"
-    script: |
-      echo "Starting to create eks cluster"
-      eksctl create cluster \
-        --name $(params.cluster-name) \
-        --version $(params.version) \
-        --region $(params.region) \
-        --zones $(params.zones) \
-        --nodegroup-name $(params.nodegroup-name) \
-        --node-type $(params.node-type) \
-        --nodes $(params.desired-nodes) \
-        --nodes-min $(params.min-nodes) \
-        --nodes-max $(params.max-nodes)
-      if [ $? -eq 0 ]
-      then
-        echo "Successfully created eks cluster $(params.cluster-name)"
-        eksctl utils write-kubeconfig -c $(params.cluster-name) --kubeconfig $(workspaces.kubeconfig.path)/kubeconfig
-      fi
+    - name: write-kubeconfig
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/docker.io/weaveworks/eksctl:0.35.0"
+      script: |
+        echo "Starting to create eks cluster"
+        eksctl create cluster \
+          --name $(params.cluster-name) \
+          --version $(params.version) \
+          --region $(params.region) \
+          --zones $(params.zones) \
+          --nodegroup-name $(params.nodegroup-name) \
+          --node-type $(params.node-type) \
+          --nodes $(params.desired-nodes) \
+          --nodes-min $(params.min-nodes) \
+          --nodes-max $(params.max-nodes)
+        if [ $? -eq 0 ]
+        then
+          echo "Successfully created eks cluster $(params.cluster-name)"
+          eksctl utils write-kubeconfig -c $(params.cluster-name) --kubeconfig $(workspaces.kubeconfig.path)/kubeconfig
+        fi

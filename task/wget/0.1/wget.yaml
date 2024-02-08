@@ -9,36 +9,44 @@ metadata:
     tekton.dev/categories: CLI
     tekton.dev/tags: download
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
+    tekton.dev/displayName: "wget"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This task uses wget to download files from the internet to a workspace.
 
   params:
-  - name: url
-    description: The url we want to download file from
-    type: string
-    default: ""
-  - name: diroptions
-    description: The directory path we want to save file to
-    type: array
-    default: []
-  - name: options
-    description: The arguments to pass to wget
-    type: array
-    default: []
-  - name: filename
-    description: The filename we want to change our file to
-    type: string
-    default: ""
-  - name: wget-option
-    description: The wget docker image to be used
-    type: string
-    default: "docker.io/library/buildpack-deps:stable-curl@sha256:3d5e59c47d5f82a769ad3f372cc9f86321e2e2905141bba974b75d3c08a53e8e" #tag: stable-curl
+    - name: url
+      description: The url we want to download file from
+      type: string
+      default: ""
+    - name: diroptions
+      description: The directory path we want to save file to
+      type: array
+      default: []
+    - name: options
+      description: The arguments to pass to wget
+      type: array
+      default: []
+    - name: filename
+      description: The filename we want to change our file to
+      type: string
+      default: ""
+    - name: wget-option
+      description: The wget docker image to be used
+      type: string
+      default: "docker.io/library/buildpack-deps:stable-curl@sha256:3d5e59c47d5f82a769ad3f372cc9f86321e2e2905141bba974b75d3c08a53e8e" #tag: stable-curl
   workspaces:
-  - name: wget-workspace
-    description: The folder where we write the wget'ed file to
+    - name: wget-workspace
+      description: The folder where we write the wget'ed file to
   steps:
-  - name: wget
-    image: "$(params.wget-option)"
-    command: [wget]
-    args: ["$(params.options[*])", "$(params.url)", "$(params.diroptions[*])", "$(workspaces.wget-workspace.path)/$(params.filename)"]
+    - name: wget
+      image: "$(params.wget-option)"
+      command: [wget]
+      args:
+        [
+          "$(params.options[*])",
+          "$(params.url)",
+          "$(params.diroptions[*])",
+          "$(workspaces.wget-workspace.path)/$(params.filename)",
+        ]

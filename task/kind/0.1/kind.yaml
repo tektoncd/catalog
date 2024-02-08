@@ -24,6 +24,7 @@ metadata:
     tekton.dev/displayName: "kind"
     tekton.dev/tags: "kind"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     Sets up and executes commands in KinD (Kubernetes in Docker) environment.

@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: CLI, kubectl
     tekton.dev/displayName: "kubernetes actions"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/kubernetes.svg"
 spec:
   description: >-
     This task is the generic kubectl CLI task which can be used

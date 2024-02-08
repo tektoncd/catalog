@@ -11,6 +11,7 @@ metadata:
     tekton.dev/tags: build,ci
     tekton.dev/displayName: "upload coverage report to codecov"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     This task publishes coverage report to Codecov.io.

@@ -4,11 +4,12 @@ kind: Pipeline
 metadata:
   name: build-push-gke-deploy
   labels:
-    app.kubernetes.io/version: '0.1'
+    app.kubernetes.io/version: "0.1"
   annotations:
-    tekton.dev/pipelines.minVersion: '0.12.1'
+    tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: build, push, deploy
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/gke.svg"
 spec:
   description: >-
     This Pipeline builds, pushes, and deploys your application to a Google Kubernetes
@@ -44,16 +45,16 @@ spec:
     - name: clusterProject
       type: string
       description: Project of target GKE cluster to deploy to.
-      default: ''
+      default: ""
   tasks:
     - name: kaniko
       taskRef:
         name: kaniko
       params:
         - name: CONTEXT
-          value: '$(params.pathToContext)'
+          value: "$(params.pathToContext)"
         - name: IMAGE
-          value: '$(params.imageUrl):$(params.imageTag)'
+          value: "$(params.imageUrl):$(params.imageTag)"
       workspaces:
         - name: source
           workspace: source
@@ -65,13 +66,13 @@ spec:
       params:
         - name: ARGS
           value:
-            - 'run'
-            - '--image=$(params.imageUrl):$(params.imageTag)'
-            - '--filename=$(workspaces.source.path)/$(params.pathToKubernetesConfigs)'
-            - '--cluster=$(params.clusterName)'
-            - '--location=$(params.clusterLocation)'
-            - '--project=$(params.clusterProject)'
-            - '--output=/var/tmp/gke-deploy'
+            - "run"
+            - "--image=$(params.imageUrl):$(params.imageTag)"
+            - "--filename=$(workspaces.source.path)/$(params.pathToKubernetesConfigs)"
+            - "--cluster=$(params.clusterName)"
+            - "--location=$(params.clusterLocation)"
+            - "--project=$(params.clusterProject)"
+            - "--output=/var/tmp/gke-deploy"
 
       workspaces:
         - name: source

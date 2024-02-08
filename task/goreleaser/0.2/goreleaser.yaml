@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: golang, release-automation, package
     tekton.dev/displayName: "GoReleaser"
     tekton.dev/platforms: "linux/amd64"
+    ozone-in2tive-ai/imgurl: "/api/asset-bucket/taskicons/tekton.svg"
 spec:
   description: >-
     GoReleaser builds Go binaries for several platforms.
