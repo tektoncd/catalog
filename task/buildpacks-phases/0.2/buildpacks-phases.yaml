@@ -27,10 +27,13 @@ spec:
 
   params:
     - name: APP_IMAGE
+      type: string
       description: The name of where to store the app image.
     - name: BUILDER_IMAGE
+      type: string
       description: The image on which builds will run (must include lifecycle and compatible buildpacks).
     - name: SOURCE_SUBPATH
+      type: string
       description: A subpath within the `source` input where the source to build is located.
       default: ""
     - name: ENV_VARS
@@ -38,27 +41,35 @@ spec:
       description: Environment variables to set during _build-time_.
       default: []
     - name: PROCESS_TYPE
+      type: string
       description: The default process type to set on the image.
       default: "web"
     - name: RUN_IMAGE
+      type: string
       description: Reference to a run image to use.
       default: ""
     - name: CACHE_IMAGE
+      type: string
       description: The name of the persistent app cache image (if no cache workspace is provided).
       default: ""
     - name: USER_ID
+      type: string
       description: The user ID of the builder image user.
       default: "1000"
     - name: GROUP_ID
+      type: string
       description: The group ID of the builder image user.
       default: "1000"
     - name: PLATFORM_DIR
+      type: string
       description: The name of the platform directory.
       default: empty-dir
     - name: LIFECYCLE_IMAGE
+      type: string
       description: The image to use when executing sensitive phases.
       default: docker.io/buildpacksio/lifecycle:0.10.2@sha256:1bf8d3fc41d2fdf0ee4abdad50038ab8902ef58c74f5bcfc432c26767d889ed0
     - name: USER_HOME
+      type: string
       description: Absolute path to the user's home directory.
       default: /tekton/home
 

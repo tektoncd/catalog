@@ -55,6 +55,7 @@ spec:
       default: ""
     - name: refspec
       description: Refspec to fetch before checking out revision.
+      type: string
       default: ""
     - name: submodules
       description: Initialize and fetch git submodules.

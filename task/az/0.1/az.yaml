@@ -22,6 +22,7 @@ spec:
 
   params:
     - name: az-image
+      type: string
       description: Azure CLI container image to run this task
       default: mcr.microsoft.com/azure-cli:2.0.78
     - name: ARGS

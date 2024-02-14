@@ -28,6 +28,7 @@ spec:
       description: Name of secret containing the RHACS StackRox API token with CI permissions.
       default: rox-api-token
     - name: rox_image
+      type: string
       description: Image providing the roxctl tool.
       default: quay.io/stackrox-io/roxctl:3.71.0
     - name: deployment

@@ -45,6 +45,7 @@ spec:
       default: "false"
       type: string
     - name: replaceExistingFiles
+      type: string
       description: |
         When "false", files that already exists are skipped. Default: "true"
 

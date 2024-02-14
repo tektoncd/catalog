@@ -18,11 +18,14 @@ spec:
     It uses `kn service apply` to create or update given knative service.
   params:
     - name: KN_IMAGE
+      type: string
       description: kn CLI container image to run this task
       default: gcr.io/knative-releases/knative.dev/client/cmd/kn:latest
     - name: SERVICE
+      type: string
       description: Knative service name
     - name: IMAGE
+      type: string
       description: Image to deploy
   steps:
     - name: kn

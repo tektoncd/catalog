@@ -29,8 +29,10 @@ spec:
       default: ""
     - name: SOURCE_PATH
       description: The path to the source code
+      type: string  
       default: "."
     - name: REQUIREMENTS_FILE
+      type: string
       description: The name of the requirements file inside the source location, with fallback to the requirements file in the root location
       default: "requirements.txt"
   steps:

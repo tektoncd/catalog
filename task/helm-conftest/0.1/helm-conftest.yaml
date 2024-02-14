@@ -21,10 +21,13 @@ spec:
     - name: source
   params:
     - name: chart
+      type: string
       default: "."
     - name: policy
+      type: string
       default: "policy"
     - name: output
+      type: string
       default: "stdout"
     - name: args
       type: array

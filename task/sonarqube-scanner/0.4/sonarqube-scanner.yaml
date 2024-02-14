@@ -33,27 +33,35 @@ spec:
       optional: true
   params:
     - name: SONAR_HOST_URL
+      type: string
       description: SonarQube server URL
       default: ""
     - name: SONAR_PROJECT_KEY
+      type: string
       description: Project's unique key
       default: ""
     - name: PROJECT_VERSION
+      type: string
       description: "Version of the project. Default: 1.0"
       default: "1.0"
     - name: SOURCE_TO_SCAN
+      type: string
       description: "Comma-separated paths to directories containing main source files"
       default: "."
     - name: SONAR_ORGANIZATION
+      type: string
       description: "The organization in sonarqube where the project exists"
       default: ""
     - name: SONAR_SCANNER_IMAGE
+      type: string
       description: "The sonarqube scanner CLI image which will run the scan"
       default: "docker.io/sonarsource/sonar-scanner-cli:4.6@sha256:7a976330a8bad1beca6584c1c118e946e7a25fdc5b664d5c0a869a6577d81b4f"
     - name: SONAR_LOGIN_KEY
+      type: string
       description: Name of the file of the login within the sonarqube credentials workspace
       default: "login"
     - name: SONAR_PASSWORD_KEY
+      type: string
       description: Name of the file of the password within the sonarqube credentials workspace
       default: "password"
   steps:

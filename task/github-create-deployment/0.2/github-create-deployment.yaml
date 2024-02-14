@@ -57,6 +57,7 @@ spec:
         The status contexts to verify against commit status checks. To
         verify all unique contexts before creating a deployment, pass
         in "*". To bypass checking entirely, pass an empty string.
+      type: string
       default: "*"
 
     - name: PAYLOAD

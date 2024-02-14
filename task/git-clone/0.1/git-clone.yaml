@@ -34,6 +34,7 @@ spec:
       default: master
     - name: refspec
       description: (optional) git refspec to fetch before checking out revision
+      type: string
       default: ""
     - name: submodules
       description: defines if the resource should initialize and fetch the submodules

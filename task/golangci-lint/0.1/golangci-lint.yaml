@@ -17,23 +17,30 @@ spec:
 
   params:
     - name: package
+      type: string
       description: base package (and its children) under validation
     - name: context
+      type: string
       description: path to the directory to use as context.
       default: "."
     - name: flags
+      type: string
       description: flags to use for the test command
       default: --verbose
     - name: version
+      type: string
       description: golangci-lint version to use
       default: "v1.39"
     - name: GOOS
+      type: string
       description: "running operating system target"
       default: linux
     - name: GOARCH
+      type: string
       description: "running architecture target"
       default: amd64
     - name: GO111MODULE
+      type: string
       description: "value of module support"
       default: auto
   workspaces:

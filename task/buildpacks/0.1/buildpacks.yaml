@@ -25,32 +25,42 @@ spec:
 
   params:
     - name: BUILDER_IMAGE
+      type: string
       description: The image on which builds will run (must include lifecycle and compatible buildpacks).
-    - name: CACHE
+    - name: CACHE 
+      type: string
       description: The name of the persistent app cache volume.
       default: empty-dir
     - name: CACHE_IMAGE
+      type: string
       description: The name of the persistent app cache image.
       default: ""
     - name: PLATFORM_DIR
+      type: string
       description: The name of the platform directory.
       default: empty-dir
     - name: USER_ID
+      type: string
       description: The user ID of the builder image user.
       default: "1000"
     - name: GROUP_ID
+      type: string
       description: The group ID of the builder image user.
       default: "1000"
     - name: PROCESS_TYPE
+      type: string
       description: The default process type to set on the image.
       default: "web"
     - name: SOURCE_SUBPATH
+      type: string
       description: A subpath within the `source` input where the source to build is located.
       default: ""
     - name: SKIP_RESTORE
+      type: string
       description: Do not write layer metadata or restore cached layers
       default: "false"
     - name: RUN_IMAGE
+      type: string
       description: Reference to a run image to use
       default: ""
 

@@ -19,29 +19,38 @@ spec:
     can be used (in a context with kubectl) to make requests to the cluster.
   params:
     - name: cluster-name
+      type: string
       description: The name of the EKS cluster you want to spin.
     - name: version
+      type: string
       default: "1.17"
       description: The EKS version to install.
     - name: region
+      type: string
       default: us-west-2
       description: The region where the cluster is in.
     - name: zones
+      type: string
       default: us-west-2a,us-west-2b,us-west-2c
       description: The zones where the cluster is in.
     - name: nodegroup-name
+      type: string
       default: linux-nodes
       description: The name of the nodegroup of the cluster.
     - name: node-type
+      type: string
       default: m5.xlarge
       description: The type of the EC2 instaces for the nodegroup of the cluster.
     - name: desired-nodes
+      type: string
       default: "4"
       description: The desired number of nodes in the cluster.
     - name: min-nodes
+      type: string
       default: "1"
       description: The minimum number of nodes in the cluster.
     - name: max-nodes
+      type: string
       default: "4"
       description: The maximum number of nodes in the cluster.
   workspaces:

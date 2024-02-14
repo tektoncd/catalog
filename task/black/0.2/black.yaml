@@ -20,9 +20,11 @@ spec:
         The workspace containing python source code which we want to format.
   params:
     - name: image
+      type: string
       description: The container image to use black in
       default: docker.io/cytopia/black:latest-0.2@sha256:2ec766f1c7e42e6b59c0873ce066fa0a2aa2bf8a80dbc1c40f1566bb539303e0
     - name: requirements_file
+      type: string
       description: The name of the requirements file inside the source location
       default: requirements.txt
     - name: args

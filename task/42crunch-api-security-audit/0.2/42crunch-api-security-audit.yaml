@@ -21,49 +21,66 @@ spec:
     - name: workdir
   params:
     - name: x42c_repository_url
+      type: string
       description: Source control repository URL. Needed to identify API collection on 42Crunch Platform.
     - name: x42c_branch_name
+      type: string
       description: Source control branch name.
       default: ""
     - name: x42c_tag_name
+      type: string
       description: Source control tag name.
       default: ""
     - name: x42c_pr_id
+      type: string
       description: Source control PR ID.
       default: ""
     - name: x42c_pr_target_branch
+      type: string
       description: Source control PR target branch name.
       default: ""
     - name: x42c_secret_name
+      type: string
       description: Name of the secret that contains the API token to access 42Crunch Platform.
       default: "42crunch-api-token"
     - name: x42c_root_directory
+      type: string
       description: "The root directory that contains the 42c-conf.yaml configuration file and the APIs. If not specified, the current working directory of the task is used."
       default: ""
     - name: x42c_min_score
+      type: string
       description: Minimum score for OpenAPI files.
       default: "75"
     - name: x42c_platform_url
+      type: string
       description: 42Crunch Platform URL.
       default: "https://platform.42crunch.com"
     - name: x42c_default_collection_name
+      type: string
       description: The default collection name used when creating collections for discovered apis.
       default: ""
     - name: x42c_log_level
+      type: string
       description: Log level, one of FATAL, ERROR, WARN, INFO, DEBUG.
       default: "INFO"
     - name: x42c_share_everyone
+      type: string
       description: Share new API collections with everyone, one of OFF, READ_ONLY, READ_WRITE
       default: "OFF"
     - name: x42c_api_tags
+      type: string  
       default: ""
     - name: x42c_skip_local_checks
+      type: string
       default: "false"
     - name: x42c_ignore_network_errors
+      type: string
       default: "false"
     - name: x42c_ignore_failures
+      type: string
       default: "false"
     - name: x42c_json_report
+      type: string
       default: ""
   steps:
     - name: 42crunch-api-security-audit

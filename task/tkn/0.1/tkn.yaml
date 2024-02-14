@@ -18,6 +18,7 @@ spec:
 
   params:
     - name: tkn-image
+      type: string
       description: tkn CLI container image to run this task
       default: gcr.io/tekton-releases/dogfooding/tkn@sha256:f79c0a56d561b1ae98afca545d0feaf2759f5c486ef891a79f23dc2451167dad #tag: latest
     - name: ARGS
