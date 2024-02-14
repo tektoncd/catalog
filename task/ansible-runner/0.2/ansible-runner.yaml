@@ -23,6 +23,7 @@ spec:
   params:
     - name: project-dir
       description: The project directory under the workspace runner-dir
+      type: string
       default: "project"
     - name: args
       description: The arguments to pass ansible-runner
@@ -30,9 +31,11 @@ spec:
       default:
         - --help
     - name: user-home
+      type: string
       description: Absolute path to the user's home directory.
       default: /tekton/home
     - name: image
+      type: string
       description: Ansible runner image.
       default: quay.io/ansible/ansible-runner:stable-2.12-latest #tag: stable-2.12-latest
   stepTemplate:

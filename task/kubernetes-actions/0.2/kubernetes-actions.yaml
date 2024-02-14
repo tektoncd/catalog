@@ -34,6 +34,7 @@ spec:
       default:
         - "help"
     - name: image
+      type: string
       default: gcr.io/cloud-builders/kubectl@sha256:8ab94be8b2b4f3d117f02d868b39540fddd225447abf4014f7ba4765cb39f753 #image is huge
       description: Kubectl wrapper image
   steps:

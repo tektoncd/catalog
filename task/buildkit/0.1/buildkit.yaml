@@ -19,16 +19,20 @@ spec:
   params:
     - name: DOCKERFILE
       description: The name of the Dockerfile
+      type: string
       default: "Dockerfile"
     - name: BUILDKIT_CLIENT_IMAGE
+      type: string
       description: The name of the BuildKit client (buildctl) image
       # The image needs to be rootful because Tekton creates /builder/home/.docker/config.json owned by root:root with 0600
       # https://github.com/tektoncd/pipeline/issues/852
       default: "docker.io/moby/buildkit:v0.6.2@sha256:db234cf7362aef489e4273a6937794cb19c09ba15c7ee0ec6f85044086ea4f6a"
     - name: BUILDKIT_DAEMON_ADDRESS
       description: The address of the BuildKit daemon (buildkitd) service
+      type: string
       default: "tcp://buildkitd:1234"
     - name: BUILDKIT_CLIENT_CERTS
+      type: string
       description: The name of Secret that contains ca.pem, cert.pem, key.pem for mTLS connection to BuildKit daemon
       default: "buildkit-client-certs"
   workspaces:

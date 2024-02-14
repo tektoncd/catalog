@@ -17,32 +17,42 @@ spec:
 
   params:
     - name: package
+      type: string
       description: package (and its children) under test
     - name: packages
+      type: string
       description: "packages to test (default: ./...)"
       default: "./..."
     - name: context
       description: path to the directory to use as context.
+      type: string
       default: "."
     - name: version
+      type: string
       description: golang version to use for tests
       default: "latest"
     - name: flags
+      type: string
       description: flags to use for the test command
       default: -race -cover -v
     - name: GOOS
+      type: string
       description: "running program's operating system target"
       default: linux
     - name: GOARCH
+      type: string
       description: "running program's architecture target"
       default: amd64
     - name: GO111MODULE
+      type: string
       description: "value of module support"
       default: auto
     - name: GOCACHE
+      type: string
       description: "Go caching directory path"
       default: ""
     - name: GOMODCACHE
+      type: string
       description: "Go mod caching directory path"
       default: ""
   workspaces:

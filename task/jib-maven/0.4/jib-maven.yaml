@@ -19,21 +19,26 @@ spec:
 
   params:
     - name: IMAGE
+      type: string
       description: Name of the image to build
     - name: MAVEN_IMAGE
       type: string
       description: Maven base image
       default: gcr.io/cloud-builders/mvn@sha256:57523fc43394d6d9d2414ee8d1c85ed7a13460cbb268c3cd16d28cfb3859e641 #tag: latest
     - name: DIRECTORY
+      type: string
       description: The directory containing the app, relative to the source repository root
       default: .
     - name: CACHE
+      type: string
       description: The name of the volume for caching Maven artifacts and base image layers
       default: empty-dir-volume
     - name: INSECUREREGISTRY
+      type: string
       description: Whether to allow insecure registry
       default: "false"
     - name: CACERTFILE
+      type: string
       description: CA cert file name for insecure registry service
       default: "service-ca.crt"
   workspaces:

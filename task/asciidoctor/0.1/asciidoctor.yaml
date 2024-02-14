@@ -31,6 +31,7 @@ spec:
       description: The Arguments to be passed to Asciidoctor command.
       type: string
     - name: ASCIIDOC_IMAGE
+      type: string
       default: docker.io/asciidoctor/docker-asciidoctor:1.16@sha256:36117d900e9365923dcf1d79c99eb82192c3d1b81ca1bb077e3373f722532e05
       description: Asciidoctor image to be used
   steps:

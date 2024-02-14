@@ -24,14 +24,19 @@ spec:
 
   params:
     - name: mode
+      type: string
       description: If "download", the state of the pull request at `url` will be fetched. If "upload" then the pull request at `url` will be updated.
     - name: url
+      type: string
       description: The URL of the Pull Reuqest, e.g. `https://github.com/bobcatfish/catservice/pull/16`
     - name: provider
+      type: string
       description: The type of SCM system, currently `github` or `gitlab`
     - name: secret-key-ref
+      type: string
       description: The name of an opaque secret containing a key called "token" with a base64 encoded SCM token
     - name: insecure-skip-tls-verify
+      type: string
       description: If "true", certificate validation will be disabled
       default: "false"
   workspaces:

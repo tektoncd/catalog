@@ -27,9 +27,11 @@ spec:
     - name: sonar-settings
   params:
     - name: SONAR_HOST_URL
+      type: string
       description: Host URL where the sonarqube server is running
       default: ""
     - name: SONAR_PROJECT_KEY
+      type: string
       description: Project's unique key
       default: ""
   steps:

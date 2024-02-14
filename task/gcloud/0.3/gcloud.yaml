@@ -17,9 +17,11 @@ spec:
 
   params:
     - name: gcloud-image
+      type: string
       description: gcloud CLI container image to run this task
       default: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     - name: version
+      type: string
       description: gcloud CLI version run this task
       default: "slim" # latest slim version
     - name: ARGS

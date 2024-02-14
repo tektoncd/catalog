@@ -17,6 +17,7 @@ spec:
 
   params:
     - name: gcloud-image
+      type: string
       description: gcloud CLI container image to run this task
       default: gcr.io/google.com/cloudsdktool/cloud-sdk:slim@sha256:88cc5b95f90ed70d0827b21fb12091f2e30a5d7a585ecafe5f71cdd5d6caa88d #tag: slim, 374.0.0-slim
     - name: ARGS

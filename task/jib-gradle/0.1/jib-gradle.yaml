@@ -20,12 +20,15 @@ spec:
 
   params:
     - name: DIRECTORY
+      type: string
       description: The directory containing the app, relative to the source repository root
       default: .
     - name: CACHE
+      type: string
       description: The name of the volume for caching Gradle artifacts, local Maven repository, and base image layers
       default: empty-dir-volume
     - name: INSECUREREGISTRY
+      type: string
       description: Whether to allow insecure registry
       default: "false"
   workspaces:

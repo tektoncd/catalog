@@ -54,6 +54,7 @@ spec:
       type: string
       default: ""
     - name: refspec
+      type: string
       description: Refspec to fetch before checking out revision.
       default: ""
     - name: submodules
