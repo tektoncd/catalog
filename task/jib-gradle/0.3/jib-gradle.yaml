@@ -20,19 +20,25 @@ spec:
   params:
     - name: BUILDER_IMAGE
       description: The location of the gradle builder image
+      type: string
       default: gcr.io/cloud-builders/gradle@sha256:96d6343589392afd9eab8c4463ec899b8b1c972e7cd70678a70a4821c16eb4c9 # 5.6.2-jdk-8
     - name: IMAGE
+      type: string
       description: Reference of the image gradle will produce
     - name: DIRECTORY
+      type: string
       description: The directory containing the app, relative to the source repository root
       default: .
     - name: CACHE
+      type: string
       description: The name of the volume for caching Gradle artifacts, local Maven repository, and base image layers
       default: empty-dir-volume
     - name: INSECUREREGISTRY
+      type: string
       description: Whether to allow insecure registry
       default: "false"
     - name: EXTRA_ARGS
+      type: string
       description: Extra arguments to add to the gradle jib build
       default: ""
 

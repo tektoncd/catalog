@@ -19,22 +19,29 @@ spec:
 
   params:
     - name: helm_repo
+      type: string
       description: "Specify a specific helm repo"
     - name: chart_name
+      type: string
       description: "Specify chart name that will be deployed"
     - name: release_version
+      type: string
       description: The helm release version in semantic versioning format
       default: "v1.0.0"
     - name: release_name
+      type: string
       description: The helm release name
       default: "helm-release"
     - name: release_namespace
+      type: string
       description: The helm release namespace
       default: ""
     - name: overwrite_values
+      type: string
       description: "Specify the values you want to overwrite, comma separated: autoscaling.enabled=true,replicas=1"
       default: ""
     - name: helm_version
+      type: string
       description: "Specify a specific helm version"
       default: "latest"
   steps:

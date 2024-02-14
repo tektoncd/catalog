@@ -25,26 +25,34 @@ spec:
 
   params:
     - name: IMAGE
+      type: string
       description: Reference of the image buildah will produce.
     - name: BUILDER_IMAGE
+      type: string
       description: The location of the buildah builder image.
       default: quay.io/buildah/stable:v1.17.0
     - name: STORAGE_DRIVER
+      type: string
       description: Set buildah storage driver
       default: overlay
     - name: DOCKERFILE
+      type: string
       description: Path to the Dockerfile to build.
       default: ./Dockerfile
     - name: CONTEXT
+      type: string
       description: Path to the directory to use as context.
       default: .
     - name: TLSVERIFY
+      type: string
       description: Verify the TLS on the registry endpoint (for push/pull to a non-TLS registry)
       default: "true"
     - name: FORMAT
+      type: string
       description: The format of the built container, oci or docker
       default: "oci"
     - name: BUILD_EXTRA_ARGS
+      type: string
       description: Extra parameters passed for the build command when building images.
       default: ""
     - name: PUSH_EXTRA_ARGS

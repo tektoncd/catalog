@@ -23,8 +23,10 @@ spec:
   params:
     - name: DOCKERFILE
       description: The name of the Dockerfile
+      type: string
       default: "Dockerfile"
     - name: BUILDKIT_IMAGE
+      type: string
       description: The name of the BuildKit image
       # The image needs to be rootful because Tekton creates /builder/home/.docker/config.json owned by root:root with 0600
       # https://github.com/tektoncd/pipeline/issues/852

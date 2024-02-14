@@ -17,35 +17,46 @@ spec:
 
   params:
     - name: package
+      type: string
       description: base package to build in
     - name: packages
+      type: string
       description: "packages to build (default: ./cmd/...)"
       default: "./cmd/..."
     - name: version
+      type: string
       description: golang version to use for builds
       default: "latest"
     - name: flags
+      type: string
       description: flags to use for the test command
       default: -v
     - name: GOOS
+      type: string
       description: "running program's operating system target"
       default: linux
     - name: GOARCH
+      type: string  
       description: "running program's architecture target"
       default: amd64
     - name: GO111MODULE
+      type: string
       description: "value of module support"
       default: auto
     - name: GOCACHE
+      type: string
       description: "Go caching directory path"
       default: ""
     - name: GOMODCACHE
+      type: string
       description: "Go mod caching directory path"
       default: ""
     - name: CGO_ENABLED
+      type: string
       description: "Toggle cgo tool during Go build. Use value '0' to disable cgo (for static builds)."
       default: ""
     - name: GOSUMDB
+      type: string
       description: "Go checksum database url. Use value 'off' to disable checksum validation."
       default: ""
   workspaces:

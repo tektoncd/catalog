@@ -18,17 +18,22 @@ spec:
     run a build from source or build the application in previous tasks and use this last task to deploy and let Camel K operates it.
   params:
     - name: camel-k-image
+      type: string
       description: The location of Camel K CLI image.
       default: docker.io/apache/camel-k:2.0.0
     - name: filename
+      type: string
       description: the Integration source we want to run
     - name: namespace
+      type: string
       description: the namespace where to run the integration
       default: ""
     - name: container-image
+      type: string
       description: the custom container image to use (if the build was performed as part of previous tasks)
       default: ""
     - name: wait
+      type: string
       description: wait for the Integration to run before exiting the task
       default: "false"
   results:

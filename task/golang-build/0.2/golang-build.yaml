@@ -18,28 +18,37 @@ spec:
   params:
     - name: package
       description: base package to build in
+      type: string
     - name: packages
       description: "packages to build (default: ./cmd/...)"
       default: "./cmd/..."
+      type: string
     - name: version
       description: golang version to use for builds
       default: "latest"
+      type: string
     - name: flags
       description: flags to use for the test command
+      type: string
       default: -v
     - name: GOOS
+      type: string
       description: "running program's operating system target"
       default: linux
     - name: GOARCH
+      type: string
       description: "running program's architecture target"
       default: amd64
     - name: GO111MODULE
       description: "value of module support"
       default: auto
+      type: string
     - name: GOCACHE
       description: "Go caching directory path"
+      type: string
       default: ""
     - name: GOMODCACHE
+      type: string
       description: "Go mod caching directory path"
       default: ""
   workspaces:

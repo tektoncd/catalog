@@ -33,6 +33,7 @@ spec:
       type: string
       default: ""
     - name: refspec
+      type: string
       description: (optional) git refspec to fetch before checking out revision
       default: ""
     - name: submodules

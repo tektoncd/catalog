@@ -22,27 +22,36 @@ spec:
 
   params:
     - name: project-name
+      type: string
       description: The name of the GCP project in which to create the GKE cluster.
     - name: private-key-path
+      type: string
       description: The path to the private key within the gcp-service-account workspace.
     - name: identifier
+      type: string
       description: A string which identifies the purpose for which this cluster is being created. Used to name other resources created.
     - name: min-nodes
+      type: string
       description: The minimum number of nodes in the cluster.
       default: "1"
     - name: max-nodes
+      type: string
       description: The maximum number of nodes in the cluster.
       default: "3"
     - name: region
+      type: string
       description: The region to create the cluster in.
       default: us-central1
     - name: machine-type
+      type: string
       description: The machine type to create, from https://cloud.google.com/compute/docs/machine-types.
       default: n1-standard-4
     - name: image-type
+      type: string
       description: The type of image to create the nodes, from https://cloud.google.com/kubernetes-engine/docs/concepts/node-images.
       default: cos
     - name: cluster-version
+      type: string
       description: |
         The GKE version to install, in a format that can be used as the `--cluster-version` argument to
         https://cloud.google.com/sdk/gcloud/reference/beta/container/clusters/create

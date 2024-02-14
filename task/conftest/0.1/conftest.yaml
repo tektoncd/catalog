@@ -23,8 +23,10 @@ spec:
     - name: files
       type: string
     - name: policy
+      type: string
       default: "policy"
     - name: output
+      type: string
       default: "stdout"
     - name: args
       type: array

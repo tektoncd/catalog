@@ -25,21 +25,26 @@ spec:
   params:
     - name: manifest-file-path
       description: Path of target manifest file to perform analysis.
+      type: string
       default: requirements.txt
 
     - name: output-file-path
+      type: string
       description: Path of the file to save analysis report.
       default: redhat-codeready-dependency-analysis-report.json
 
     - name: pkg-installation-directory-path
+      type: string
       description: Path of a directory in workspace, where dependencies are installed.
       default: site-package
 
     - name: image
+      type: string
       description: Image where CRDA CLI binary and required applications are installed.
       default: ghcr.io/fabric8-analytics/crda-python:3.7
 
     - name: CRDA_HOST_URL
+      type: string
       description: The CRDA host, adjust this if you use an on premise environment.
       default: ""
 

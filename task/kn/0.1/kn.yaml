@@ -18,6 +18,7 @@ spec:
 
   params:
     - name: kn-image
+      type: string
       description: kn CLI container image to run this task
       default: gcr.io/knative-releases/knative.dev/client/cmd/kn:latest
     - name: ARGS

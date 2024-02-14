@@ -24,17 +24,22 @@ spec:
         which needs to be released.
   params:
     - name: package
+      type: string
       description: base package to build in
     - name: github-token-secret
+      type: string
       description: name of the secret holding the github-token
       default: bot-token-github
     - name: github-token-secret-key
+      type: string
       description: name of the secret key holding the github-token
       default: bot-token
     - name: flags
+      type: string
       description: flags to pass to `goreleaser release`
       default: --timeout=30m
     - name: image
+      type: string
       description: container image location for goreleaser
       default: docker.io/goreleaser/goreleaser@sha256:7197bb7cb63defc1cd5ede16df876605b4535980fe9e09f6618ad2b1101f8576
   steps:

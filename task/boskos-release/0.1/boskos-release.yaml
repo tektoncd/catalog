@@ -22,11 +22,14 @@ spec:
     any state created).
   params:
     - name: server-url
+      type: string
       description: The URL of the running boskos server
       default: "http://boskos.test-pods.svc.cluster.local"
     - name: leased-resource
+      type: string
       description: A string that identifies the leased resource to release.
     - name: owner-name
+      type: string
       description: A string that identifies the owner of the leased resource to request.
   steps:
     - name: boskosctl-release

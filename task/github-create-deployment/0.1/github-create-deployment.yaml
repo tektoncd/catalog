@@ -52,6 +52,7 @@ spec:
         verify all unique contexts before creating a deployment, pass
         in "*". To bypass checking entirely, pass an empty string.
       default: "*"
+      type: string
 
     - name: PAYLOAD
       description: |

@@ -32,6 +32,7 @@ spec:
       default: scribe-secret
       type: string
     - name: version
+      type: string
       description: valint CLI version run this task
       default: "v0.4.2"
   steps:

@@ -19,26 +19,34 @@ spec:
     The image will be built and pushed using a dind sidecar over TCP+TLS.
   params:
     - name: image
+      type: string
       description: Reference of the image docker will produce.
     - name: builder_image
+      type: string
       description: The location of the docker builder image.
       default: docker.io/library/docker:stable@sha256:18ff92d3d31725b53fa6633d60bed323effb6d5d4588be7b547078d384e0d4bf #tag: stable
     - name: dind_image
+      type: string
       description: The location of the docker-in-docker image.
       default: docker:dind
     - name: dockerfile
+      type: string
       description: Path to the Dockerfile to build.
       default: ./Dockerfile
     - name: context
+      type: string
       description: Path to the directory to use as context.
       default: .
     - name: build_extra_args
+      type: string
       description: Extra parameters passed for the build command when building images.
       default: ""
     - name: push_extra_args
+      type: string
       description: Extra parameters passed for the push command when pushing images.
       default: ""
     - name: insecure_registry
+      type: string
       description: Allows the user to push to an insecure registry that has been specified
       default: ""
   workspaces:
