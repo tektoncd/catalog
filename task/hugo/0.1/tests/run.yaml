@@ -1,0 +1,46 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: hugo-task-test-pipeline
+spec:
+  workspaces:
+    - name: work-dir
+
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: work-dir
+      params:
+        - name: url
+          value: "https://github.com/shipit/hugotenberg.git"
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+
+    - name: build-project
+      runAfter:
+        - fetch-repository
+      taskRef:
+        name: hugo
+      workspaces:
+        - name: work-dir
+          workspace: work-dir
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: hugo-task-test-pipeline-run
+spec:
+  pipelineRef:
+    name: hugo-task-test-pipeline
+  podTemplate:
+    securityContext:
+      fsGroup: 65532
+  workspaces:
+    - name: work-dir
+      persistentvolumeclaim:
+        claimName: hugo-project-source-pvc
