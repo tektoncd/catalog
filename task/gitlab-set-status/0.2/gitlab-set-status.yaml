@@ -90,7 +90,7 @@ spec:
 
   steps:
     - name: set-status
-      image: registry.access.redhat.com/ubi8/python-38@sha256:af6f93b81f9313de95966e8cd681edb9dbcb5fdbddc5a4cc365af8e4534096ef
+      image: "{{TEKTON_PUBLIC_REGISTRY_PREFIX}}/registry.access.redhat.com/ubi8/python-38"
       script: |
         #!/usr/libexec/platform-python
 
