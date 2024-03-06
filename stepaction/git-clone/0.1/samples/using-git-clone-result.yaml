@@ -1,0 +1,70 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: validate-tag-sha
+spec:
+  description: |
+    validate-tag-sha takes a git repository, tag name, and a commit SHA and
+    checks whether the given tag resolves to that commit. This example
+    Task demonstrates the following:
+      - How to use the git-clone catalog StepAction
+      - How to use the git-clone Step's "commit" Step Result from another Step.
+      - How to discard the contents of the git repo when it isn't needed by
+        passing an `emptyDir` Volume as its "output" workspace.
+  params:
+  - name: repo-url
+    type: string
+    description: The git repository URL to clone from.
+  - name: tag-name
+    type: string
+    description: The git tag to clone.
+  - name: expected-sha
+    type: string
+    description: The expected SHA to be received for the supplied revision.
+  workspaces:
+  - name: output
+  steps:
+  - name: fetch-repository
+    ref:
+      name: git-clone
+    params:
+    - name: url
+      value: $(params.repo-url)
+    - name: revision
+      value: $(params.tag-name)
+    - name: output-path
+      value: $(workspaces.output.path)
+  - name: validate-revision-sha
+    image: zshusers/zsh:4.3.15
+    env:
+      - name: RESULT_COMMIT
+        value: $(steps.fetch-repository.results.commit)
+    script: |
+      #!/usr/bin/env zsh
+      if [ "$(params.expected-sha)" != "${RESULT_COMMIT}" ]; then
+        echo "Expected revision $(params.tag-name) to have SHA $(params.expected-sha)."
+        exit 1
+      else
+        echo "Revision $(params.tag-name) has expected SHA $(params.expected-sha)."
+      fi
+---
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  generateName: using-git-clone-result-
+spec:
+  taskRef:
+    name: validate-tag-sha
+  podTemplate:
+    securityContext:
+      fsGroup: 65532
+  workspaces:
+  - name: output
+    emptyDir: {}  # We don't care about the repo contents in this example, just the "commit" result
+  params:
+  - name: repo-url
+    value: https://github.com/tektoncd/pipeline.git
+  - name: tag-name
+    value: v0.12.1
+  - name: expected-sha
+    value: a54dd3984affab47f3018852e61a1a6f9946ecfa

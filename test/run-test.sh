@@ -37,26 +37,36 @@ if [[ -z ${@} || ${1} == "-h" ]];then
 This script will run a single task to help developers testing directly a
 single task without sending it to CI.
 
-You need to specify the task name as the first argument and the task version as
-the second argument. For example :
+You need to specify the resource kind as the first argument, resource name 
+as the second argument and the resource version as the second argument.
 
-${0} git-clone 0.1
+For example :
 
-will run the tests for git-clone
+${0} task git-clone 0.1
+
+will run the tests for the git-clone task
+
+while
+
+${0} stepaction git-clone 0.1
+
+will run the tests for the git-clone stepaction.
+
 EOF
     exit 0
 fi
 
-TASK=${1}
-VERSION=${2}
+RESOURCE=${1}
+NAME=${2}
+VERSION=${3}
 
-taskdir=task/${TASK}/${VERSION}
+resourcedir=${RESOURCE}/${NAME}/${VERSION}
 
-kubectl get ns ${TASK}-${VERSION//./-} >/dev/null 2>/dev/null && kubectl delete ns ${TASK}-${VERSION//./-}
+kubectl get ns ${RESOURCE}-${NAME}-${VERSION//./-} >/dev/null 2>/dev/null && kubectl delete ns ${RESOURCE}-${NAME}-${VERSION//./-}
 
-if [[ ! -d ${taskdir}/tests ]];then
-    echo "No 'tests' directory is located in ${taskdir}"
+if [[ ! -d ${resourcedir}/tests ]];then
+    echo "No 'tests' directory is located in ${resourcedir}"
     exit 1
 fi
 
-test_task_creation task/${TASK}/${VERSION}/tests
+test_resource_creation ${RESOURCE}/${NAME}/${VERSION}/tests

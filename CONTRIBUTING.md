@@ -12,10 +12,10 @@ and the individual `CONTRIBUTING.md` files in each respective project.
 PRs are welcome, and will follow
 [the tektoncd pull request process](https://github.com/tektoncd/community/blob/main/process.md#pull-request-process).
 
-## How to Contribute a Task or Pipeline
+## How to Contribute a Task, StepAction or Pipeline
 
 The Catalog repository is intended to serve as a location where users can find
-`Task`s and `Pipeline`s that are maintained, useful and follow established
+`Task`s, `StepAction`s and `Pipeline`s that are maintained, useful and follow established
 best practices.
 
 The process for contributing looks like this:
@@ -55,7 +55,7 @@ changes.
 
 ### Guidelines
 
-When reviewing PRs that add new `Task`s or `Pipeline`s, maintainers will follow
+When reviewing PRs that add new `Task`s, `StepAction`s or `Pipeline`s, maintainers will follow
 the following guidelines:
 
 * Submissions should be useful in real-world applications.
