@@ -7,6 +7,7 @@ metadata:
     app.kubernetes.io/version: '0.2'
     app.kubernetes.io/ansible-version: '2.12.5'
   annotations:
+    tekton.dev/deprecated: "true"
     tekton.dev/pipelines.minVersion: '0.12.1'
     tekton.dev/categories: CLI
     tekton.dev/tags: cli
