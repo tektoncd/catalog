@@ -67,7 +67,7 @@ spec:
       default: ""
   steps:
     - name: 42crunch-api-security-audit
-      image: docker.io/42crunch/docker-api-security-audit:v3.3@sha256:2b6064ac01fbfcaba8ad16a33f52150f9061d930f59ea9258d4d2f6a1a9d6002
+      image: docker.io/42crunch/docker-api-security-audit:v3.4@sha256:a55fca6e063ad74d9f8c1d65f602aab431c80901a801af3cb045e3a4f961eba5
       env:
         - name: "X42C_REPOSITORY_URL"
           value: $(params.x42c_repository_url)
