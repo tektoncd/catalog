@@ -5,6 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/version: "0.2"
   annotations:
+    tekton.dev/deprecated: "true"
     tekton.dev/pipelines.minVersion: "0.27.0"
     tekton.dev/categories: Build Tools
     tekton.dev/tags: annotations
