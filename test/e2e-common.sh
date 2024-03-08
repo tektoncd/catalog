@@ -79,7 +79,6 @@ import sys, yaml
 
 f=open(0, encoding="utf-8")
 data=yaml.load(f.read(), Loader=yaml.FullLoader)
-
 sidecars = map(lambda v: yaml.safe_load(v), sys.argv[1:]) # after -c
 for sidecar in sidecars:
   if "sidecars" in data["spec"]:
@@ -130,6 +129,22 @@ function add_task() {
         fi
 	fi
     ${KUBECTL_CMD} -n "${tns}" apply -f "${path_version}"/"${task}".yaml
+}
+
+function add_stepaction() {
+    local array path_version stepaction
+    stepaction=${1}
+    if [[ "${2}" == "latest" ]];then
+        array=($(echo stepaction/${stepaction}/*/|sort -u))
+        path_version=${array[-1]}
+	else
+		path_version=stepaction/${stepaction}/${2}
+        if [[ ! -d ${path_version} ]];then
+            echo "I could not find version '${2}' for the stepaction '${stepaction}' in ./stepaction/"
+            exit 1
+        fi
+	fi
+    ${KUBECTL_CMD} -n "${tns}" apply -f "${path_version}"/"${stepaction}".yaml
 }
 
 function install_pipeline_crd() {
