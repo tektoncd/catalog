@@ -5,6 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/version: "0.1"
   annotations:
+    tekton.dev/deprecated: "true"
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/categories: Image Build
     tekton.dev/tags: dockerslim, dslim, build-image, push-image, dind

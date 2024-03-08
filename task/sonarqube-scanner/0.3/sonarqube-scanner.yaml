@@ -5,6 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/version: "0.3"
   annotations:
+    tekton.dev/deprecated: "true"
     tekton.dev/pipelines.minVersion: "0.17.0"
     tekton.dev/categories: Security
     tekton.dev/tags: security
