@@ -6,6 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/version: "0.4"
   annotations:
+    ozone-in2tive-ai/imgurl: /api/asset-bucket/taskicons/buildah.svg
     tekton.dev/categories: Image Build
     tekton.dev/pipelines.minVersion: "0.17.0"
     tekton.dev/tags: image-build
