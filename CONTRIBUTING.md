@@ -155,7 +155,7 @@ A helper script called [`run-test.sh`](test/run-test.sh) is provider in the
 specify the task name and the version as the first and the second argument i.e:
 
 ```bash
-./test/run-test.sh git-clone 0.1
+./test/run-test.sh task git-clone 0.1
 ```
 
 and it will use your current kubernetes context to run the test and show you the
