@@ -1,0 +1,124 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: checking-out-a-revision
+spec:
+  description: |
+    checking-out-a-revision takes a git repository and a commit SHA
+    and validates that cloning the revision succeeds. This is an example
+    Pipeline demonstrating the following:
+      - Using the git-clone catalog Task to clone a specific commit
+      - Passing a cloned repo to subsequent Tasks using a Workspace.
+      - Ordering Tasks in a Pipeline using "runAfter" so that
+        git-clone completes before we try to read from the Workspace.
+      - Using a volumeClaimTemplate Volume as a Workspace.
+      - Avoiding hard-coded paths by using a Workspace's path
+        variable instead.
+  params:
+  - name: repo-url
+    type: string
+    description: The git repository URL to clone from.
+  - name: commit
+    type: string
+    description: The git commit to fetch.
+  - name: user-home
+    type: string
+    description: The home directory of the user performing the git clone.
+    default: "/tekton/home"
+  - name: user-uid
+    type: string
+    description: The UID of the user performing the git clone.
+    default: "0"
+  workspaces:
+  - name: shared-data
+    description: |
+      This workspace will receive the cloned git repo and be passed
+      to the next Task for the commit to be checked.
+  tasks:
+  - name: fetch-repo
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: shared-data
+    params:
+    - name: url
+      value: $(params.repo-url)
+    - name: revision
+      value: $(params.commit)
+    - name: gitInitImage
+      value: localhost:5000/git-init-4874978a9786b6625dd8b6ef2a21aa70:latest
+    - name: userHome
+      value: $(params.user-home)
+  - name: check-expectations
+    runAfter: ["fetch-repo"]  # Wait until the clone is done before reading the readme.
+    params:
+    - name: expected-commit
+      value: $(params.commit)
+    - name: expected-readme-uid
+      value: $(params.user-uid)
+    workspaces:
+    - name: source
+      workspace: shared-data
+    taskSpec:
+      params:
+      - name: expected-commit
+      - name: expected-readme-uid
+      workspaces:
+      - name: source
+      steps:
+      - image: alpine/git:v2.24.3
+        script: |
+          #!/usr/bin/env sh
+          cd "$(workspaces.source.path)"
+
+          receivedCommit="$(git rev-parse HEAD)"
+          if [ "$receivedCommit" != "$(params.expected-commit)" ]; then
+            echo "Expected commit $(params.expected-commit) but received $receivedCommit."
+            exit 1
+          else
+            echo "Received commit $receivedCommit as expected."
+          fi
+
+          detectedUID="$(ls -l ./README.md | awk '{ print $3 }')"
+          if [ "$detectedUID" != "$(params.expected-readme-uid)" ]; then
+            echo "Expected README UID of $(params.expected-readme-uid) but received $detectedUID."
+            exit 2
+          else
+            echo "Saw README with owner of $detectedUID as expected."
+          fi
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: git-clone-checking-out-a-commit-
+spec:
+  pipelineRef:
+    name: checking-out-a-revision
+  podTemplate:
+    securityContext:
+      fsGroup: 65532
+  workspaces:
+  - name: shared-data
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 500Mi
+  taskRunSpecs:
+  - pipelineTaskName: fetch-repo
+    taskPodTemplate:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532  # nonroot user in git-init container
+  params:
+  - name: repo-url
+    value: https://github.com/tektoncd/pipeline.git
+  - name: commit
+    value: 301b41380e95382a18b391c2165fa3a6a3de93b0  # Tekton Pipeline's first ever commit!
+  - name: user-home
+    value: "/home/nonroot"
+  - name: user-uid
+    value: "65532"
