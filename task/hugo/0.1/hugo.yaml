@@ -1,0 +1,86 @@
+apiVersion: tekton.dev/v1
+kind: Task
+
+metadata:
+  name: hugo
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Build Tools, Cloud
+    tekton.dev/tags: buildtools, cloud
+    tekton.dev/displayName: Hugo
+    tekton.dev/platforms: "linux/amd64"
+
+spec:
+  description: >-
+    A Task that builds a Hugo site.
+
+    This task uses the Hugo static site generator to build a static site from the
+    content in the specified directory.
+
+  workspaces:
+    - name: work-dir
+
+  params:
+    - name: content-dir
+      type: string
+      description: The directory where the content is located
+      default: ""
+
+    - name: minify
+      type: string
+      description: Minify the output e.g. HTML, CSS, JS, XML
+      default: "false"
+
+    - name: base-url
+      type: string
+      description: The base URL for the Hugo site. By default reads from the hugo.toml or hugo.yaml
+      default: ""
+
+    - name: verbose
+      type: string
+      description: Verbose output
+      default: "false"
+
+  results:
+    - name: output
+      description: generated static site
+
+  steps:
+    - name: build
+      env:
+        - name: HUGO_MINIFY
+          value: $(params.minify)
+        - name: HUGO_BASEURL
+          value: $(params.base-url)
+        - name: HUGO_VERBOSE
+          value: $(params.verbose)
+        - name: HUGO_CONTENT_DIR
+          value: $(params.content-dir)
+
+      image: docker.io/hugomods/hugo:0.122.0@sha256:e90f2e6786969463f3475c7d5e7f031cb5dbf75a8394687d52f99d6c9d0eda0d
+      script: |
+        export HUGOCMD="hugo"
+
+
+        if [ "$HUGO_MINIFY" = 'true' ]; then
+          export HUGOCMD="${HUGOCMD} --minify"
+        fi
+
+        if [ "$HUGO_BASEURL" != '' ]; then
+          export HUGOCMD="${HUGOCMD} --baseURL $HUGO_BASEURL"
+        fi
+
+        if [ "$HUGO_VERBOSE" = 'true' ]; then
+          export HUGOCMD="${HUGOCMD} --verbose"
+        fi
+
+        if [ "$HUGO_CONTENT_DIR" != '' ]; then
+          export HUGOCMD="${HUGOCMD} --contentDir ${HUGO_CONTENT_DIR}"
+        fi
+
+        cd "$(workspaces.work-dir.path)" || exit
+        $HUGOCMD
+
+        printf "%s/public" "$(workspaces.work-dir.path)" | tee /tekton/results/output
