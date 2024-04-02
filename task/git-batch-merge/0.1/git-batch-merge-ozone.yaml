@@ -1,0 +1,57 @@
+params:
+  - description: git url to clone
+    name: url
+    type: string
+  - default: master
+    description: "base git revision to checkout (branch, tag, sha, ref\u2026)"
+    name: revision
+    type: string
+  - default: refs/heads/master:refs/heads/master
+    description: base git refspec to fetch before checking out revision
+    name: refspec
+    type: string
+  - description:
+      git refs to fetch and batch on top of revision using the given mode
+      (must be a valid refname, no commit SHA's)
+    name: batchedRefs
+    type: string
+  - default: GitBatch Task
+    description: git user name to use for creating the batched commit (First Last)
+    name: gitUserName
+    type: string
+  - default: GitBatch.Task@tekton.dev
+    description: git user email to use for creating the batched commit (First.Last@domain.com)
+    name: gitUserEmail
+    type: string
+  - default: merge
+    description: git operation to perform while batching (choose from merge, cherry-pick)
+    name: mode
+    type: string
+  - default: "true"
+    description: defines if the resource should initialize and fetch the submodules
+    name: submodules
+    type: string
+  - default: "1"
+    description:
+      performs a shallow clone where only the most recent commit(s) will
+      be fetched
+    name: depth
+    type: string
+  - default: "true"
+    description:
+      defines if http.sslVerify should be set to true or false in the global
+      git config
+    name: sslVerify
+    type: string
+  - default: src
+    description: subdirectory inside the "output" workspace to clone the git repo into
+    name: subdirectory
+    type: string
+  - default: "false"
+    description:
+      clean out the contents of the repo's destination directory (if it already
+      exists) before trying to clone the repo there
+    name: deleteExisting
+    type: string
+visibility:
+  showToUser: true

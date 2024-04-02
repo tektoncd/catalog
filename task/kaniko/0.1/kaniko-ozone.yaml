@@ -1,0 +1,21 @@
+params:
+  - description: Name (reference) of the image to build.
+    name: IMAGE
+    type: string
+  - default: ./Dockerfile
+    description: Path to the Dockerfile to build.
+    name: DOCKERFILE
+    type: string
+  - default: ./
+    description: The build context used by Kaniko.
+    name: CONTEXT
+    type: string
+  - default: ""
+    name: EXTRA_ARGS
+    type: string
+  - default: gcr.io/kaniko-project/executor@sha256:e36c9fa99279217c4bb8ee172819b441c3ca8ef946dc0e28b21721eefb2ba70a
+    description: The image on which builds will run
+    name: BUILDER_IMAGE
+    type: string
+visibility:
+  showToUser: true

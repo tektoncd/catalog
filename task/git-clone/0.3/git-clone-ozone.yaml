@@ -1,0 +1,66 @@
+params:
+  - description: git url to clone
+    name: url
+    type: string
+  - default: ""
+    description: "git revision to checkout (branch, tag, sha, ref\u2026)"
+    name: revision
+    type: string
+  - default: ""
+    description: (optional) git refspec to fetch before checking out revision
+    name: refspec
+    type: string
+  - default: "true"
+    description: defines if the resource should initialize and fetch the submodules
+    name: submodules
+    type: string
+  - default: "1"
+    description:
+      performs a shallow clone where only the most recent commit(s) will
+      be fetched
+    name: depth
+    type: string
+  - default: "true"
+    description:
+      defines if http.sslVerify should be set to true or false in the global
+      git config
+    name: sslVerify
+    type: string
+  - default: ""
+    description: subdirectory inside the "output" workspace to clone the git repo into
+    name: subdirectory
+    type: string
+  - default: ""
+    description:
+      defines which directories patterns to match or exclude when performing
+      a sparse checkout
+    name: sparseCheckoutDirectories
+    type: string
+  - default: "true"
+    description:
+      clean out the contents of the repo's destination directory (if it already
+      exists) before trying to clone the repo there
+    name: deleteExisting
+    type: string
+  - default: ""
+    description: git HTTP proxy server for non-SSL requests
+    name: httpProxy
+    type: string
+  - default: ""
+    description: git HTTPS proxy server for SSL requests
+    name: httpsProxy
+    type: string
+  - default: ""
+    description: git no proxy - opt out of proxying HTTP/HTTPS requests
+    name: noProxy
+    type: string
+  - default: "true"
+    description: log the commands used during execution
+    name: verbose
+    type: string
+  - default: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.21.0
+    description: the image used where the git-init binary is
+    name: gitInitImage
+    type: string
+visibility:
+  showToUser: true

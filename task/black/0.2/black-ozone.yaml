@@ -1,0 +1,16 @@
+params:
+  - default: docker.io/cytopia/black:latest-0.2@sha256:2ec766f1c7e42e6b59c0873ce066fa0a2aa2bf8a80dbc1c40f1566bb539303e0
+    description: The container image to use black in
+    name: image
+    type: string
+  - default: requirements.txt
+    description: The name of the requirements file inside the source location
+    name: requirements_file
+    type: string
+  - default:
+      - --help
+    description: extra args that needs to be appended
+    name: args
+    type: array
+visibility:
+  showToUser: true

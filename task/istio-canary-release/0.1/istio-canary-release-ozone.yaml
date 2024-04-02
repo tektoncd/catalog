@@ -1,0 +1,15 @@
+params:
+  - default: ""
+    description: The virtual service name to be patched
+    name: VS_NAME
+    type: string
+  - default: ""
+    description: The traffic percentage to be sent to version v1
+    name: V1_WEIGHT
+    type: string
+  - default: ""
+    description: The traffic percentage to be sent to version v2
+    name: V2_WEIGHT
+    type: string
+visibility:
+  showToUser: true

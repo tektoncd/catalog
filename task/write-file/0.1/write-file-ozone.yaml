@@ -1,0 +1,23 @@
+params:
+  - description:
+      "Relative path to create within the workspace. Directories will be
+      created as necessary.
+
+      "
+    name: path
+    type: string
+  - description: "Contents of the file to create.
+
+      "
+    name: contents
+    type: string
+  - default: "0755"
+    description:
+      "chmod-style permission string to apply to the file. Note that octal
+      numbers need quoting in YAML. Mode will not be applied to created directories.
+
+      "
+    name: mode
+    type: string
+visibility:
+  showToUser: true

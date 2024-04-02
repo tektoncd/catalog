@@ -1,0 +1,24 @@
+params:
+  - default: docker.io/apache/camel-k:2.0.0
+    description: The location of Camel K CLI image.
+    name: camel-k-image
+    type: string
+  - description: the Integration source we want to run
+    name: filename
+    type: string
+  - default: ""
+    description: the namespace where to run the integration
+    name: namespace
+    type: string
+  - default: ""
+    description:
+      the custom container image to use (if the build was performed as part
+      of previous tasks)
+    name: container-image
+    type: string
+  - default: "false"
+    description: wait for the Integration to run before exiting the task
+    name: wait
+    type: string
+visibility:
+  showToUser: true

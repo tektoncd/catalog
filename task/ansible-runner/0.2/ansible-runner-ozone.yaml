@@ -1,0 +1,20 @@
+params:
+  - default: project
+    description: The project directory under the workspace runner-dir
+    name: project-dir
+    type: string
+  - default:
+      - --help
+    description: The arguments to pass ansible-runner
+    name: args
+    type: array
+  - default: /tekton/home
+    description: Absolute path to the user's home directory.
+    name: user-home
+    type: string
+  - default: quay.io/ansible/ansible-runner:stable-2.12-latest
+    description: Ansible runner image.
+    name: image
+    type: string
+visibility:
+  showToUser: true

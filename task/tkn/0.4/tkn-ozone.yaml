@@ -1,0 +1,16 @@
+params:
+  - default: gcr.io/tekton-releases/dogfooding/tkn@sha256:d17fec04f655551464a47dd59553c9b44cf660cc72dbcdbd52c0b8e8668c0579
+    description: tkn CLI container image to run this task
+    name: TKN_IMAGE
+    type: string
+  - default: tkn $@
+    description: tkn CLI script to execute
+    name: SCRIPT
+    type: string
+  - default:
+      - --help
+    description: tkn CLI arguments to run
+    name: ARGS
+    type: array
+visibility:
+  showToUser: true

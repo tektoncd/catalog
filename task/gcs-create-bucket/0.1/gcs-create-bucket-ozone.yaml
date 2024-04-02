@@ -1,0 +1,43 @@
+params:
+  - description: 'The name (including "gs://") of the bucket to create.
+
+      '
+    name: bucketName
+    type: string
+  - description: "The project with which your bucket will be associated.
+
+      "
+    name: project
+    type: string
+  - default: STANDARD
+    description:
+      "The storage class for the new bucket. STANDARD, NEARLINE, COLDLINE,
+      or ARCHIVE.
+
+      "
+    name: storageClass
+    type: string
+  - default: ""
+    description: "The region, dual-region, or multi-region for the new bucket.
+
+      "
+    name: region
+    type: string
+  - default: "false"
+    description:
+      'Set this to "true" if the bucket should be created with bucket-level
+      permissions instead of Access Control Lists.
+
+      '
+    name: uniformAccess
+    type: string
+  - default: service_account.json
+    description:
+      "The path inside the credentials workspace to the GOOGLE_APPLICATION_CREDENTIALS
+      key file.
+
+      "
+    name: serviceAccountPath
+    type: string
+visibility:
+  showToUser: true

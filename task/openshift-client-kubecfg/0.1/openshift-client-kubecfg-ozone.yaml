@@ -1,0 +1,12 @@
+params:
+  - default: oc $@
+    description: The OpenShift CLI arguments to run
+    name: SCRIPT
+    type: string
+  - default:
+      - help
+    description: The OpenShift CLI arguments to run
+    name: ARGS
+    type: array
+visibility:
+  showToUser: true

@@ -1,0 +1,26 @@
+params:
+  - default: python@sha256:4ec7de21666118edfa1b90c79b34c282624d03e2e560fa1b542b2069a65b367f
+    description:
+      The image used to run the tests. This can be a base python image, or
+      an image that already has pre-requirements installed.
+    name: IMAGE
+    type: string
+  - default: ""
+    description: Optional requirements file to use for installing test requirements
+    name: REQUIREMENTS_FILE
+    type: string
+  - default: ""
+    description: Arguments to use with the robot command
+    name: ROBOT_OPTIONS
+    type: string
+  - description: Directory that contains robot tests
+    name: TEST_DIR
+    type: string
+  - default: variables.py
+    description:
+      Name of the variable file provided in the workspace. A .py extension
+      is necessary.
+    name: VARIABLES_FILE
+    type: string
+visibility:
+  showToUser: true

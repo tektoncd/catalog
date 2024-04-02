@@ -1,0 +1,16 @@
+params:
+  - default: codecov-token
+    description: Name of the secret holding the github-token.
+    name: codecov-token-secret
+    type: string
+  - default: token
+    description: Name of the secret key holding the codecov token
+    name: codecov-token-secret-key
+    type: string
+  - default:
+      - -Z
+    description: Extra arguments to be passed to the codecov script.
+    name: args
+    type: array
+visibility:
+  showToUser: true

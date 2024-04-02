@@ -1,0 +1,30 @@
+params:
+  - description: The directory in source that contains the helm chart
+    name: charts_dir
+    type: string
+  - default: v1.0.0
+    description: The helm release version in semantic versioning format
+    name: release_version
+    type: string
+  - default: helm-release
+    description: The helm release name
+    name: release_name
+    type: string
+  - default: ""
+    description: The helm release namespace
+    name: release_namespace
+    type: string
+  - default: ""
+    description: "Specify the values you want to overwrite, comma separated: autoscaling.enabled=true,replicas=1"
+    name: overwrite_values
+    type: string
+  - default: values.yaml
+    description: The values file to be used
+    name: values_file
+    type: string
+  - default: docker.io/lachlanevenson/k8s-helm@sha256:5c792f29950b388de24e7448d378881f68b3df73a7b30769a6aa861061fd08ae
+    description: helm image to be used
+    name: helm_image
+    type: string
+visibility:
+  showToUser: true

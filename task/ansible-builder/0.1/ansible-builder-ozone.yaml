@@ -1,0 +1,23 @@
+params:
+  - default: execution-environment.yml
+    description: Execution environment file definition.
+    name: FILENAME
+    type: string
+  - default: context
+    description: Execution environment build context.
+    name: BUILD_CONTEXT
+    type: string
+  - default: Containerfile
+    description: Name of file to write image definition to. Either Dockerfile or Containerfile.
+    name: OUTPUT_FILENAME
+    type: string
+  - default: "2"
+    description: ansible-builder output verbosity.
+    name: VERBOSITY
+    type: string
+  - default: quay.io/ansible/ansible-builder:latest
+    description: The location of the ansible-builder image.
+    name: BUILDER_IMAGE
+    type: string
+visibility:
+  showToUser: true

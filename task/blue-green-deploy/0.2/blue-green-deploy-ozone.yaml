@@ -1,0 +1,22 @@
+params:
+  - description: Name of the service which is pointing to existing deployment
+    name: SERVICE_NAME
+    type: string
+  - description:
+      The version of newer deployment which is to be patched to existing
+      service
+    name: NEW_VERSION
+    type: string
+  - default: .
+    description: The newer version of the deployment to be deployed in another zone
+    name: MANIFEST
+    type: string
+  - description: Target namespace in which operation needs to be performed
+    name: NAMESPACE
+    type: string
+  - default: quay.io/openshift/origin-cli:4.9
+    description: Image which has kubectl binary present
+    name: IMAGE
+    type: string
+visibility:
+  showToUser: true

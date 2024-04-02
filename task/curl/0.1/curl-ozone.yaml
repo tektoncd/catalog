@@ -1,0 +1,14 @@
+params:
+  - description: URL to curl'ed
+    name: url
+    type: string
+  - default: []
+    description: options of url
+    name: options
+    type: array
+  - default: docker.io/curlimages/curl:7.72.0@sha256:bd5bbd35f89b867c1dccbc84b8be52f3f74dea20b46c5fe0db3780e040afcb6f
+    description: option of curl image
+    name: curl-image
+    type: string
+visibility:
+  showToUser: true

@@ -1,0 +1,29 @@
+params:
+  - description: Prometheus API endpoint
+    name: prometheus_endpoint
+    type: string
+  - description: range query to use to define SLO
+    name: range_query
+    type: string
+  - default: -10m
+    description: time we want to assert fits the SLO
+    name: range_time
+    type: string
+  - default: "1"
+    description: value we will use as threshold
+    name: target_value
+    type: string
+  - default: min
+    description: The target_strategy is min,max or equal
+    name: target_strategy
+    type: string
+  - default: "3600"
+    description: timeout of the gate
+    name: timeout
+    type: string
+  - default: 1m
+    description: how often to draw data from prometheus
+    name: tick_time
+    type: string
+visibility:
+  showToUser: true

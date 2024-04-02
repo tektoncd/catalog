@@ -1,0 +1,13 @@
+params:
+  - description: The Arguments to be passed to Trivy command.
+    name: ARGS
+    type: array
+  - default: docker.io/aquasec/trivy@sha256:dea76d4b50c75125cada676a87ac23de2b7ba4374752c6f908253c3b839201d9
+    description: Trivy scanner image to be used
+    name: TRIVY_IMAGE
+    type: string
+  - description: Image or Path to be scanned by trivy.
+    name: IMAGE_PATH
+    type: string
+visibility:
+  showToUser: true

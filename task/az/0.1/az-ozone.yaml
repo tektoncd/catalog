@@ -1,0 +1,10 @@
+params:
+  - default: mcr.microsoft.com/azure-cli:2.0.78
+    description: Azure CLI container image to run this task
+    name: az-image
+    type: string
+  - description: Azure CLI arguments to run
+    name: ARGS
+    type: array
+visibility:
+  showToUser: true

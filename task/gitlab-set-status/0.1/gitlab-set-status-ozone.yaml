@@ -1,0 +1,74 @@
+params:
+  - default: gitlab.com
+    description: "The GitLab host, adjust this if you run a GitLab enterprise.
+
+      "
+    name: GITLAB_HOST_URL
+    type: string
+  - default: /api/v4
+    description:
+      "The API path prefix, GitLab Enterprise has a prefix e.g. /api/v4
+
+      "
+    name: API_PATH_PREFIX
+    type: string
+  - description: "The GitLab repository full name, e.g.: tektoncd/catalog
+
+      "
+    name: REPO_FULL_NAME
+    type: string
+  - default: gitlab-api-secret
+    description:
+      "The name of the kubernetes secret that contains the GitLab token,
+      default: gitlab-api-secret
+
+      "
+    name: GITLAB_TOKEN_SECRET_NAME
+    type: string
+  - default: token
+    description:
+      "The key within the kubernetes secret that contains the GitLab token,
+      default: token
+
+      "
+    name: GITLAB_TOKEN_SECRET_KEY
+    type: string
+  - description: "Commit SHA to set the status for.
+
+      "
+    name: SHA
+    type: string
+  - description:
+      "The target URL to associate with this status. This URL will be linked
+
+      from the GitLab UI to allow users to easily see the source of the
+
+      status.
+
+      "
+    name: TARGET_URL
+    type: string
+  - description: "A short description of the status.
+
+      "
+    name: DESCRIPTION
+    type: string
+  - default: continuous-integration/tekton
+    description:
+      'The GitLab context, A string label to differentiate this status from
+
+      the status of other systems. ie: "continuous-integration/tekton"
+
+      '
+    name: CONTEXT
+    type: string
+  - description:
+      "The state of the status. Can be one of the following `pending`,
+
+      `running`, `success`, `failed`, or `canceled`.
+
+      "
+    name: STATE
+    type: string
+visibility:
+  showToUser: true

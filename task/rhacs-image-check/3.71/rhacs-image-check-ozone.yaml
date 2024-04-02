@@ -1,0 +1,38 @@
+params:
+  - default: rox-central-endpoint
+    description:
+      Name of secret containing the address:port tuple for RHACS Stackrox
+      Central.
+    name: rox_central_endpoint
+    type: string
+  - default: rox-api-token
+    description: Name of secret containing the RHACS StackRox API token with CI permissions.
+    name: rox_api_token
+    type: string
+  - default: quay.io/stackrox-io/roxctl:3.71.0
+    description: Image providing the roxctl tool.
+    name: rox_image
+    type: string
+  - default: $(params.IMAGE)
+    description: "Full name of image to check.
+
+      Examples: 'gcr.io/rox/sample:5.0-rc1', '$(params.IMAGE)', '$(params.IMAGE)@$(tasks.buildah.results.IMAGE_DIGEST)'
+
+      "
+    name: image
+    type: string
+  - default: table
+    description: Results output format (csv | json | junit | table)
+    name: output_format
+    type: string
+  - default: "false"
+    description: 'Do not verify TLS certificates.
+
+
+      When set to "true", skip verifying the TLS certs of the Central endpoint and registry.
+
+      '
+    name: insecure-skip-tls-verify
+    type: string
+visibility:
+  showToUser: true

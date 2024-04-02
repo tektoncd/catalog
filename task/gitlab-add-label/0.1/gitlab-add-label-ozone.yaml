@@ -1,0 +1,38 @@
+params:
+  - default: gitlab.com
+    description: "The Gitlab host url
+
+      "
+    name: GITLAB_HOST_URL
+    type: string
+  - default: /api/v4
+    description: "The API path prefix
+
+      "
+    name: API_PATH_PREFIX
+    type: string
+  - description:
+      "The Gitlab issue or merge request URL where we want to add a label.
+
+      "
+    name: REQUEST_URL
+    type: string
+  - description: "The actual labels to add.
+
+      "
+    name: LABELS
+    type: array
+  - default: gitlab
+    description: "Name of the secret holding the gitlab-token.
+
+      "
+    name: GITLAB_TOKEN_SECRET
+    type: string
+  - default: token
+    description: "Name of the secret key holding the gitlab-token.
+
+      "
+    name: GITLAB_TOKEN_SECRET_KEY
+    type: string
+visibility:
+  showToUser: true

@@ -1,0 +1,29 @@
+params:
+  - description: Specify a specific helm repo
+    name: helm_repo
+    type: string
+  - description: Specify chart name that will be deployed
+    name: chart_name
+    type: string
+  - default: v1.0.0
+    description: The helm release version in semantic versioning format
+    name: release_version
+    type: string
+  - default: helm-release
+    description: The helm release name
+    name: release_name
+    type: string
+  - default: ""
+    description: The helm release namespace
+    name: release_namespace
+    type: string
+  - default: ""
+    description: "Specify the values you want to overwrite, comma separated: autoscaling.enabled=true,replicas=1"
+    name: overwrite_values
+    type: string
+  - default: latest
+    description: Specify a specific helm version
+    name: helm_version
+    type: string
+visibility:
+  showToUser: true

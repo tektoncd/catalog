@@ -1,0 +1,33 @@
+params:
+  - description: Action on the resource
+    name: action
+    type: string
+  - default: strategic
+    description: Merge strategy when using action  patch
+    name: merge-strategy
+    type: string
+  - description: Content of the resource to deploy
+    name: manifest
+    type: string
+  - default: ""
+    description: A label selector express to decide if the action on resource is success.
+    name: success-condition
+    type: string
+  - default: ""
+    description: A label selector express to decide if the action on resource is failure.
+    name: failure-condition
+    type: string
+  - default: ""
+    description: An express to retrieval data from resource.
+    name: output
+    type: string
+  - default: "false"
+    description: Enable set owner reference for created resource.
+    name: set-ownerreference
+    type: string
+  - default: index.docker.io/aipipeline/kubeclient:v0.0.2
+    description: Kubectl wrapper image
+    name: image
+    type: string
+visibility:
+  showToUser: true

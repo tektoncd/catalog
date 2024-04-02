@@ -1,0 +1,13 @@
+params:
+  - default: gcr.io/knative-releases/knative.dev/client/cmd/kn:latest
+    description: kn CLI container image to run this task
+    name: KN_IMAGE
+    type: string
+  - description: Knative service name
+    name: SERVICE
+    type: string
+  - description: Image to deploy
+    name: IMAGE
+    type: string
+visibility:
+  showToUser: true

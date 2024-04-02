@@ -1,0 +1,21 @@
+params:
+  - description: The command line that you would like to enter.
+    name: command
+    type: string
+  - description: The extended command line that you would like to enter.
+    name: options
+    type: array
+  - default: ""
+    description:
+      "The path inside the credentials workspace to the GOOGLE_APPLICATION_CREDENTIALS
+      key file.
+
+      "
+    name: serviceAccountPath
+    type: string
+  - default: gcr.io/google.com/cloudsdktool/cloud-sdk:slim@sha256:70d3c9ef711c704259b06485f9ab3bab6e1b5c99e4a5c1ed37f9338004664c17
+    description: google cloud image that will be used in steps.
+    name: image
+    type: string
+visibility:
+  showToUser: true

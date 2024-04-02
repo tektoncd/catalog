@@ -1,0 +1,141 @@
+params:
+  - description:
+      "The script to run inside of the VM. The script will be prepended with
+      the following
+
+      if no shebang is present:
+
+
+      #!/bin/sh
+
+      set -ex
+
+
+      You can set your shebang instead (e.g., to run a script with your preferred shell
+      or a scripting language like Python or Ruby).
+
+      "
+    name: script
+    type: string
+  - default: "true"
+    description:
+      "Specifies whether to copy build artifacts from the Orka VM back to
+      the workspace.
+
+      Disable when there is no need to copy build artifacts (e.g., when running tests
+      or linting code).
+
+      "
+    name: copy-build
+    type: string
+  - default: "false"
+    description: Enables verbose logging for all connection activity to the VM.
+    name: verbose
+    type: string
+  - default: "true"
+    description:
+      "Specifies whether to delete the VM after use when run in a pipeline.
+
+      You can discard build agents that are no longer needed to free up resources.
+
+
+      Set to false if you intend to clean up VMs after use manually.
+
+      "
+    name: delete-vm
+    type: string
+  - default: ghcr.io/macstadium/orka-tekton-runner:2022-06-29-ec3440a7@sha256:d7cfb75ea082a927e36c131aa96e96bfcacd23f62fdaf33f5b37320b86baf50e
+    description: "The name of the docker image which runs the task step.
+
+      "
+    name: orka-tekton-runner-image
+    type: string
+  - default: "false"
+    description:
+      "Specifies whether the SSH credentials secret contains an SSH key,
+      as opposed to a password.
+
+      "
+    name: ssh-key
+    type: string
+  - default: orka-ssh-creds
+    description: The name of the secret holding your VM SSH credentials.
+    name: ssh-secret
+    type: string
+  - default: username
+    description:
+      "The name of the key in the VM SSH credentials secret for the username
+      associated with the macOS VM.
+
+      "
+    name: ssh-username-key
+    type: string
+  - default: password
+    description:
+      "The name of the key in the VM SSH credentials secret for the password
+
+      associated with the macOS VM.
+
+
+      If ssh-key is true, this parameter should specify the name of the key in
+
+      the VM SSH credentials secret that holds the private SSH key.
+
+      "
+    name: ssh-password-key
+    type: string
+  - default: ""
+    description:
+      Assign an owned macOS system serial number to the VM (on Intel nodes
+      only).
+    name: system-serial
+    type: string
+  - default: ""
+    description:
+      "\"Inject custom metadata to the VM (on Intel nodes only). You need\
+      \ to provide the metadata in format:\n[\n  { key: firstKey, value: firstValue\
+      \ },\n  { key: secondKey, value: secondsValue }\n]\"\n"
+    name: vm-metadata
+    type: string
+  - default: "false"
+    description: Enables or disables GPU passthrough for the VM (on Intel nodes only).
+    name: gpu-passthrough
+    type: string
+  - default: orka-token
+    description:
+      "The name of the secret holding the authentication token used to access
+      the Orka API.
+
+      "
+    name: orka-token-secret
+    type: string
+  - default: token
+    description:
+      "The name of the key in the Orka token secret, which holds the authentication
+      token.
+
+      "
+    name: orka-token-secret-key
+    type: string
+  - default: orka-vm-name
+    description:
+      "The name of the config map, which stores the name of the generated
+      VM configuration.
+
+      "
+    name: orka-vm-name-config
+    type: string
+  - default: vm-name
+    description:
+      "The name of the key in the VM name config map, which stores the name
+      of the generated VM configuration.
+
+      "
+    name: orka-vm-name-config-key
+    type: string
+  - default: /tekton/home
+    description: Absolute path to the user's home directory.
+    name: user-home
+    type: string
+visibility:
+  showToUser: true

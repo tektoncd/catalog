@@ -1,0 +1,33 @@
+params:
+  - description: package (and its children) to fuzz
+    name: package
+    type: string
+  - description: fuzz target
+    name: target
+    type: string
+  - default: .
+    description: path to the directory to use as context
+    name: context
+    type: string
+  - default: latest
+    description: golang version to use for fuzzing
+    name: version
+    type: string
+  - default: ""
+    description: flags to use for the test command
+    name: flags
+    type: string
+  - default: linux
+    description: running program's operating system target
+    name: GOOS
+    type: string
+  - default: amd64
+    description: running program's architecture target
+    name: GOARCH
+    type: string
+  - default: auto
+    description: value of module support
+    name: GO111MODULE
+    type: string
+visibility:
+  showToUser: true

@@ -1,0 +1,14 @@
+params:
+  - description: extra args that needs to be appended
+    name: args
+    type: array
+  - default: scribe-secret
+    description: Scribe secret name
+    name: scribe-secret
+    type: string
+  - default: v0.4.2
+    description: valint CLI version run this task
+    name: version
+    type: string
+visibility:
+  showToUser: true

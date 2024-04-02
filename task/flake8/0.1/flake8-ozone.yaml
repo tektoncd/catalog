@@ -1,0 +1,19 @@
+params:
+  - default: docker.io/alpine/flake8@sha256:bb280bf2af4a434be912f25bbcb6c79ea4d735ed3c8e259f96c405998920871f
+    description: The container image with flake8
+    name: image
+    type: string
+  - default: .
+    description: The path to the module which should be analysed by flake8
+    name: path
+    type: string
+  - default: requirements.txt
+    description: The name of the requirements file inside the source location
+    name: requirements_file
+    type: string
+  - default: []
+    description: The arguments to pass to the flake8 CLI.
+    name: args
+    type: array
+visibility:
+  showToUser: true

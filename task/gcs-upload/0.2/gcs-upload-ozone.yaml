@@ -1,0 +1,31 @@
+params:
+  - description:
+      The path to files or directories relative to the source workspace that
+      you'd like to upload.
+    name: path
+    type: string
+  - description: The address (including "gs://") where you'd like to upload files to.
+    name: location
+    type: string
+  - default: "false"
+    description:
+      'When "true", delete extra files under location not found under path.
+
+      By default extra files are not deleted.
+
+
+      NOTE: this option can delete data quickly if you specify the wrong
+
+      source/destination combination. "BE CAREFUL WHEN USING THIS OPTION!".
+
+      '
+    name: deleteExtraFiles
+    type: string
+  - default: service_account.json
+    description:
+      The path inside the credentials workspace to the GOOGLE_APPLICATION_CREDENTIALS
+      key file.
+    name: serviceAccountPath
+    type: string
+visibility:
+  showToUser: true

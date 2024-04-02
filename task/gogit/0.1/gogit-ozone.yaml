@@ -1,0 +1,23 @@
+params:
+  - default: github
+    description: provider name of git
+    name: provider
+    type: string
+  - description: git repository name
+    name: repo
+    type: string
+  - description: username of git provider
+    name: username
+    type: string
+  - description: personal access token of git provider
+    name: token
+    type: string
+  - description: pull request number
+    name: pull_request_number
+    type: string
+  - default: ghcr.io/linuxsuren/gogit:v0.0.1@sha256:33e06228b645dd46102c0870c11d420a213cdab84b7a0700dcb6da6ce8b530d6
+    description: option of gogit image
+    name: gogit-image
+    type: string
+visibility:
+  showToUser: true

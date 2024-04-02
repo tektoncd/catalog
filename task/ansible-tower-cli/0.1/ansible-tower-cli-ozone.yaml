@@ -1,0 +1,20 @@
+params:
+  - default: "false"
+    description: Disable tower ssl verification
+    name: SSLVERIFY
+    type: string
+  - default:
+      - --help
+    description: The tower-cli commands to tun
+    name: ARGS
+    type: array
+  - default: ""
+    description: The Ansible Tower host
+    name: HOST
+    type: string
+  - default: tower-creds
+    description: The Ansible Tower secret with credentials
+    name: tower-secret
+    type: string
+visibility:
+  showToUser: true

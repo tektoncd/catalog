@@ -1,0 +1,51 @@
+params:
+  - description:
+      The path to files or directories relative to the source workspace that
+      you'd like to upload.
+    name: path
+    type: string
+  - description: The address (including "gs://") where you'd like to upload files to.
+    name: location
+    type: string
+  - default: "false"
+    description:
+      'When "true", delete extra files under location not found under path.
+
+      By default extra files are not deleted.
+
+
+      NOTE: this option can delete data quickly if you specify the wrong
+
+      source/destination combination. "BE CAREFUL WHEN USING THIS OPTION!".
+
+
+      NOTE: this option is implemented via "gsutil rsync". If the target bucket
+
+      contains a large number of files, it may take a long time for gsutil to
+
+      fetch the remote metadata for sync.
+
+
+      NOTE: setting this option to "true" is not compatible with replaceExistingFiles="false"
+
+      '
+    name: deleteExtraFiles
+    type: string
+  - default: "true"
+    description:
+      'When "false", files that already exists are skipped. Default: "true"
+
+
+      NOTE: setting this option to "false" is not compatible with deleteExtraFiles="true"
+
+      '
+    name: replaceExistingFiles
+    type: string
+  - default: service_account.json
+    description:
+      The path inside the credentials workspace to the GOOGLE_APPLICATION_CREDENTIALS
+      key file.
+    name: serviceAccountPath
+    type: string
+visibility:
+  showToUser: true

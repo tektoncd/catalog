@@ -1,0 +1,16 @@
+params:
+  - default: oc $@
+    description: The OpenShift CLI arguments to run
+    name: SCRIPT
+    type: string
+  - default:
+      - help
+    description: The OpenShift CLI arguments to run
+    name: ARGS
+    type: array
+  - default: "4.6"
+    description: The OpenShift Version to use
+    name: VERSION
+    type: string
+visibility:
+  showToUser: true

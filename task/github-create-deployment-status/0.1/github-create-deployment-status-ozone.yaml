@@ -1,0 +1,83 @@
+params:
+  - default: api.github.com
+    description: "The GitHub host, adjust this if you run a GitHub enteprise.
+
+      "
+    name: GITHUB_HOST_URL
+    type: string
+  - default: ""
+    description:
+      "The API path prefix, GitHub Enterprise has a prefix e.g. /api/v3
+
+      "
+    name: API_PATH_PREFIX
+    type: string
+  - description: "The GitHub repository full name, i.e: tektoncd/catalog.
+
+      "
+    name: REPO_FULL_NAME
+    type: string
+  - description: "The ID of deployment
+
+      "
+    name: DEPLOYMENT_ID
+    type: string
+  - description:
+      'The state of the status. This can be one of "error", "failure",
+
+      "inactive", "in_progress", "queued", "pending" or "success".
+
+      '
+    name: STATE
+    type: string
+  - default: ""
+    description: "The full URL of the deployment's output.
+
+      "
+    name: LOG_URL
+    type: string
+  - default: ""
+    description: "Short description of the status.
+
+      "
+    name: DESCRIPTION
+    type: string
+  - default: ""
+    description:
+      "Name for the target deployment environment (e.g., production, staging).
+
+      "
+    name: ENVIRONMENT
+    type: string
+  - default: ""
+    description: "The URL for accessing environment.
+
+      "
+    name: ENVIRONMENT_URL
+    type: string
+  - default: "true"
+    description: "Adds a new inactive status to all prior non-transient,
+
+      non-production environment deployments with the same repository and
+
+      environment name as the created status's deployment.
+
+      "
+    name: AUTO_INACTIVE
+    type: string
+  - default: github
+    description:
+      "The name of the Kubernetes Secret that contains the GitHub token.
+
+      "
+    name: GITHUB_TOKEN_SECRET_NAME
+    type: string
+  - default: token
+    description:
+      "The key within the Kubernetes Secret that contains the GitHub token.
+
+      "
+    name: GITHUB_TOKEN_SECRET_KEY
+    type: string
+visibility:
+  showToUser: true

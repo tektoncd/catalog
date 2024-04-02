@@ -1,0 +1,16 @@
+params:
+  - default: docker.io/library/gradle:7.6-jdk8@sha256:ebda657f66e04cfa9f152896b4fa70bea4b80561a836adddca3ed85d622f8898
+    description: Gradle base image.
+    name: GRADLE_IMAGE
+    type: string
+  - default: .
+    description: The directory containing build.gradle
+    name: PROJECT_DIR
+    type: string
+  - default:
+      - build
+    description: "The gradle tasks to run (default: build)"
+    name: TASKS
+    type: array
+visibility:
+  showToUser: true

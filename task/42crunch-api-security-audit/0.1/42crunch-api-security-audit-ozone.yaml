@@ -1,0 +1,50 @@
+params:
+  - description:
+      Source control repository URL. Needed to identify API collection on
+      42Crunch Platform.
+    name: x42c_repository_url
+    type: string
+  - default: ""
+    description: Source control branch name.
+    name: x42c_branch_name
+    type: string
+  - default: ""
+    description: Source control tag name.
+    name: x42c_tag_name
+    type: string
+  - default: ""
+    description: Source control PR ID.
+    name: x42c_pr_id
+    type: string
+  - default: ""
+    description: Source control PR target branch name.
+    name: x42c_pr_target_branch
+    type: string
+  - default: 42crunch-api-token
+    description: Name of the secret that contains the API token to access 42Crunch Platform.
+    name: x42c_secret_name
+    type: string
+  - default: "75"
+    description: Minimum score for OpenAPI files.
+    name: x42c_min_score
+    type: string
+  - default: https://platform.42crunch.com
+    description: 42Crunch Platform URL.
+    name: x42c_platform_url
+    type: string
+  - default: ""
+    description:
+      The default collection name used when creating collections for discovered
+      apis.
+    name: x42c_default_collection_name
+    type: string
+  - default: INFO
+    description: Log level, one of FATAL, ERROR, WARN, INFO, DEBUG.
+    name: x42c_log_level
+    type: string
+  - default: "OFF"
+    description: Share new API collections with everyone, one of OFF, READ_ONLY, READ_WRITE
+    name: x42c_share_everyone
+    type: string
+visibility:
+  showToUser: true

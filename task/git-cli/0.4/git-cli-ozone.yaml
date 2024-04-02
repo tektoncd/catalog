@@ -1,0 +1,41 @@
+params:
+  - default: cgr.dev/chainguard/git:root-2.39@sha256:7759f87050dd8bacabe61354d75ccd7f864d6b6f8ec42697db7159eccd491139
+    description: "The base image for the task.
+
+      "
+    name: BASE_IMAGE
+    type: string
+  - default: ""
+    description: "Git user name for performing git operation.
+
+      "
+    name: GIT_USER_NAME
+    type: string
+  - default: ""
+    description: "Git user email for performing git operation.
+
+      "
+    name: GIT_USER_EMAIL
+    type: string
+  - default: "git help
+
+      "
+    description: The git script to run.
+    name: GIT_SCRIPT
+    type: string
+  - default: /root
+    description:
+      "Absolute path to the user's home directory. Set this explicitly if
+      you are running the image as a non-root user or have overridden
+
+      the gitInitImage param with an image containing custom user configuration.
+
+      "
+    name: USER_HOME
+    type: string
+  - default: "true"
+    description: Log the commands that are executed during `git-clone`'s operation.
+    name: VERBOSE
+    type: string
+visibility:
+  showToUser: true

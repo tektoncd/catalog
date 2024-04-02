@@ -1,0 +1,18 @@
+params:
+  - description: url of the repository you want to add
+    name: repository-url
+    type: string
+  - description: repository type (helm or git)
+    name: repository-type
+    type: string
+  - description: name you want to give to the repository
+    name: repository-name
+    type: string
+  - default: --
+    name: flags
+    type: string
+  - default: v2.3.4
+    name: argocd-version
+    type: string
+visibility:
+  showToUser: true

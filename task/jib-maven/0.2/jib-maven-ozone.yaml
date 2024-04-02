@@ -1,0 +1,24 @@
+params:
+  - description: Name of the image to build
+    name: IMAGE
+    type: string
+  - default: gcr.io/cloud-builders/mvn@sha256:57523fc43394d6d9d2414ee8d1c85ed7a13460cbb268c3cd16d28cfb3859e641
+    description: Maven base image
+    name: MAVEN_IMAGE
+    type: string
+  - default: .
+    description:
+      The directory containing the app, relative to the source repository
+      root
+    name: DIRECTORY
+    type: string
+  - default: empty-dir-volume
+    description: The name of the volume for caching Maven artifacts and base image layers
+    name: CACHE
+    type: string
+  - default: "false"
+    description: Whether to allow insecure registry
+    name: INSECUREREGISTRY
+    type: string
+visibility:
+  showToUser: true

@@ -1,0 +1,49 @@
+params:
+  - default: ./*.yaml
+    description:
+      Complete path for the yaml files relative to the workspace path. Should
+      include the yaml file name with extension.
+    name: yamlSrc
+    type: string
+  - default: ""
+    description:
+      Output the policy check results in the requested format (simple, json,
+      yaml, xml)
+    name: output
+    type: string
+  - default: ""
+    description: Set Kubernetes version to validate against. Defaults to 1.18.0 in Datree
+    name: schemaVersion
+    type: string
+  - default: "false"
+    description:
+      Skip files with missing schemas instead of failing the schema validation
+      check
+    name: ignoreMissingSchemas
+    type: string
+  - default: ""
+    description: Specify which policy to execute (by policy name). Example-staging
+    name: policy
+    type: string
+  - default: "false"
+    description:
+      Skip all non-K8s files.Especially useful when scanning a dir with K8s
+      and other config files.
+    name: onlyK8sFiles
+    type: string
+  - default: datree-token
+    description: Name of the secret holding the datree token
+    name: DATREE_TOKEN_SECRET
+    type: string
+  - default: DATREE_TOKEN
+    description: Name of the secret key holding the datree token
+    name: DATREE_TOKEN_SECRET_KEY
+    type: string
+  - default: docker.io/datree/datree:0.15.22@sha256:85cf78f16e67e08ea9df18ab6d3d823a576bfbcc5937f30629eb4859fdeb3fd1
+    description:
+      Datree image to run datree. Ensure the image has the datree binary
+      in /
+    name: datreeImage
+    type: string
+visibility:
+  showToUser: true

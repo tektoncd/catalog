@@ -1,0 +1,16 @@
+params:
+  - description: 'The name (including "gs://") of the bucket to delete.
+
+      '
+    name: bucketName
+    type: string
+  - default: service_account.json
+    description:
+      "The path inside the credentials workspace to the GOOGLE_APPLICATION_CREDENTIALS
+      key file.
+
+      "
+    name: serviceAccountPath
+    type: string
+visibility:
+  showToUser: true

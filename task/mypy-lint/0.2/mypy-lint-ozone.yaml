@@ -1,0 +1,16 @@
+params:
+  - default: docker.io/cytopia/mypy:latest-0.4@sha256:0d5e1a97ce68c4aeececc818c8bf19301b396edbe36a6f83eca8248d7d84a05c
+    description: The container image to use mypy in
+    name: image
+    type: string
+  - default: requirements.txt
+    description: The name of the requirements file inside the source location
+    name: requirements_file
+    type: string
+  - default:
+      - --help
+    description: extra args that need to be appended
+    name: args
+    type: array
+visibility:
+  showToUser: true

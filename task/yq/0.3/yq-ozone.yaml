@@ -1,0 +1,15 @@
+params:
+  - description:
+      A list of files to execute the expression on. Needs to be relative
+      to the source workspace.
+    name: files
+    type: array
+  - description: The yq expression to apply. Can be used to replace yaml fields.
+    name: expression
+    type: string
+  - default: docker.io/mikefarah/yq:4.16.2@sha256:0d4f6e27bdcac7316f635acd524ab0eecc4ad50834b54d10322268650c7712cb
+    description: The yq image to use.
+    name: image
+    type: string
+visibility:
+  showToUser: true

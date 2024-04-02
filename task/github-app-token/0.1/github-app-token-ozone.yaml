@@ -1,0 +1,17 @@
+params:
+  - description: The installation id for the GitHub application to request a token for.
+    name: installation_id
+    type: string
+  - description: The application id for the GitHub application to request a token for.
+    name: application_id
+    type: string
+  - default: private.key
+    description: The key path inside the secret workspace
+    name: private_key_path
+    type: string
+  - default: "10"
+    description: Token expiration time in minutes
+    name: token_expiration_minutes
+    type: string
+visibility:
+  showToUser: true

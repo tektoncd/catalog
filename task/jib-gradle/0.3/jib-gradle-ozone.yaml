@@ -1,0 +1,30 @@
+params:
+  - default: gcr.io/cloud-builders/gradle@sha256:96d6343589392afd9eab8c4463ec899b8b1c972e7cd70678a70a4821c16eb4c9
+    description: The location of the gradle builder image
+    name: BUILDER_IMAGE
+    type: string
+  - description: Reference of the image gradle will produce
+    name: IMAGE
+    type: string
+  - default: .
+    description:
+      The directory containing the app, relative to the source repository
+      root
+    name: DIRECTORY
+    type: string
+  - default: empty-dir-volume
+    description:
+      The name of the volume for caching Gradle artifacts, local Maven repository,
+      and base image layers
+    name: CACHE
+    type: string
+  - default: "false"
+    description: Whether to allow insecure registry
+    name: INSECUREREGISTRY
+    type: string
+  - default: ""
+    description: Extra arguments to add to the gradle jib build
+    name: EXTRA_ARGS
+    type: string
+visibility:
+  showToUser: true

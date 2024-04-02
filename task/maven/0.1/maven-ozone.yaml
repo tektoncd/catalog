@@ -1,0 +1,40 @@
+params:
+  - default: gcr.io/cloud-builders/mvn@sha256:57523fc43394d6d9d2414ee8d1c85ed7a13460cbb268c3cd16d28cfb3859e641
+    description: Maven base image
+    name: MAVEN_IMAGE
+    type: string
+  - default:
+      - package
+    description: maven goals to run
+    name: GOALS
+    type: array
+  - default: ""
+    description: The Maven repository mirror url
+    name: MAVEN_MIRROR_URL
+    type: string
+  - default: ""
+    description: The username for the proxy server
+    name: PROXY_USER
+    type: string
+  - default: ""
+    description: The password for the proxy server
+    name: PROXY_PASSWORD
+    type: string
+  - default: ""
+    description: Port number for the proxy server
+    name: PROXY_PORT
+    type: string
+  - default: ""
+    description: Proxy server Host
+    name: PROXY_HOST
+    type: string
+  - default: ""
+    description: Non proxy server host
+    name: PROXY_NON_PROXY_HOSTS
+    type: string
+  - default: http
+    description: Protocol for the proxy ie http or https
+    name: PROXY_PROTOCOL
+    type: string
+visibility:
+  showToUser: true

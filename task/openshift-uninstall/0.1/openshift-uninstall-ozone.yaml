@@ -1,0 +1,7 @@
+params:
+  - default: quay.io/openshift/origin-upi-installer:4.6
+    description: OpenShift installer base image for UPI installation
+    name: OPENSHIFT_INSTALLER_IMAGE
+    type: string
+visibility:
+  showToUser: true

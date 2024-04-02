@@ -1,0 +1,14 @@
+params:
+  - name: files
+    type: string
+  - default: policy
+    name: policy
+    type: string
+  - default: stdout
+    name: output
+    type: string
+  - default: []
+    name: args
+    type: array
+visibility:
+  showToUser: true

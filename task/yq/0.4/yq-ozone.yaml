@@ -1,0 +1,23 @@
+params:
+  - default: ""
+    description: The yq script to execute. Can be multiple lines for complex tasks.
+    name: SCRIPT
+    type: string
+  - default: docker.io/mikefarah/yq:4.27.5@sha256:2be3626ed633fbe1fc33ee9343a1256a6be53334412b2251b9a859f8c145bb53
+    description: The yq image to use.
+    name: image
+    type: string
+  - default: []
+    description:
+      (deprecated, use SCRIPT instead) A list of files to execute the expression
+      on. Needs to be relative to the source workspace.
+    name: files
+    type: array
+  - default: ""
+    description:
+      (deprecated, use SCRIPT instead) The yq expression to apply. Can be
+      used to replace yaml fields.
+    name: expression
+    type: string
+visibility:
+  showToUser: true

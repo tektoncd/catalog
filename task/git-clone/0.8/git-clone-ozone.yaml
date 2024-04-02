@@ -1,0 +1,76 @@
+params:
+  - description: Repository URL to clone from.
+    name: url
+    type: string
+  - default: ""
+    description: Revision to checkout. (branch, tag, sha, ref, etc...)
+    name: revision
+    type: string
+  - default: ""
+    description: Refspec to fetch before checking out revision.
+    name: refspec
+    type: string
+  - default: "true"
+    description: Initialize and fetch git submodules.
+    name: submodules
+    type: string
+  - default: "1"
+    description: Perform a shallow clone, fetching only the most recent N commits.
+    name: depth
+    type: string
+  - default: "true"
+    description:
+      Set the `http.sslVerify` global git config. Setting this to `false`
+      is not advised unless you are sure that you trust your git remote.
+    name: sslVerify
+    type: string
+  - default: ca-bundle.crt
+    description:
+      file name of mounted crt using ssl-ca-directory workspace. default
+      value is ca-bundle.crt.
+    name: crtFileName
+    type: string
+  - default: ""
+    description: Subdirectory inside the `output` Workspace to clone the repo into.
+    name: subdirectory
+    type: string
+  - default: ""
+    description:
+      Define the directory patterns to match or exclude when performing a
+      sparse checkout.
+    name: sparseCheckoutDirectories
+    type: string
+  - default: "true"
+    description:
+      Clean out the contents of the destination directory if it already exists
+      before cloning.
+    name: deleteExisting
+    type: string
+  - default: ""
+    description: HTTP proxy server for non-SSL requests.
+    name: httpProxy
+    type: string
+  - default: ""
+    description: HTTPS proxy server for SSL requests.
+    name: httpsProxy
+    type: string
+  - default: ""
+    description: Opt out of proxying HTTP/HTTPS requests.
+    name: noProxy
+    type: string
+  - default: "true"
+    description: Log the commands that are executed during `git-clone`'s operation.
+    name: verbose
+    type: string
+  - default: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.29.0
+    description: The image providing the git-init binary that this Task runs.
+    name: gitInitImage
+    type: string
+  - default: /tekton/home
+    description: "Absolute path to the user's home directory.
+
+      "
+    name: userHome
+    type: string
+visibility:
+  showToUser: true

@@ -1,0 +1,12 @@
+params:
+  - description: secret name of the slack app access token (key is token)
+    name: token-secret
+    type: string
+  - description: channel id or channel name
+    name: channel
+    type: string
+  - description: plain text message
+    name: message
+    type: string
+visibility:
+  showToUser: true

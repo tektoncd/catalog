@@ -1,0 +1,23 @@
+params:
+  - default: registry.gitlab.com/pipeline-components/pylint:0.12.0@sha256:051b701936dfab6fa27bd1ebd50ef56b19577565661bc0227e50dd1cf94a3d6e
+    description: The container image with pylint
+    name: image
+    type: string
+  - default: .
+    description: The path to the module which should be analysed by pylint
+    name: path
+    type: string
+  - default: requirements.txt
+    description: The name of the requirements file inside the source location
+    name: requirements_file
+    type: string
+  - default: []
+    description: The arguments to pass to the pylint CLI.
+    name: args
+    type: array
+  - default: pip.conf
+    description: The name of the custom pip config file.
+    name: pip_conf_file
+    type: string
+visibility:
+  showToUser: true

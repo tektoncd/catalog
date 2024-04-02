@@ -1,0 +1,9 @@
+params:
+  - description: command to run inside kind environment.
+    name: command
+    type: array
+  - description: Task runtime image. Should typically contain the kind CLI (https://kind.sigs.k8s.io)
+    name: image
+    type: string
+visibility:
+  showToUser: true

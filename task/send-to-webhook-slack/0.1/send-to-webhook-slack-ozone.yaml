@@ -1,0 +1,17 @@
+params:
+  - description: secret name of the slack app webhook URL (key is url)
+    name: webhook-secret
+    type: string
+  - description: plain text message
+    name: message
+    type: string
+  - default: Tekton Bot
+    description: plain text message
+    name: bot-name
+    type: string
+  - default: ":robot_face:"
+    description: plain text message
+    name: icon-emoji
+    type: string
+visibility:
+  showToUser: true

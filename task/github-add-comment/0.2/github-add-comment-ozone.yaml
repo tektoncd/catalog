@@ -1,0 +1,43 @@
+params:
+  - default: api.github.com
+    description: "The GitHub host, adjust this if you run a GitHub enteprise.
+
+      "
+    name: GITHUB_HOST_URL
+    type: string
+  - default: ""
+    description:
+      "The API path prefix, GitHub Enterprise has a prefix e.g. /api/v3
+
+      "
+    name: API_PATH_PREFIX
+    type: string
+  - description:
+      "The GitHub issue or pull request URL where we want to add a new
+
+      comment.
+
+      "
+    name: REQUEST_URL
+    type: string
+  - description: "The actual comment to add.
+
+      "
+    name: COMMENT
+    type: string
+  - default: github
+    description:
+      "The name of the Kubernetes Secret that contains the GitHub token.
+
+      "
+    name: GITHUB_TOKEN_SECRET_NAME
+    type: string
+  - default: token
+    description:
+      "The key within the Kubernetes Secret that contains the GitHub token.
+
+      "
+    name: GITHUB_TOKEN_SECRET_KEY
+    type: string
+visibility:
+  showToUser: true

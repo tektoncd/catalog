@@ -1,0 +1,12 @@
+params:
+  - default: aws $@
+    description: The AWS script to run
+    name: SCRIPT
+    type: string
+  - default:
+      - help
+    description: AWS cli arguments to be passed
+    name: ARGS
+    type: array
+visibility:
+  showToUser: true

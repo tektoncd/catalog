@@ -1,0 +1,18 @@
+params:
+  - default: local-to-remote
+    name: direction
+    type: string
+  - default: ./
+    name: local-path
+    type: string
+  - default: ~/
+    name: remote-path
+    type: string
+  - default: 0.0.0.0
+    name: remote-ip
+    type: string
+  - default: root
+    name: remote-username
+    type: string
+visibility:
+  showToUser: true

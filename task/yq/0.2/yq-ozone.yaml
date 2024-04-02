@@ -1,0 +1,11 @@
+params:
+  - description:
+      A list of files to execute the expression on. Needs to be relative
+      to the source workspace.
+    name: files
+    type: array
+  - description: The yq expression to apply. Can be used to replace yaml fields.
+    name: expression
+    type: string
+visibility:
+  showToUser: true

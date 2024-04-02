@@ -1,0 +1,16 @@
+params:
+  - default: .
+    description: The path where package.json of the project is defined.
+    name: PATH_CONTEXT
+    type: string
+  - default:
+      - version
+    description: The npm goals you want to run.
+    name: ARGS
+    type: array
+  - default: docker.io/library/node:12-alpine@sha256:dfbebf17bfb014e1e7068e76325a117bccf8679c68aec6a28514184a209c8bae
+    description: The node image you want to use.
+    name: IMAGE
+    type: string
+visibility:
+  showToUser: true

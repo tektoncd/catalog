@@ -1,0 +1,6 @@
+params:
+  - description: Go package to analyze.
+    name: package
+    type: string
+visibility:
+  showToUser: true

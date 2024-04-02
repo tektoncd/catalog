@@ -1,0 +1,25 @@
+params:
+  - default: docker.io/python:3.11.1-bullseye
+    description: The used Python image
+    name: PYTHON_IMAGE
+    type: string
+  - default: ""
+    description: The additional arguments to be used with pytest
+    name: ARGS
+    type: string
+  - default: .
+    description: The path to the source code
+    name: SOURCE_PATH
+    type: string
+  - default: requirements.txt
+    description:
+      The name of the requirements file inside the source location, with
+      fallback to the requirements file in the root location
+    name: REQUIREMENTS_FILE
+    type: string
+  - default: pip.conf
+    description: The name of the custom pip config file.
+    name: PIP_CONF_FILE
+    type: string
+visibility:
+  showToUser: true

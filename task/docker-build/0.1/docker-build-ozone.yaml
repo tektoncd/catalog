@@ -1,0 +1,34 @@
+params:
+  - description: Reference of the image docker will produce.
+    name: image
+    type: string
+  - default: docker.io/library/docker:stable@sha256:18ff92d3d31725b53fa6633d60bed323effb6d5d4588be7b547078d384e0d4bf
+    description: The location of the docker builder image.
+    name: builder_image
+    type: string
+  - default: docker:dind
+    description: The location of the docker-in-docker image.
+    name: dind_image
+    type: string
+  - default: ./Dockerfile
+    description: Path to the Dockerfile to build.
+    name: dockerfile
+    type: string
+  - default: .
+    description: Path to the directory to use as context.
+    name: context
+    type: string
+  - default: ""
+    description: Extra parameters passed for the build command when building images.
+    name: build_extra_args
+    type: string
+  - default: ""
+    description: Extra parameters passed for the push command when pushing images.
+    name: push_extra_args
+    type: string
+  - default: ""
+    description: Allows the user to push to an insecure registry that has been specified
+    name: insecure_registry
+    type: string
+visibility:
+  showToUser: true

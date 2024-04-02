@@ -1,0 +1,11 @@
+params:
+  - default: us-east-1
+    description: "Region for AWS, ensure that you specify the
+
+      same Region that your Amazon ECR registry exists in.
+
+      "
+    name: region
+    type: string
+visibility:
+  showToUser: true

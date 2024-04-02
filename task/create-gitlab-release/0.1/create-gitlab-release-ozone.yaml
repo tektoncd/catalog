@@ -1,0 +1,38 @@
+params:
+  - description: Name of the tag.
+    name: TAG_NAME
+    type: string
+  - description: Name of the release.
+    name: NAME
+    type: string
+  - default: ""
+    description: Short description of the release.
+    name: DESCRIPTION
+    type: string
+  - default: master
+    description:
+      Required in the case of Gitlab, It can be a commit SHA, another tag
+      name, or a branch name.
+    name: RELEASE_REF
+    type: string
+  - description: Project id for gitlab project.
+    name: PROJECT_ID
+    type: string
+  - default: ""
+    description: Name of the asset to be uploaded.
+    name: UPLOAD_ASSET_NAME
+    type: string
+  - default: ""
+    description: Uplaod URL for the hosted asset.
+    name: UPLOAD_ASSET_URL
+    type: string
+  - default: gitlab-token
+    description: Name of the secret holding the gitlab-token.
+    name: GITLAB_TOKEN_SECRET
+    type: string
+  - default: GITLAB_TOKEN
+    description: Name of the secret key holding the gitlab-token.
+    name: GITLAB_TOKEN_SECRET_KEY
+    type: string
+visibility:
+  showToUser: true

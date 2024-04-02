@@ -1,0 +1,63 @@
+params:
+  - default: ""
+    description: URL to the IQ Server that will evaluate policies
+    name: SERVER_URL
+    type: string
+  - default: ""
+    description: Authentication credentials to use for the IQ Server
+    name: AUTHENTICATION
+    type: string
+  - default: ""
+    description: Public ID of the application on the IQ Server
+    name: APPLICATION_ID
+    type: string
+  - default: build
+    description:
+      "The stage to run analysis against. Accepted values: develop | build
+      | stage-release | release | operate. Default: build"
+    name: STAGE
+    type: string
+  - default: ""
+    description:
+      "Path to a JSON file where the results of the policy evaluation will
+      be stored in a machine-readable format. Default: none"
+    name: RESULT_FILE
+    type: string
+  - default: ""
+    description:
+      "Introduced in 1.125.0-04a: The format of the HTML evaluation report.
+      Accepted values: summary | enhanced. Default: enhanced"
+    name: REPORT_FORMAT
+    type: string
+  - default: ""
+    description: "Fail on policy evaluation warnings. Default: false"
+    name: FAIL_ON_POLICY_WARNINGS
+    type: string
+  - default: ""
+    description: "Ignore system errors (IO, network, server, etc). Default: false"
+    name: IGNORE_SYSTEM_ERRORS
+    type: string
+  - default: ""
+    description: "Proxy to use. Default: none"
+    name: PROXY
+    type: string
+  - default: ""
+    description: "Credentials to use for the proxy. Default: none"
+    name: PROXY_USER
+    type: string
+  - default: ""
+    description:
+      "Enable debug logs. WARNING: This may expose sensitive information
+      in the log. Default: false"
+    name: DEBUG
+    type: string
+  - default: ""
+    description: "Show the help screen. Default: false"
+    name: HELP
+    type: string
+  - default: ""
+    description: Scan targets
+    name: TARGETS
+    type: string
+visibility:
+  showToUser: true

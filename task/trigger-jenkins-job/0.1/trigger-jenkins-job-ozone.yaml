@@ -1,0 +1,18 @@
+params:
+  - description: Server URL on which Jenkins is running
+    name: JENKINS_HOST_URL
+    type: string
+  - description: Jenkins Job which needs to be triggered
+    name: JOB_NAME
+    type: string
+  - default: jenkins-credentials
+    description: Jenkins secret containing credentials
+    name: JENKINS_SECRETS
+    type: string
+  - default:
+      - ""
+    description: Extra arguments to append as a part of CURL request
+    name: JOB_PARAMS
+    type: array
+visibility:
+  showToUser: true

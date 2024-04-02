@@ -1,0 +1,18 @@
+params:
+  - default: asciidoctor-pdf
+    description: Command to convert AsciiDoc files asciidoctor, asciidoctor-pdf, asciidoctor-epub3
+    name: ASCIIDOC_CMD
+    type: string
+  - default: ./Readme.adoc
+    description: The .adoc file path.
+    name: ADOC_PATH
+    type: string
+  - description: The Arguments to be passed to Asciidoctor command.
+    name: ASCIIDOC_ARGS
+    type: string
+  - default: docker.io/asciidoctor/docker-asciidoctor:1.16@sha256:36117d900e9365923dcf1d79c99eb82192c3d1b81ca1bb077e3373f722532e05
+    description: Asciidoctor image to be used
+    name: ASCIIDOC_IMAGE
+    type: string
+visibility:
+  showToUser: true

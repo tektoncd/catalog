@@ -1,0 +1,65 @@
+params:
+  - default: api.github.com
+    description: "The GitHub host, adjust this if you run a GitHub enteprise.
+
+      "
+    name: GITHUB_HOST_URL
+    type: string
+  - default: ""
+    description:
+      "The API path prefix, GitHub Enterprise has a prefix e.g. /api/v3
+
+      "
+    name: API_PATH_PREFIX
+    type: string
+  - description: "The GitHub repository full name, e.g.: tektoncd/catalog
+
+      "
+    name: REPO_FULL_NAME
+    type: string
+  - default: github
+    description:
+      "The name of the kubernetes secret that contains the GitHub token,
+      default: github
+
+      "
+    name: GITHUB_TOKEN_SECRET_NAME
+    type: string
+  - default: token
+    description:
+      "The key within the kubernetes secret that contains the GitHub token,
+      default: token
+
+      "
+    name: GITHUB_TOKEN_SECRET_KEY
+    type: string
+  - default: Bearer
+    description:
+      'The type of authentication to use. You could use the less secure "Basic"
+      for example
+
+      '
+    name: AUTH_TYPE
+    type: string
+  - description: "The name of the branch where your changes are implemented.
+
+      "
+    name: HEAD
+    type: string
+  - description: "The name of the branch you want the changes pulled into.
+
+      "
+    name: BASE
+    type: string
+  - description: "The body description of the pull request.
+
+      "
+    name: BODY
+    type: string
+  - description: "The title of the pull request.
+
+      "
+    name: TITLE
+    type: string
+visibility:
+  showToUser: true

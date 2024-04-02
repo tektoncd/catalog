@@ -1,0 +1,21 @@
+params:
+  - default: Dockerfile
+    description: The name of the Dockerfile
+    name: DOCKERFILE
+    type: string
+  - default: docker.io/moby/buildkit:v0.6.2@sha256:db234cf7362aef489e4273a6937794cb19c09ba15c7ee0ec6f85044086ea4f6a
+    description: The name of the BuildKit client (buildctl) image
+    name: BUILDKIT_CLIENT_IMAGE
+    type: string
+  - default: tcp://buildkitd:1234
+    description: The address of the BuildKit daemon (buildkitd) service
+    name: BUILDKIT_DAEMON_ADDRESS
+    type: string
+  - default: buildkit-client-certs
+    description:
+      The name of Secret that contains ca.pem, cert.pem, key.pem for mTLS
+      connection to BuildKit daemon
+    name: BUILDKIT_CLIENT_CERTS
+    type: string
+visibility:
+  showToUser: true

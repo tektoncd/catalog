@@ -1,0 +1,40 @@
+params:
+  - default: api.github.com
+    description: "The GitHub host, adjust this if you run a GitHub Enteprise.
+
+      "
+    name: GITHUB_HOST_URL
+    type: string
+  - default: ""
+    description:
+      "The API path prefix, GitHub Enterprise has a prefix e.g. /api/v3
+
+      "
+    name: API_PATH_PREFIX
+    type: string
+  - description: "{owner}/{repo}"
+    name: PACKAGE
+    type: string
+  - description: The pull request number
+    name: PULL_REQUEST_NUMBER
+    type: string
+  - default: ""
+    description: "Comma separated list of github user slugs.
+
+      "
+    name: REVIEWERS
+    type: string
+  - default: ""
+    description: "Comma separated list of github team slugs.
+
+      "
+    name: TEAM_REVIEWERS
+    type: string
+  - default: token
+    description: "The file within workspace that contains the GitHub token.
+
+      "
+    name: GITHUB_TOKEN_FILE
+    type: string
+visibility:
+  showToUser: true

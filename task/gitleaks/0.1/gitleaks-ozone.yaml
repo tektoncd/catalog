@@ -1,0 +1,25 @@
+params:
+  - description: path to the repo to be scanned.
+    name: repo_path
+    type: string
+  - default: ""
+    description: url from where the config file would be fetched.
+    name: config_file_url
+    type: string
+  - default: ""
+    description: path to config file.
+    name: config_file_path
+    type: string
+  - default: json
+    description: format in which report will be generated. (json|csv|sarif) (default:"json")
+    name: output_format
+    type: string
+  - description: path of file to save analysis report
+    name: report_output_path
+    type: string
+  - default: []
+    description: args
+    name: args
+    type: array
+visibility:
+  showToUser: true

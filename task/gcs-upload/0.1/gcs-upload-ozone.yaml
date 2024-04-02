@@ -1,0 +1,17 @@
+params:
+  - description:
+      The path to files or directories relative to the source workspace that
+      you'd like to upload.
+    name: path
+    type: string
+  - description: The address (including "gs://") where you'd like to upload files to.
+    name: location
+    type: string
+  - default: service_account.json
+    description:
+      The path inside the credentials workspace to the GOOGLE_APPLICATION_CREDENTIALS
+      key file.
+    name: serviceAccountPath
+    type: string
+visibility:
+  showToUser: true

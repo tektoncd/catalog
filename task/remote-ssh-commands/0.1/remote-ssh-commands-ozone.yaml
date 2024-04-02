@@ -1,0 +1,20 @@
+params:
+  - description: Remote host to connect
+    name: HOST
+    type: string
+  - description: SSH username
+    name: USERNAME
+    type: string
+  - default: "22"
+    description: SSH port, default is 22
+    name: PORT
+    type: string
+  - description: The script which you want to execute on remote server
+    name: SSH_SCRIPT
+    type: string
+  - default: "false"
+    description: include more ciphers with use_insecure_cipher
+    name: USE_INSECURE_CIPHER
+    type: string
+visibility:
+  showToUser: true

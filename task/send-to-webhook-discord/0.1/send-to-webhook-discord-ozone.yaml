@@ -1,0 +1,18 @@
+params:
+  - description: secret name of Discord webhook URL
+    name: webhook-secret
+    type: string
+  - default: Hello World from Tekton Bot
+    description: plain text message
+    name: message
+    type: string
+  - default: Tekton Bot
+    description: plain text message
+    name: bot-name
+    type: string
+  - default: https://github.com/tektoncd.png
+    description: url avatar image
+    name: avatar-url
+    type: string
+visibility:
+  showToUser: true

@@ -1,0 +1,12 @@
+params:
+  - default:
+      - --help
+    description: The terraform cli commands to tun
+    name: ARGS
+    type: array
+  - default: terraform-creds
+    description: The terraform secret with credentials
+    name: terraform-secret
+    type: string
+visibility:
+  showToUser: true

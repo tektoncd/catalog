@@ -1,0 +1,22 @@
+params:
+- default: ghcr.io/ko-build/ko:5a95f8abc540475366126d6c34baf7014794315c
+  description: ko image to use for builds
+  name: ko-image
+  type: string
+- default: .
+  description: import path of package main
+  name: main
+  type: string
+- default: []
+  description: additional arguments to ko build
+  name: extra-args
+  type: array
+- description: ko environment variable which identifies where to push images
+  name: KO_DOCKER_REPO
+  type: string
+- default: ''
+  description: base image for ko build
+  name: KO_DEFAULTBASEIMAGE
+  type: string
+visibility:
+  showToUser: true

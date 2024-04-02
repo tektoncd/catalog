@@ -1,0 +1,12 @@
+params:
+  - default: gcr.io/google.com/cloudsdktool/cloud-sdk:slim@sha256:88cc5b95f90ed70d0827b21fb12091f2e30a5d7a585ecafe5f71cdd5d6caa88d
+    description: gcloud CLI container image to run this task
+    name: gcloud-image
+    type: string
+  - default:
+      - help
+    description: gcloud CLI arguments to run
+    name: ARGS
+    type: array
+visibility:
+  showToUser: true

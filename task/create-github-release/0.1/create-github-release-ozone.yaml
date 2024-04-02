@@ -1,0 +1,24 @@
+params:
+  - description: A git tag that will be created with this release (e.g. v1.0.0)
+    name: TAG
+    type: string
+  - default: master
+    description:
+      "Git revision to create a release from (branch, tag, sha, ref\u2026\
+      )."
+    name: REVISION
+    type: string
+  - default: release.md
+    description: Name of the file that has to be uploaded as release notes.
+    name: RELEASE_FILE_NAME
+    type: string
+  - default: github-token
+    description: Name of the secret holding the github-token.
+    name: GITHUB_TOKEN_SECRET
+    type: string
+  - default: GITHUB_TOKEN
+    description: Name of the secret key holding the github-token.
+    name: GITHUB_TOKEN_SECRET_KEY
+    type: string
+visibility:
+  showToUser: true

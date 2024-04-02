@@ -1,0 +1,29 @@
+params:
+  - default: https://upload.pypi.org/legacy/
+    description: The repository (package index) to upload the package to.
+    name: TWINE_REPOSITORY_URL
+    type: string
+  - default: pypi-secret
+    description:
+      Name of the secret containing the username & password used to upload
+      the package.
+    name: SECRET_NAME
+    type: string
+  - default: username
+    description: Name of the secret key containing the username.
+    name: SECRET_USERNAME_KEY
+    type: string
+  - default: password
+    description: Name of the secret key containing the password.
+    name: SECRET_PASSWORD_KEY
+    type: string
+  - default: ""
+    description: Script to execute prior to running setup.py.
+    name: PREBUILD_SCRIPT
+    type: string
+  - default: python:3.9
+    description: Image to use for building the package
+    name: BUILDER_IMAGE
+    type: string
+visibility:
+  showToUser: true

@@ -1,0 +1,23 @@
+params:
+  - default: latest
+    description: The used Python version, more precisely the tag for the Python image
+    name: PYTHON
+    type: string
+  - default: .
+    description: The path to the source code
+    name: SOURCE_PATH
+    type: string
+  - default: .
+    description: The path to the module which should be analysed by pylint
+    name: MODULE_PATH
+    type: string
+  - default: ""
+    description: The additional arguments to be used with pylint
+    name: ARGS
+    type: string
+  - default: requirements.txt
+    description: The name of the requirements file inside the source location
+    name: REQUIREMENTS_FILE
+    type: string
+visibility:
+  showToUser: true
