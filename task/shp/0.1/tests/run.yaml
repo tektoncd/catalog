@@ -1,0 +1,12 @@
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: shp-taskrun
+spec:
+  serviceAccountName: shp-account
+  taskRef:
+    name: shp
+  params:
+    - name: SCRIPT
+      value: |
+        shp version
