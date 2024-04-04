@@ -1,0 +1,16 @@
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: shp-run-with-workspace
+spec:
+  taskRef:
+    name: shp
+  workspaces:
+    - name: kubeconfig
+      secret:
+        secretName: kubeconfig
+  params:
+    - name: SCRIPT
+      value: |
+        shp build list
+        shp build run BUILD-NAME --follow
