@@ -1,0 +1,59 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: jq
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/categories: Developer Tools
+    tekton.dev/tags: jq
+    tekton.dev/displayName: "JQ"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    Task built for using the JQ utility in pipelines.
+  workspaces:
+    - name: source
+      description: A workspace that contains the file which needs to be altered. It can take the form of a persistent volume (PV and PVC) or configmap.
+      optional: true
+  params:
+    - name: script
+      type: string
+      description: "JQ script that will be executed. If none is provided, the command jq '.' will be executed by default."
+      default: "."
+    - name: image
+      type: string
+      description: "The jq image to use."
+      default: quay.io/jpmaida1/jq@sha256:f90645c017ba8b1a2fff44309231cb7f8fd3a441690e17c15a53e60997f309c0
+    - name: input
+      type: string
+      description: >-
+        The input to be passed to the JQ command. It can be a JSON string or a file name. 
+        It is recommended for large JSON to use file mode. 
+        If this parameter is not provided, the default value '{\"hello\":\"world\"}' will be used.
+        If file mode is used the full file's path needs to be informed.
+      default: '{\"hello\":\"world\"}'
+    - name: stringOrFile
+      type: string
+      enum: ["string","file"]
+      default: "file"
+      description: >-
+        Flag used to determine whether the input passed will be a JSON string or file. 
+        Use the value 'string' for JSON string or 'file' for file. 
+        In order to use the enum type the parameter 'enable-param-enum' needs to be enabled.
+  results:
+    - name: jq-script-outcome
+      description: "The result of the JQ script passed as a parameter"
+  steps:
+    - name: jq-script
+      image: $(params.image)
+      workingDir: $(workspaces.source.path)
+      script: |
+        echo "You submitted as input: $(params.input)"
+        echo "JQ script result:"
+        
+        if [ "string" = "$(params.stringOrFile)" ]; then
+          echo $(params.input) | jq $(params.script) | tee $(results.jq-script-outcome.path)
+        else
+          cat $(params.input) | jq $(params.script) | tee $(results.jq-script-outcome.path)
+        fi

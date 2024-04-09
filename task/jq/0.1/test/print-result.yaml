@@ -1,0 +1,12 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: print-result
+spec:
+  params:
+    - name: input
+  steps:
+    - name: print
+      image: registry.access.redhat.com/ubi8:8.9-1160
+      script: |
+        echo "$(params.input)"
