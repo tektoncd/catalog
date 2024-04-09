@@ -1,4 +1,4 @@
-# YQ Task
+# JQ Task
 
 The following task is used to execute a given JQ script and expose its result. It is able to work with both JSON string and file as input to the script.
 
