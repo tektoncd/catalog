@@ -1,51 +1,57 @@
 apiVersion: tekton.dev/v1
 kind: Task
 metadata:
-  annotations:
-    tekton.dev/categories: Security
-    tekton.dev/displayName: Scan an image for vulnerabilities with Red Hat Advanced Cluster Security
-    tekton.dev/pipelines.minVersion: 0.18.0
-    tekton.dev/platforms: linux/amd64
-    tekton.dev/tags: security
   name: rhacs-image-scan
   labels:
-    app.kubernetes.io/version: '3.71'
+    app.kubernetes.io/version: "3.71"
+  annotations:
+    tekton.dev/tags: security
+    tekton.dev/categories: Security
+    tekton.dev/displayName: "Scan an image for vulnerabilities with Red Hat Advanced Cluster Security"
+    tekton.dev/platforms: "linux/amd64"
+    tekton.dev/pipelines.minVersion: "0.18.0"
 spec:
-  description: |-
+  description: >-
     Scan an image with Red Hat Advanced Cluster Security.
-    This task allows you to return full vulnerability scan results for an image in CSV, Table, or JSON formats. The companion rhacs-image-check task checks an image against build-time policies.
+
+    This task allows you to return full vulnerability scan results for an image
+    in CSV, Table, or JSON formats.
+    The companion rhacs-image-check task checks an image against build-time policies.
   params:
-    - description: 'Name of secret containing the address:port tuple for RHACS Stackrox Central.'
+    - name: rox_central_endpoint
+      type: string
+      description: Name of secret containing the address:port tuple for RHACS Stackrox Central.
       default: rox-central-endpoint
-      name: rox_central_endpoint
+    - name: rox_api_token
       type: string
-    - description: 'Name of secret containing the RHACS StackRox API token with CI permissions. Leave empty if you use another authentication mechanism. Example: rox-api-token.'
+      description: |
+        Name of secret containing the RHACS StackRox API token with CI permissions.
+        Leave empty if you use another authentication mechanism.
+        Example: rox-api-token.
       default: ""
-      name: rox_api_token
+    - name: rox_image
       type: string
-    - description: Image providing the roxctl tool.
-      default: 'quay.io/stackrox-io/roxctl:4.4.0'
-      name: rox_image
+      description: Image providing the roxctl tool.
+      default: quay.io/stackrox-io/roxctl:4.4.0
+    - name: image
       type: string
-    - description: |
+      description: |
         Full name of image to scan.
 
         SHA 256 digest may be included to ensure scan of sequental runs with same tag.
         Examples: 'gcr.io/rox/sample:5.0-rc1', '$(params.IMAGE)', '$(params.IMAGE)@$(tasks.buildah.results.IMAGE_DIGEST)'
-      default: $(params.IMAGE)
-      name: image
+      default: '$(params.IMAGE)'
+    - name: output_format
       type: string
-    - description: 'Results output format (json | csv | table).'
+      description: Results output format (json | csv | table).
       default: json
-      name: output_format
+    - name: insecure-skip-tls-verify
       type: string
-    - description: |
+      description: |
         Do not verify TLS certificates.
 
         When set to "true", skip verifying the TLS certs of the Central endpoint and registry.
-      default: 'false'
-      name: insecure-skip-tls-verify
-      type: string
+      default: "false"
   volumes:
     - name: token-vol
       projected:
@@ -56,7 +62,7 @@ spec:
               path: token
   workspaces:
     - name: roxctl-config
-      description: The folder where the roxctl config should be stored
+      description: The folder where the roxctl config should be stored.
       mountPath: /roxctl-config
   stepTemplate:
     env:
@@ -155,11 +161,14 @@ spec:
         - name: OUTPUT
           value: $(params.output_format)
         - name: ROX_API_TOKEN
-          value: $(params.rox_api_token)
+          valueFrom:
+            secretKeyRef:
+              name: $(params.rox_api_token)
+              key: rox_api_token
       args:
         - image
         - scan
-        - '--endpoint=$(ROX_CENTRAL_ENDPOINT)'
-        - '--insecure-skip-tls-verify=$(INSECURE)'
-        - '--output=$(OUTPUT)'
-        - '--image=$(IMAGE)'
+        - --endpoint=$(ROX_CENTRAL_ENDPOINT)
+        - --insecure-skip-tls-verify=$(INSECURE)
+        - --output=$(OUTPUT)
+        - --image=$(IMAGE)
