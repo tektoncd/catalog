@@ -5,6 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/version: "0.1"
   annotations:
+    tekton.dev/pipelines.minVersion: "0.47.6"
     tekton.dev/categories: Developer Tools
     tekton.dev/tags: jq
     tekton.dev/displayName: "JQ"
