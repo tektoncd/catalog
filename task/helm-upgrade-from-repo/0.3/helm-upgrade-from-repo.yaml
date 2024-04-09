@@ -1,0 +1,51 @@
+# This Task will do a helm upgrade based on the given helm repo and chart
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: helm-upgrade-from-repo
+  labels:
+    app.kubernetes.io/version: "0.3"
+  annotations:
+    tekton.dev/categories: Deployment
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: helm
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le,linux/arm64"
+spec:
+  description: >-
+    These tasks will install / upgrade a helm chart into your Kubernetes /
+    OpenShift Cluster using Helm
+
+  params:
+    - name: helm_repo
+      description: "Specify a specific helm repo"
+    - name: chart_name
+      description: "Specify chart name that will be deployed"
+    - name: release_version
+      description: The helm release version in semantic versioning format
+      default: "v1.0.0"
+    - name: release_name
+      description: The helm release name
+      default: "helm-release"
+    - name: release_namespace
+      description: The helm release namespace
+      default: ""
+    - name: overwrite_values
+      description: "Specify the values you want to overwrite, comma separated: autoscaling.enabled=true,replicas=1"
+      default: ""
+    - name: helm_image
+      description: "Specify a specific helm image"
+      default: "docker.io/lachlanevenson/k8s-helm@sha256:0a068ae407e21d1836c6a89a1e9e81af1e55fa56890998e33d5caabdbb51e77b" # tag: v3.10.2
+  steps:
+    - name: upgrade-from-repo
+      image: $(params.helm_image)
+      script: |
+        echo current installed helm releases
+        helm list --namespace "$(params.release_namespace)"
+        echo parsing helms repo name...
+        REPO=`echo "$(params.chart_name)" | cut -d "/" -f 1`
+        echo adding helm repo...
+        helm repo add $REPO "$(params.helm_repo)"
+        echo adding updating repo...
+        helm repo update
+        echo installing helm chart...
+        helm upgrade --wait --install --namespace "$(params.release_namespace)" $(params.release_name) $(params.chart_name) --debug --set "$(params.overwrite_values)"

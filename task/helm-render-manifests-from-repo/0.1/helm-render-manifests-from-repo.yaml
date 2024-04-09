@@ -1,0 +1,85 @@
+# This Task will do a helm upgrade based on the given helm repo and chart
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: helm-render-manifests-from-repo
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/categories: Deployment
+    tekton.dev/pipelines.minVersion: "0.50.0"
+    tekton.dev/tags: helm
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le,linux/arm64"
+spec:
+  description: >-
+    This task will render a validated helm chart into a given
+    directory to be used with a GitOps deployment
+
+  params:
+    - name: helm_repo
+      description: "Specify a specific helm repo"
+    - name: chart_name
+      description: "Specify fully qualified chart name that will be deployed, e.g. my-repo/mychart"
+    - name: release_version
+      description: The helm release version in semantic versioning format, e.g. v0.1.0
+      default: ""
+    - name: release_name
+      description: The helm release name
+      default: "helm-release"
+    - name: release_namespace
+      description: The helm release namespace
+      default: ""
+    - name: manifest_filename
+      description: The name of the generated YAML file
+      default: "manifest.yaml"
+    - name: manifest_path
+      description: The path for the generated YAML file
+      default: .
+    - name: extra_args
+      description: "Specify any extra CLI arguments, space separated, e.g.: --validate --skip-tests"
+      default: "--validate --skip-tests"
+    - name: overwrite_values
+      description: "Specify the values you want to overwrite, comma separated: autoscaling.enabled=true,replicas=1"
+      default: ""
+    - name: helm_image
+      description: "Specify a specific helm image"
+      default: "docker.io/lachlanevenson/k8s-helm@sha256:0a068ae407e21d1836c6a89a1e9e81af1e55fa56890998e33d5caabdbb51e77b"  # tag: v3.10.2
+
+  steps:
+    - name: render-manifests-from-repo
+      env:  # Avoid interpolation in script
+        - name: MANIFEST_PATH
+          value: $(params.manifest_path)
+        - name: MANIFEST_FILENAME
+          value: $(params.manifest_filename)
+        - name: CHART_NAME
+          value: $(params.chart_name)
+        - name: RELEASE_VERSION
+          value: $(params.release_version)
+        - name: RELEASE_NAME
+          value: $(params.release_name)
+        - name: RELEASE_NAMESPACE
+          value: $(params.release_namespace)
+        - name: EXTRA_ARGS
+          value: $(params.extra_args)
+        - name: OVERWRITE_VALUES
+          value: $(params.overwrite_values)
+        - name: HELM_REPO
+          value: $(params.helm_repo)
+      image: $(params.helm_image)
+      script: |
+        OUTFILE=$MANIFEST_PATH/$MANIFEST_FILENAME
+        REPO=`echo "$CHART_NAME" | cut -d "/" -f 1`
+        echo setting opts...
+        if [ -n "$RELEASE_VERSION" ]; then export OPTS="$OPTS --version=$RELEASE_VERSION"; fi
+        if [ -n "$RELEASE_NAMESPACE" ]; then export OPTS="$OPTS --namespace=$RELEASE_NAMESPACE"; fi
+        if [ -n "$EXTRA_ARGS" ]; then export OPTS="$OPTS $EXTRA_ARGS"; fi
+        if [ -n "$OVERWRITE_VALUES" ]; then export OPTS="$OPTS --set=$OVERWRITE_VALUES"; fi
+        echo adding helm repo...
+        helm repo add $REPO "$HELM_REPO"
+        helm repo update
+        echo templating helm chart...
+        helm template $RELEASE_NAME $CHART_NAME $OPTS > $OUTFILE
+      workingDir: /workspace/target
+  workspaces:
+    - name: target

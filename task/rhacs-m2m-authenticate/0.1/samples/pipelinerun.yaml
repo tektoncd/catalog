@@ -1,0 +1,30 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: rox-pipelinerun
+spec:
+  pipelineRef:
+    name: rox-pipeline
+  params:
+  - name: deployment-name
+    value: pipelines-vote-api
+  - name: deployment
+    value: k8s/deployment.yaml
+  - name: git-url
+    value: https://github.com/openshift/pipelines-vote-api.git
+  - name: git-revision
+    value: pipelines-1.7
+  - name: IMAGE
+    value: image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/pipelines-vote-ui
+  - name: insecure-skip-tls-verify
+    value: "true"
+  workspaces:
+  - name: shared-workspace
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 500Mi

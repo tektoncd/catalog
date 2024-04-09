@@ -1,0 +1,63 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: anchore-cli
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Security
+    tekton.dev/tags: CLI, anchore
+    tekton.dev/displayName: "anchore cli"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    The Anchore CLI provides a command line interface on top of the Anchore Engine REST API.
+    Using the Anchore CLI users can manage and inspect images, policies, subscriptions, and registries
+  workspaces:
+    - name: manifest-dir
+  params:
+    - name: ARGS
+      description: The Arguments to be passed to the Anchore command.
+      type: array
+    - name: ANCHORE_CLI_IMAGE
+      default: anchore/engine-cli:latest
+      description: Anchore CLI image to be used
+    - name: ANCHORE_CLI_URL
+      default: http://localhost:8228/v1/
+      description: Anchore Engine URL
+    - name: IMAGE_NAME
+      default: openjdk:7-jre-alpine:latest
+      description: Image to be scanned
+
+  steps:
+    - name: anchore-cli
+      image: $(params.ANCHORE_CLI_IMAGE)
+      workingDir: $(workspaces.manifest-dir.path)
+      script: |
+        #!/usr/bin/env sh
+        ANCHORE_CLI_URL=$(params.ANCHORE_CLI_URL)
+        export ANCHORE_CLI_URL
+        anchore-cli image add "$(params.IMAGE_NAME)" > /dev/null 2>&1
+        anchore-cli image vuln "$(params.IMAGE_NAME)" > /dev/null 2>&1
+        status=$(anchore-cli evaluate check "$(params.IMAGE_NAME)")
+        if echo "$status" | grep -q 'fail'; then
+          echo "Image Vulnerable. Status Failed"
+          exit
+        else
+          echo "Image not Vulnerable. Status Success"
+        fi
+
+      args:
+        - "$(params.ARGS)"
+      env:
+        - name: ANCHORE_CLI_USER
+          valueFrom:
+            secretKeyRef:
+              name: $(params.anchore-cli-secret)
+              key: ANCHORE_CLI_USER
+        - name: ANCHORE_CLI_PASS
+          valueFrom:
+            secretKeyRef:
+              name: $(params.anchore-cli-secret)
+              key: ANCHORE_CLI_PASS
