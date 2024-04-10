@@ -32,7 +32,7 @@ spec:
     - name: rox_image
       type: string
       description: Image providing the roxctl tool.
-      default: quay.io/stackrox-io/roxctl:4.4.0
+      default: 'quay.io/stackrox-io/roxctl:4.4.x-376-g3a3364f8d6'
     - name: image
       type: string
       description: |
@@ -45,6 +45,18 @@ spec:
       type: string
       description: Results output format (json | csv | table).
       default: json
+    - name: output_file
+      type: string
+      description: |
+        Path to a file where to write the roxctl standard output stream.
+        If empty, the output stream goes to the container standard output.
+      default: ""
+    - name: error_file
+      type: string
+      description: |
+        Path to a file where to write the roxctl standard error stream.
+        If empty, the error stream goes to the container standard error.
+      default: ""
     - name: insecure-skip-tls-verify
       type: string
       description: |
@@ -57,7 +69,7 @@ spec:
       projected:
         sources:
           - serviceAccountToken:
-              audience: api
+              audience: rhacs
               expirationSeconds: 3600
               path: token
   workspaces:
@@ -77,82 +89,23 @@ spec:
           secretKeyRef:
             key: rox_central_endpoint
             name: $(params.rox_central_endpoint)
+      - name: ROX_OUTPUT_FILE
+        value: $(params.output_file)
+      - name: ROX_ERROR_FILE
+        value: $(params.error_file)
   steps:
     - name: extract-serviceaccount-token
-      image: python:latest
+      image: $(params.rox_image)
       volumeMounts:
         - mountPath: /service-account-token
           name: token-vol
-      script: |
-        #!/usr/bin/env bash
-        set +x
-
-        cat > configure_for_endpoint.py << EOF
-        import argparse
-        import datetime
-        import os
-        import os.path
-        import requests
-        import urllib3
-        import yaml
-
-        parser = argparse.ArgumentParser()
-        parser.add_argument("-d", "--config-directory", type=str, default=os.environ['ROX_CONFIG_DIR'])
-        parser.add_argument("-e", "--endpoint", type=str, default=os.environ['ROX_CENTRAL_ENDPOINT'])
-        opts = parser.parse_args()
-
-        urllib3.disable_warnings()
-
-        service_account_token = ''
-        with open('/service-account-token/token') as token_file:
-          service_account_token = token_file.read()
-
-        verify_ssl = True
-        if os.environ['INSECURE'] == 'true':
-          verify_ssl = False
-
-        token_request = '{"idToken":"' + service_account_token + '"}'
-        request_url = 'https://' + opts.endpoint + '/v1/auth/m2m/exchange'
-
-        central_token = ''
-        response = requests.post(request_url, data=token_request, verify=verify_ssl)
-        if response.status_code == 200:
-          rsp_json = response.json()
-          if 'accessToken' in rsp_json:
-            central_token = rsp_json['accessToken']
-
-        # Update the roxctl config
-        config = {}
-        configpath = os.path.join(opts.config_directory, 'roxctl-config.yaml')
-        if os.path.exists(configpath):
-          with open(configpath) as f:
-            config = yaml.safe_load(f)
-
-        central_configs = {}
-        centrals = 'centrals'
-        if centrals in config:
-          central_configs = config[centrals]
-        else:
-          config[centrals] = central_configs
-
-        access_config = {
-          'accessToken': central_token,
-          'issuedAt': datetime.datetime.now(),
-          'expiresAt': None,
-          'refreshToken': ''
-        }
-        central_config = {
-          'access': access_config
-        }
-        config[centrals][opts.endpoint] = central_config
-
-        with open(configpath, 'w') as f:
-          yaml.dump(config, f)
-        EOF
-
-        pip install pyyaml requests 2>/dev/null >/dev/null
-
-        python configure_for_endpoint.py
+      args:
+        - central
+        - m2m
+        - exchange
+        - --endpoint=$(ROX_CENTRAL_ENDPOINT)
+        - --insecure-skip-tls-verify=$(INSECURE)
+        - --token-file=/service-account-token/token
     - name: rox-image-scan
       image: $(params.rox_image)
       env:
@@ -160,11 +113,11 @@ spec:
           value: $(params.image)
         - name: OUTPUT
           value: $(params.output_format)
-        - name: ROX_API_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: $(params.rox_api_token)
-              key: rox_api_token
+        #- name: ROX_API_TOKEN
+        #  valueFrom:
+        #    secretKeyRef:
+        #      name: $(params.rox_api_token)
+        #      key: rox_api_token
       args:
         - image
         - scan
