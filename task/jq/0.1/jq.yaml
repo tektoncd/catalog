@@ -58,7 +58,7 @@ spec:
         echo "JQ script result:"
         
         if [ "string" = "$(params.stringOrFile)" ]; then
-          jq $(params.options) $(params.filter) <<< "$(params.input)" | tee $(results.jq-script-outcome.path)
+          jq "$(params.options)" "$(params.filter)" <<< "$(params.input)" | tee "$(results.jq-script-outcome.path)"
         else
-          jq $(params.options) $(params.filter) $(params.input) | tee $(results.jq-script-outcome.path)
+          jq "$(params.options)" "$(params.filter)" "$(params.input)" | tee "$(results.jq-script-outcome.path)"
         fi
