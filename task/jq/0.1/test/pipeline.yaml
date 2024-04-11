@@ -6,8 +6,8 @@ spec:
   tasks:
     - name: jq-using-string-as-input
       params:
-        - name: script
-          value: "."
+        - name: filter
+          value: "'.'"
         - name: input
           value: '{   \"product\": \"Widget\",   \"price\": 24.99,   \"color\": \"blue\",   \"quantity_available\": 50,   \"manufacturer\": {     \"name\": \"ABC Manufacturing\",     \"location\": \"Cityville, USA\"   },   \"features\": [\"durable\", \"easy to use\", \"versatile\"],   \"dimensions\": {     \"length\": 10,     \"width\": 5,     \"height\": 3   },   \"tags\": [\"gadget\", \"technology\", \"home\"] }'
         - name: stringOrFile
@@ -17,8 +17,8 @@ spec:
         name: jq
     - name: jq-using-file-as-input
       params:
-        - name: script
-          value: "'.company.employees[].name' test.json"
+        - name: filter
+          value: "'.company.employees[].name'"
         - name: input
           value: 'test.json'
         - name: stringOrFile
@@ -29,6 +29,17 @@ spec:
       workspaces:
         - name: source
           workspace: shared-workspace
+    - name: jq-using-string-as-input-with-wild-filter
+      params:
+        - name: filter
+          value: "'map(length) | max_by(.) as $max_length | .[] | select(length == $max_length)'"
+        - name: input
+          value: '[\"apple\", \"banana\", \"orange\", \"grape\", \"kiwi\", \"siriguela\"]'
+        - name: stringOrFile
+          value: "string"
+      taskRef:
+        kind: Task
+        name: jq
     - name: print-result
       runAfter:
         - "jq-using-string-as-input"
