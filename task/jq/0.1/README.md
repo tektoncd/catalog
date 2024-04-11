@@ -10,14 +10,15 @@ kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/jq/0.1/raw
 
 ## Parameters
 
-- **script**: JQ script that will be executed. If none is provided, the command jq '.' will be executed by default.
+- **options**: JQ options that will be used. If none is provided, the default value "" will be used."
+- **filter**: JQ filter that will be executed. If none is provided, the the filter '.' will be executed by default. The entire filter provided must be wrapped with ''.
 - **image**: The jq image to use.
-- **input**: The input to be passed to the JQ command. It can be a JSON string or a file name.
-- **stringOrFile**: Flag used to determine whether the input passed will be a JSON string or file.
+- **input**: The input to be passed to the JQ command. It can be a JSON string or a file name. In case of file pass the entire path where the file is mounted.
+- **stringOrFile**: Flag used to determine whether the input passed will be a JSON string or file. Use **string** or **file**.
 
 ## Workspaces
 
-- **source** : The workspace containing files on which we want to do the replacement on a single file.
+- **source** : The workspace containing files on which we want to handle. This workspace can be a persistent volume or configmap.
 
 ## Platforms
 
