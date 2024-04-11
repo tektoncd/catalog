@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/version: "0.1"
   annotations:
-    tekton.dev/pipelines.minVersion: "0.47.6"
+    tekton.dev/pipelines.minVersion: "0.56.1"
     tekton.dev/categories: Developer Tools
     tekton.dev/tags: jq
     tekton.dev/displayName: "JQ"
@@ -18,9 +18,13 @@ spec:
       description: A workspace that contains the file which needs to be altered. It can take the form of a persistent volume (PV and PVC) or configmap.
       optional: true
   params:
-    - name: script
+    - name: options
       type: string
-      description: "JQ script that will be executed. If none is provided, the command jq '.' will be executed by default."
+      description: JQ options that will be used. If none is provided, the default value '' will be used."
+      default: ""
+    - name: filter
+      type: string
+      description: "JQ filter that will be executed. If none is provided, the the filter '.' will be executed by default."
       default: "."
     - name: image
       type: string
@@ -54,7 +58,7 @@ spec:
         echo "JQ script result:"
         
         if [ "string" = "$(params.stringOrFile)" ]; then
-          echo $(params.input) | jq $(params.script) | tee $(results.jq-script-outcome.path)
+          jq $(params.options) $(params.filter) <<< "$(params.input)" | tee $(results.jq-script-outcome.path)
         else
-          cat $(params.input) | jq $(params.script) | tee $(results.jq-script-outcome.path)
+          jq $(params.options) $(params.filter) $(params.input) | tee $(results.jq-script-outcome.path)
         fi
