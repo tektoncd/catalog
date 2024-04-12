@@ -11,7 +11,7 @@ kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/jq/0.1/raw
 ## Parameters
 
 - **options**: JQ options that will be used. If none is provided, the default value "" will be used."
-- **filter**: JQ filter that will be executed. If none is provided, the the filter '.' will be executed by default. The entire filter provided must be wrapped with ''.
+- **filter**: JQ filter that will be executed. If none is provided, the the filter '.' will be executed by default. The filter does not need to be wrapped with ''.
 - **image**: The jq image to use.
 - **input**: The input to be passed to the JQ command. It can be a JSON string or a file name. In case of file pass the entire path where the file is mounted.
 - **stringOrFile**: Flag used to determine whether the input passed will be a JSON string or file. Use **string** or **file**.

@@ -21,7 +21,7 @@ spec:
     - name: options
       type: string
       description: JQ options that will be used. If none is provided, the default value '' will be used."
-      default: ""
+      default: "-M"
     - name: filter
       type: string
       description: "JQ filter that will be executed. If none is provided, the the filter '.' will be executed by default."
@@ -58,7 +58,7 @@ spec:
         echo "JQ script result:"
         
         if [ "string" = "$(params.stringOrFile)" ]; then
-          jq "$(params.options)" "$(params.filter)" <<< "$(params.input)" | tee "$(results.jq-script-outcome.path)"
+          jq "$(params.options)" '$(params.filter)' <<< "$(params.input)" | tee "$(results.jq-script-outcome.path)"
         else
-          jq "$(params.options)" "$(params.filter)" "$(params.input)" | tee "$(results.jq-script-outcome.path)"
+          jq "$(params.options)" '$(params.filter)' "$(params.input)" | tee "$(results.jq-script-outcome.path)"
         fi
