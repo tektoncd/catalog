@@ -33,19 +33,14 @@ spec:
     - name: input
       type: string
       description: >-
-        The input to be passed to the JQ command. It can be a JSON string or a file name. 
-        It is recommended for large JSON to use file mode. 
-        If this parameter is not provided, the default value '{\"hello\":\"world\"}' will be used.
-        If file mode is used the full file's path needs to be informed.
+        The input to be passed to the JQ command. It can be a JSON string or a file name. It is recommended for large JSON to use file mode. If this parameter is not provided, the default value '{\"hello\":\"world\"}' will be used. If file mode is used the full file's path needs to be informed.
       default: '{\"hello\":\"world\"}'
     - name: stringOrFile
       type: string
       enum: ["string","file"]
       default: "file"
       description: >-
-        Flag used to determine whether the input passed will be a JSON string or file. 
-        Use the value 'string' for JSON string or 'file' for file. 
-        In order to use the enum type the parameter 'enable-param-enum' needs to be enabled.
+        Flag used to determine whether the input passed will be a JSON string or file. Use the value 'string' for JSON string or 'file' for file. In order to use the enum type the parameter 'enable-param-enum' needs to be enabled.
   results:
     - name: jq-script-outcome
       description: "The result of the JQ script passed as a parameter"
