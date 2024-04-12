@@ -35,7 +35,7 @@ spec:
           # value: "map(length) | max_by(.) as $max_length | .[] | select(length == $max_length)"
           value: map_values(if type == "string" then . | split("") | reverse | join("") | ascii_upcase else . end)
         - name: input
-          value: '[\"apple\", \"banana\", \"orange\", \"grape\", \"kiwi\", \"siriguela\"]'
+          value: '[\"apple\", \"banana\", \"orange\", \"grape\", \"kiwi\", \"siriguela\", \"mamão\"]'
         - name: stringOrFile
           value: "string"
       taskRef:
