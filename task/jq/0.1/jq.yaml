@@ -37,7 +37,7 @@ spec:
       default: '{\"hello\":\"world\"}'
     - name: stringOrFile
       type: string
-      enum: ["string","file"]
+      enum: ["string", "file"]
       default: "file"
       description: >-
         Flag used to determine whether the input passed will be a JSON string or file. Use the value 'string' for JSON string or 'file' for file. In order to use the enum type the parameter 'enable-param-enum' needs to be enabled.
@@ -51,7 +51,6 @@ spec:
       script: |
         echo "You submitted as input: $(params.input)"
         echo "JQ script result:"
-        
         if [ "string" = "$(params.stringOrFile)" ]; then
           echo "$(params.input)" > tmp.json
           jq "$(params.options)" '$(params.filter)' tmp.json | tee "$(results.jq-script-outcome.path)"
