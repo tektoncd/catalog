@@ -32,7 +32,8 @@ spec:
     - name: jq-using-string-as-input-with-wild-filter
       params:
         - name: filter
-          value: "map(length) | max_by(.) as $max_length | .[] | select(length == $max_length)"
+          # value: "map(length) | max_by(.) as $max_length | .[] | select(length == $max_length)"
+          value: map_values(if type == "string" then . | split("") | reverse | join("") | ascii_upcase else . end)
         - name: input
           value: '[\"apple\", \"banana\", \"orange\", \"grape\", \"kiwi\", \"siriguela\"]'
         - name: stringOrFile
