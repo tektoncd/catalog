@@ -29,5 +29,3 @@ The Task can be run on `linux/amd64` platform.
 For an example of real-world usage, check the **tests** directory for this task for an example of how it can be used.
 
 For cases where it is necessary to pass large JSON sections as input parameter, it is recommended to enter the full path of a file as the parameter's value. Therefore, the **stringOrFile** parameter must be properly configured.
-
-The **stringOrFile** parameter is of type **enum** and requires the **enable-param-enum parameter** to be enabled in TektonConfig.
