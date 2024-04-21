@@ -50,12 +50,10 @@ spec:
       script: |
         echo "You submitted as input: $(params.input)"
         echo "JQ script result:"
-        
         if [ "$(params.stringOrFile)" != "string" ] && [ "$(params.stringOrFile)" != "file" ]; then
           echo "You must provide the following values 'string' or 'file' to the stringOrFile parameter."
           exit 1
         fi
-        
         if [ "string" = "$(params.stringOrFile)" ]; then
           printf "%s" "$(params.input)" > tmp.json
           jq "$(params.options)" '$(params.filter)' tmp.json | tee "$(results.jq-script-outcome.path)"
