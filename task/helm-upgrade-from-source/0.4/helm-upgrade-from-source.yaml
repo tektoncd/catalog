@@ -34,7 +34,7 @@ spec:
       default: "values.yaml"
     - name: helm_image
       description: "helm image to be used"
-      default: "docker.io/lachlanevenson/k8s-helm@sha256:5c792f29950b388de24e7448d378881f68b3df73a7b30769a6aa861061fd08ae" #tag: v3.6.0
+      default: "docker.io/lachlanevenson/k8s-helm@sha256:0a068ae407e21d1836c6a89a1e9e81af1e55fa56890998e33d5caabdbb51e77b" # tag: v3.10.2
     - name: upgrade_extra_params
       description: "Extra parameters passed for the helm upgrade command"
       default: ""
