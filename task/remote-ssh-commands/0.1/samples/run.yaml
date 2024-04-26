@@ -14,12 +14,6 @@ spec:
       value: "127.0.0.1"
     - name: USERNAME
       value: "username"
-    - name: PUT_FILE
-      value: "true"
-    - name: LOCAL_FILE
-      value: "/path/file"
-    - name: TO_REMOTE_FILE
-      value: "/to/path/file"
     - name: SSH_SCRIPT
       value: |
         #!/bin/sh
