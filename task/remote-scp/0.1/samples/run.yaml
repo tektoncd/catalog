@@ -1,0 +1,23 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: remote-scp-run
+spec:
+  taskRef:
+    name: remote-scp
+  workspaces:
+    - name: credentials
+      secret:
+        secretName: remote-scp-secret
+    - name: storage
+      persistentVolumeClaim:
+        claimName: test-pvc
+  params:
+    - name: HOST
+      value: "127.0.0.1"
+    - name: USERNAME
+      value: "user"
+    - name: TO_PATH
+      value: "/temp/"
+    - name: LOCAL_PATH
+      value: "local_PATH"
