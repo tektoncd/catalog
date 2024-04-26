@@ -1,0 +1,45 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: remote-scp
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.50.0"
+    tekton.dev/categories: Developer Tools
+    tekton.dev/tags: scp,remote
+    tekton.dev/displayName: "scp remote"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    The following tasks can be used to remotely upload files.
+  workspaces:
+    - name: credentials
+      description: >-
+        SSH private key
+    - name: storage
+      description: >-
+        External storage
+  params:
+    - name: HOST
+      type: string
+      description: Remote host to connect
+    - name: USERNAME
+      type: string
+      description: SSH username
+    - name: PORT
+      type: string
+      description: SSH port, default is 22
+      default: "22"
+    - name: TO_PATH
+      type: string
+      description: upload to path
+    - name: LOCAL_PATH
+      type: string
+      description: local path
+  steps:
+    - name: put
+      image: docker.io/appleboy/drone-scp:1.6.14@sha256:0e0597678b948b0aa09888c66ac75af904cce81baf6af955208527d259c61818
+      script: |
+        cd "$(workspaces.storage.path)" || exit
+        drone-scp --host "$(params.HOST)" --port "$(params.PORT)" --username "$(params.USERNAME)" --key-path "$(workspaces.credentials.path)/id_rsa" --target "$(params.TO_PATH)" --source "$(params.LOCAL_PATH)"
