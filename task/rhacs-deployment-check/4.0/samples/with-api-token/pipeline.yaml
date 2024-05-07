@@ -1,0 +1,140 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: rox-pipeline
+spec:
+
+  workspaces:
+    - name: shared-workspace
+    - name: rox-api-token-auth
+
+  params:
+    - name: deployment-name
+      type: string
+      description: name of the deployment resource to be patched
+    - name: deployment
+      type: string
+      description: filename of the deployment to be patched
+    - name: git-url
+      type: string
+      description: url of the git repo for the code of deployment
+    - name: git-revision
+      type: string
+      description: revision to be used from repo of the code for deployment
+      default: main
+    - name: IMAGE
+      type: string
+      description: image to be build from the code
+    - name: TLSVERIFY
+      type: string
+      description: Verify the TLS on the registry endpoint (for push/pull to a non-TLS registry) (default "true")
+      default: "true"
+    - name: rox_central_endoint
+      type: string
+      description: The address:port tuple for RHACS Stackrox Central.
+      default: central.stackrox.svc:443
+    - name: rox_token_file
+      type: string
+      description: The location of the ROX API token file
+      default: /rox-api-token-auth/rox_api_token
+    - name: rox_image
+      type: string
+      description: The Red Hat Advanced Cluster Security container image
+      default: quay.io/stackrox-io/roxctl:4.4.2
+
+  tasks:
+    # checkout source code
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      workspaces:
+      - name: output
+        workspace: shared-workspace
+      params:
+      - name: url
+        value: $(params.git-url)
+      - name: subdirectory
+        value: ""
+      - name: deleteExisting
+        value: "true"
+      - name: revision
+        value: $(params.git-revision)
+
+    # validate deployment against defined  RHACS policies
+    - name: police-deployment
+      taskRef:
+        name: rhacs-deployment-check
+        kind: Task
+      workspaces:
+      - name: source
+        workspace: shared-workspace
+      - name: rox-api-token-auth
+        workspace: rox-api-token-auth
+      params:
+      - name: deployment
+        value: $(params.deployment)
+      - name: insecure-skip-tls-verify
+        value: "true"
+      - name: rox_token_file
+        value: $(params.rox_token_file)
+      - name: rox_image
+        value: $(params.rox_image)
+      runAfter:
+      - fetch-repository
+
+    - name: build-image
+      taskRef:
+        name: buildah
+        kind: ClusterTask
+      params:
+      - name: IMAGE
+        value: $(params.IMAGE)
+      - name: TLSVERIFY
+        value: $(params.TLSVERIFY)
+      workspaces:
+      - name: source
+        workspace: shared-workspace
+      runAfter:
+      - fetch-repository
+
+    # scan image for vulns using RHACS
+    - name: scan-image
+      taskRef:
+        name: rhacs-image-scan
+        kind: Task
+      workspaces:
+      - name: rox-api-token-auth
+        workspace: rox-api-token-auth
+      params:
+      - name: image
+        value: "$(params.IMAGE)@$(tasks.build-image.results.IMAGE_DIGEST)"
+      - name: insecure-skip-tls-verify
+        value: "true" # stackrox to OCP image registry x509 fail...
+      - name: rox_token_file
+        value: $(params.rox_token_file)
+      - name: rox_image
+        value: $(params.rox_image)
+      runAfter:
+      - build-image
+
+    # validate image against RHACS policies
+    - name: police-image
+      taskRef:
+        name: rhacs-image-check
+        kind: Task
+      workspaces:
+      - name: rox-api-token-auth
+        workspace: rox-api-token-auth
+      params:
+      - name: image
+        value: "$(params.IMAGE)@$(tasks.build-image.results.IMAGE_DIGEST)"
+      - name: insecure-skip-tls-verify
+        value: "true"
+      - name: rox_token_file
+        value: $(params.rox_token_file)
+      - name: rox_image
+        value: $(params.rox_image)
+      runAfter:
+      - scan-image
