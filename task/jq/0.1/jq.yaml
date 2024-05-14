@@ -20,7 +20,7 @@ spec:
   params:
     - name: options
       type: string
-      description: JQ options that will be used. If none is provided, the default value '' will be used."
+      description: JQ options that will be used. If none is provided, the default value '-M' will be used."
       default: "-M"
     - name: filter
       type: string
