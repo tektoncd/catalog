@@ -26,6 +26,6 @@ The Task can be run on `linux/amd64` platform.
 
 ## Usage
 
-For an example of real-world usage, check the **tests** directory for this task for an example of how it can be used.
+For an example of real-world usage, check the [**tests**](https://github.com/tektoncd/catalog/tree/main/task/jq/0.1/tests) directory for an example of how it can be used.
 
 For cases where it is necessary to pass large JSON sections as input parameter, it is recommended to enter the full path of a file as the parameter's value. Therefore, the **stringOrFile** parameter must be properly configured.
