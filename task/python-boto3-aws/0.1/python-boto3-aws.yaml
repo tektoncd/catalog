@@ -1,0 +1,44 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: python-boto3
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: sdk
+    tekton.dev/tags: CLI, boto3, sdk
+    tekton.dev/displayName: "python boto3 aws"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  params:
+    - name: aws-region
+      type: string
+      default: "us-east-1"
+      description: AWS Region
+  volumes:
+    - name: python-script
+      configMap:
+        name: python-script-configmap
+  steps:
+    - name: run-python-script
+      image: python:3.9
+      env:
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: aws-credentials
+              key: access-key-id
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aws-credentials
+              key: secret-access-key
+        - name: AWS_DEFAULT_REGION
+          value: $(params.aws-region)
+      volumeMounts:
+        - name: python-script
+          mountPath: /workspace/python-script
+      script: |
+        pip install boto3
+        python /workspace/python-script/script.py
