@@ -1,0 +1,107 @@
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: rhacs-generic
+  labels:
+    apps.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/tags: security
+    tekton.dev/categories: Security
+    tekton.dev/displayName: "Perform an action with Red Hat Advanced Cluster Security"
+    tekton.dev/platforms: "linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,darwin/amd64,darwin/arm64,windows/amd64"
+    tekton.dev/pipelines.minVersion: "0.50.0"
+spec:
+  description: >-
+    Performs an action with Red Hat Advanced Cluster Security.
+
+    Actions are performed using the associated command line tool: roxctl.
+  params:
+    - name: rox_image
+      description: Image providing the roxctl tool.
+      default: 'quay.io/stackrox-io/roxctl:4.4.2'
+    - name: rox_central_endpoint
+      description: The address:port tuple for RHACS Stackrox Central.
+      type: string
+      default: central.stackrox.svc:443
+    - name: rox_arguments
+      description: The roxctl command line arguments.
+      type: array
+    - name: rox_ca_cert_file
+      description: |
+        Path to the central CA PEM file.
+        Leave empty if no file is available.
+        Prefix the file path with /workspace/ca when available.
+      type: string
+      default: ''
+    - name: insecure-skip-tls-verify
+      description: |
+        Do not verify TLS certificates.
+        When set to "true", skip verifying the TLS certs of the Central endpoint.
+      type: string
+      default: "false"
+    - name: output_file
+      type: string
+      description: |
+        Path to a file where to write the roxctl standard output stream.
+        If empty, the output stream goes to the container standard output.
+      default: ""
+    - name: error_file
+      description: |
+        Path to a file where to write the roxctl standard error stream.
+        If empty, the error stream goes to the container standard error.
+      type: string
+      default: ""
+  stepTemplate:
+    env:
+      - name: ROX_INSECURE_CLIENT_SKIP_TLS_VERIFY
+        value: $(params.insecure-skip-tls-verify)
+      - name: ROX_CA_CERT_FILE
+        value: $(params.rox_ca_cert_file)
+      - name: ROX_ENDPOINT
+        value: $(params.rox_central_endpoint)
+      - name: ROX_CONFIG_DIR
+        value: /rox-config
+      - name: ROX_EXECUTION_ENV
+        value: Tekton
+      - name: ROX_OUTPUT_FILE
+        value: $(params.output_file)
+      - name: ROX_ERROR_FILE
+        value: $(params.error_file)
+  workspaces:
+    - name: ca
+      description: An optional workspace storing the Central CA PEM file.
+      optional: true
+      readOnly: true
+    - name: data
+      description: An optional workspace storing files to pass to the command line tool (as input or output).
+      optional: true
+  steps:
+    - name: exchange-service-account-token
+      image: $(params.rox_image)
+      volumeMounts:
+        - name: token-vol
+          mountPath: /service-account-token
+        - name: roxctl-config
+          mountPath: /rox-config
+      args:
+        - central
+        - m2m
+        - exchange
+        - --token-file=/service-account-token/token
+    - name: roxctl-action
+      image: $(params.rox_image)
+      volumeMounts:
+        - name: roxctl-config
+          mountPath: /rox-config
+      args: ["$(params.rox_arguments[*])"]
+  volumes:
+    - name: token-vol
+      projected:
+        sources:
+          - serviceAccountToken:
+              audience: rhacs
+              path: token
+              expirationSeconds: 3600
+    - name: roxctl-config
+      emptyDir: {}
