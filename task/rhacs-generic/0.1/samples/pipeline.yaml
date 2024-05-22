@@ -1,0 +1,185 @@
+---
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: rox-pipeline
+spec:
+  workspaces:
+    - name: shared-workspace
+  params:
+    - name: deployment
+      type: string
+      description: filename of the deployment to be patched
+    - name: git-url
+      type: string
+      description: url of the git repo for the code of deployment
+    - name: git-revision
+      type: string
+      description: revision to be used from repo of the code for deployment
+      default: main
+    - name: IMAGE
+      type: string
+      description: image to be build from the code
+    - name: rox_central_endpoint
+      type: string
+      description: The address:port tuple for RHACS Stackrox Central.
+      default: central.stackrox.svc:443
+    - name: rox_image
+      type: string
+      description: The Red Hat Advanced Cluster Security container image
+      default: quay.io/stackrox-io/roxctl:4.4.2
+
+  tasks:
+    # fetch central CA
+    - name: fetch-central-ca
+      taskRef:
+        name: rhacs-generic
+        kind: Task
+      workspaces:
+        - name: data
+          workspace: shared-workspace
+      params:
+        - name: insecure-skip-tls-verify
+          value: 'true'
+        - name: rox_endpoint
+          value: $(params.rox_central_endpoint)
+        - name: rox_image
+          value: $(params.rox_image)
+        - name: rox_arguments
+          value:
+            - central
+            - cert
+            - '--output=/workspace/data/central-ca.pem'
+
+    # checkout source code
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: $(params.git-url)
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+        - name: revision
+          value: $(params.git-revision)
+      runAfter:
+        - fetch-central-ca
+
+    # Test access scope creation
+    - name: create-access-scope
+      taskRef:
+        name: rhacs-generic
+        kind: Task
+      workspaces:
+        - name: ca
+          workspace: shared-workspace
+      params:
+        - name: rox_ca_cert_file
+          value: /workspace/ca/central-ca.pem
+        - name: rox_endpoint
+          value: $(params.rox_central_endpoint)
+        - name: rox_image
+          value: $(params.rox_image)
+        - name: rox_arguments
+          value:
+            - declarative-config
+            - create
+            - access-scope
+            - --name=testScope
+            - --description=test access scope
+            - --included=testCluster=stackrox
+      runAfter:
+        - fetch-repository
+
+    # validate deployment against defined RHACS policies
+    - name: police-deployment
+      taskRef:
+        name: rhacs-generic
+        kind: Task
+      params:
+        - name: rox_ca_cert_file
+          value: /workspace/ca/central-ca.pem
+        - name: rox_endpoint
+          value: $(params.rox_central_endpoint)
+        - name: rox_image
+          value: $(params.rox_image)
+        - name: rox_arguments
+          value:
+            - deployment
+            - check
+            - --output=table
+            - --file=/workspace/data/$(params.deployment)
+      workspaces:
+        - name: data
+          workspace: shared-workspace
+        - name: ca
+          workspace: shared-workspace
+      runAfter:
+        - fetch-repository
+        - build-image
+
+    - name: build-image
+      taskRef:
+        name: buildah
+        kind: ClusterTask
+      params:
+        - name: IMAGE
+          value: $(params.IMAGE)
+        - name: TLSVERIFY
+          value: "false"
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      runAfter:
+        - fetch-repository
+
+    # scan image for vulns using RHACS
+    - name: scan-image
+      taskRef:
+        name: rhacs-generic
+        kind: Task
+      workspaces:
+        - name: ca
+          workspace: shared-workspace
+      params:
+        - name: rox_ca_cert_file
+          value: /workspace/ca/central-ca.pem
+        - name: rox_endpoint
+          value: $(params.rox_central_endpoint)
+        - name: rox_image
+          value: $(params.rox_image)
+        - name: rox_arguments
+          value:
+            - image
+            - scan
+            - --output=table
+            - --image=$(params.IMAGE)@$(tasks.build-image.results.IMAGE_DIGEST)
+      runAfter:
+        - build-image
+
+    # validate image against RHACS policies
+    - name: police-image
+      taskRef:
+        name: rhacs-generic
+        kind: Task
+      params:
+        - name: insecure-skip-tls-verify
+          value: "true"
+        - name: rox_endpoint
+          value: $(params.rox_central_endpoint)
+        - name: rox_image
+          value: $(params.rox_image)
+        - name: rox_arguments
+          value:
+            - image
+            - check
+            - --output=table
+            - --image=$(params.IMAGE)@$(tasks.build-image.results.IMAGE_DIGEST)
+      runAfter:
+        - scan-image
