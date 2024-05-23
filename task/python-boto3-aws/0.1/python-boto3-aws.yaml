@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/version: "0.1"
   annotations:
     tekton.dev/pipelines.minVersion: "0.12.1"
-    tekton.dev/categories: sdk
+    tekton.dev/categories: CLI
     tekton.dev/tags: CLI, boto3, sdk
     tekton.dev/displayName: "python boto3 aws"
     tekton.dev/platforms: "linux/amd64"
