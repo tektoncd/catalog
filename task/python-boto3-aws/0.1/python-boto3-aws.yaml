@@ -11,6 +11,8 @@ metadata:
     tekton.dev/displayName: "python boto3 aws"
     tekton.dev/platforms: "linux/amd64"
 spec:
+  description: >-
+    Executes a Python script using AWS Boto3 to manage and inspect AWS resources.
   params:
     - name: aws-region
       type: string
@@ -41,4 +43,4 @@ spec:
           mountPath: /workspace/python-script
       script: |
         pip install boto3
-        python /workspace/python-script/script.py
+        python3 /workspace/python-script/script.py
