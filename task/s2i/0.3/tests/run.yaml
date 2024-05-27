@@ -34,7 +34,7 @@ spec:
             workspace: sslcertdir
         params:
           - name: BUILDER_IMAGE
-            value: centos/python-36-centos7
+            value: centos/python-38-centos7
           - name: TLSVERIFY
             value: "false"
           - name: LOGLEVEL
