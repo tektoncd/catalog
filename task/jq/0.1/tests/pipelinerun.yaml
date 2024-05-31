@@ -5,8 +5,6 @@ metadata:
 spec:
   pipelineRef:
     name: new-pipeline
-  # taskRunTemplate:
-  #   serviceAccountName: pipeline
   timeouts:
     pipeline: 1h0m0s
   workspaces:
