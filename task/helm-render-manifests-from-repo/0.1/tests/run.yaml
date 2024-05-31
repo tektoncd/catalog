@@ -1,0 +1,75 @@
+---
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: helm-render-manifests-test-pipeline
+spec:
+  tasks:
+    - name: helm-render-manifests-from-repo
+      taskRef:
+        name: helm-render-manifests-from-repo
+      params:
+      - name: helm_repo
+        value: https://prometheus-community.github.io/helm-charts
+      - name: chart_name
+        value: prometheus-community/prometheus
+      - name: release_version
+        value: 25.21.0
+      - name: release_name
+        value: helm-repo-sample
+      - name: extra_args
+        value: '--skip-tests'
+      - name: overwrite_values
+        value: alertmanager.enabled=false,kube-state-metrics.enabled=false,prometheus-node-exporter.enabled=false,prometheus-pushgateway.enabled=false
+      workspaces:
+        - name: target
+          workspace: target
+
+    - name: test-output
+      runAfter:
+        - helm-render-manifests-from-repo
+      taskSpec:
+        steps:
+        - image: redhat/ubi9-minimal:latest
+          script: |
+            cat << EOF >> ./test.bats
+            setup() {
+                bats_load_library bats-support
+                bats_load_library bats-file
+            }
+            @test 'assert_file_exists()' {
+              assert_file_exists ./manifest.yaml
+            }
+            @test 'assert_file_contains() {
+                assert_file_contains ./manifest.yaml "name: helm-repo-sample-prometheus-server"
+            }
+            EOF
+          workingDir: /workspace/target
+        - image: bats/bats:latest
+          args:
+          - ./test.bats
+          workingDir: /workspace/target
+      workspaces:
+        - name: target
+          workspace: target
+  workspaces:
+    - name: target
+---
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: helm-render-manifests-test-pipeline-run
+spec:
+  pipelineRef:
+    name: helm-render-manifests-test-pipeline
+  taskRunTemplate:
+    serviceAccountName: helm-pipeline-run-sa
+  workspaces:
+    - name: target
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 200Mi

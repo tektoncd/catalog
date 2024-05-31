@@ -1,0 +1,50 @@
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: shp
+  labels:
+    app.kubernetes.io/version: "1.20"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.0"
+    tekton.dev/categories: CLI
+    tekton.dev/tags: cli
+    tekton.dev/displayName: "Shipwright CLI"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  workspaces:
+    - name: kubeconfig
+      description: >-
+        An optional workspace that allows you to provide a .kube/config
+        file for shp to access the cluster. The file should be placed at
+        the root of the Workspace with name kubeconfig.
+      optional: true
+  description: This task performs operations on Shipwright resources using shp
+  params:
+    - name: SHP_IMAGE
+      description: shp CLI container image to run this task
+      default: quay.io/shipwright/cli:0.12
+    - name: SCRIPT
+      description: shp CLI script to execute
+      type: string
+      default: "shp $@"
+    - name: ARGS
+      type: array
+      description: shp CLI arguments to run
+      default: ["--help"]
+  steps:
+    - name: shp
+      env:
+      - name: HOME
+        value: /tekton/home
+      image: "$(params.SHP_IMAGE)"
+      script: |
+        if [ "$(workspaces.kubeconfig.bound)" = "true" ] && [ -e $(workspaces.kubeconfig.path)/kubeconfig ]; then
+          export KUBECONFIG="$(workspaces.kubeconfig.path)"/kubeconfig
+        fi
+
+        eval "$(params.SCRIPT)"
+      args: ["$(params.ARGS)"]
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532

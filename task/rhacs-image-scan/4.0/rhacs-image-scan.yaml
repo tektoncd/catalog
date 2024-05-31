@@ -1,0 +1,121 @@
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: rhacs-image-scan
+  labels:
+    app.kubernetes.io/version: "4.0"
+  annotations:
+    tekton.dev/tags: security
+    tekton.dev/categories: Security
+    tekton.dev/displayName: "Scan an image for vulnerabilities with Red Hat Advanced Cluster Security"
+    tekton.dev/platforms: "linux/amd64,linux/arm64,linux/ppc64le,linux/s390x,darwin/amd64,darwin/arm64,windows/amd64"
+    tekton.dev/pipelines.minVersion: "0.50.0"
+spec:
+  description: >-
+    Scan an image with Red Hat Advanced Cluster Security.
+
+    This task allows you to return full vulnerability scan results for an image
+    in CSV, Table, or JSON formats.
+    The companion rhacs-image-check task checks an image against build-time policies.
+  params:
+    - name: rox_central_endpoint
+      type: string
+      description: The address:port tuple for RHACS Stackrox Central.
+      default: central.stackrox.svc:443
+    - name: rox_image
+      description: Image providing the roxctl tool.
+      default: quay.io/stackrox-io/roxctl:4.4.2
+    - name: image
+      type: string
+      description: |
+        Full name of image to scan.
+
+        SHA 256 digest may be included to ensure scan of sequental runs with same tag.
+        Examples: 'gcr.io/rox/sample:5.0-rc1', '$(params.IMAGE)', '$(params.IMAGE)@$(tasks.buildah.results.IMAGE_DIGEST)'
+      default: '$(params.IMAGE)'
+    - name: output_format
+      type: string
+      description: Results output format (json | csv | table)
+      default: json
+    - name: insecure-skip-tls-verify
+      type: string
+      description: |
+        Do not verify TLS certificates.
+
+        When set to "true", skip verifying the TLS certs of the Central endpoint and registry.
+      default: "false"
+    - name: rox_config_dir
+      type: string
+      description: |
+        Path to the roxtl config directory within the roxctl-config workspace (if machine to machine authentication is used).
+        Mutually exclusive with token_file.
+        The path must be prefixed with "/roxctl-config".
+      default: ""
+    - name: rox_token_file
+      description: |
+        Path to the API Token file (if authentication through API token).
+        Mutually exclusive with rox_config_dir.
+        The path must be prefixed with "/rox-api-token-auth".
+        Example "/rox-api-token-auth/rox_api_token"
+      type: string
+      default: ""
+    - name: output_file
+      type: string
+      description: |
+        Path to a file where to write the roxctl standard output stream.
+        If empty, the output stream goes to the container standard output.
+      default: ""
+    - name: error_file
+      type: string
+      description: |
+        Path to a file where to write the roxctl standard error stream.
+        If empty, the error stream goes to the container standard error.
+      default: ""
+  workspaces:
+    - name: roxctl-config
+      description: |
+        A workspace containing the configuration for roxctl. Used to authenticate with the remote central using short-lived tokens.
+        Mutually exclusive with rox-api-token-auth workspace.
+        The workspace has to be populated by a rhacs-m2m-authenticate TaskRun.
+      optional: true
+      readOnly: true
+      mountPath: /roxctl-config
+    - name: rox-api-token-auth
+      description: |
+        A workspace containing a rox token file. Used to authenticate with the remote central.
+        Mutually exclusive with roxctl-config.
+        It is strongly recommended that this workspace be bound to a Kubernetes secret.
+      optional: true
+      readOnly: true
+      mountPath: /rox-api-token-auth
+  steps:
+    - name: rox-image-scan
+      image: $(params.rox_image)
+      env:
+        - name: HOME
+          value: /tekton/home
+        - name: IMAGE
+          value: $(params.image)
+        - name: INSECURE
+          value: $(params.insecure-skip-tls-verify)
+        - name: OUTPUT
+          value: $(params.output_format)
+        - name: ROX_CONFIG_DIR
+          value: $(params.rox_config_dir)
+        - name: ROX_API_TOKEN_FILE
+          value: $(params.rox_token_file)
+        - name: ROX_ENDPOINT
+          value: $(params.rox_central_endpoint)
+        - name: ROX_EXECUTION_ENV
+          value: Tekton
+        - name: ROX_OUTPUT_FILE
+          value: $(params.output_file)
+        - name: ROX_ERROR_FILE
+          value: $(params.error_file)
+      args:
+        - image
+        - scan
+        - --insecure-skip-tls-verify=$(INSECURE)
+        - --output=$(OUTPUT)
+        - --image=$(IMAGE)

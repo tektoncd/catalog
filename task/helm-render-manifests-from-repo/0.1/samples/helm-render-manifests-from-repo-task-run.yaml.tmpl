@@ -1,0 +1,20 @@
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: example-helm-render-manifests-from-repo
+spec:
+  taskRef:
+    name: helm-render-manifests-from-repo
+  params:
+  - name: helm_repo
+    value: https://prometheus-community.github.io/helm-charts
+  - name: chart_name
+    value: prometheus-community/prometheus
+  - name: release_version
+    value: 25.21.0
+  - name: release_name
+    value: helm-repo-sample
+  - name: extra_args
+    value: '--skip-tests'
+  - name: overwrite_values
+    value: alertmanager.enabled=false,kube-state-metrics.enabled=false,prometheus-node-exporter.enabled=false,prometheus-pushgateway.enabled=false
