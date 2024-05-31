@@ -50,7 +50,7 @@ data:
       }
     }
 
---- 
+---
 
 apiVersion: tekton.dev/v1
 kind: Task
