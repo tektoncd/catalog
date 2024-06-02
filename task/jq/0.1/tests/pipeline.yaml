@@ -1,0 +1,124 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: test-json
+immutable: false
+data:
+  test.json: |-
+    {
+      "company": {
+        "name": "Acme Corporation",
+        "industry": "Technology",
+        "location": {
+          "city": "Metropolis",
+          "country": "USA"
+        },
+        "employees": [
+          {
+            "name": "Alice",
+            "age": 35,
+            "position": "Software Engineer"
+          },
+          {
+            "name": "Bob",
+            "age": 42,
+            "position": "Data Analyst"
+          },
+          {
+            "name": "Charlie",
+            "age": 28,
+            "position": "Product Manager"
+          }
+        ],
+        "products": [
+          {
+            "name": "Widget",
+            "price": 19.99,
+            "color": "blue"
+          },
+          {
+            "name": "Gizmo",
+            "price": 29.99,
+            "color": "red"
+          },
+          {
+            "name": "Thingamajig",
+            "price": 39.99,
+            "color": "green"
+          }
+        ]
+      }
+    }
+
+---
+
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: print-result
+spec:
+  params:
+    - name: input
+  steps:
+    - name: print
+      image: registry.access.redhat.com/ubi8:8.9-1160
+      script: |
+        echo "$(params.input)"
+
+---
+
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: new-pipeline
+spec:
+  tasks:
+    - name: jq-using-string-as-input
+      params:
+        - name: filter
+          value: "."
+        - name: input
+          value: '{   \"product\": \"Widget\",   \"price\": 24.99,   \"color\": \"blue\",   \"quantity_available\": 50,   \"manufacturer\": {     \"name\": \"ABC Manufacturing\",     \"location\": \"Cityville, USA\"   },   \"features\": [\"durable\", \"easy to use\", \"versatile\"],   \"dimensions\": {     \"length\": 10,     \"width\": 5,     \"height\": 3   },   \"tags\": [\"gadget\", \"technology\", \"home\"] }'
+        - name: stringOrFile
+          value: "string"
+      taskRef:
+        kind: Task
+        name: jq
+    - name: jq-using-file-as-input
+      params:
+        - name: filter
+          value: ".company.employees[].name"
+        - name: input
+          value: 'test.json'
+        - name: stringOrFile
+          value: "file"
+      taskRef:
+        kind: Task
+        name: jq
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+    - name: jq-using-string-as-input-with-wild-filter
+      params:
+        - name: filter
+          # value: "map(length) | max_by(.) as $max_length | .[] | select(length == $max_length)"
+          value: map_values(if type == "string" then . | split("") | reverse | join("") | ascii_upcase else . end)
+        - name: input
+          value: '[\"apple\", \"banana\", \"orange\", \"grape\", \"kiwi\", \"siriguela\", \"mamão\"]'
+        - name: stringOrFile
+          value: "string"
+      taskRef:
+        kind: Task
+        name: jq
+    - name: print-result
+      runAfter:
+        - "jq-using-string-as-input"
+        - "jq-using-file-as-input"
+      taskRef:
+        kind: Task
+        name: print-result
+      params:
+        - name: input
+          value: $(tasks.jq-using-string-as-input.results.jq-script-outcome)
+  workspaces:
+    - name: shared-workspace
