@@ -24,7 +24,7 @@ spec:
         name: python-script-configmap
   steps:
     - name: run-python-script
-      image: python:3.9
+      image: docker.io/python:3.9
       env:
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
