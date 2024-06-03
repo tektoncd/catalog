@@ -62,7 +62,7 @@ spec:
         - name: PROJECT_DIR
           value: "wrapper-test"
         - name: GRADLE_IMAGE
-          value: docker.io/library/eclipse-temurin:17-jdk-alpine@sha256:16d70818ae1d9dfca5e8d05de8e74a23c959ae59968010f013a4cfe5aa5b0038
+          value: docker.io/library/eclipse-temurin:17-ubi9-minimal@sha256:19c66566a0a802df5674301b223683ffbcf56cf18488a37a21d53e3d09df57d1
       workspaces:
         - name: source
           workspace: shared-workspace
