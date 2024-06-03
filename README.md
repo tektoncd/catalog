@@ -152,7 +152,7 @@ status:
 
 [Tekton Bundles](https://tekton.dev/docs/pipelines/pipelines/#tekton-bundles) are an alpha feature of Tekton pipelines that allows storing `Tasks` as bundles in a container registry, instead of as custom resources in etcd in a Kubernetes cluster.
 With Tekton Bundles are enabled, it is possible to reference any task in the catalog without installing it first.
-Tasks are available at [`gcr.io/tekton-releases/catalog/upstream/<task-name>:<task-version>`](https://console.cloud.google.com/gcr/images/tekton-releases/GLOBAL/catalog/upstream?gcrImageListsize=100).
+Tasks are available at [`gcr.io/tekton-releases/catalog/upstream/tasks/<task-name>:<task-version>`](https://console.cloud.google.com/gcr/images/tekton-releases/GLOBAL/catalog/upstream/tasks?gcrImageListsize=100).
 For example:
 
 ```
