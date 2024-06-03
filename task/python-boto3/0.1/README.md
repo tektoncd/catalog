@@ -54,5 +54,24 @@ kubectl create configmap python-script-configmap --from-file=script.py
 This command will create a ConfigMap named python-script-configmap with the contents of the script.py file.
 Alternatively you can also use config-map.yaml given in sample
 
-Then, you can create a Tekton TaskRun that references this Task and provide the necessary parameters (if any).
+
+Creating AWS Credentials Secret
+This Kubernetes Secret named aws-credentials is used to store AWS credentials and configuration data, enabling your Tekton Tasks to interact with AWS services securely.
+
+Secret Structure:
+credentials: Contains the AWS access key ID and secret access key for both a specified profile and the default profile.
+config: Contains AWS region and output format settings for both a specified profile and the default profile.
+Refer to secret.yaml in samples
+
+Create the Secret:
+Apply the Secret in your Kubernetes cluster:
+kubectl apply -f secret.yaml
+or
+kubectl create secret generic aws-credentials --from-literal=access-key-id=<YOUR_ACCESS_KEY_ID> --from-literal=secret-access-key=<YOUR_SECRET_ACCESS_KEY>
+
+
+Using the Secret in Tekton Tasks:
+Reference the aws-credentials Secret in your Tekton Task to inject the AWS credentials and configuration:
+
+
 
