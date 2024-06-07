@@ -6,7 +6,7 @@ lifecycle policies to validate a pipeline run using `roxctl`.
 This tasks allows you to return full vulnerability scan results for an image in
 JSON, CSV, or Pretty format.  It's a companion to the rhacs-image-check task.
 
-**Note: this Task is not backwards compatible with the `3.71` version as it
+**Note: this Task is not backwards compatible with the `0.1` version as it
 changes the parameters and token configuration.**
 
 **Note: this Task requires a 4.4.2 roxctl image (task default) or a more recent 
