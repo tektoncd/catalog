@@ -4,7 +4,7 @@ kind: Task
 metadata:
   name: rhacs-image-check
   labels:
-    app.kubernetes.io/version: "4.0"
+    app.kubernetes.io/version: "0.2"
   annotations:
     tekton.dev/tags: security
     tekton.dev/categories: Security
