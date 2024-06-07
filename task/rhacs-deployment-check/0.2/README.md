@@ -3,7 +3,7 @@
 Check a deployment manifest against RHACS deploy lifecycle policies to validate
 a pipeline run using `roxctl`.
 
-**Note: this Task is not backwards compatible with the `3.71` versions as it
+**Note: this Task is not backwards compatible with the `0.1` versions as it
 changes the parameters and token configuration.**
 
 **Note: this Task requires a 4.4.2 roxctl image (task default) or a more

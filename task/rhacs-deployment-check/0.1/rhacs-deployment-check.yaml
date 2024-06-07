@@ -4,7 +4,7 @@ kind: Task
 metadata:
   name: rhacs-deployment-check
   labels:
-    app.kubernetes.io/version: "3.71"
+    app.kubernetes.io/version: "0.1"
   annotations:
     tekton.dev/tags: security
     tekton.dev/categories: Security
