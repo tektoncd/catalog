@@ -41,7 +41,7 @@ spec:
   tasks:
     - name: rhacs-authenticate
       taskRef:
-        name: rhacs-m2m-exchange
+        name: rhacs-m2m-authenticate
         kind: Task
       params:
         - name: insecure-skip-tls-verify
