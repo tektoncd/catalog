@@ -19,7 +19,7 @@ spec:
       optional: true
     - name: secrets
       optional: true
-      mountPath: /tekton/home/.aws
+      mountPath: /root/.aws
   params:
     - name: SCRIPT
       description: The AWS script to run
