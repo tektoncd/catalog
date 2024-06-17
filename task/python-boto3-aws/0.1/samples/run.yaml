@@ -1,0 +1,10 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: python-boto3-run
+spec:
+  taskRef:
+    name: python-boto3
+  params:
+    - name: aws-region
+      value: us-west-2
