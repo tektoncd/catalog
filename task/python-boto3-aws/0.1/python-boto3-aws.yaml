@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/version: "0.1"
   annotations:
-    tekton.dev/pipelines.minVersion: "0.18.0"
+    tekton.dev/pipelines.minVersion: "0.54.0"
     tekton.dev/categories: sdk
     tekton.dev/tags: CLI, boto3, sdk
     tekton.dev/displayName: "python boto3 aws"
@@ -22,7 +22,7 @@ spec:
         name: python-script-configmap
   steps:
     - name: run-python-script
-      image: python:3.9.19-alpine3.20@sha256:45cc18540209d878c2b24080cf8f64fc37603721b67d0ecc508799e2f9a9b21d
+      image: docker.io/library/python:3.9.19-alpine3.20@sha256:45cc18540209d878c2b24080cf8f64fc37603721b67d0ecc508799e2f9a9b21d
       env:
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
