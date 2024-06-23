@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: python-script-configmap
+data:
+  script.py: |
+    import boto3
+
+    # Your Python script that uses boto3 goes here
+    # For example:
+    s3 = boto3.client('s3')
+    response = s3.list_buckets()
+
+    print(response)
