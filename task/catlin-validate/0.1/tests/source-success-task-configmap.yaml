@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: source-success
+data:
+  hello.yaml: |
+    apiVersion: tekton.dev/v1beta1
+    kind: Task
+    metadata:
+      name: hello
+      labels:
+        app.kubernetes.io/version: "0.1"
+      annotations:
+        tekton.dev/categories: Testing
+        tekton.dev/pipelines.minVersion: "0.17.0"
+        tekton.dev/tags: "testing"
+        tekton.dev/platforms: "linux/amd64"
+        tekton.dev/displayName: hello
+    spec:
+      description: "hello task"
+      steps:
+        - name: echo
+          image: docker.io/library/ubuntu:18.04
+          script: |
+            #!/bin/sh
+            echo "Hello World"
