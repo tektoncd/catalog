@@ -4,7 +4,7 @@ kind: Task
 metadata:
   name: rhacs-m2m-authenticate
   labels:
-    apps.kubernetes.io/version: "0.1"
+    app.kubernetes.io/version: "0.1"
   annotations:
     tekton.dev/tags: security
     tekton.dev/categories: Security
