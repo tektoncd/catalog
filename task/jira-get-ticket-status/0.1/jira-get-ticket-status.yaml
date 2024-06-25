@@ -1,0 +1,81 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: jira-get-ticket-status
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.56.4"
+    tekton.dev/categories: Automation
+    tekton.dev/tags: jira, get, ticket, status
+    tekton.dev/displayName: "Jira - Get Ticket Status"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    This task helps you to get the current status of a Jira ticket.
+  params:
+    - name: ticket_id
+      description: Jira Ticket ID
+      type: string
+    - name: ssl_verify
+      default: "true"
+      description: Verify or not SSL certificates
+    - name: secret_name
+      description: the name of the secret that have the Jira URL and the Bearer token
+      type: string
+  results:
+    - name: ticket_status
+      description: Jira Ticket status
+  stepTemplate:
+    envFrom:
+      - secretRef:
+          name: $(params.secret_name)
+  steps:
+    - name: get-ticket-status
+      image: registry.access.redhat.com/ubi8/python-39@sha256:27e795fd6b1b77de70d1dc73a65e4c790650748a9cfda138fdbd194b3d6eea3d
+      command:
+        - sh
+        - '-c'
+      args:
+        - |
+          pip install requests &>/dev/null
+          python -c "
+          import requests
+          import os
+
+          jira_url = os.getenv('JIRA_URL')
+          ssl_verify = os.getenv('SSL_VERIFY')
+          token = os.getenv('JIRA_BEARER_TOKEN')
+          ticket_id = os.getenv('TICKET_ID')
+          url = str(jira_url) + '/rest/api/2/issue/' + str(ticket_id)
+          print(f'--> Using the URL: {url}')
+
+          headers = {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + str(token)
+          }
+
+          if ssl_verify.lower().strip() == 'true':
+              ssl_verify = True
+          else:
+              ssl_verify = False
+
+          response = requests.get(url, headers=headers, verify=ssl_verify)
+          if response.status_code == 200:
+              print(f'--> The query to ticket {ticket_id} was successful! ')
+              data = response.json()
+              status = data.get('fields', {}).get('status', {}).get('name')
+              print(f'--> The status of ticket {ticket_id} is: {status}')
+              with open('$(results.ticket_status.path)', 'w') as file:
+                  file.write(status)
+          else:
+              print(f'Error getting the status of ticket {ticket_id}')
+              print(f'HTTP Code: {response.status_code}')
+              print(response.json())
+              raise Exception('Error getting ticket status')
+          "
+      env:
+        - name: TICKET_ID
+          value: $(params.ticket_id)
+        - name: SSL_VERIFY
+          value: $(params.ssl_verify)
