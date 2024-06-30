@@ -53,8 +53,11 @@ spec:
       if tls == 'True':
           context = ssl.create_default_context()
           server = smtplib.SMTP_SSL(smtp_server, port, context=context)
+          server.ehlo()
       else:
           server = smtplib.SMTP(smtp_server, port)
+          server.ehlo()
+          server.starttls()
       if password != '':
           server.login(user, password)
       for receiver in [item for item in receiver_emails.split(' ') if item]:
