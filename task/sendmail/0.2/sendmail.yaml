@@ -1,0 +1,88 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: sendmail
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Messaging
+    tekton.dev/tags: mail
+    tekton.dev/displayName: "send mail"
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le,linux/arm64"
+spec:
+  description: >-
+    This task sends a simple email to receivers via SMTP server
+
+  params:
+  - name: server
+    type: string
+    description: secret name for SMTP server information (url, port, password)
+  - name: subject
+    type: string
+    description: plain text email subject
+  - name: body
+    type: string
+    description: plain text email body
+  - name: sender
+    type: string
+    description: sender email address
+  - name: recipients
+    type: string
+    description: recipient email addresses (space delimited list)
+  steps:
+  - name: send
+    image: docker.io/library/python:3.8-alpine@sha256:e11bbd37d4371894e954421b85dbe8dd4eb7198d7cb4ed144ab529f19f57c3f1 #tag: 3.8-alpine
+    script: |
+      #!/usr/bin/env python3
+      import smtplib, ssl, os
+      port = os.getenv('PORT')
+      smtp_server = os.getenv('SERVER')
+      sender_email = "$(params.sender)"
+      receiver_emails = "$(params.recipients)"
+      user = os.getenv('USER')
+      password = os.getenv('PASSWORD')
+      tls = os.getenv('TLS')
+      message = f"""\
+      Subject: $(params.subject)
+      To: {receiver_emails}
+      From: {sender_email}
+
+      $(params.body)"""
+      print(message)
+      if tls == 'True':
+          context = ssl.create_default_context()
+          server = smtplib.SMTP_SSL(smtp_server, port, context=context)
+      else:
+          server = smtplib.SMTP(smtp_server, port)
+      if password != '':
+          server.login(user, password)
+      for receiver in [item for item in receiver_emails.split(' ') if item]:
+          server.sendmail(sender_email, receiver, message.encode('utf-8'))
+      server.quit()
+    env:
+    - name: USER
+      valueFrom:
+        secretKeyRef:
+          name: $(params.server)
+          key: user
+    - name: PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: $(params.server)
+          key: password
+    - name: TLS
+      valueFrom:
+        secretKeyRef:
+          name: $(params.server)
+          key: tls
+    - name: SERVER
+      valueFrom:
+        secretKeyRef:
+          name: $(params.server)
+          key: url
+    - name: PORT
+      valueFrom:
+        secretKeyRef:
+          name: $(params.server)
+          key: port
