@@ -1,0 +1,12 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: skopeo-run
+spec:
+  serviceAccountName: secret-service-account
+  taskRef:
+    name: skopeo-copy
+  workspaces:
+  - name: images-url
+    configmap:
+      name: image-configmap
