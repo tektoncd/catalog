@@ -102,8 +102,6 @@ spec:
         value: $(params.VERBOSE)
       - name: PARAM_USER_HOME
         value: $(params.USER_HOME)
-      - name: WORKSPACE_OUTPUT_PATH
-        value: $(workspaces.output.path)
       - name: WORKSPACE_SSH_DIRECTORY_BOUND
         value: $(workspaces.ssh-directory.bound)
       - name: WORKSPACE_SSH_DIRECTORY_PATH
