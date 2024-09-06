@@ -1,3 +1,4 @@
+![1725353383533_1725353239093_0_andrii-bunkov](https://github.com/user-attachments/assets/6170b097-a8ab-4c92-a153-b5560ca53ed2)
 # Tekton Catalog
 
 **If you want `v1alpha1` resources, you need to go to the
