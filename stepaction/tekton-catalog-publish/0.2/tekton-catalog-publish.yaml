@@ -1,0 +1,88 @@
+---
+apiVersion: tekton.dev/v1alpha1
+kind: StepAction
+metadata:
+  name: tekton-catalog-publish
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/categories: Publishing
+    tekton.dev/pipelines.minVersion: "0.54.0"
+    tekton.dev/cli.minVersion: "0.34.0"
+    tekton.dev/tags: catalog, bundles
+    tekton.dev/displayName: "Publish a Tekton Catalog"
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
+spec:
+  params:
+    - name: TKN_IMAGE
+      type: string
+      description: tkn CLI container image to run this stepaction
+      default: gcr.io/tekton-releases/dogfooding/tkn@sha256:328b4a98eb566ccad4aafcd7fb8307a97c5771e681d85bda669e21e37c071a81
+    - name: TKN_ARGS
+      description: Extra args to be passed to tkn, as a single string
+      default: ""
+    - name: REGISTRY
+      type: string
+      description: The registry where bundles are published to
+    - name: PATH
+      type: string
+      description: The path in the registry
+      default: tekton/catalog/tasks
+    - name: RESOURCE
+      type: string
+      description: task or stepaction. It must match the resource name in the root of the catalog path.
+      default: task
+    - name: TAG
+      type: string
+      description: An optional extra tag. If provided, tasks are tagged with it too.
+      default: ""
+    - name: catalogPath
+      description: >-
+        A directory that holds the catalog to be published. The catalog must be stored
+        in the root of the directory, and is must follow the
+        [Tetkon Catalog](https://github.com/tektoncd/catalog#catalog-structure) structure.
+    - name: dockerconfigPath
+      description: >-
+        An optional directory that allows providing a .docker/config.json
+        file for tkn to access the container registry. The file should be placed at
+        the root of the Directory with name config.json.
+      default: "no-path"
+  image: "$(params.TKN_IMAGE)"
+  workingDir: "$(params.catalogPath)"
+  env:
+    - name: REGISTRY
+      value: $(params.REGISTRY)
+    - name: REGISTRY_PATH
+      value: $(params.PATH)
+    - name: TAG
+      value: $(params.TAG)
+    - name: DOCKER_CONFIG_PATH
+      value: $(params.dockerconfigPath)
+    - name: RESOURCE
+      value: $(params.RESOURCE)
+    - name: TKN_ARGS
+      value: $(params.TKN_ARGS)
+  script: |
+    #!/usr/bin/env sh
+    set -e -o pipefail
+    TARGET="${REGISTRY}"
+    [ "${REGISTRY_PATH}" != "" ] && TARGET="${TARGET}/${REGISTRY_PATH}"
+    # If a dockerconfig workspace was provided, set DOCKER_CONFIG to point to it
+    if [ -d "$DOCKER_CONFIG_PATH" ]; then
+        export DOCKER_CONFIG="${DOCKER_CONFIG_PATH}"
+    fi
+    find ${RESOURCE} -type f -mindepth 3 -maxdepth 3 -name '*.yaml' -o -name '*.yml'| while read -r resource_version_dir; do
+      FOLDER=$(dirname "$resource_version_dir")
+      VERSION=$(basename "$FOLDER")
+      RESOURCE_NAME=$(basename "$(dirname "$FOLDER")")
+      tkn bundle push \
+          --label org.opencontainers.image.description="${RESOURCE_NAME}" \
+          --label org.opencontainers.image.version="${VERSION}" \
+          ${TKN_ARGS} "${TARGET}/${RESOURCE_NAME}:${VERSION}" -f "$resource_version_dir"
+      [ "${TAG}" != "" ] && \
+        tkn bundle push \
+          --label org.opencontainers.image.description="${RESOURCE_NAME}" \
+          --label org.opencontainers.image.version="${TAG}" \
+           ${TKN_ARGS} "${TARGET}/${RESOURCE_NAME}:${TAG}" -f "$resource_version_dir"
+      sleep 0.1
+    done
