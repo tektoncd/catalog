@@ -1,0 +1,54 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: catalog-publish-test-task
+spec:
+  workspaces:
+    - name: shared-workspace
+  steps:
+    - name: fetch-repository
+      ref:
+        name: git-clone
+      params:
+        - name: url
+          value: https://github.com/tektoncd/catalog
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+        - name: output-path
+          value: $(workspaces.shared-workspace.path)
+    - name: reduce
+      image: alpine
+      script: |
+        set -e
+        cd "$(workspaces.shared-workspace.path)/stepaction"
+        ls | grep -v 'git-clone' | xargs rm -rf
+    - name: publish
+      params:
+        - name: REGISTRY
+          value: localhost:5000
+        - name: RESOURCE
+          value: stepaction
+        - name: PATH
+          value: tekton/catalog/stepactions
+        - name: TAG
+          value: $(steps.fetch-repository.results.commit)
+        - name: catalogPath
+          value: $(workspaces.shared-workspace.path)
+      ref:
+        name: tekton-catalog-publish
+  sidecars:
+    - name: registry
+      image: registry
+---
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: catalog-publish-test-task-run
+spec:
+  taskRef:
+    name: catalog-publish-test-task
+  workspaces:
+    - name: shared-workspace
+      emptyDir: {}
