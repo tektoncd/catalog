@@ -1,0 +1,81 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: maven-test-pipeline
+spec:
+  workspaces:
+    - name: shared-workspace
+    - name: maven-settings
+    - name: maven-local-m2
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: https://github.com/vinamra28/tekton-tutorial-rh
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+    - name: maven-run-build-1
+      taskRef:
+        name: maven
+      runAfter:
+        - fetch-repository
+      params:
+        - name: CONTEXT_DIR
+          value: "apps/greeter/java/quarkus"
+        - name: GOALS
+          value:
+            - -DskipTests
+            - clean
+            - package
+      workspaces:
+        - name: maven-settings
+          workspace: maven-settings
+        - name: source
+          workspace: shared-workspace
+        - name: maven-local-repo
+          workspace: maven-local-m2
+    - name: maven-run-build-2
+      taskRef:
+        name: maven
+      runAfter:
+        - maven-run-build-1
+      params:
+        - name: CONTEXT_DIR
+          value: "apps/greeter/java/quarkus"
+        - name: GOALS
+          value:
+            - -DskipTests
+            - clean
+            - package
+      workspaces:
+        - name: maven-settings
+          workspace: maven-settings
+        - name: source
+          workspace: shared-workspace
+        - name: maven-local-repo
+          workspace: maven-local-m2
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: maven-test-pipeline-run
+spec:
+  pipelineRef:
+    name: maven-test-pipeline
+  workspaces:
+    - name: maven-settings
+      emptyDir: {}
+    - name: shared-workspace
+      persistentvolumeclaim:
+        claimName: maven-source-pvc
+    - name: maven-local-m2
+      persistentvolumeclaim:
+        claimName: maven-local-m2-pvc
