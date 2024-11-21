@@ -16,27 +16,24 @@ spec:
       description: "The OCID of the tenancy"
     - name: user_ocid
       description: "The OCID of the user"
-    - name: fingerprint
-      description: "The fingerprint of the API key"
-    - name: private_key
-      description: "The private key content (base64 encoded)"
     - name: region
       description: "The OCI region (e.g., us-ashburn-1)"
     - name: command
       description: "The OCI CLI command to execute"
   steps:
     - name: oci-cli
-      image: ghcr.io/oracle/oci-cli:latest
+      image: ghcr.io/oracle/oci-cli:sha-5846bb2
       script: |
         #!/bin/bash
         set -e
         mkdir -p /root/.oci
-        # Decode and store the private key
-        echo "$PRIVATE_KEY" | base64 -d > /root/.oci/oci_api_key.pem
+
+        # Use the mounted secret
+        cp /secrets/oci/oci_api_key.pem /root/.oci/oci_api_key.pem
         chmod 600 /root/.oci/oci_api_key.pem
+        FINGERPRINT=$(cat /secrets/oci/fingerprint)
 
         # Create OCI configuration
-        mkdir -p /root/.oci
         cat <<EOF > /root/.oci/config
         [DEFAULT]
         tenancy=${TENANCY_OCID}
@@ -53,16 +50,20 @@ spec:
         # Run the provided OCI CLI command
         echo "Executing OCI CLI command: $COMMAND"
         eval $COMMAND
-  env:
-    - name: TENANCY_OCID
-      value: "$(params.tenancy_ocid)"
-    - name: USER_OCID
-      value: "$(params.user_ocid)"
-    - name: FINGERPRINT
-      value: "$(params.fingerprint)"
-    - name: PRIVATE_KEY
-      value: "$(params.private_key)"
-    - name: REGION
-      value: "$(params.region)"
-    - name: COMMAND
-      value: "$(params.command)"
+      env:
+        - name: TENANCY_OCID
+          value: "$(params.tenancy_ocid)"
+        - name: USER_OCID
+          value: "$(params.user_ocid)"
+        - name: REGION
+          value: "$(params.region)"
+        - name: COMMAND
+          value: "$(params.command)"
+      volumeMounts:
+        - name: oci-cli-secret
+          mountPath: /secrets/oci
+          readOnly: true
+  volumes:
+    - name: oci-cli-secret
+      secret:
+        secretName: oci-cli-secret
