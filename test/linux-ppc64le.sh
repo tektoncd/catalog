@@ -49,4 +49,3 @@ kubectl patch cm feature-flags -n tekton-pipelines -p '{"data":{"enable-step-act
 echo "Patch to Disable Affinity Assistant (Needed to allow binding of two PVCs for Maven-0-3 test)"
 kubectl patch cm feature-flags -n tekton-pipelines -p '{"data":{"disable-affinity-assistant":"true"}}'
 
-
