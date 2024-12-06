@@ -5,7 +5,7 @@ This Task can be used to run a Maven goals on a simple maven project or on a mul
 ## Install the Task
 
 ```bash
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/maven/0.3/raw
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/maven/0.4/raw
 ```
 
 ## Parameters
@@ -22,6 +22,12 @@ kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/maven/0.3/ra
 - **PROXY_PORT**: Port number on which the proxy port listens (to be inserted into ~/.m2/settings.xml)
 - **PROXY_PROTOCOL**: http or https protocol whichever is applicable (to be inserted into ~/.m2/settings.xml)
 - **CONTEXT_DIR**: The context directory within the repository for sources on which we want to execute maven goals. (_Default_: ".")
+
+## Results
+
+* **group-id**: The Maven project group id
+* **artifact-id**: The Maven project artifact id
+* **version**: The Maven project version
 
 ## Workspaces
 
@@ -67,7 +73,7 @@ This Pipeline and PipelineRun runs a Maven build on a particular module in a mul
 ### With Defaults
 
 ```yaml
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: maven-test-pipeline
@@ -111,7 +117,7 @@ spec:
         - name: maven-local-repo
           workspace: maven-local-m2
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   name: maven-test-pipeline-run
@@ -134,7 +140,7 @@ spec:
 ### With Custom Maven Params
 
 ```yaml
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: maven-test-pipeline
@@ -222,7 +228,7 @@ oc create configmap custom-maven-settings --from-file=settings.xml
 2. create `Pipeline` and `PipelineRun`
 
 ```yaml
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: maven-test-pipeline
@@ -267,7 +273,7 @@ spec:
           workspace: maven-local-m2
         
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   name: maven-test-pipeline-run

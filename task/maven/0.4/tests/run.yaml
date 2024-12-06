@@ -1,5 +1,20 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: test-mvn-results
+spec:
+  params:
+  - name: input
+    type: string
+  steps:
+    - name: verify
+      image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
+      script: |
+        #!/bin/bash
+        echo "$(params.input)"
+---
+apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: maven-test-pipeline
@@ -62,8 +77,16 @@ spec:
           workspace: shared-workspace
         - name: maven-local-repo
           workspace: maven-local-m2
+    - name: verify-mvn-results
+      taskRef:
+        name: test-mvn-results
+      runAfter:
+        - maven-run-build-2
+      params:
+        - name: input
+          value: $(tasks.maven-run-build-2.group-id) $(tasks.maven-run-build-2.artifact-id) $(tasks.maven-run-build-2.version)
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   name: maven-test-pipeline-run

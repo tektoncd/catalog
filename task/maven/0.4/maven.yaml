@@ -1,11 +1,11 @@
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: maven
   labels:
-    app.kubernetes.io/version: "0.3"
+    app.kubernetes.io/version: "0.4"
   annotations:
-    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/pipelines.minVersion: "0.50.0"
     tekton.dev/categories: Build Tools
     tekton.dev/tags: build-tool
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
@@ -75,6 +75,16 @@ spec:
         The context directory within the repository for sources on
         which we want to execute maven goals.
       default: "."
+  results:
+    - description: Maven project group id
+      name: group-id
+      type: string
+    - description: Maven project artifact id
+      name: artifact-id
+      type: string
+    - description: version
+      name: version
+      type: string
   steps:
     - name: mvn-settings
       image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
@@ -146,9 +156,15 @@ spec:
     - name: mvn-goals
       image: $(params.MAVEN_IMAGE)
       workingDir: $(workspaces.source.path)/$(params.CONTEXT_DIR)
-      command: ["/usr/bin/mvn"]
-      args:
-        - -s
-        - $(workspaces.maven-settings.path)/settings.xml
-        - "$(params.GOALS)"
-        - '-Dmaven.repo.local=$(workspaces.maven-local-repo.path)/.m2'
+      args: ["$(params.GOALS[*])"]
+      script: |
+        #!/usr/bin/env bash
+
+        /usr/bin/mvn -s $(workspaces.maven-settings.path)/settings.xml "$@" '-Dmaven.repo.local=$(workspaces.maven-local-repo.path)/.m2'
+
+        GROUPID=$(/usr/bin/mvn -s $(workspaces.maven-settings.path)/settings.xml '-Dmaven.repo.local=$(workspaces.maven-local-repo.path)/.m2' -q -Dexec.executable=echo -Dexec.args='${project.gruopId}' --non-recursive exec:exec)
+        echo -n $GROUPID | tee $(results.group-id.path)
+        ARTIFACTID=$(/usr/bin/mvn -s $(workspaces.maven-settings.path)/settings.xml '-Dmaven.repo.local=$(workspaces.maven-local-repo.path)/.m2' -q -Dexec.executable=echo -Dexec.args='${project.artifactId}' --non-recursive exec:exec)
+        echo -n $ARTIFACTID | tee $(results.artifact-id.path)
+        VERSION=$(/usr/bin/mvn -s $(workspaces.maven-settings.path)/settings.xml '-Dmaven.repo.local=$(workspaces.maven-local-repo.path)/.m2' -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
+        echo -n $VERSION | tee $(results.version.path)
