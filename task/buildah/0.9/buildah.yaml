@@ -1,0 +1,129 @@
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: buildah
+  labels:
+    app.kubernetes.io/version: "0.9"
+  annotations:
+    tekton.dev/categories: Image Build
+    tekton.dev/pipelines.minVersion: "0.50.0"
+    tekton.dev/tags: image-build
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le,linux/arm64"
+    tekton.dev/displayName: buildah
+spec:
+  description: >-
+    Buildah task builds source into a container image and
+    then pushes it to a container registry.
+
+    Buildah Task builds source into a container image using Project Atomic's
+    Buildah build tool.It uses Buildah's support for building from Dockerfiles,
+    using its buildah bud command.This command executes the directives in the
+    Dockerfile to assemble a container image, then pushes that image to a
+    container registry.
+
+  params:
+  - name: IMAGE
+    description: Reference of the image buildah will produce.
+  - name: BUILDER_IMAGE
+    description: The location of the buildah builder image.
+    default: quay.io/buildah/stable:v1
+  - name: STORAGE_DRIVER
+    description: Set buildah storage driver
+    default: overlay
+  - name: DOCKERFILE
+    description: Path to the Dockerfile to build.
+    default: ./Dockerfile
+  - name: CONTEXT
+    description: Path to the directory to use as context.
+    default: .
+  - name: TLSVERIFY
+    description: Verify the TLS on the registry endpoint (for push/pull to a non-TLS registry)
+    default: "true"
+  - name: FORMAT
+    description: The format of the built container, oci or docker
+    default: "oci"
+  - name: BUILD_EXTRA_ARGS
+    description: Extra parameters passed for the build command when building images. WARNING - must be sanitized to avoid command injection
+    default: ""
+  - name: PUSH_EXTRA_ARGS
+    description: Extra parameters passed for the push command when pushing images. WARNING - must be sanitized to avoid command injection
+    type: string
+    default: ""
+  - name: SKIP_PUSH
+    description: Skip pushing the built image
+    default: "false"
+  - name: BUILD_ARGS
+    description: Dockerfile build arguments, array of key=value
+    type: array
+    default:
+    - ""
+  workspaces:
+  - name: source
+  - name: sslcertdir
+    optional: true
+  - name: dockerconfig
+    description: >-
+      An optional workspace that allows providing a .docker/config.json file
+      for Buildah to access the container registry.
+      The file should be placed at the root of the Workspace with name config.json.
+    optional: true
+  results:
+  - name: IMAGE_DIGEST
+    description: Digest of the image just built.
+  - name: IMAGE_URL
+    description: Image repository where the built image would be pushed to
+  steps:
+  - name: build-and-push
+    image: $(params.BUILDER_IMAGE)
+    workingDir: $(workspaces.source.path)
+    env:
+    - name: PARAM_IMAGE
+      value: $(params.IMAGE)
+    - name: PARAM_STORAGE_DRIVER
+      value: $(params.STORAGE_DRIVER)
+    - name: PARAM_DOCKERFILE
+      value: $(params.DOCKERFILE)
+    - name: PARAM_CONTEXT
+      value: $(params.CONTEXT)
+    - name: PARAM_TLSVERIFY
+      value: $(params.TLSVERIFY)
+    - name: PARAM_FORMAT
+      value: $(params.FORMAT)
+    - name: PARAM_BUILD_EXTRA_ARGS
+      value: $(params.BUILD_EXTRA_ARGS)
+    - name: PARAM_PUSH_EXTRA_ARGS
+      value: $(params.PUSH_EXTRA_ARGS)
+    - name: PARAM_SKIP_PUSH
+      value: $(params.SKIP_PUSH)
+    args:
+    - $(params.BUILD_ARGS[*])
+    script: |
+      BUILD_ARGS=()
+      for buildarg in "$@"
+      do
+        BUILD_ARGS+=("--build-arg=$buildarg")
+      done
+      [ "$(workspaces.sslcertdir.bound)" = "true" ] && CERT_DIR_FLAG="--cert-dir=$(workspaces.sslcertdir.path)"
+      [ "$(workspaces.dockerconfig.bound)" = "true" ] && DOCKER_CONFIG="$(workspaces.dockerconfig.path)" && export DOCKER_CONFIG
+      # build the image (CERT_DIR_FLAG should be omitted if empty and BUILD_EXTRA_ARGS can contain multiple args)
+      # shellcheck disable=SC2046,SC2086
+      buildah ${CERT_DIR_FLAG} "--storage-driver=${PARAM_STORAGE_DRIVER}" bud "${BUILD_ARGS[@]}" ${PARAM_BUILD_EXTRA_ARGS} \
+        "--format=${PARAM_FORMAT}" "--tls-verify=${PARAM_TLSVERIFY}" \
+        -f "${PARAM_DOCKERFILE}" -t "${PARAM_IMAGE}" "${PARAM_CONTEXT}"
+      [ "${PARAM_SKIP_PUSH}" = "true" ] && echo "Push skipped" && exit 0
+      # push the image (CERT_DIR_FLAG should be omitted if empty and PUSH_EXTRA_ARGS can contain multiple args)
+      # shellcheck disable=SC2046,SC2086
+      buildah ${CERT_DIR_FLAG} "--storage-driver=${PARAM_STORAGE_DRIVER}" push \
+        "--tls-verify=${PARAM_TLSVERIFY}" --digestfile /tmp/image-digest ${PARAM_PUSH_EXTRA_ARGS} \
+        "${PARAM_IMAGE}" "docker://${PARAM_IMAGE}"
+      tee "$(results.IMAGE_DIGEST.path)" < /tmp/image-digest
+      printf '%s' "${PARAM_IMAGE}" | tee "$(results.IMAGE_URL.path)"
+    volumeMounts:
+    - name: varlibcontainers
+      mountPath: /var/lib/containers
+    securityContext:
+      privileged: true
+  volumes:
+  - name: varlibcontainers
+    emptyDir: {}
