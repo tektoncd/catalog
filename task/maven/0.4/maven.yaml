@@ -162,7 +162,7 @@ spec:
 
         /usr/bin/mvn -s $(workspaces.maven-settings.path)/settings.xml "$@" '-Dmaven.repo.local=$(workspaces.maven-local-repo.path)/.m2'
 
-        GROUPID=$(/usr/bin/mvn -s $(workspaces.maven-settings.path)/settings.xml '-Dmaven.repo.local=$(workspaces.maven-local-repo.path)/.m2' -q -Dexec.executable=echo -Dexec.args='${project.gruopId}' --non-recursive exec:exec)
+        GROUPID=$(/usr/bin/mvn -s $(workspaces.maven-settings.path)/settings.xml '-Dmaven.repo.local=$(workspaces.maven-local-repo.path)/.m2' -q -Dexec.executable=echo -Dexec.args='${project.groupId}' --non-recursive exec:exec)
         echo -n $GROUPID | tee $(results.group-id.path)
         ARTIFACTID=$(/usr/bin/mvn -s $(workspaces.maven-settings.path)/settings.xml '-Dmaven.repo.local=$(workspaces.maven-local-repo.path)/.m2' -q -Dexec.executable=echo -Dexec.args='${project.artifactId}' --non-recursive exec:exec)
         echo -n $ARTIFACTID | tee $(results.artifact-id.path)
