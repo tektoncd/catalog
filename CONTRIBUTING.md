@@ -86,7 +86,7 @@ yet.
   auto-built.
 * Images should not have any major security vulnerabilities
 * Should follow Kubernetes best practices
-* Provide as many default paramater values as possible
+* Provide as many default parameter values as possible
 * Provide [end to end tests](#end-to-end-testing)
 * (Nice to have) : provide versions with and without `PipelineResource`
 
