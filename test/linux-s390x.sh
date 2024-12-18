@@ -45,3 +45,4 @@ yq eval '(..|select(.kind?=="Pipeline")|select(.metadata.name?=="jib-maven-test-
 
 echo "Patch to Enable Step Actions,Disable Affinity Assistant  on the cluster"
 kubectl patch cm feature-flags -n tekton-pipelines -p '{"data":{"enable-step-actions":"true","disable-affinity-assistant":"true"}}'
+
