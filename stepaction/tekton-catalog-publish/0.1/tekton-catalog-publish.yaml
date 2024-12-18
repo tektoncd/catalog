@@ -12,12 +12,13 @@ metadata:
     tekton.dev/tags: catalog, bundles
     tekton.dev/displayName: "Publish a Tekton Catalog"
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
+    tekton.dev/deprecated: "true"
 spec:
   params:
     - name: TKN_IMAGE
       type: string
       description: tkn CLI container image to run this stepaction
-      default: gcr.io/tekton-releases/dogfooding/tkn@sha256:79d21abf8a29128ede5091773078d5d8528f47240e455adb9824222d2fff489a
+      default: ghcr.io/tektoncd/plumbing/tkn@sha256:79d21abf8a29128ede5091773078d5d8528f47240e455adb9824222d2fff489a
     - name: REGISTRY
       type: string
       description: The registry where bundles are published to

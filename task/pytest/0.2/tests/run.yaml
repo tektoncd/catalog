@@ -36,7 +36,7 @@ spec:
         - name: ARGS
           value: "-rfs"
         - name: PYTHON_IMAGE
-          value: "docker.io/python:3.7"
+          value: "ghcr.io/tektoncd/python3.7@sha256:eedf63967cdb57d8214db38ce21f105003ed4e4d0358f02bedc057341bcf92a0"
         - name: PIP_CONF_FILE
           value: "custom-pip.conf"
 ---

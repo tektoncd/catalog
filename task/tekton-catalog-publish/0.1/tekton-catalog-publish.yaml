@@ -11,6 +11,7 @@ metadata:
     tekton.dev/tags: catalog, bundles
     tekton.dev/displayName: "Publish a Tekton Catalog"
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
+    tekton.dev/deprecated: "true"
 spec:
   description: >-
     This task publishes each Task in a Tekton catalog as a Tekton Bundle.
@@ -38,7 +39,7 @@ spec:
     - name: TKN_IMAGE
       type: string
       description: tkn CLI container image to run this task
-      default: gcr.io/tekton-releases/dogfooding/tkn@sha256:015bb6018d5eaf4523a775f4955c85f68077099753661941d06843d5a61a86df
+      default: ghcr.io/tektoncd/plumbing/tkn@sha256:328b4a98eb566ccad4aafcd7fb8307a97c5771e681d85bda669e21e37c071a81
     - name: REGISTRY
       type: string
       description: The registry where bundles are published to

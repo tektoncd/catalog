@@ -1,0 +1,63 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: catalog-publish-test-pipeline
+spec:
+  workspaces:
+    - name: shared-workspace
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: https://github.com/tektoncd/catalog
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+    - name: reduce
+      runAfter:
+        - fetch-repository
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      taskSpec:
+        workspaces:
+          - name: source
+        steps:
+          - name: all-but-one
+            image: alpine
+            script: |
+              set -e
+              cd "$(workspaces.source.path)/task"
+              ls | grep -v 'git-clone' | xargs rm -rf
+    - name: publish
+      runAfter:
+        - reduce
+      workspaces:
+        - name: catalog
+          workspace: shared-workspace
+      params:
+        - name: REGISTRY
+          value: localhost:5000
+        - name: TAG
+          value: $(tasks.fetch-repository.results.commit)
+      taskRef:
+        name: tekton-catalog-publish
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: catalog-publish-test-pipeline-run
+spec:
+  pipelineRef:
+    name: catalog-publish-test-pipeline
+  workspaces:
+    - name: shared-workspace
+      persistentVolumeClaim:
+        claimName: catalog-source-pvc

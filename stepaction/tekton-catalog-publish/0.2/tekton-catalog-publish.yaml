@@ -17,7 +17,7 @@ spec:
     - name: TKN_IMAGE
       type: string
       description: tkn CLI container image to run this stepaction
-      default: gcr.io/tekton-releases/dogfooding/tkn@sha256:328b4a98eb566ccad4aafcd7fb8307a97c5771e681d85bda669e21e37c071a81
+      default: ghcr.io/tektoncd/plumbing/tkn@sha256:328b4a98eb566ccad4aafcd7fb8307a97c5771e681d85bda669e21e37c071a81
     - name: TKN_ARGS
       description: Extra args to be passed to tkn, as a single string
       default: ""

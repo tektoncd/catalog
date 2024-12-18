@@ -42,7 +42,7 @@ spec:
           - name: revision
             value: main
           - name: pathInRepo
-            value: task/git-clone/0.9/git-clone.yaml
+            value: task/git-clone/0.10/git-clone.yaml
       workspaces:
         - name: output
           workspace: source-ws

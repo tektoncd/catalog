@@ -23,7 +23,7 @@ if __name__ == "__main__":
     # Modify Task YAML
     sidecars.append({
         "name": "go-rest-api",
-        "image": "gcr.io/tekton-releases/dogfooding/go-rest-api-test:latest",
+        "image": "quay.io/chmouel/go-rest-api-test:latest",
         "env": [
             {
                 "name": "CONFIG",
