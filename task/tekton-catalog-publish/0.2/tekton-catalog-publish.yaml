@@ -1,0 +1,84 @@
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: tekton-catalog-publish
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/categories: Publishing
+    tekton.dev/pipelines.minVersion: "0.41.0"
+    tekton.dev/tags: catalog, bundles
+    tekton.dev/displayName: "Publish a Tekton Catalog"
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
+spec:
+  description: >-
+    This task publishes each Task in a Tekton catalog as a Tekton Bundle.
+    The catalog must be structured as a Tekton Catalog.
+    Bundles are published to $TARGET/<task-name>:<task-version> and, when
+    TAG is provided, to $TARGET/<task-name>:$TAG. A typical extra tag
+    would be the git sha of the catalog repo that is being published.
+    The task uses the "tkn bundle" command to publish, which is available
+    in tkn starting with version v0.18.0.
+
+  workspaces:
+    - name: catalog
+      description: >-
+        A workspace that holds the catalog to be published. The catalog must be stored
+        in the root of the workspace mount point, and is must follow the
+        [Tetkon Catalog](https://github.com/tektoncd/catalog#catalog-structure) structure.
+    - name: dockerconfig
+      description: >-
+        An optional workspace that allows providing a .docker/config.json
+        file for tkn to access the container registry. The file should be placed at
+        the root of the Workspace with name config.json.
+      optional: true
+
+  params:
+    - name: TKN_IMAGE
+      type: string
+      description: tkn CLI container image to run this task
+      default: ghcr.io/tektoncd/plumbing/tkn@sha256:328b4a98eb566ccad4aafcd7fb8307a97c5771e681d85bda669e21e37c071a81
+    - name: REGISTRY
+      type: string
+      description: The registry where bundles are published to
+    - name: PATH
+      type: string
+      description: The path in the registry
+      default: tekton/catalog/tasks
+    - name: TAG
+      type: string
+      description: An optional extra tag. If provided, tasks are tagged with it too.
+      default: ""
+
+  steps:
+    - name: publish
+      image: "$(params.TKN_IMAGE)"
+      workingDir: "$(workspaces.catalog.path)"
+      env:
+        - name: REGISTRY
+          value: $(params.REGISTRY)
+        - name: REGISTRY_PATH
+          value: $(params.PATH)
+        - name: TAG
+          value: $(params.TAG)
+        - name: DOCKER_CONFIG_PATH
+          value: $(workspaces.dockerconfig.path)
+      script: |
+        #!/usr/bin/env sh
+        set -e -o pipefail
+        TARGET="${REGISTRY}"
+        [ "${REGISTRY_PATH}" != "" ] && TARGET="${TARGET}/${REGISTRY_PATH}"
+        # If a dockerconfig workspace was provided, set DOCKER_CONFIG to point to it
+        if [ -d "$DOCKER_CONFIG_PATH" ]; then
+            export DOCKER_CONFIG="${DOCKER_CONFIG_PATH}"
+        fi
+        find task -type f -mindepth 3 -maxdepth 3 -name '*.yaml' -o -name '*.yml'| while read -r task_version_dir; do
+          FOLDER=$(dirname "$task_version_dir")
+          VERSION=$(basename "$FOLDER")
+          TASK=$(basename "$(dirname "$FOLDER")")
+          tkn bundle push "${TARGET}/${TASK}:${VERSION}" -f "$task_version_dir"
+          [ "${TAG}" != "" ] && \
+            tkn bundle push "${TARGET}/${TASK}:${TAG}" -f "$task_version_dir"
+          sleep 0.1
+        done

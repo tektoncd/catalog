@@ -1,0 +1,42 @@
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: "github-secret"
+stringData:
+  token: SECRETE
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: pull-request-test-run
+spec:
+  pipelineSpec:
+    workspaces:
+      - name: pr
+    tasks:
+      - name: pull-request-test
+        taskRef:
+          name: pull-request
+        workspaces:
+          - name: pr
+            workspace: pr
+        params:
+          - name: url
+            value: http://127.0.0.1:8080/octocat/Hello-World/pull/1347
+          - name: mode
+            value: "download"
+          - name: provider
+            value: "github"
+          - name: secret-key-ref
+            value: "github-secret"
+  workspaces:
+  - name: pr
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 16Mi

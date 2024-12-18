@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: git
     tekton.dev/displayName: "git clone"
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le,linux/arm64"
+    tekton.dev/deprecated: "true"
 spec:
   description: >-
     These Tasks are Git tasks to work with repositories used by other tasks
@@ -102,7 +103,7 @@ spec:
     - name: gitInitImage
       description: The image providing the git-init binary that this Task runs.
       type: string
-      default: "gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.40.2"
+      default: "ghcr.io/tektoncd/github.com/tektoncd/pipeline/cmd/git-init:v0.40.2"
     - name: userHome
       description: |
         Absolute path to the user's home directory.

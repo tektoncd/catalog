@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: git
     tekton.dev/displayName: "git batch merge"
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le,linux/arm64"
+    tekton.dev/deprecated: "true"
 spec:
   description: >-
     This task takes a set of refspecs, fetches them and performs git operations
@@ -74,7 +75,7 @@ spec:
       default: "false"
     - name: gitInitImage
       description: The image used where the git-init binary is.
-      default: "gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.18.1"
+      default: "ghcr.io/tektoncd/github.com/tektoncd/pipeline/cmd/git-init:v0.18.1"
       type: string
   results:
     - name: commit

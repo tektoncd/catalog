@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: git
     tekton.dev/displayName: "git batch merge"
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/deprecated: "true"
 spec:
   description: >-
     This task takes a set of refspecs, fetches them and performs git operations
@@ -79,7 +80,7 @@ spec:
       description: The git tree SHA that was obtained after batching all provided refs onto revision.
   steps:
     - name: clone
-      image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.14.2
+      image: ghcr.io/tektoncd/github.com/tektoncd/pipeline/cmd/git-init:v0.14.2
       script: |
         CHECKOUT_DIR="$(workspaces.output.path)/$(params.subdirectory)"
 
