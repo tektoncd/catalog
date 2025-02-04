@@ -1,0 +1,10 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: python-azure-run
+spec:
+  taskRef:
+    name: python-azure
+  params:
+    - name: azure-region
+      value: eastus

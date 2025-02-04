@@ -1,0 +1,49 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: python-azure
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.54.0"
+    tekton.dev/categories: sdk
+    tekton.dev/tags: CLI, azure, sdk
+    tekton.dev/displayName: "python azure sdk"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  params:
+    - name: azure-region
+      type: string
+      default: "eastus"
+      description: Azure Region
+  volumes:
+    - name: python-script
+      configMap:
+        name: python-script-configmap
+  steps:
+    - name: run-python-script
+      image: docker.io/library/python:3.9.19-alpine3.20@sha256:45cc18540209d878c2b24080cf8f64fc37603721b67d0ecc508799e2f9a9b21d
+      env:
+        - name: AZURE_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: azure-credentials
+              key: client-id
+        - name: AZURE_TENANT_ID
+          valueFrom:
+            secretKeyRef:
+              name: azure-credentials
+              key: tenant-id
+        - name: AZURE_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: azure-credentials
+              key: client-secret
+        - name: AZURE_REGION
+          value: $(params.azure-region)
+      volumeMounts:
+        - name: python-script
+          mountPath: /workspace/python-script
+      script: |
+        pip install azure-identity azure-mgmt
+        python /workspace/python-script/script.py
