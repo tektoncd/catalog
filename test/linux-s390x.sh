@@ -40,8 +40,9 @@ find task/gradle/*/tests/run.yaml | xargs -I{} yq eval '(..|select(.kind?=="Pipe
 echo "Add extra BUILDER_IMAGE parameter"
 find task/jib-gradle/*/tests/run.yaml | xargs -I{} yq eval '(..|select(.kind?=="Pipeline")|.spec.tasks[1].params) |= . +{"name": "BUILDER_IMAGE","value": env(BUILDER_IMAGE)}' -i {}
 
-echo "Add extra MAVEN_IMAGE parameter for maven-0-3 test"
+echo "Add extra MAVEN_IMAGE parameter for maven-0-3 and maven-0-4 tests"
 yq eval '(..|select(.kind?=="Pipeline")|select(.metadata.name?=="jib-maven-test-pipeline"|"maven-test-pipeline")|.spec.tasks[2].params) |= . +{"name": "MAVEN_IMAGE","value": env(MAVEN_IMAGE)}' -i task/maven/0.3/tests/run.yaml
+yq eval '(..|select(.kind?=="Pipeline")|select(.metadata.name?=="jib-maven-test-pipeline"|"maven-test-pipeline")|.spec.tasks[2].params) |= . +{"name": "MAVEN_IMAGE","value": env(MAVEN_IMAGE)}' -i task/maven/0.4/tests/run.yaml
 
 echo "Patch to Enable Step Actions,Disable Affinity Assistant  on the cluster"
 kubectl patch cm feature-flags -n tekton-pipelines -p '{"data":{"enable-step-actions":"true","disable-affinity-assistant":"true"}}'
