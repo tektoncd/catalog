@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: Security, Vulnenrability, CVE
     tekton.dev/displayName: "Red Hat Dependency Analytics"
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/deprecated: "true"
 spec:
   description: >-
     The Red Hat Dependency Analytics task is an interface between Tekton and Red Hat Dependency Analytics (RHDA) platform.
