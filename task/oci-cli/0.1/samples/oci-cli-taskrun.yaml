@@ -1,0 +1,21 @@
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: oci-cli-taskrun
+  namespace: default
+spec:
+  taskRef:
+    name: oci-cli
+  params:
+    - name: tenancy_ocid
+      value: "<YOUR_TENANCY_OCID>" # Replace with your Tenancy OCID
+    - name: user_ocid
+      value: "<YOUR_USER_OCID>"     # Replace with your User OCID
+    - name: fingerprint
+      value: "<YOUR_FINGERPRINT>"  # Replace with your API key fingerprint
+    - name: private_key
+      value: "<BASE64_ENCODED_PRIVATE_KEY>"  # Replace with base64-encoded private key
+    - name: region
+      value: "us-ashburn-1"        # Replace with your OCI region
+    - name: command
+      value: "oci iam compartment list"  # Replace with your OCI CLI command

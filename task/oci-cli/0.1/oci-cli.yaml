@@ -1,0 +1,69 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: oci-cli
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.54.0"
+    tekton.dev/categories: CLI
+    tekton.dev/tags: cli
+    tekton.dev/displayName: "oracle cli task"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  params:
+    - name: tenancy_ocid
+      description: "The OCID of the tenancy"
+    - name: user_ocid
+      description: "The OCID of the user"
+    - name: region
+      description: "The OCI region (e.g., us-ashburn-1)"
+    - name: command
+      description: "The OCI CLI command to execute"
+  steps:
+    - name: oci-cli
+      image: ghcr.io/oracle/oci-cli:sha-5846bb2
+      script: |
+        #!/bin/bash
+        set -e
+        mkdir -p /root/.oci
+
+        # Use the mounted secret
+        cp /secrets/oci/oci_api_key.pem /root/.oci/oci_api_key.pem
+        chmod 600 /root/.oci/oci_api_key.pem
+        FINGERPRINT=$(cat /secrets/oci/fingerprint)
+
+        # Create OCI configuration
+        cat <<EOF > /root/.oci/config
+        [DEFAULT]
+        tenancy=${TENANCY_OCID}
+        user=${USER_OCID}
+        fingerprint=${FINGERPRINT}
+        key_file=/root/.oci/oci_api_key.pem
+        region=${REGION}
+        EOF
+
+        # Verify the configuration
+        echo "OCI CLI Configuration:"
+        cat /root/.oci/config
+
+        # Run the provided OCI CLI command
+        echo "Executing OCI CLI command: $COMMAND"
+        eval $COMMAND
+      env:
+        - name: TENANCY_OCID
+          value: "$(params.tenancy_ocid)"
+        - name: USER_OCID
+          value: "$(params.user_ocid)"
+        - name: REGION
+          value: "$(params.region)"
+        - name: COMMAND
+          value: "$(params.command)"
+      volumeMounts:
+        - name: oci-cli-secret
+          mountPath: /secrets/oci
+          readOnly: true
+  volumes:
+    - name: oci-cli-secret
+      secret:
+        secretName: oci-cli-secret
