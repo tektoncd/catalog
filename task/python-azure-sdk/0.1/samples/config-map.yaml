@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: python-script-configmap
+data:
+  script.py: |
+    from azure.identity import ClientSecretCredential
+    from azure.mgmt.resource import ResourceManagementClient
+
+    # Set up Azure credentials using the client ID, tenant ID, and client secret
+    credential = ClientSecretCredential(
+        tenant_id="$(AZURE_TENANT_ID)",
+        client_id="$(AZURE_CLIENT_ID)",
+        client_secret="$(AZURE_CLIENT_SECRET)"
+    )
+
+    # Create a client to interact with Azure Resource Manager
+    resource_client = ResourceManagementClient(credential, "$(AZURE_SUBSCRIPTION_ID)")
+
+    # List resource groups
+    resource_groups = resource_client.resource_groups.list()
+
+    # Print resource group names
+    for rg in resource_groups:
+        print(f"Resource Group: {rg.name}")
