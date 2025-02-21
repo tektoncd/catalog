@@ -1,11 +1,11 @@
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   name: oci-cli-taskrun
   namespace: default
 spec:
   taskRef:
-    name: oci-cli-task
+    name: oci-cli
   params:
     - name: tenancy_ocid
       value: "<YOUR_TENANCY_OCID>" # Replace with your Tenancy OCID
