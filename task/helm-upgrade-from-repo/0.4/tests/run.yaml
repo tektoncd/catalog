@@ -1,0 +1,30 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: helm-upgrade-test-pipeline
+spec:
+  tasks:
+    - name: helm-upgrade-from-repo
+      taskRef:
+        name: helm-upgrade-from-repo
+      params:
+        - name: helm_repo
+          value: https://dunefro.github.io/sample-charts/
+        - name: chart_name
+          value: sample-charts/sample-nginx
+        - name: release_version
+          value: v1.0.0
+        - name: release_name
+          value: helm-repo-sample
+        - name: overwrite_values
+          value: autoscaling.enabled=false,autoscaling.maxReplicas=3
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: helm-upgrade-test-pipeline-run
+spec:
+  serviceAccountName: helm-pipeline-run-sa
+  pipelineRef:
+    name: helm-upgrade-test-pipeline
