@@ -4,7 +4,7 @@ kind: Task
 metadata:
   name: helm-upgrade-from-repo
   labels:
-    app.kubernetes.io/version: "0.3"
+    app.kubernetes.io/version: "0.4"
   annotations:
     tekton.dev/categories: Deployment
     tekton.dev/pipelines.minVersion: "0.12.1"
