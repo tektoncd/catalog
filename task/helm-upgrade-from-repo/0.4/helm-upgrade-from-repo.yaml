@@ -35,6 +35,9 @@ spec:
     - name: helm_image
       description: "Specify a specific helm image"
       default: "docker.io/lachlanevenson/k8s-helm@sha256:0a068ae407e21d1836c6a89a1e9e81af1e55fa56890998e33d5caabdbb51e77b" # tag: v3.10.2
+    - name: upgrade_extra_params
+      description: "Extra parameters passed for the helm upgrade command"
+      default: ""
   steps:
     - name: upgrade-from-repo
       image: $(params.helm_image)
@@ -48,4 +51,4 @@ spec:
         echo adding updating repo...
         helm repo update
         echo installing helm chart...
-        helm upgrade --wait --install --create-namespace --namespace "$(params.release_namespace)" $(params.release_name) $(params.chart_name) --debug --set "$(params.overwrite_values)"
+        helm upgrade --wait --install --namespace "$(params.release_namespace)" $(params.release_name) $(params.chart_name) --debug --set "$(params.overwrite_values)" $(params.upgrade_extra_params)
