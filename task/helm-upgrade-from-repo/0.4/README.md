@@ -22,6 +22,7 @@ kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/helm-upgrade
 - **release_namespace**: The namespace in which the release is to be installed (*default: ""*)
 - **overwrite_values**: The values to be overwritten (*default: ""*)
 - **helm_image**: The helm image which should be used (default: lachlanevenson/k8s-helm:v3.5.0)
+- **upgrade_extra_params**: Extra parameters passed for the helm upgrade command (*default: ""*)
 
 #### Platforms
 
