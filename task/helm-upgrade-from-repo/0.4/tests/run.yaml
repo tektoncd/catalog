@@ -20,7 +20,7 @@ spec:
         - name: overwrite_values
           value: autoscaling.enabled=false,autoscaling.maxReplicas=3
         - name: upgrade_extra_params
-          value: "--create-namespace --force --timeout 10m0s"
+          value: "--force"
 ---
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
