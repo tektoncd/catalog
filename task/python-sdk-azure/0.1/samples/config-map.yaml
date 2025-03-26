@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: python-script-configmap
+data:
+  script.py: |
+    #!/usr/bin/env python3
+    from azure.identity import DefaultAzureCredential
+    from azure.storage.blob import BlobServiceClient
+
+    credential = DefaultAzureCredential()
+    account_url = "https://<your-storage-account-name>.blob.core.windows.net"
+
+    blob_service_client = BlobServiceClient(account_url, credential=credential)
+
+    print("Listing containers in the storage account:")
+    for container in blob_service_client.list_containers():
+        print(f"- {container['name']}")
