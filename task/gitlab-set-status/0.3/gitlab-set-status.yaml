@@ -140,6 +140,9 @@ spec:
             "description": DESCRIPTION
         }
 
+        if COVERAGE:
+            params["coverage"] = float(COVERAGE)
+
         ssl_context = None if SSL_VERIFY else ssl._create_unverified_context()
 
         if GITLAB_HOST_URL.startswith("http://"):
