@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/version: "0.1"
   annotations:
     tekton.dev/pipelines.minVersion: "0.54.0"
-    tekton.dev/categories: sdk
+    tekton.dev/categories: cloud
     tekton.dev/tags: CLI, azure-sdk, sdk
     tekton.dev/displayName: "python azure sdk"
     tekton.dev/platforms: "linux/amd64"
@@ -16,13 +16,17 @@ spec:
       type: string
       default: "eastus"
       description: Azure Region
+    - name: image-tag
+      type: string
+      default: "3.9.19-alpine3.20"
+      description: Python image tag to use
   volumes:
     - name: python-script
       configMap:
         name: python-script-configmap
   steps:
     - name: run-python-script
-      image: docker.io/library/python:3.9.19-alpine3.20@sha256:45cc18540209d878c2b24080cf8f64fc37603721b67d0ecc508799e2f9a9b21d
+      image: docker.io/library/python:$(params.image-tag)
       env:
         - name: AZURE_CLIENT_ID
           valueFrom:
