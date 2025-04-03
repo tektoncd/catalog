@@ -1,10 +1,9 @@
-Tekton Task for Running Python Scripts with Azure SDK
+**Tekton Task for Running Python Scripts with Azure SDK**
 
 This Tekton Task enables execution of Python scripts that utilize the Azure SDK to interact with Azure services. The Task is designed to securely authenticate using Azure credentials and execute the script from a ConfigMap without embedding the script directly in the pipeline.
 
 
-
-Features
+**Features**
 
 Runs Python scripts with Azure SDK support  
 Uses Azure credentials securely via a Kubernetes Secret  
@@ -13,7 +12,7 @@ Allows specifying the Azure region dynamically
 
 
 
-Prerequisites
+**Prerequisites**
 
 Before running the Task, ensure you have:  
 
@@ -48,11 +47,11 @@ Triggers the Task execution.
 
 How It Works
 
-1️⃣ Azure credentials** are injected from the Kubernetes Secret.  
-2️⃣ Python script is retrieved from the ConfigMap and mounted inside the container.  
-3️⃣ Required dependencies (`azure-identity`, `azure-storage-blob`, etc.) are installed.  
-4️⃣ The script is executed with azure authentication.  
-5️⃣ Results (such as listing Azure Storage containers) are printed in the logs.  
+Azure credentials** are injected from the Kubernetes Secret.  
+Python script is retrieved from the ConfigMap and mounted inside the container.  
+Required dependencies (`azure-identity`, `azure-storage-blob`, etc.) are installed.  
+The script is executed with azure authentication.  
+Results (such as listing Azure Storage containers) are printed in the logs.  
 
 ---
 
@@ -76,10 +75,10 @@ Execute the Task with dynamic parameters (such as Azure region).
 
 A typical scenario would be:  
 
-1️⃣ Authenticating to Azure** using DefaultAzureCredential
-2️⃣ Connecting to Azure Storage 
-3️⃣ Listing available Storage Containers  
-4️⃣ Printing the output to logs  
+Authenticating to Azure** using DefaultAzureCredential
+Connecting to Azure Storage 
+Listing available Storage Containers  
+Printing the output to logs  
 
 
  
