@@ -23,7 +23,7 @@ A ConfigMap containing the Python script
 
 
 
-Components
+**Components**
 
 This setup consists of the following:  
 
@@ -45,7 +45,7 @@ Triggers the Task execution.
 
 
 
-How It Works
+**How It Works**
 
 Azure credentials** are injected from the Kubernetes Secret.  
 Python script is retrieved from the ConfigMap and mounted inside the container.  
@@ -55,7 +55,7 @@ Results (such as listing Azure Storage containers) are printed in the logs.
 
 ---
 
-Steps to Use  
+**Steps to Use  **
 
 Step 1: Create the Azure Credentials Secret 
 Store your Azure authentication details in a Kubernetes Secret to be used by the pipeline.  
@@ -71,7 +71,7 @@ Execute the Task with dynamic parameters (such as Azure region).
 
 ---
 
- Example Use Case  
+** Example Use Case ** 
 
 A typical scenario would be:  
 
