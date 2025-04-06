@@ -1,216 +1,91 @@
 
----
-
-```markdown
-# 🔷 Tekton Task: Run Python Scripts with Azure SDK
-
-This Tekton Task enables execution of Python scripts that interact with Azure services using the Azure SDK. The solution is designed to promote secure credential management and modular pipeline design.
 
 ---
 
-## ✨ Features
+# Tekton Task: Run Python Scripts with Azure SDK
 
-- ✅ Runs Python scripts using Azure SDK modules like `azure-identity`, `azure-storage-blob`, etc.
-- 🔐 Securely authenticates to Azure using Kubernetes Secrets
-- 🧩 Uses ConfigMaps to load dynamic Python scripts (decouples script from pipeline)
-- 🌍 Supports dynamic input of Azure regions via `params`
+This Tekton Task allows you to run Python scripts that interact with Azure services using the Azure SDK. It's designed to securely use Azure credentials via Kubernetes Secrets and retrieve scripts from ConfigMaps, making your pipelines clean and modular.
 
 ---
 
-## 📦 Prerequisites
+## Features
 
-Ensure you have the following before using this Task:
-
-- A **Kubernetes cluster** with **Tekton Pipelines installed**
-- An **Azure account** with necessary permissions (e.g., Reader or Contributor roles)
-- A **Kubernetes Secret** containing Azure credentials:
-  - `AZURE_CLIENT_ID`
-  - `AZURE_CLIENT_SECRET`
-  - `AZURE_TENANT_ID`
-- A **Kubernetes ConfigMap** containing the Python script you want to execute
+- Executes Python scripts using Azure SDK (`azure-identity`, `azure-storage-blob`, etc.)
+- Securely injects Azure credentials from Kubernetes Secrets
+- Loads Python scripts from ConfigMaps instead of embedding them
+- Supports dynamic Azure region configuration via parameters
+- Logs script output, useful for auditing and debugging
 
 ---
 
-## 🧱 Architecture Overview
+## Prerequisites
 
-```text
-+---------------------------+
-|     Tekton TaskRun       |
-|--------------------------|
-|  Inject Azure Credentials|
-|  Load Script from ConfigMap |
-|  Install Azure SDKs      |
-|  Run Python Script       |
-+---------------------------+
-```
+- A Kubernetes cluster with Tekton Pipelines installed
+- An active Azure account with appropriate permissions
+- A Kubernetes Secret containing Azure credentials (`AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_TENANT_ID`)
+- A ConfigMap that holds your Python script
+- A basic understanding of Tekton Task and TaskRun concepts
 
 ---
 
-## 🔐 Step 1: Create Azure Credentials Secret
+## Components
 
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: azure-credentials
-type: Opaque
-stringData:
-  AZURE_CLIENT_ID: "<your-client-id>"
-  AZURE_CLIENT_SECRET: "<your-client-secret>"
-  AZURE_TENANT_ID: "<your-tenant-id>"
-```
+### 1. Kubernetes Secret: `azure-credentials`
 
-Apply with:
+Stores Azure authentication details securely and is referenced by the Task to set environment variables.
 
-```bash
-kubectl apply -f azure-secret.yaml
-```
+### 2. ConfigMap: `python-script-configmap`
 
----
+Contains the Python script that uses Azure SDK to interact with Azure resources.
 
-## 📝 Step 2: Create Python Script ConfigMap
+### 3. Tekton Task: `python-azure-sdk`
 
-Save your Python script (e.g., `list_containers.py`) locally:
+Defines the steps to:
+- Install required Azure SDK packages
+- Inject credentials
+- Load and execute the Python script
 
-```python
-# list_containers.py
-from azure.identity import DefaultAzureCredential
-from azure.storage.blob import BlobServiceClient
+### 4. Tekton TaskRun: `python-azure-sdk-run`
 
-credential = DefaultAzureCredential()
-account_url = "https://<your-storage-account>.blob.core.windows.net"
-service_client = BlobServiceClient(account_url=account_url, credential=credential)
-
-print("Containers:")
-for container in service_client.list_containers():
-    print(f"- {container['name']}")
-```
-
-Create the ConfigMap:
-
-```bash
-kubectl create configmap python-script-configmap --from-file=list_containers.py
-```
+Used to trigger the Task with optional parameters like Azure region.
 
 ---
 
-## 📋 Step 3: Define the Tekton Task
+## How It Works
 
-```yaml
-apiVersion: tekton.dev/v1
-kind: Task
-metadata:
-  name: python-azure-sdk
-spec:
-  params:
-    - name: region
-      type: string
-      default: eastus
-  steps:
-    - name: run-python
-      image: python:3.11
-      env:
-        - name: AZURE_CLIENT_ID
-          valueFrom:
-            secretKeyRef:
-              name: azure-credentials
-              key: AZURE_CLIENT_ID
-        - name: AZURE_CLIENT_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: azure-credentials
-              key: AZURE_CLIENT_SECRET
-        - name: AZURE_TENANT_ID
-          valueFrom:
-            secretKeyRef:
-              name: azure-credentials
-              key: AZURE_TENANT_ID
-      volumeMounts:
-        - name: script-volume
-          mountPath: /scripts
-      workingDir: /scripts
-      script: |
-        pip install azure-identity azure-storage-blob
-        python list_containers.py
-  volumes:
-    - name: script-volume
-      configMap:
-        name: python-script-configmap
-```
-
-Apply with:
-
-```bash
-kubectl apply -f task-python-azure-sdk.yaml
-```
+- Credentials are injected into the container from the Secret.
+- The script is mounted into the container from the ConfigMap.
+- Required Azure SDK libraries are installed inside the Task container.
+- The script is executed and the output is printed in the logs.
 
 ---
 
-## 🚀 Step 4: Run the Task with TaskRun
+## Usage Workflow
 
-```yaml
-apiVersion: tekton.dev/v1
-kind: TaskRun
-metadata:
-  name: python-azure-sdk-run
-spec:
-  taskRef:
-    name: python-azure-sdk
-  params:
-    - name: region
-      value: eastus
-```
-
-Apply with:
-
-```bash
-kubectl apply -f taskrun-python-azure-sdk.yaml
-```
+1. Create a Kubernetes Secret with Azure credentials.
+2. Create a ConfigMap containing the Python script.
+3. Apply the Tekton Task that defines execution logic.
+4. Trigger the Task using a TaskRun, optionally specifying the Azure region.
 
 ---
 
-## 🔍 Example Output
+## Example Use Case
 
-```bash
-Containers:
-- logs-container
-- backup-data
-- reports2024
-```
+Use this setup to:
 
----
-
-## 🛡️ Security Note
-
-- Credentials are injected using environment variables from Kubernetes Secrets
-- No sensitive data is hard-coded or stored in the script/configmap
+- Authenticate to Azure using `DefaultAzureCredential`
+- Connect to Azure Storage
+- List available containers or perform blob operations
+- Print results in TaskRun logs
 
 ---
 
-## 💡 Use Cases
+## Best Practices
 
-- Automate Azure resource audits
-- Run scheduled data processing jobs
-- Fetch metadata from Azure Storage, Key Vault, etc.
-- Teach CI/CD with Azure using Tekton and Kubernetes
+- Keep your Python scripts modular and reusable via ConfigMaps
+- Avoid hardcoding credentials—always use Kubernetes Secrets
+- Use parameterization to control regions or other inputs
+- Store logs for audit and debugging
 
----
 
-## 📂 Repository Structure Suggestion
-
-```
-.
-├── azure-secret.yaml
-├── configmap-script.yaml
-├── list_containers.py
-├── task-python-azure-sdk.yaml
-└── taskrun-python-azure-sdk.yaml
-```
-
----
-
-## 🙌 Contributions
-
-Feel free to fork this repo, submit pull requests, or share issues you encounter!
-
----
+Let me know if you want this turned into an actual GitHub repo with all the files laid out!
