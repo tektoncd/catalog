@@ -1,3 +1,11 @@
+> [!IMPORTANT]
+> **Migrate Images from *gcr.io* to *ghcr.io*.**
+>
+> To reduce costs, we've migrated all our new and old Tekton releases to the free tier on [ghcr.io/tektoncd](https://github.com/orgs/tektoncd/packages?repo_name=catalog). <br />
+> Read more [here](https://tekton.dev/blog/2025/04/03/migration-to-github-container-registry/).
+
+---
+
 # Tekton Catalog
 
 **If you want `v1alpha1` resources, you need to go to the
@@ -24,7 +32,7 @@ _See [our project roadmap](roadmap.md)._
 
 1. Each resource follows the following structure
 
-    ```
+    ```plaintext
     ./task/                     👈 the kind of the resource
 
         /argocd                 👈 definition file must have same name
@@ -56,7 +64,7 @@ _See [our project roadmap](roadmap.md)._
 
     annotations:
       tekton.dev/pipelines.minVersion: "0.12.1"        👈 Min Version of pipeline resource is compatible
-      tekton.dev/categories: CLI		        👈 Comma separated list of categories
+      tekton.dev/categories: CLI                       👈 Comma separated list of categories
       tekton.dev/tags: "ansible, cli"                  👈 Comma separated list of tags
       tekton.dev/displayName: "Ansible Tower Cli"      👈 displayName can be optional
       tekton.dev/platforms: "linux/amd64,linux/s390x"  👈 Comma separated list of platforms, can be optional
@@ -89,14 +97,14 @@ There are two kinds of `Task`s:
 
 First, install a `Task` onto your cluster:
 
-```
+```sh
 $ kubectl apply -f golang/build.yaml
 task.tekton.dev/golang-build created
 ```
 
 You can see which `Task`s are installed using `kubectl` as well:
 
-```
+```sh
 $ kubectl get tasks
 NAME           AGE
 golang-build   3s
@@ -105,7 +113,7 @@ golang-build   3s
 With the `Task` installed, you can define a `TaskRun` that runs that `Task`,
 being sure to provide values for required input parameters and resources:
 
-```
+```yaml
 apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
@@ -124,14 +132,14 @@ spec:
 
 Next, create the `TaskRun` you defined:
 
-```
+```sh
 $ kubectl apply -f example-run.yaml
 taskrun.tekton.dev/example-run created
 ```
 
 You can check the status of the `TaskRun` using `kubectl`:
 
-```
+```sh
 $ kubectl get taskrun example-run -oyaml
 apiVersion: tekton.dev/v1beta1
 kind: TaskRun
@@ -152,10 +160,10 @@ status:
 
 [Tekton Bundles](https://tekton.dev/docs/pipelines/pipelines/#tekton-bundles) are an alpha feature of Tekton pipelines that allows storing `Tasks` as bundles in a container registry, instead of as custom resources in etcd in a Kubernetes cluster.
 With Tekton Bundles are enabled, it is possible to reference any task in the catalog without installing it first.
-Tasks are available at [`gcr.io/tekton-releases/catalog/upstream/tasks/<task-name>:<task-version>`](https://console.cloud.google.com/gcr/images/tekton-releases/GLOBAL/catalog/upstream/tasks?gcrImageListsize=100).
+Tasks are available at [`ghcr.io/tektoncd/catalog/upstream/tasks/<task-name>:<task-version>`](https://github.com/orgs/tektoncd/packages?q=&tab=packages&q=).
 For example:
 
-```
+```yaml
 apiVersion: tekton.dev/v1beta1
 kind: TaskRun
 metadata:
@@ -163,7 +171,7 @@ metadata:
 spec:
   taskRef:
     name: golang-build
-    bundle: gcr.io/tekton-releases/catalog/upstream/golang-build:0.1
+    bundle: ghcr.io/tektoncd/catalog/upstream/tasks/golang-build:0.1
   params:
   - name: package
     value: github.com/tektoncd/pipeline
