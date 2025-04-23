@@ -36,8 +36,7 @@ spec:
          echo "Using the client $(params.client-name)"
          jmp config client use $(params.client-name)
 
-         # Loop through each label provided as argument and build 
-         #TODO: Once the lease timeout is implemented, add the $parameter.lease-duration to the command.
+         # Loop through each label provided as argument and build
          CLIENT_LEASE_CMD="jmp create lease"
          for label in "$@"; do
            IFS='=' read -r KEY VAL <<< "$label"
@@ -45,8 +44,7 @@ spec:
          done
 
          # Request a lease
-         JMP_LEASE_ID=$(timeout "$(params.timeout)" $CLIENT_LEASE_CMD --duration "$(params.lease-duration)" -o name) 
-
+         JMP_LEASE_ID=$(timeout "$(params.timeout)" $CLIENT_LEASE_CMD --duration "$(params.lease-duration)" -o name)
          # Output the lease ID to the Tekton results
          echo -n "$JMP_LEASE_ID" > /tekton/results/jmp-lease-id
   workspaces:
