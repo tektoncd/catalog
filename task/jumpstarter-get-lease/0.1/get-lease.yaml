@@ -1,0 +1,56 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: jumpstarter-get-lease
+spec:
+  params:
+    - default: 'default'
+      description: The client intending to acquire the lease.
+      name: client-name
+      type: string
+    - description: A list of label exporters in the format key=value.
+      name: exporter-labels
+      type: array
+    - default: '3600'
+      description: Maximum wait time (in seconds) for lease acquisition before timeout.
+      name: timeout
+      type: string
+    - default: '02:00:00'
+      description: Maximum time (in HH:MM:SS format) for holding lease before relasing it.
+      name: lease-duration
+      type: string
+  results:
+    - description: The Lease ID from Jumpstarter
+      name: jmp-lease-id
+      type: string
+  steps:
+    - computeResources: {}
+      image: 'quay.io/jumpstarter-dev/jumpstarter:latest'
+      name: acquire-lease
+      args: ["$(params.exporter-labels[*])"]
+      script: |
+        #!/usr/bin/env bash
+         set -eux
+
+         # Use the client name provided in the parameter
+         echo "Using the client $(params.client-name)"
+         jmp config client use $(params.client-name)
+
+         # Loop through each label provided as argument and build 
+         #TODO: Once the lease timeout is implemented, add the $parameter.lease-duration to the command.
+         CLIENT_LEASE_CMD="jmp create lease"
+         for label in "$@"; do
+           IFS='=' read -r KEY VAL <<< "$label"
+           CLIENT_LEASE_CMD+=" -l $KEY=$VAL"
+         done
+
+         # Request a lease
+         JMP_LEASE_ID=$(timeout "$(params.timeout)" $CLIENT_LEASE_CMD --duration "$(params.lease-duration)" -o name) 
+
+         # Output the lease ID to the Tekton results
+         echo -n "$JMP_LEASE_ID" > /tekton/results/jmp-lease-id
+  workspaces:
+    - description: Workspace for mounting Jumpstarter client files.
+      mountPath: /root/.config/jumpstarter/clients
+      name: jumpstarter-client-secret
+      readOnly: true
