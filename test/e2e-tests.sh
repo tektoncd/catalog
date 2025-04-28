@@ -87,8 +87,8 @@ if [[ -z ${TEST_RUN_ALL_TESTS} ]];then
     }
 fi
 
-test_yaml_can_install "${all_stepactions}"
-test_yaml_can_install "${all_tests}"
+test_yaml_can_install stepactions "${all_stepactions}"
+test_yaml_can_install tasks "${all_tests}"
 
 function test_resources {
     local cnt=0

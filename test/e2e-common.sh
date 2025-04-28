@@ -174,7 +174,8 @@ function install_pipeline_crd() {
 
 function test_yaml_can_install() {
     # Validate that all the StepAction/Task CRDs in this repo are valid by creating them in a NS.
-    ns="task-stepaction-ns"
+    ns="${1}-ns"
+    shift
     all_tasks="$*"
     ${KUBECTL_CMD} create ns "${ns}" || true
     local runtest

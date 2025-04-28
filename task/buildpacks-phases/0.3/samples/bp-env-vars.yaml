@@ -1,0 +1,95 @@
+#
+# If the registries to be used require to be authenticated, then create a secret with the credentials using either the $home/.docker/config.json
+# file or for podman's user the $HOME/.config/containers/auth.json file
+#
+# kubectl create secret docker-registry dockercfg --from-file=.dockerconfigjson=$HOME/.config/containers/auth.json -n demo
+#
+# Next create a ServiceAccount where you registered the secret's name within the list of the secrets or imagePullSecrets.
+# Tekton will then mount the secret(s) under the following path of the task - pod
+# /tekton/home/.docker/config.json
+#
+#  cat <<EOF | kubectl apply -f -
+#  apiVersion: v1
+#  kind: ServiceAccount
+#  metadata:
+#    name: sa-with-creds
+#  imagePullSecrets:
+#  - name: dockercfg
+#  secrets:
+#  - name: dockercfg
+#  EOF
+#
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: source-ws
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+---
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: bp-env-vars-buildpacks-pipeline
+spec:
+  workspaces:
+    - name: source-ws
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        resolver: git
+        params:
+          - name: url
+            value: https://github.com/tektoncd/catalog.git
+          - name: revision
+            value: main
+          - name: pathInRepo
+            value: task/git-clone/0.9/git-clone.yaml
+      workspaces:
+        - name: output
+          workspace: source-ws
+      params:
+        - name: url
+          value: https://github.com/quarkusio/quarkus-quickstarts
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+    - name: buildpacks-phases
+      taskRef:
+        name: buildpacks-phases
+      runAfter:
+        - fetch-repository
+      workspaces:
+        - name: source
+          workspace: source-ws
+      params:
+        - name: APP_IMAGE
+          value: localhost:5000/buildpacks-app
+        - name: SOURCE_SUBPATH
+          value: getting-started
+        - name: CNB_BUILDER_IMAGE
+          value: paketobuildpacks/builder-ubi8-base:0.1.0@sha256:1ba4bf4b29abef28a0d364591becdc402a3bdec62662393b9457b2bd419f307b
+        - name: CNB_INSECURE_REGISTRIES
+          value: "my-gitea-http.gitea.svc.cluster.local:3000"
+        - name: CNB_ENV_VARS
+          value:
+            - BP_JVM_VERSION=21
+---
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: bp-env-vars-buildpacks-pipeline-run
+spec:
+  taskRunTemplate:
+    serviceAccountName: sa-with-creds
+  pipelineRef:
+    name: bp-env-vars-buildpacks-pipeline
+  workspaces:
+    - name: source-ws
+      persistentVolumeClaim:
+        claimName: source-ws
