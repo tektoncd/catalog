@@ -1,0 +1,489 @@
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: buildpacks-phases
+  labels:
+    app.kubernetes.io/version: "0.3"
+  annotations:
+    tekton.dev/categories: Image Build, Security
+    tekton.dev/pipelines.minVersion: "0.62.0"
+    tekton.dev/tags: image-build
+    tekton.dev/displayName: "Buildpacks phases"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    The Buildpacks-Phases task builds source into a container image and pushes it to
+    a registry, using Cloud Native Buildpacks - https://buildpacks.io/. This task separately calls the aspects of the
+    Cloud Native Buildpacks lifecycle, to provide increased security via container isolation.
+
+    When the builder image includes extensions (= Dockerfiles), then this task will execute them.
+    That allows to by example install packages, rpm, etc and to customize the build process according to your needs.
+
+    This task supports the Platform spec 0.13: https://github.com/buildpacks/spec/blob/platform/v0.13/platform.md
+
+  workspaces:
+    - name: source
+      description: Directory where application source is located.
+    - name: cache
+      description: Directory where cache is stored (when no cache image is provided).
+      optional: true
+
+  params:
+    - name: CNB_BUILD_IMAGE
+      description: Reference to the current build image in an OCI registry (if used <kaniko-dir> must be provided)
+      default: ""
+    - name: CNB_BUILDER_IMAGE
+      description: The Builder image which includes the lifecycle tool, the buildpacks and metadata.
+    - name: CNB_CACHE_IMAGE
+      description: Reference to a cache image in an OCI registry (if no cache workspace is provided).
+      default: ""
+    - name: CNB_ENV_VARS
+      type: array
+      description: Environment variables to set during _build-time_.
+      default: []
+    - name: CNB_EXPERIMENTAL_MODE
+      description: Control the lifecycle's execution according to the mode silent, warn, error for the experimental features.
+      default: silent
+    - name: CNB_GROUP_ID
+      description: The group ID of the builder image user.
+      default: ""
+    - name: CNB_INSECURE_REGISTRIES
+      description: List of registries separated by a comma having a self-signed certificate where TLS verification will be skipped.
+      default: ""
+    - name: CNB_LAYERS_DIR
+      description: Path to layers directory
+      default: "/layers"
+    - name: CNB_LOG_LEVEL
+      description: Logging level values info, warning, error, debug
+      default: "info"
+    - name: CNB_PLATFORM_API_SUPPORTED
+      description: Buildpack Platform API supported by the Tekton task
+      default: "0.13"
+    - name: CNB_PLATFORM_API
+      description: User's Buildpack Platform API
+      default: ""
+    - name: CNB_PLATFORM_DIR
+      description: Path to the platform directory
+      default: "/platform"
+    - name: CNB_PROCESS_TYPE
+      description: Default process type to set in the exported image
+      default: "web"
+    - name: CNB_RUN_IMAGE
+      description: Reference to an image which is packaging the application runtime to be launched.
+      default: ""
+    - name: CNB_SKIP_LAYERS
+      description: Do not restore SBOM layer from previous image
+      default: false
+    # DEPRECATED: It does not make sense to support such an env variable as mounting the unix docker socket part of a pod from a host volume
+    # will never happen for security reason
+    # - name: CNB_USE_DAEMON
+    #  description: Analyze image from docker daemon
+    #  default: false
+    - name: CNB_USER_ID
+      description: The user ID of the builder image user.
+      default: ""
+
+    - name: APP_IMAGE
+      description: The name of the container image for your application.
+    - name: SOURCE_SUBPATH
+      description: A subpath within the `source` input where the source to build is located.
+      default: ""
+    - name: TAGS
+      description: Additional tag to apply to the exported image
+      default: ""
+    - name: USER_HOME
+      description: Absolute path to the user's home directory.
+      default: /tekton/home
+    - name: INSPECT_TOOLS_IMAGE
+      description: Image packaging tools like skopeo and jq to inspect the builder images
+      default: quay.io/halkyonio/skopeo-jq:0.1.3@sha256:1b3d21ad541227dc9d3e793d18cef9eb00a969c0c01eb09cab88997bc63680c6
+
+  results:
+    - name: APP_IMAGE_DIGEST
+      description: The digest of the built `APP_IMAGE`.
+
+  stepTemplate:
+    env:
+      - name: CNB_EXPERIMENTAL_MODE
+        value: $(params.CNB_EXPERIMENTAL_MODE)
+      - name: HOME
+        value: $(params.USER_HOME)
+
+  steps:
+    - name: get-labels-and-env
+      image: $(params.INSPECT_TOOLS_IMAGE)
+      onError: stopAndFail
+      env:
+        - name: PARAM_VERBOSE
+          value: $(params.CNB_LOG_LEVEL)
+        - name: PARAM_BUILDER_IMAGE
+          value: $(params.CNB_BUILDER_IMAGE)
+        - name: PARAM_CNB_PLATFORM_API
+          value: $(params.CNB_PLATFORM_API)
+        - name: PARAM_CNB_PLATFORM_API_SUPPORTED
+          value: $(params.CNB_PLATFORM_API_SUPPORTED)
+      results:
+        - name: UID
+          description: UID of the user specified in the Builder image
+        - name: GID
+          description: GID of the user specified in the Builder image
+        - name: EXTENSION_LABELS
+          description: "Extensions labels: io.buildpacks.extension.layers defined in the Builder image"
+        - name: CNB_PLATFORM_API
+          description: The CNB_PLATFORM_API to be used by lifecycle and verified against the one supported by this task
+      script: |
+        #!/usr/bin/env bash
+        set -eu
+
+        if [ "${PARAM_VERBOSE}" = "debug" ] ; then
+          set -x
+        fi
+
+        echo # Check if registry creds docker file has been mounted from a secret"
+        if [[ -f "$HOME/.docker/config.json" ]]; then
+          printf %"s\n" "The docker config.json file exists !"
+        else
+          printf %"s\n" "!!!!! Warning: No registry credentials file exist. So it could be possible that the task will fail due to docker rate limit, etc !!!"
+        fi
+
+        printf %"s\n" "Remove the @sha from the image as not supported by skopeo to inspect an image"
+        CLEANED_IMAGE="${PARAM_BUILDER_IMAGE%@*}"
+
+        EXT_LABEL_1="io.buildpacks.extension.layers"
+        EXT_LABEL_2="io.buildpacks.buildpack.order-extensions"
+        BUILDER_LABEL="io.buildpacks.builder.metadata"
+
+        IMG_MANIFEST=$(skopeo inspect --authfile $HOME/.docker/config.json "docker://${CLEANED_IMAGE}")
+
+        #
+        # The following test should be reviewed as :
+        #
+        # 1) we get from non ubi images a {} value as you can see hereafter
+        #   "io.buildpacks.extension.layers": "{}",
+        #
+        # 2) Do we have to check the content of this label too ?
+        #    "io.buildpacks.buildpack.order-extensions": "null",
+        #
+
+        IMG_LABELS=$(echo $IMG_MANIFEST | jq -e '.Labels')
+
+        if [[ $(echo "$IMG_LABELS" | jq -r '.["'${BUILDER_LABEL}'"]') != "{}" ]] > /dev/null; then
+          printf %"s\n" "## The builder image ${PARAM_BUILDER_IMAGE} includes the label: \"${BUILDER_LABEL}\" :"
+
+          builderLabel=$(echo -n "$IMG_LABELS" | jq -r '.["'${BUILDER_LABEL}'"]')
+          platforms=($(echo $builderLabel | jq -r '.lifecycle.apis.platform.supported'))
+          printf %"s\n" "Lifecycle platforms API supported: ${platforms[@]}"
+
+          CNB_PLATFORM_API=${PARAM_CNB_PLATFORM_API:-$PARAM_CNB_PLATFORM_API_SUPPORTED}
+          echo "Platform API selected: $CNB_PLATFORM_API"
+          printf %"s\n" "Platform API supported by this task: $PARAM_CNB_PLATFORM_API_SUPPORTED"
+
+          if [[ "${platforms[@]}" =~ "$CNB_PLATFORM_API" && "$CNB_PLATFORM_API" == "$PARAM_CNB_PLATFORM_API_SUPPORTED" ]]; then
+              echo -n "$CNB_PLATFORM_API" > "$(step.results.CNB_PLATFORM_API.path)"
+              printf %"s\n" "$CNB_PLATFORM_API is in the list of the platform supported by lifecycle like also this Tekton task :-)"
+          else
+              echo "$PARAM_CNB_PLATFORM_API is not in the list of the supported platform by lifecycle or is not supported by this tekton task: ${PARAM_CNB_PLATFORM_API_SUPPORTED} !"
+              exit 1
+          fi
+        fi
+
+        if [[ $(echo "$IMG_LABELS" | jq -r '.["'${EXT_LABEL_1}'"]') != "{}" ]] > /dev/null; then
+          echo "## The builder image ${PARAM_BUILDER_IMAGE} includes some extensions as the extension label \"${EXT_LABEL_1}\" is NOT empty:"
+          echo -n "$IMG_LABELS" | jq -r '.["'${EXT_LABEL_1}'"]' | tee "$(step.results.EXTENSION_LABELS.path)"
+          echo ""
+        else
+          echo "## The builder image ${PARAM_BUILDER_IMAGE} dot not include extensions as the extension label \"${EXT_LABEL_1}\" is empty !"
+          echo -n "empty" | tee "$(step.results.EXTENSION_LABELS.path)"
+        fi
+
+        CNB_USER_ID=$(echo $IMG_MANIFEST | jq -r '.Env' | jq -r '.[] | select(test("^CNB_USER_ID="))'  | cut -d '=' -f 2)
+        CNB_GROUP_ID=$(echo $IMG_MANIFEST | jq -r '.Env' | jq -r '.[] | select(test("^CNB_GROUP_ID="))' | cut -d '=' -f 2)
+
+        echo "## The CNB_USER_ID & CNB_GROUP_ID defined within the builder image: ${PARAM_BUILDER_IMAGE} are:"
+        echo -n "$CNB_USER_ID"  | tee "$(step.results.UID.path)"
+        echo ""
+        echo -n "$CNB_GROUP_ID" | tee "$(step.results.GID.path)"
+
+    - name: prepare
+      image: registry.access.redhat.com/ubi8/ubi-minimal@sha256:b2a1bec3dfbc7a14a1d84d98934dfe8fdde6eb822a211286601cf109cbccb075
+      args:
+        - "--env-vars"
+        - "$(params.CNB_ENV_VARS[*])"
+      env:
+        - name: CNB_USER_ID
+          value: $(steps.get-labels-and-env.results.UID)
+        - name: CNB_GROUP_ID
+          value: $(steps.get-labels-and-env.results.GID)
+      script: |
+        #!/usr/bin/env bash
+        set -eu
+
+        echo "CNB UID: $CNB_USER_ID"
+        echo "CNB GID: $CNB_GROUP_ID"
+
+        if [[ "$(workspaces.cache.bound)" == "true" ]]; then
+          echo "--> Setting permissions on '$(workspaces.cache.path)'..."
+          chown -R "$CNB_USER_ID:$CNB_GROUP_ID" "$(workspaces.cache.path)"
+        fi
+
+        echo "--> Creating .docker folder"
+        mkdir -p "/tekton/home/.docker"
+
+        for path in "/tekton/home" "/tekton/home/.docker" "/tekton/creds" "/layers" "$(workspaces.source.path)"; do
+          echo "--> Setting permissions on '$path'..."
+          chown -R "$CNB_USER_ID:$CNB_GROUP_ID" "$path"
+        done
+
+        echo "--> Parsing additional configuration..."
+        parsing_flag=""
+        envs=()
+        for arg in "$@"; do
+            if [[ "$arg" == "--env-vars" ]]; then
+                echo "-> Parsing env variables..."
+                parsing_flag="env-vars"
+            elif [[ "$parsing_flag" == "env-vars" ]]; then
+                envs+=("$arg")
+            fi
+        done
+
+        echo "--> Processing any environment variables..."
+        ENV_DIR="/platform/env"
+
+        echo "--> Creating 'env' directory: $ENV_DIR"
+        mkdir -p "$ENV_DIR"
+
+        for env in "${envs[@]}"; do
+            IFS='=' read -r key value string <<< "$env"
+            if [[ "$key" != "" && "$value" != "" ]]; then
+                path="${ENV_DIR}/${key}"
+                echo "--> Writing ${path}..."
+                echo -n "$value" > "$path"
+            fi
+        done
+        echo "--> Content of $(params.CNB_PLATFORM_DIR)/env"
+        ls -la $(params.CNB_PLATFORM_DIR)/env
+
+        echo "--> Show the project cloned within the workspace ..."
+        ls -la $(workspaces.source.path)/$(params.SOURCE_SUBPATH)
+
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+        - name: platform-dir
+          mountPath: $(params.CNB_PLATFORM_DIR)
+
+    - name: analyze
+      image: $(params.CNB_BUILDER_IMAGE)
+      imagePullPolicy: Always
+      command: ["/cnb/lifecycle/analyzer"]
+      env:
+        - name: CNB_PLATFORM_API
+          value: $(steps.get-labels-and-env.results.CNB_PLATFORM_API)
+      args:
+        - "-log-level=$(params.CNB_LOG_LEVEL)"
+        - "-layers=$(params.CNB_LAYERS_DIR)"
+        - "-run-image=$(params.CNB_RUN_IMAGE)"
+        - "-cache-image=$(params.CNB_CACHE_IMAGE)"
+        - "-uid=$(steps.get-labels-and-env.results.UID)"
+        - "-gid=$(steps.get-labels-and-env.results.GID)"
+        - "-insecure-registry=$(params.CNB_INSECURE_REGISTRIES)"
+        - "-tag=$(params.TAGS)"
+        - "-skip-layers=$(params.CNB_SKIP_LAYERS)"
+        - "$(params.APP_IMAGE)"
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+
+    - name: detect
+      image: $(params.CNB_BUILDER_IMAGE)
+      imagePullPolicy: Always
+      command: ["/cnb/lifecycle/detector"]
+      env:
+        - name: CNB_PLATFORM_API
+          value: $(steps.get-labels-and-env.results.CNB_PLATFORM_API)
+      args:
+        - "-log-level=$(params.CNB_LOG_LEVEL)"
+        - "-app=$(workspaces.source.path)/$(params.SOURCE_SUBPATH)"
+        - "-group=/layers/group.toml"
+        - "-plan=/layers/plan.toml"
+        - "-layers=$(params.CNB_LAYERS_DIR)"
+        - "-platform=$(params.CNB_PLATFORM_DIR)"
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+        - name: platform-dir
+          mountPath: $(params.CNB_PLATFORM_DIR)
+        - name: tekton-home-dir
+          mountPath: /tekton/home
+
+    - name: restore
+      image: $(params.CNB_BUILDER_IMAGE)
+      imagePullPolicy: Always
+      env:
+        - name: UID
+          value: $(steps.get-labels-and-env.results.UID)
+        - name: GID
+          value: $(steps.get-labels-and-env.results.GID)
+        - name: CNB_LOG_LEVEL
+          value: $(params.CNB_LOG_LEVEL)
+        - name: CNB_BUILD_IMAGE
+          value: $(params.CNB_BUILD_IMAGE)
+        - name: CNB_BUILDER_IMAGE
+          value: $(params.CNB_BUILDER_IMAGE)
+        - name: CNB_CACHE_IMAGE
+          value: $(params.CNB_CACHE_IMAGE)
+        - name: CNB_INSECURE_REGISTRIES
+          value: $(params.CNB_INSECURE_REGISTRIES)
+        - name: CNB_SKIP_LAYERS
+          value: $(params.CNB_SKIP_LAYERS)
+        - name: CNB_PLATFORM_API
+          value: $(steps.get-labels-and-env.results.CNB_PLATFORM_API)
+      script: |
+        #!/usr/bin/env bash
+        export BUILD_IMAGE=${CNB_BUILD_IMAGE:-${CNB_BUILDER_IMAGE}}
+        /cnb/lifecycle/restorer \
+          -log-level=${CNB_LOG_LEVEL} \
+          -build-image=${BUILD_IMAGE} \
+          -group=/layers/group.toml \
+          -layers=${CNB_LAYERS_DIR} \
+          -cache-dir=$(workspaces.cache.path) \
+          -cache-image=${CNB_CACHE_IMAGE} \
+          -uid=${UID} \
+          -gid=${GID} \
+          -insecure-registry=${CNB_INSECURE_REGISTRIES} \
+          -skip-layers=${CNB_SKIP_LAYERS}
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+        - name: kaniko-dir
+          mountPath: /kaniko
+
+    - name: extender
+      when:
+        - input: $(steps.get-labels-and-env.results.EXTENSION_LABELS)
+          operator: notin
+          values: ["empty"]
+      image: $(params.CNB_BUILDER_IMAGE)
+      imagePullPolicy: Always
+      command: ["/cnb/lifecycle/extender"]
+      env:
+        - name: CNB_PLATFORM_API
+          value: $(steps.get-labels-and-env.results.CNB_PLATFORM_API)
+      args:
+        - "-log-level=$(params.CNB_LOG_LEVEL)"
+        - "-app=$(workspaces.source.path)/$(params.SOURCE_SUBPATH)"
+        - "-generated=/layers/generated"
+        - "-uid=$(steps.get-labels-and-env.results.UID)"
+        - "-gid=$(steps.get-labels-and-env.results.GID)"
+        - "-platform=$(params.CNB_PLATFORM_DIR)"
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        capabilities:
+          add:
+            - "SYS_ADMIN"
+            - "SETFCAP"
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+        - name: kaniko-dir
+          mountPath: /kaniko
+        - name: tekton-home-dir
+          mountPath: /tekton/home
+        - name: platform-dir
+          mountPath: $(params.CNB_PLATFORM_DIR)
+
+    - name: build
+      when:
+        - input: $(steps.get-labels-and-env.results.EXTENSION_LABELS)
+          operator: in
+          values: ["empty"]
+      image: $(params.CNB_BUILDER_IMAGE)
+      imagePullPolicy: Always
+      command: ["/cnb/lifecycle/builder"]
+      env:
+        - name: CNB_PLATFORM_API
+          value: $(steps.get-labels-and-env.results.CNB_PLATFORM_API)
+      args:
+        - "-log-level=$(params.CNB_LOG_LEVEL)"
+        - "-app=$(workspaces.source.path)/$(params.SOURCE_SUBPATH)"
+        - "-layers=$(params.CNB_LAYERS_DIR)"
+        - "-group=/layers/group.toml"
+        - "-plan=/layers/plan.toml"
+        - "-platform=$(params.CNB_PLATFORM_DIR)"
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+        - name: platform-dir
+          mountPath: $(params.CNB_PLATFORM_DIR)
+        - name: tekton-home-dir
+          mountPath: /tekton/home
+
+    - name: export
+      image: $(params.CNB_BUILDER_IMAGE)
+      imagePullPolicy: Always
+      command: ["/cnb/lifecycle/exporter"]
+      env:
+        - name: CNB_PLATFORM_API
+          value: $(steps.get-labels-and-env.results.CNB_PLATFORM_API)
+      args:
+        - "-log-level=$(params.CNB_LOG_LEVEL)"
+        - "-app=$(workspaces.source.path)/$(params.SOURCE_SUBPATH)"
+        - "-layers=$(params.CNB_LAYERS_DIR)"
+        - "-group=/layers/group.toml"
+        - "-cache-dir=$(workspaces.cache.path)"
+        - "-cache-image=$(params.CNB_CACHE_IMAGE)"
+        - "-report=/layers/report.toml"
+        - "-process-type=$(params.CNB_PROCESS_TYPE)"
+        - "-uid=$(steps.get-labels-and-env.results.UID)"
+        - "-gid=$(steps.get-labels-and-env.results.GID)"
+        - "-insecure-registry=$(params.CNB_INSECURE_REGISTRIES)"
+        - "$(params.APP_IMAGE)"
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+
+    - name: results
+      image: registry.access.redhat.com/ubi8/python-311@sha256:43605cb2491ef2297a7acf4b4bf0b7f54f0c91b96daf12ae41c49cc7f192b153
+      script: |
+        #!/usr/bin/env python3
+
+        import tomllib
+
+        def write_to_file(filename, content):
+          with open(filename, "w") as f:
+            f.write(content)
+
+        with open("/layers/report.toml", "rb") as f:
+            data = tomllib.load(f)
+
+        img_data = data.get("image")
+
+        tags = img_data.get("tags")
+        digest = img_data.get("digest")
+        image_id = img_data.get("image_id")
+        manifest_size = img_data.get("manifest_size")
+
+        print("#### Image data ####")
+        print(f"tags: {tags}")
+        print(f"Digest: {digest}")
+
+        if None not in (image_id, manifest_size):
+          print(f"image container id (when using daemon): {image_id}, manifest size: {manifest_size}")
+
+        write_to_file('$(results.APP_IMAGE_DIGEST.path)',digest)
+
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+
+  volumes:
+    - name: tekton-home-dir
+      emptyDir: {}
+    - name: layers-dir
+      emptyDir: {}
+    - name: kaniko-dir
+      emptyDir: {}
+    - name: platform-dir
+      emptyDir: {}
