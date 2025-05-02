@@ -1,0 +1,27 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  generateName: ai-code-review-run-
+spec:
+  taskRef:
+    name: ai-code-review
+  params:
+    - name: repo
+      value: "jkhelil/go-helloworld"
+    - name: pullRequestNumber
+      value: "19"
+    - name: githubHost
+      value: "https://api.github.com"
+    - name: apiBaseUrl
+      value: "https://api.openai.com/v1"
+    - name: apiModel
+      value: "gpt-4o"
+    - name: excludePatterns
+      value: "*.md,*.txt,package-lock.json,yarn.lock,*.png,*.jpg"
+    - name: dryRun
+      value: "false"
+    - name: debug
+      value: "true"
+  workspaces:
+  - name: shared-workspace
+    emptyDir: {}
