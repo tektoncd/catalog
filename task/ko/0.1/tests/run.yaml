@@ -45,5 +45,5 @@ spec:
     value: localhost:5000/ko-build
   workspaces:
   - name: shared-workspace
-    persistentvolumeclaim:
+    persistentVolumeClaim:
       claimName: ko-source-pvc

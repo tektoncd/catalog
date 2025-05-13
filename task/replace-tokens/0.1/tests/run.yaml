@@ -43,8 +43,8 @@ spec:
     name: replace-tokens-pipeline
   workspaces:
     - name: shared-workspace
-      persistentvolumeclaim:
+      persistentVolumeClaim:
         claimName: replace-tokens-source-pvc
     - name: json-workspace
-      configmap:
+      configMap:
         name: tokens-configmap

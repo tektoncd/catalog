@@ -50,5 +50,5 @@ spec:
     name: helm-upgrade-test-pipeline
   workspaces:
     - name: shared-workspace
-      persistentvolumeclaim:
+      persistentVolumeClaim:
         claimName: helm-source-pvc

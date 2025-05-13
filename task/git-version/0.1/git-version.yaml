@@ -24,7 +24,7 @@ spec:
     - description: A normalized version for use in container images e.g. "0.1.0-tektonize.1-188"
       name: packageVersion
   steps:
-    - image: mcr.microsoft.com/dotnet/sdk:3.1-focal@sha256:1d31e2582f69920c3a6ea9498bb7da285baffbca7ea84d90d9e5b545604cc92d
+    - image: mcr.microsoft.com/dotnet/sdk:3.1-focal@sha256:1e34d3881f9e1da0b2e81de59656abc29be6993eef2362d9134d66530db8b6ba
       name: set-git-version
       workingDir: $(workspaces.source.path)
       securityContext:
@@ -39,13 +39,15 @@ spec:
 
         git checkout "${PARAM_BRANCH}"
 
-        export GITVERSION=$(dotnet gitversion /showvariable FullSemVer)
-        echo -n "${GITVERSION}" | tee $(results.gitVersion.path)
+        GITVERSION=$(dotnet gitversion /showvariable FullSemVer)
+        export GITVERSION
+        echo -n "${GITVERSION}" | tee "$(results.gitVersion.path)"
 
         # normalize a bit because
         # image tags can only contain `abcdefghijklmnopqrstuvwxyz0123456789_-.ABCDEFGHIJKLMNOPQRSTUVWXYZ`
-        export PACKAGEVERSION=$(echo -n $GITVERSION | sed 's/[^-._0-9A-Za-z]/-/g')
-        echo -n "${PACKAGEVERSION}" | tee $(results.packageVersion.path)
+        PACKAGEVERSION=$(echo -n "$GITVERSION" | sed 's/[^-._0-9A-Za-z]/-/g')
+        export PACKAGEVERSION
+        echo -n "${PACKAGEVERSION}" | tee "$(results.packageVersion.path)"
   workspaces:
     - name: source
       description: A workspace that contains the fetched git repository to create a version for.

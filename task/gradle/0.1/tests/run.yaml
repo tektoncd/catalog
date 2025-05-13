@@ -41,5 +41,5 @@ spec:
     name: gradle-test-pipeline
   workspaces:
     - name: shared-workspace
-      persistentvolumeclaim:
+      persistentVolumeClaim:
         claimName: gradle-source-pvc

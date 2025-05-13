@@ -32,5 +32,5 @@ spec:
             workspace: shared-workspace
   workspaces:
     - name: shared-workspace
-      configmap:
+      configMap:
         name: flake8-example-dir

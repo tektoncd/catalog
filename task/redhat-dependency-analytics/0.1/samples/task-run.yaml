@@ -11,7 +11,7 @@ spec:
   workspaces:
     # Volume backing this workspace is used for input/output of the task.
     - name: output
-      persistentvolumeclaim:
+      persistentVolumeClaim:
         claimName: output
   params:
     - name: manifest-file-path

@@ -12,7 +12,7 @@ spec:
     name: redhat-codeready-dependency-analysis-pipeline
   workspaces:
     - name: output
-      persistentvolumeclaim:
+      persistentVolumeClaim:
         claimName: output
 
 # Change link to git_url and manifest-file-name according to target repository

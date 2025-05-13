@@ -48,5 +48,5 @@ spec:
     name: python-test-pipeline
   workspaces:
     - name: shared-workspace
-      persistentvolumeclaim:
+      persistentVolumeClaim:
         claimName: python-source-pvc

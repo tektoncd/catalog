@@ -52,7 +52,7 @@ spec:
     name: buildpacks-phases-test-pipeline
   workspaces:
   - name: shared-workspace
-    persistentvolumeclaim:
+    persistentVolumeClaim:
       claimName: buildpacks-source-pvc
   resources:
   - name: build-image

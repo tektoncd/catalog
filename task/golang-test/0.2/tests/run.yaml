@@ -42,5 +42,5 @@ spec:
     name: golang-test-pipeline
   workspaces:
     - name: shared-workspace
-      persistentvolumeclaim:
+      persistentVolumeClaim:
         claimName: golang-source-pvc

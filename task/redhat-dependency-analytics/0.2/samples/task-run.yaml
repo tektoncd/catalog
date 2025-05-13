@@ -11,7 +11,7 @@ spec:
   workspaces:
     # Volume backing this workspace is used for input/output of the task.
     - name: output
-      persistentvolumeclaim:
+      persistentVolumeClaim:
         claimName: output
   params:
     # Replace with path to target manifest file within the worspace (e.g., "pom.xml" or "path/to/my/project/pom.xml")

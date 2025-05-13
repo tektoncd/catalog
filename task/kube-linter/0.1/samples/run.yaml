@@ -49,5 +49,5 @@ spec:
     value: https://github.com/urvashigupta7/Go-Server
   workspaces:
   - name: workspace
-    persistentvolumeclaim:
+    persistentVolumeClaim:
       claimName: pvc

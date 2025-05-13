@@ -7,5 +7,5 @@ spec:
     name: kubeconfig-test-pipeline
   workspaces:
     - name: shared-workspace
-      persistentvolumeclaim:
+      persistentVolumeClaim:
         claimName: kubeconfig-pvc

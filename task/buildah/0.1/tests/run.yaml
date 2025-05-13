@@ -43,5 +43,5 @@ spec:
     name: buildah-test-pipeline
   workspaces:
   - name: shared-workspace
-    persistentvolumeclaim:
+    persistentVolumeClaim:
       claimName: buildah-source-pvc

@@ -44,5 +44,5 @@ spec:
     name: python-coverage-pipeline
   workspaces:
     - name: shared-workspace
-      persistentvolumeclaim:
+      persistentVolumeClaim:
         claimName: python-source-pvc

@@ -10,7 +10,7 @@ spec:
 
   workspaces:
     - name: output
-      persistentvolumeclaim:
+      persistentVolumeClaim:
         claimName: output
 
   params:
