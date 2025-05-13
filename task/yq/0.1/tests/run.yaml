@@ -64,5 +64,5 @@ spec:
     name: yq-pipeline
   workspaces:
     - name: source
-      persistentvolumeclaim:
+      persistentVolumeClaim:
         claimName: yq-pvc

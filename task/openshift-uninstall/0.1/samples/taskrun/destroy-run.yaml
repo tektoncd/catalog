@@ -7,5 +7,5 @@ spec:
     name: openshift-uninstall
   workspaces:
     - name: install-dir
-      persistentvolumeclaim:
+      persistentVolumeClaim:
         claimName: install-dir

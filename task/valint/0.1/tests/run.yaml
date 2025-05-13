@@ -73,7 +73,7 @@ spec:
     name: basic-tests
   workspaces:
   - name: shared-workspace
-    persistentvolumeclaim:
+    persistentVolumeClaim:
       claimName: test-pvc-output
   podTemplate:
     volumes:

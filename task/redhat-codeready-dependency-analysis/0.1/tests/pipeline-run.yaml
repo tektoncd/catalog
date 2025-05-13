@@ -113,7 +113,7 @@ spec:
     name: redhat-codeready-dependency-analysis-pipeline
   workspaces:
     - name: output
-      persistentvolumeclaim:
+      persistentVolumeClaim:
         claimName: output
 
   params:

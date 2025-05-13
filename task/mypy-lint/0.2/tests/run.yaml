@@ -45,5 +45,5 @@ spec:
     name: linter-pipeline
   workspaces:
     - name: shared-workspace
-      persistentvolumeclaim:
+      persistentVolumeClaim:
         claimName: linter-pvc

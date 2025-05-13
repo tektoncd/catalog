@@ -48,7 +48,7 @@ spec:
     name: jib-gradle-test-pipeline
   workspaces:
   - name: shared-workspace
-    persistentvolumeclaim:
+    persistentVolumeClaim:
       claimName: jib-gradle-source-pvc
   resources:
   - name: build-image

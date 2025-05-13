@@ -62,8 +62,8 @@ spec:
             requests:
               storage: 500Mi
     - name: upload
-      configmap:
+      configMap:
         name: upload-asset
     - name: release-notes
-      configmap:
+      configMap:
         name: release-file

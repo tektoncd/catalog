@@ -43,5 +43,5 @@ spec:
     name: upload-pypi-test-pipeline
   workspaces:
   - name: shared-workspace
-    persistentvolumeclaim:
+    persistentVolumeClaim:
       claimName: upload-pypi-source-pvc

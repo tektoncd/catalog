@@ -20,5 +20,5 @@ spec:
       secret:
         secretName: aws-credentials
     - name: source
-      configmap:
+      configMap:
         name: upload-file

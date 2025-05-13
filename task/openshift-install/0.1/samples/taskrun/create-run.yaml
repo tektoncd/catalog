@@ -18,7 +18,7 @@ spec:
       value: "3"
   workspaces:
     - name: install-dir
-      persistentvolumeclaim:
+      persistentVolumeClaim:
         claimName: install-dir
     - name: secrets
       secret:

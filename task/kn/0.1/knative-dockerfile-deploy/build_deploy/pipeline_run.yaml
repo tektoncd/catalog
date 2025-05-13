@@ -8,7 +8,7 @@ spec:
     name: buildah-build-kn-create
   workspaces:
     - name: source
-      persistentvolumeclaim:
+      persistentVolumeClaim:
         claimName: clone-source-pvc
   params:
     - name: GIT_URL

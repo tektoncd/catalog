@@ -42,5 +42,5 @@ spec:
     name: docker-test-pipeline
   workspaces:
   - name: shared-workspace
-    persistentvolumeclaim:
+    persistentVolumeClaim:
       claimName: docker-source-pvc

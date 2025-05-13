@@ -47,5 +47,5 @@ spec:
     name: ansibler-runner-pipeline
   workspaces:
     - name: runner-dir
-      persistentvolumeclaim:
+      persistentVolumeClaim:
         claimName: ansible-playbooks-pvc

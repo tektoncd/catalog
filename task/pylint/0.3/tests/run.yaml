@@ -42,8 +42,8 @@ spec:
             value: "custom-pip.conf"
   workspaces:
     - name: shared-workspace
-      persistentvolumeclaim:
+      persistentVolumeClaim:
         claimName: python-source-pvc
     - name: python-config
-      configmap:
+      configMap:
         name: python-config

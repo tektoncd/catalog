@@ -45,5 +45,5 @@ spec:
     - name: maven-settings
       emptyDir: {}
     - name: shared-workspace
-      persistentvolumeclaim:
+      persistentVolumeClaim:
         claimName: maven-source-pvc

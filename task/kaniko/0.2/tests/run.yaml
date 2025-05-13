@@ -67,5 +67,5 @@ spec:
     value: localhost:5000/kaniko-nocode
   workspaces:
   - name: shared-workspace
-    persistentvolumeclaim:
+    persistentVolumeClaim:
       claimName: kaniko-source-pvc

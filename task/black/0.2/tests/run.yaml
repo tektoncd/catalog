@@ -29,5 +29,5 @@ spec:
     name: python-formatter-pipeline
   workspaces:
     - name: shared-workspace
-      configmap:
+      configMap:
         name: black-python-configmap

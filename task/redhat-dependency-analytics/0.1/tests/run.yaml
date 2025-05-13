@@ -51,7 +51,7 @@ spec:
     name: redhat-dependency-analytics-pipeline
   workspaces:
     - name: output
-      persistentvolumeclaim:
+      persistentVolumeClaim:
         claimName: output
   params:
     - name: github-url
