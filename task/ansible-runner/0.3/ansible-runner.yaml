@@ -1,0 +1,82 @@
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: ansible-runner
+  labels:
+    app.kubernetes.io/version: '0.3'
+    app.kubernetes.io/ansible-version: '2.18.2'
+  annotations:
+    tekton.dev/deprecated: "false"
+    tekton.dev/pipelines.minVersion: '0.19.0'
+    tekton.dev/categories: CLI
+    tekton.dev/tags: cli
+    tekton.dev/displayName: 'Ansible Runner'
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    Task to run Ansible playbooks using Ansible Runner
+
+  workspaces:
+    - name: runner-dir
+      description: The Ansibler runner directory
+    - name: ssl-ca-directory
+      optional: true
+      description: |
+        A Workspace containing CA certificates, this will be used by Ansible and pip to
+        verify the peer with when interacting with remote repositories using
+        HTTPS.
+  params:
+    - name: project-dir
+      description: The project directory under the workspace runner-dir
+      default: '.'
+    - name: args
+      description: The arguments to pass ansible-runner
+      type: array
+      default:
+        - --help
+    - name: user-home
+      description: Absolute path to the user's home directory.
+      default: /tekton/home
+    - name: image
+      description: Ansible runner image.
+      default: ghcr.io/ansible/community-ansible-dev-tools:v25.5.1 #tag: v25.5.1
+    - name: workspaces_ssl_ca_file
+      default: ""
+
+  stepTemplate:
+    env:
+      - name: HOME
+        value: $(params.user-home)
+      - name: SSL_CERT_FILE
+        value: "$(workspaces.ssl-ca-directory.path)$(params.workspaces_ssl_ca_file)"
+  steps:
+    - name: requirements
+      image: $(params.image)
+      script: |
+        #!/bin/bash
+        set -e
+
+        if [ -f requirements.txt ];
+        then
+          pip3 install --user \
+            -r requirements.txt
+        fi
+
+        if [ -f  requirements.yml ];
+        then
+          ansible-galaxy role install -vv \
+            -r requirements.yml
+          ansible-galaxy collection install -vv \
+            -r requirements.yml
+        fi
+      workingDir: '$(workspaces.runner-dir.path)/$(params.project-dir)'
+
+    - name: run-playbook
+      image: $(params.image)
+      command: ['ansible-runner']
+      args:
+        - run
+        - $(params.args)
+        - $(params.project-dir)
+      workingDir: '$(workspaces.runner-dir.path)'
