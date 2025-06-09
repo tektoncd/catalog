@@ -3,7 +3,7 @@ kind: Task
 metadata:
   name: apko
   labels:
-    app.kubernetes.io/version: "0.6"
+    app.kubernetes.io/version: "0.1"
   annotations:
     tekton.dev/pipelines.minVersion: "0.17.0"
     tekton.dev/categories: Image Build
@@ -16,6 +16,11 @@ metadata:
 spec:
   description: >-
     This Task builds a minimal Docker image with apko and pushes it to a registry.
+
+    Using the apko build tool, this task builds minimal or even
+    distroless Docker images from a config file. The build artifacts are automatically
+    published to the specified registry.
+
     This Task stores the image name and digest as results, allowing Tekton Chains to pick up
     that an image was built & sign it.
   params:
