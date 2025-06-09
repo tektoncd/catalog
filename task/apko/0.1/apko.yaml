@@ -1,0 +1,165 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: apko
+  labels:
+    app.kubernetes.io/version: "0.6"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/categories: Image Build
+    tekton.dev/tags: image-build
+    tekton.dev/displayName: "Build and upload minimal container image using apko"
+    tekton.dev/platforms: "linux/amd64"
+    # Security-related annotations
+    apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default'
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'runtime/default'
+spec:
+  description: >-
+    This Task builds a minimal Docker image with apko and pushes it to a registry.
+    This Task stores the image name and digest as results, allowing Tekton Chains to pick up
+    that an image was built & sign it.
+  params:
+    - name: REGISTRY
+      type: string
+      description: Container registry URL (e.g., ghcr.io, gcr.io, docker.io)
+    - name: PASSWORD
+      type: string
+      description: |
+        Password or token for the container registry. For better security, use a Kubernetes Secret:
+        `kubectl create secret generic registry-credentials --from-literal=password=YOUR_PASSWORD`
+    - name: USERNAME
+      type: string
+      default: "AWS"
+      description: Username for the container registry
+    - name: IMAGE
+      description: Name (reference) of the image to build (e.g., my-org/my-app:latest)
+    - name: CONFIGFILE
+      description: yaml file that configures the target image.
+      default: config.yaml
+    - name: CONTEXT
+      description: The build context where apko shall search for config files.
+      default: ./
+    - name: EXTRA_ARGS
+      type: array
+      default: []
+      description: Additional arguments to pass to the apko command
+    - name: BUILDER_IMAGE
+      description: The image on which builds will run. Use a specific version tag instead of 'latest' for better security.
+      default: cgr.dev/chainguard/apko@sha256:... # Recommend using a specific digest
+    - name: CPU_REQUEST
+      description: CPU request for the build container
+      default: 500m
+    - name: CPU_LIMIT
+      description: CPU limit for the build container
+      default: 1000m
+    - name: MEMORY_REQUEST
+      description: Memory request for the build container
+      default: 1Gi
+    - name: MEMORY_LIMIT
+      description: Memory limit for the build container
+      default: 2Gi
+  workspaces:
+    - name: source
+      description: Holds the config file and build context
+    - name: dockerconfig
+      description: Includes a docker `config.json`
+      optional: true
+      mountPath: /root/.docker
+  results:
+    - name: IMAGE_DIGEST
+      description: Digest of the image just built.
+    - name: IMAGE_URL
+      description: URL of the image just built.
+  steps:
+    - name: login-to-ecr
+      resources:
+        requests:
+          cpu: $(params.CPU_REQUEST)
+          memory: $(params.MEMORY_REQUEST)
+        limits:
+          cpu: $(params.CPU_LIMIT)
+          memory: $(params.MEMORY_LIMIT)
+      workingDir: $(workspaces.source.path)
+      image: $(params.BUILDER_IMAGE)
+      env:
+        - name: DOCKER_CONFIG
+          value: $(workspaces.source.path)/.docker
+      args:
+        - login
+        - --workdir=$(workspaces.source.path)/$(params.CONTEXT)
+        - --username=$(params.USERNAME)
+        - --password=$(params.PASSWORD)
+        - $(params.REGISTRY)
+      # Security context for the login step
+      securityContext:
+        # apko requires root access for package installation and image building operations
+        runAsUser: 0
+        runAsGroup: 65532
+        # Prevent privilege escalation and limit capabilities
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        # Don't run in privileged mode
+        privileged: false
+        procMount: Default
+        # Use the container runtime's default seccomp profile
+        seccompProfile:
+          type: RuntimeDefault
+        # Drop all Linux capabilities
+        capabilities:
+          drop:
+            - ALL
+
+    - name: build-and-publish
+      resources:
+        requests:
+          cpu: $(params.CPU_REQUEST)
+          memory: $(params.MEMORY_REQUEST)
+        limits:
+          cpu: $(params.CPU_LIMIT)
+          memory: $(params.MEMORY_LIMIT)
+      workingDir: $(workspaces.source.path)
+      image: $(params.BUILDER_IMAGE)
+      env:
+        - name: DOCKER_CONFIG
+          value: $(workspaces.source.path)/.docker
+      args:
+        - publish
+        - --workdir=$(workspaces.source.path)/$(params.CONTEXT)
+        - --sbom=false
+        $(params.EXTRA_ARGS)
+        - $(params.CONFIGFILE)
+        - $(params.IMAGE)
+      # Security context for the build step
+      securityContext:
+        # apko requires root access for package installation and image building operations
+        runAsUser: 0
+        runAsGroup: 65532
+        # Prevent privilege escalation and limit capabilities
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        # Don't run in privileged mode
+        privileged: false
+        procMount: Default
+        # Use the container runtime's default seccomp profile
+        seccompProfile:
+          type: RuntimeDefault
+        # Drop all Linux capabilities
+        capabilities:
+          drop:
+            - ALL
+
+    - name: write-url
+      image: public.ecr.aws/docker/library/bash:5.2.15-alpine3.16@sha256:46aef8866a15877c36cf72736f1433e827c648d27dfcc9f1c1f187e8df762be9
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532  # non-root user
+        runAsGroup: 65532
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+      script: |
+        set -euo pipefail
+        image="$(params.IMAGE)"
+        echo -n "${image}" | tee "$(results.IMAGE_URL.path)"

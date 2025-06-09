@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: apko-test-config
+data:
+  apko.yaml: |
+    contents:
+      repositories:
+        - https://dl-cdn.alpinelinux.org/alpine/edge/main
+      packages:
+        - alpine-baselayout-data
+        - busybox
+        - ca-certificates-bundle
+        - tzdata
+    
+    accounts:
+      groups:
+        - groupname: nonroot
+          gid: 65532
+      users:
+        - username: nonroot
+          uid: 65532
+      run-as: 65532
+    
+    entrypoint:
+      command: /bin/echo
+      arguments: ["Hello, apko!"]
+    
+    archs:
+      - x86_64
+      - arm64
