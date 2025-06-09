@@ -45,7 +45,7 @@ spec:
       description: Additional arguments to pass to the apko command
     - name: BUILDER_IMAGE
       description: The image on which builds will run. Use a specific version tag instead of 'latest' for better security.
-      default: cgr.dev/chainguard/apko@sha256:... # Recommend using a specific digest
+      default: cgr.dev/chainguard/apko@sha256:5b93802c7962992de6d79e4473bb233cc4104874af013b58ff4a1041378bb622
     - name: CPU_REQUEST
       description: CPU request for the build container
       default: 500m
