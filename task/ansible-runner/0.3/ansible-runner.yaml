@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/ansible-version: '2.18.2'
   annotations:
     tekton.dev/deprecated: "false"
-    tekton.dev/pipelines.minVersion: '0.19.0'
+    tekton.dev/pipelines.minVersion: '1.0.0'
     tekton.dev/categories: CLI
     tekton.dev/tags: cli
     tekton.dev/displayName: 'Ansible Runner'
