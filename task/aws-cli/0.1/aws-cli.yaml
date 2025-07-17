@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: cli
     tekton.dev/displayName: "aws cli"
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/deprecated: "true"
 spec:
   description: >-
     This task performs operations on Amazon Web Services resources using aws.

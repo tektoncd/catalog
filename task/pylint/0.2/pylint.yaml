@@ -11,6 +11,7 @@ metadata:
     tekton.dev/tags: python, pylint
     tekton.dev/displayName: pylint
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/deprecated: "true"
 spec:
   description: >-
     This task will run pylint on the provided input.

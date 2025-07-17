@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Testing
     tekton.dev/tags: test
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/deprecated: "true"
 spec:
   description: >-
     These tasks make it possible to use Conftest within your Tekton pipelines

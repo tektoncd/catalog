@@ -11,6 +11,7 @@ metadata:
     tekton.dev/tags: github
     tekton.dev/displayName: "create github deployment"
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/deprecated: "true"
 spec:
   description: >-
     This Task will create a GitHub deployment for a repository.
