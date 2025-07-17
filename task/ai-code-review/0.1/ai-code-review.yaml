@@ -1,0 +1,493 @@
+# yamllint disable rule:trailing-spaces rule:empty-lines
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: ai-code-review
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: '0.12.1'
+    tekton.dev/categories: Code Quality
+    tekton.dev/tags: ai, code review, github
+    tekton.dev/displayName: ai-code-review
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+        AI Code Review for GitHub Pull Requests using OpenAI API.
+        This task reviews code changes in a pull request and provides feedback using AI.
+        It can be used to automate code reviews and improve code quality.
+  params:
+    - name: repo
+      description: GitHub repository in format owner/repo
+      type: string
+    - name: pullRequestNumber
+      description: Pull request number to review
+      type: string
+    - name: githubHost
+      description: GitHub API host URL
+      type: string
+      default: "https://api.github.com"
+    - name: apiBaseUrl
+      description: Base URL for the AI API service
+      type: string
+      default: "https://api.openai.com/v1"
+    - name: apiModel
+      description: AI model to use for code review
+      type: string
+      default: "gpt-3.5-turbo"
+    - name: excludePatterns
+      description: Comma-separated list of file patterns to exclude from review
+      type: string
+      default: "*.md,*.txt,package-lock.json,yarn.lock"
+    - name: dryRun
+      description: Whether to actually post comments or just print them
+      type: string
+      default: "false"
+    - name: debug
+      description: Enable debug mode
+      type: string
+      default: "false"
+  
+  workspaces:
+    - name: shared-workspace
+      description: Source code & virtual environment shared between steps
+  
+  steps:
+    - name: prepare-script
+      image: docker.io/library/python:3.12-slim
+      workingDir: $(workspaces.shared-workspace.path)
+      script: |
+        cat > code-review.py << 'EOF'
+        #!/usr/bin/env python3
+        import json
+        import logging
+        import os
+        import re
+        import argparse
+        from typing import List, Optional, Dict, Any
+
+        import httpx
+        import openai
+        import requests
+        from github import Github
+
+        # =========================
+        # Configuration & Logging
+        # =========================
+
+        logger = logging.getLogger("AutoReview")
+        logger.setLevel(logging.INFO)
+        handler = logging.StreamHandler()
+        formatter = logging.Formatter("[%(levelname)s] %(message)s")
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+
+        def fnmatch_pattern(filename: str, pattern: str) -> bool:
+            """Simple implementation of fnmatch-style glob matching"""
+            # Convert glob pattern to regex
+            regex_pattern = pattern.replace(".", "\\.")
+            regex_pattern = regex_pattern.replace("*", ".*")
+            regex_pattern = f"^{regex_pattern}$"
+            
+            try:
+                return bool(re.match(regex_pattern, filename))
+            except:
+                return False
+
+        def parse_diff(diff_text: str) -> List[Dict[str, Any]]:
+            """Parse diff text to extract file and chunk information with correct line numbers"""
+            files = []
+            current_file = None
+            current_chunk = None
+            
+            lines = diff_text.split('\n')
+            for line in lines:
+                if line.startswith('diff --git'):
+                    if current_file and current_chunk:
+                        current_file['chunks'].append(current_chunk)
+                    
+                    current_file = {
+                        'from': None,
+                        'to': None,
+                        'chunks': []
+                    }
+                    files.append(current_file)
+                    current_chunk = None
+                    
+                elif line.startswith('--- '):
+                    if current_file:
+                        current_file['from'] = line[4:].strip()
+                        
+                elif line.startswith('+++ '):
+                    if current_file:
+                        current_file['to'] = line[4:].strip()
+                        if current_file['to'].startswith('b/'):
+                            current_file['to'] = current_file['to'][2:]
+                            
+                elif line.startswith('@@'):
+                    if current_file and current_chunk:
+                        current_file['chunks'].append(current_chunk)
+                    
+                    # Parse the chunk header to get the correct line numbers
+                    # Format: @@ -<start>,<count> +<start>,<count> @@
+                    chunk_header_match = re.match(r'@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@', line)
+                    if chunk_header_match:
+                        old_start = int(chunk_header_match.group(1))
+                        new_start = int(chunk_header_match.group(2))
+                    else:
+                        old_start = 1
+                        new_start = 1
+                    
+                    current_chunk = {
+                        'content': line,
+                        'changes': [],
+                        'old_line': old_start,
+                        'new_line': new_start
+                    }
+                
+                elif current_chunk is not None:
+                    old_line = None
+                    new_line = None
+                    
+                    # Determine line number based on prefix
+                    if line.startswith('+'):
+                        new_line = current_chunk['new_line']
+                        current_chunk['new_line'] += 1
+                    elif line.startswith('-'):
+                        old_line = current_chunk['old_line']
+                        current_chunk['old_line'] += 1
+                    else:
+                        old_line = current_chunk['old_line']
+                        new_line = current_chunk['new_line']
+                        current_chunk['old_line'] += 1
+                        current_chunk['new_line'] += 1
+                    
+                    current_chunk['changes'].append({
+                        'content': line,
+                        'ln': old_line,
+                        'ln2': new_line
+                    })
+            
+            # Add the last chunk if it exists
+            if current_file and current_chunk:
+                current_file['chunks'].append(current_chunk)
+                
+            return files
+
+        def get_pr_details(repo_full_name: str, pr_number: int, github_token: str, github_host: str = "https://api.github.com") -> Dict[str, Any]:
+            logger.debug(f"Fetching PR details for {repo_full_name}#{pr_number} from {github_host}")
+            try:
+                owner, _ = repo_full_name.split('/')
+                g = Github(github_token, base_url=github_host)
+                repo_obj = g.get_repo(repo_full_name)
+                pull_request = repo_obj.get_pull(pr_number)
+                return {
+                    "owner": owner,
+                    "repo": repo_full_name.split('/')[1],
+                    "pull_number": pr_number,
+                    "title": pull_request.title,
+                    "description": pull_request.body or ""
+                }
+            except Exception as e:
+                logger.error(f"Failed to get PR details: {e}")
+                raise
+
+        def get_diff(owner: str, repo: str, pull_number: int, github_token: str, github_host: str = "https://api.github.com") -> Optional[str]:
+            logger.debug(f"Getting diff for {owner}/{repo}#{pull_number}")
+            headers = {
+                "Accept": "application/vnd.github.v3.diff",
+                "Authorization": f"token {github_token}"
+            }
+            try:
+                response = requests.get(f"{github_host}/repos/{owner}/{repo}/pulls/{pull_number}", headers=headers)
+                logger.debug(f"GitHub diff response: {response.status_code}")
+                if response.status_code == 200:
+                    return response.text
+                logger.warning(f"Failed to get diff: {response.status_code} {response.text}")
+            except Exception as e:
+                logger.error(f"Exception while getting diff: {e}")
+            return None
+
+
+
+        def create_prompt(file: Dict[str, Any], chunk: Dict[str, Any], pr_details: Dict[str, Any]) -> str:
+            """Create the prompt for the OpenAI API."""
+            file_path = file.get("to", "")
+            changes_text = "\n".join([
+                f"{c.get('ln2') or c.get('ln') or '?'} {c['content']}" 
+                for c in chunk["changes"]
+            ])
+            
+            return f"""Your task is to review pull requests. Instructions:
+        - Provide the response in following JSON format:  {{"reviews": [{{"lineNumber":  <line_number>, "reviewComment": "<review comment>"}}]}}
+        - Do not give positive comments or compliments.
+        - Provide comments and suggestions ONLY if there is something to improve, otherwise "reviews" should be an empty array.
+        - Write the comment in GitHub Markdown format.
+        - Use the given description only for the overall context and only comment the code.
+        - IMPORTANT: NEVER suggest adding comments to the code.
+
+        Review the following code diff in the file "{file_path}" and take the pull request title and description into account when writing the response.
+        
+        Pull request title: {pr_details["title"]}
+        Pull request description:
+
+        ---
+        {pr_details["description"]}
+        ---
+
+        Git diff to review:
+
+        diff
+        {chunk["content"]}
+        {changes_text}
+
+        """
+
+        def get_ai_response(prompt: str, api_base_url: str, api_key: str, api_model: str) -> Optional[List[Dict[str, Any]]]:
+            logger.debug(f"Sending prompt to OpenAI model '{api_model}'")
+            try:
+                client = openai.OpenAI(base_url=api_base_url, api_key=api_key, http_client=httpx.Client(verify=False))
+                args = {
+                    "model": api_model,
+                    "temperature": 0.2,
+                    "max_tokens": 700,
+                    "top_p": 1,
+                    "frequency_penalty": 0,
+                    "presence_penalty": 0,
+                    "messages": [{"role": "system", "content": prompt}]
+                }
+                response = client.chat.completions.create(**args)
+                content = response.choices[0].message.content.strip()
+                logger.debug(f"Raw AI response: {content[:200]}...")
+                return json.loads(content).get("reviews", [])
+            except Exception as e:
+                logger.error(f"Failed to get AI response: {e}")
+                return None
+
+        def create_comments(file: Dict[str, Any], ai_responses: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+            """Create comments from the AI responses."""
+            if not file.get("to"):
+                return []
+            
+            return [
+                {
+                    "body": response["reviewComment"],
+                    "path": file["to"],
+                    "line": int(response["lineNumber"])
+                }
+                for response in ai_responses
+            ]
+
+        def create_review_comment(owner: str, repo: str, pull_number: int, comments: List[Dict[str, Any]], github_token: str, github_host: str = "https://api.github.com") -> None:
+            """Create a review comment on GitHub."""
+            if not comments:
+                print("No comments to post")
+                return
+                
+            g = Github(github_token, base_url=github_host)
+            repo_obj = g.get_repo(f"{owner}/{repo}")
+            pr = repo_obj.get_pull(pull_number)
+            
+            # GitHub API requires creating a review with comments
+            pr.create_review(
+                body="AI Code Review",
+                event="COMMENT",
+                comments=comments
+            )
+            print(f"Posted {len(comments)} review comments")
+
+        def analyze_code(parsed_diff: List[Dict[str, Any]], pr_details: Dict[str, Any], api_base_url: str, api_key: str, api_model: str) -> List[Dict[str, Any]]:
+            """Analyze the code in the PR."""
+            all_comments = []
+            
+            for file in parsed_diff:
+                if file.get("to") == "/dev/null":  # Ignore deleted files
+                    continue
+                        
+                for chunk in file.get("chunks", []):
+                    print(f"Analyzing file: {file.get('to')}, chunk: {chunk['content']}")
+                    prompt = create_prompt(file, chunk, pr_details)
+                    ai_response = get_ai_response(prompt, api_base_url, api_key, api_model)
+                    
+                    if ai_response:
+                        comments = create_comments(file, ai_response)
+                        all_comments.extend(comments)
+            
+            return all_comments
+
+        def list_available_models(api_base_url: str, api_key: str):
+            """List available models to help with debugging."""
+            try:
+                print(api_base_url)
+                print(api_key)
+                client = openai.OpenAI(api_key=api_key,base_url=api_base_url, http_client = httpx.Client(verify=False))
+                models = client.models.list()
+                print("Available models:")
+                for model in models.data:
+                    print(f" - {model.id}")
+            except Exception as e:
+                print(f"Error listing models: {str(e)}")
+                import traceback
+                traceback.print_exc()
+
+        def main():
+            """Main function."""
+            parser = argparse.ArgumentParser(description="AI Code Review for GitHub PRs")
+            parser.add_argument("--repo", required=True, help="Repository full name (owner/repo)")
+            parser.add_argument("--pr", required=True, type=int, help="Pull request number")
+            parser.add_argument("--token", required=True, help="GitHub token")
+            parser.add_argument("--api-base-url", required=True, help="API base URL")
+            parser.add_argument("--api-key", required=True, help="API key")
+            parser.add_argument("--api-model", default="gpt-3.5-turbo", help="model name")
+            parser.add_argument("--github-host", default="https://api.github.com", help="GitHub API host URL")
+            parser.add_argument("--exclude", default="*.md,*.txt,package-lock.json,yarn.lock", help="Comma-separated list of file patterns to exclude")
+            parser.add_argument("--dry-run", action="store_true", help="Don't post comments, just print them")
+            parser.add_argument("--list-models", action="store_true", help="List available models and exit")
+            parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+
+            args = parser.parse_args()
+
+            # Enable debug logging if requested
+            if args.debug:
+                logger.setLevel(logging.DEBUG)
+
+            try:
+                if args.list_models:
+                    logger.info("Listing available models...")
+                    list_available_models(args.api_base_url, args.api_key)
+                    return
+
+                logger.debug(f"GitHub token starts with: {args.token[:4]}...")
+                logger.debug(f"OpenAI API key starts with: {args.api_key[:4]}...")
+
+                # Get PR details
+                pr_details = get_pr_details(args.repo, args.pr, args.token, args.github_host)
+                logger.info(f"Processing PR #{pr_details['pull_number']} in {pr_details['owner']}/{pr_details['repo']}")
+
+                # Get diff
+                diff = get_diff(pr_details["owner"], pr_details["repo"], pr_details["pull_number"], args.token, args.github_host)
+
+                if not diff:
+                    logger.warning("No diff found.")
+                    return
+
+                parsed_diff = parse_diff(diff)
+
+                # Apply exclusion patterns
+                exclude_patterns = [p.strip() for p in args.exclude.split(",") if p.strip()]
+                filtered_diff = [
+                    file for file in parsed_diff
+                    if not any(fnmatch_pattern(file.get("to", ""), pattern) for pattern in exclude_patterns)
+                ]
+
+                logger.info(f"Analyzing {len(filtered_diff)} files after applying exclusions.")
+
+                # Analyze code
+                comments = analyze_code(filtered_diff, pr_details, args.api_base_url, args.api_key, args.api_model)
+
+                logger.info(f"Generated {len(comments)} comment(s).")
+
+                for comment in comments:
+                    logger.debug(f"File: {comment['path']}, Line: {comment['line']}\nComment: {comment['body']}\n")
+
+                if not args.dry_run and comments:
+                    create_review_comment(
+                        pr_details["owner"],
+                        pr_details["repo"],
+                        pr_details["pull_number"],
+                        comments,
+                        args.token,
+                        args.github_host
+                    )
+                    logger.info("Review comments posted successfully.")
+                elif args.dry_run:
+                    logger.info("Dry run enabled — comments not posted.")
+                    for comment in comments:
+                        print(f"File: {comment['path']}, Line: {comment['line']}")
+                        print(f"Comment: {comment['body']}\n")
+                else:
+                    logger.info("No issues found to comment on.")
+
+            except Exception as e:
+                logger.exception("An error occurred during execution:")
+                import sys
+                sys.exit(1)
+
+        if __name__ == "__main__":
+            main()
+
+        EOF
+        
+        chmod +x code-review.py
+
+    - name: install-and-run-review
+      image: docker.io/library/python:3.12-slim
+      workingDir: $(workspaces.shared-workspace.path)
+      env:
+        - name: GITHUB_TOKEN_FILE
+          value: /secrets/github-token
+        - name: API_KEY_FILE
+          value: /secrets/api-key
+        - name: DRY_RUN
+          value: $(params.dryRun)
+        - name: DEBUG
+          value: $(params.debug)
+        - name: PULL_REQUEST_NUMBER
+          value: $(params.pullRequestNumber)
+        - name: REPO
+          value: $(params.repo)
+        - name: API_BASE_URL
+          value: $(params.apiBaseUrl)
+        - name: API_MODEL
+          value: $(params.apiModel)
+        - name: GITHUB_HOST
+          value: $(params.githubHost)
+        - name: EXCLUDE_PATTERNS
+          value: $(params.excludePatterns)
+      volumeMounts:
+        - name: code-review-secrets
+          mountPath: /secrets
+          readOnly: true
+      script: |
+        #!/usr/bin/env bash
+        set -e
+        python -m venv venv
+        # shellcheck source=venv/bin/activate disable=SC1091
+        . venv/bin/activate
+        pip install --upgrade pip
+        pip install requests openai httpx PyGithub
+        # Read secrets from files
+        GITHUB_TOKEN=$(cat "${GITHUB_TOKEN_FILE}")
+        API_KEY=$(cat "${API_KEY_FILE}")
+        # Run code review
+        echo "Starting AI code review for PR #${PULL_REQUEST_NUMBER} in ${REPO}"
+        # shellcheck source=venv/bin/activate disable=SC1091
+        . venv/bin/activate
+        # Determine dry run parameter
+        if [ "${DRY_RUN}" == "true" ]; then
+          DRY_RUN_ARG="--dry-run"
+        else
+          DRY_RUN_ARG=""
+        fi
+        # Determine debug parameter
+        if [ "${DEBUG}" == "true" ]; then
+          DEBUG_ARG="--debug"
+        else
+          DEBUG_ARG=""
+        fi
+        python3 code-review.py \
+          --repo "${REPO}" \
+          --pr "${PULL_REQUEST_NUMBER}" \
+          --token "${GITHUB_TOKEN}" \
+          --api-base-url "${API_BASE_URL}" \
+          --api-key "${API_KEY}" \
+          --api-model "${API_MODEL}" \
+          --github-host "${GITHUB_HOST}" \
+          --exclude "${EXCLUDE_PATTERNS}" \
+          ${DRY_RUN_ARG} \
+          ${DEBUG_ARG}
+        echo "AI code review completed"
+  volumes:
+    - name: code-review-secrets
+      secret:
+        secretName: code-review-secrets
