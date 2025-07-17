@@ -11,6 +11,7 @@ metadata:
     tekton.dev/tags: github
     tekton.dev/displayName: "set github status"
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/deprecated: "true"
 spec:
   description: >-
     This task will set the status of the CI job to the specified value along
