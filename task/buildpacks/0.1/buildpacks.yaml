@@ -9,9 +9,9 @@ metadata:
     tekton.dev/categories: Image Build
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: image-build
-    tekton.dev/deprecated: "true"
     tekton.dev/displayName: "buildpacks"
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/deprecated: "true"
 spec:
   description: >-
     The Buildpacks task builds source into a container image and pushes it to a registry,

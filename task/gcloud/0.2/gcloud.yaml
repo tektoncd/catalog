@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: gcp
     tekton.dev/platforms: "linux/amd64"
     tekton.dev/displayName: "gcloud"
+    tekton.dev/deprecated: "true"
 spec:
   description: >-
     This task performs operations on Google Cloud Platform resources using gcloud.

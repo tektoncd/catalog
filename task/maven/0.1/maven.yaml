@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Build Tools
     tekton.dev/tags: build-tool
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/deprecated: "true"
 spec:
   description: >-
     This Task can be used to run a Maven build.

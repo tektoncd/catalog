@@ -11,6 +11,7 @@ metadata:
     tekton.dev/tags: github
     tekton.dev/displayName: "add github comment"
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/deprecated: "true"
 spec:
   description: >-
     This Task will add a comment to a pull request or an issue.
