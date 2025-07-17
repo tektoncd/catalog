@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: github
     tekton.dev/displayName: "github app token"
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/deprecated: "true"
 spec:
   description: >-
     Retrive a user token from a GitHub application

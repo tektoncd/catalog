@@ -11,6 +11,7 @@ metadata:
     tekton.dev/tags: image-build
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le,linux/arm64"
     tekton.dev/displayName: buildah
+    tekton.dev/deprecated: "true"
 spec:
   description: >-
     Buildah task builds source into a container image and

@@ -1,0 +1,115 @@
+name: ci
+
+on: [pull_request] # yamllint disable-line rule:truthy
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: read
+  checks: write # Used to annotate code in the PR
+
+jobs:
+  linting:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
+    - uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5  # v5.5.0
+      with:
+        go-version-file: "go.mod"
+    - name: yamllint
+      run: |
+        sudo apt-get update && sudo apt-get install -y yamllint
+        yamllint -c $(git rev-parse --show-toplevel)/.yamllint $(find . -type f -regex ".*y[a]ml" -print | tr '\n' ' ')
+    - name: gofmt
+      run: |
+        gofmt_out=$(gofmt -d $(find * -name '*.go' ! -path 'vendor/*' ! -path 'third_party/*'))
+        if [[ -n "$gofmt_out" ]]; then
+            failed=1
+        fi
+        echo "$gofmt_out"
+  e2e-tests:
+    concurrency:
+      group: ${{ github.workflow }}-${{ matrix.tekton-version }}-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: true
+    name: e2e tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false # Keep running if one leg fails.
+      matrix:
+        tekton-version:
+        - lts-latest
+        - lts-latest-minus-one
+        - lts-latest-minus-two
+        - lts-latest-minus-three
+
+        include:
+        - tekton-version: lts-latest
+          pipeline-version: v1.0.0
+        - tekton-version: lts-latest-minus-one
+          pipeline-version: v0.68.1
+        - tekton-version: lts-latest-minus-two
+          pipeline-version: v0.65.6
+        - tekton-version: lts-latest-minus-three
+          pipeline-version: v0.62.8
+
+    env:
+      KO_DOCKER_REPO: registry.local:5000/tekton
+      CLUSTER_DOMAIN: c${{ github.run_id }}.local
+      ARTIFACTS: ${{ github.workspace }}/artifacts
+
+    steps:
+    - name: Free disk space
+      run: |
+        echo "--- Disk space before cleanup ---"
+        df -h
+        sudo rm -rf /usr/share/dotnet
+        sudo rm -rf /usr/local/lib/android
+        sudo rm -rf /opt/ghc
+        sudo rm -rf /opt/hostedtoolcache/CodeQL
+        sudo docker image prune -a -f
+        echo "--- Disk space after cleanup ---"
+        df -h
+    - id: checkout
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5  # v5.5.0
+      with:
+        go-version-file: "go.mod"
+    - name: Run tests
+      run: |
+        export PULL_BASE_SHA=origin/${{ github.base_ref }}
+        export PULL_PULL_SHA=${{ steps.checkout.outputs.commit }}
+        ./hack/setup-kind.sh \
+          --registry-url $(echo ${KO_DOCKER_REPO} | cut -d'/' -f 1) \
+          --cluster-suffix c${{ github.run_id }}.local \
+          --nodes 1 \
+          --pipeline-version ${{ matrix.pipeline-version }} \
+          --e2e-script ./test/e2e-tests.sh \
+          --e2e-env ./test/e2e-tests-kind-gha.env
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.pipeline-version }}
+        path: ${{ env.ARTIFACTS }}
+
+    - uses: chainguard-dev/actions/kind-diag@main
+      if: ${{ failure() }}
+      with:
+        artifact-name: ${{ matrix.pipeline-version }}-logs
+
+    - name: Dump Artifacts
+      if: ${{ failure() }}
+      run: |
+        if [[ -d ${{ env.ARTIFACTS }} ]]; then
+          cd ${{ env.ARTIFACTS }}
+          for x in $(find . -type f); do
+            echo "::group:: artifact $x"
+            cat $x
+            echo '::endgroup::'
+          done
+        fi

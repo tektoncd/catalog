@@ -1,5 +1,6 @@
 ignore: |
   /vendor
+  /hack
 
 rules:
   braces: enable
