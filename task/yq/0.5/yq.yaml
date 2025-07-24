@@ -1,0 +1,57 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: yq
+  labels:
+    app.kubernetes.io/version: "0.4"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Developer Tools
+    tekton.dev/tags: yq
+    tekton.dev/displayName: "YQ"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    This task can be used to replace fields in YAML files. For example for altering helm charts on GitOps repos.
+  workspaces:
+    - name: source
+      description: A workspace that contains the file which needs to be altered.
+  params:
+    - name: SCRIPT
+      type: string
+      description: The yq script to execute. Can be multiple lines for complex tasks.
+      default: ""
+    - name: image
+      type: string
+      description: The yq image to use.
+      default: docker.io/mikefarah/yq:4.27.5@sha256:2be3626ed633fbe1fc33ee9343a1256a6be53334412b2251b9a859f8c145bb53
+    - name: files
+      type: array
+      description: (deprecated, use SCRIPT instead) A list of files to execute the expression on. Needs to be relative to the source workspace.
+      default: []
+    - name: expression
+      type: string
+      description: (deprecated, use SCRIPT instead) The yq expression to apply. Can be used to replace yaml fields.
+      default: ""
+  results:
+    - name: yq
+      description: The result from your yq command. You can write to it using `$(results.yq.path)`
+  steps:
+    - name: yq-script
+      image: $(params.image)
+      workingDir: $(workspaces.source.path)
+      args: ["$(params.files[*])"]
+      script: |
+        /usr/bin/env sh
+        set -e
+
+        # For backwards compatibility with previous versions
+        if [ "$(params.SCRIPT)" = "" ]; then
+          for var in "$@"
+          do
+              /usr/bin/yq eval -i "$(params.expression)" "$var"
+          done
+          exit $?
+        fi
+
+        $(params.SCRIPT)
