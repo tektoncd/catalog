@@ -1,0 +1,64 @@
+---
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  generateName: buildah-multiarch-matrix-
+spec:
+  taskRunSpecs:
+  - pipelineTaskName: build-multiarch
+    podTemplate:
+      nodeSelector:
+        kubernetes.io/arch: $(params.ARCH)
+  
+  pipelineSpec:
+    workspaces:
+    - name: shared-workspace
+    - name: dockerconfig
+      optional: true
+    
+    tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+      - name: output
+        workspace: shared-workspace
+      params:
+      - name: url
+        value: https://github.com/kelseyhightower/nocode
+      - name: subdirectory
+        value: ""
+      - name: deleteExisting
+        value: "true"
+    
+    - name: build-multiarch
+      matrix:
+        params:
+        - name: ARCH
+          value: ["amd64", "arm64"]  
+      taskRef:
+        name: buildah
+      runAfter:
+      - fetch-repository
+      params:
+      - name: IMAGE
+        value: registry.example.com/nocode-multiarch:latest
+      - name: MANIFEST_LIST
+        value: "true"
+      workspaces:
+      - name: source
+        workspace: shared-workspace
+      - name: dockerconfig
+        workspace: dockerconfig
+
+  workspaces:
+  - name: shared-workspace
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Mi
+  - name: dockerconfig
+    emptyDir: {}

@@ -124,3 +124,193 @@ spec:
       items:
       - key: ca.crt
         path: ca.crt
+---
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: buildah-test-multiarch-params
+spec:
+  pipelineSpec:
+    workspaces:
+    - name: shared-workspace
+    - name: sslcertdir
+      optional: true
+    tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+      - name: output
+        workspace: shared-workspace
+      params:
+      - name: url
+        value: https://github.com/kelseyhightower/nocode
+      - name: subdirectory
+        value: ""
+      - name: deleteExisting
+        value: "true"
+    
+    - name: buildah-amd64
+      taskRef:
+        name: buildah
+      runAfter:
+      - fetch-repository
+      params:
+      - name: IMAGE
+        value: registry:5000/nocode-test
+      - name: MANIFEST_LIST
+        value: "true"
+      - name: SKIP_PUSH
+        value: "true"
+      workspaces:
+      - name: source
+        workspace: shared-workspace
+      - name: sslcertdir
+        workspace: sslcertdir
+    
+    - name: test-multiarch-results
+      runAfter:
+      - buildah-amd64
+      params:
+        - name: BUILT_IMAGE_URL
+          value: "$(tasks.buildah-amd64.results.IMAGE_URL)"
+      taskSpec:
+        params:
+          - name: BUILT_IMAGE_URL
+        steps:
+          - name: verify-architecture-suffix
+            image: alpine
+            script: |
+              #!/usr/bin/env sh
+              echo "Architecture-specific image: $(params.BUILT_IMAGE_URL)"
+              # Verify the architecture suffix was added
+              if [[ "$(params.BUILT_IMAGE_URL)" == *"-amd64" ]]; then
+                echo "Architecture suffix correctly added"
+                exit 0
+              else
+                echo "Architecture suffix missing or incorrect"
+                exit 1
+              fi
+
+  workspaces:
+  - name: shared-workspace
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Mi
+  - name: sslcertdir
+    configMap:
+      name: sslcert
+      defaultMode: 420
+      items:
+      - key: ca.crt
+        path: ca.crt
+---
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: buildah-test-manifest-list
+spec:
+  pipelineSpec:
+    workspaces:
+    - name: shared-workspace
+    - name: sslcertdir
+      optional: true
+    tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+      - name: output
+        workspace: shared-workspace
+      params:
+      - name: url
+        value: https://github.com/kelseyhightower/nocode
+      - name: subdirectory
+        value: ""
+      - name: deleteExisting
+        value: "true"
+    
+    - name: buildah-with-manifest
+      taskRef:
+        name: buildah
+      runAfter:
+      - fetch-repository
+      params:
+      - name: IMAGE
+        value: registry:5000/nocode-manifest-test
+      - name: MANIFEST_LIST
+        value: "true"
+      workspaces:
+      - name: source
+        workspace: shared-workspace
+      - name: sslcertdir
+        workspace: sslcertdir
+    
+    - name: verify-manifest-list
+      runAfter:
+      - buildah-with-manifest
+      params:
+        - name: MANIFEST_IMAGE
+          value: registry:5000/nocode-manifest-test
+        - name: ARCH_IMAGE
+          value: "$(tasks.buildah-with-manifest.results.IMAGE_URL)"
+        - name: MANIFEST_DIGEST
+          value: "$(tasks.buildah-with-manifest.results.MANIFEST_LIST_DIGEST)"
+      taskSpec:
+        params:
+          - name: MANIFEST_IMAGE
+          - name: ARCH_IMAGE
+          - name: MANIFEST_DIGEST
+        steps:
+          - name: verify-manifest-list-created
+            image: quay.io/buildah/stable:v1
+            script: |
+              #!/usr/bin/env bash
+              set -e
+              
+              echo "Verifying manifest list: $(params.MANIFEST_IMAGE)"
+              echo "Architecture-specific image: $(params.ARCH_IMAGE)"
+              echo "Manifest list digest: $(params.MANIFEST_DIGEST)"
+              
+              echo "Inspecting manifest list..."
+              buildah manifest inspect $(params.MANIFEST_IMAGE)
+              
+              # Verify the architecture-specific image is in the manifest list
+              echo "Checking if $(params.ARCH_IMAGE) is in the manifest list..."
+              
+              # Get the manifest list content and check for our architecture image
+              MANIFEST_CONTENT=$(buildah manifest inspect $(params.MANIFEST_IMAGE))
+              
+              # Extract just the image name with arch suffix for comparison
+              ARCH_IMAGE_NAME=$(echo "$(params.ARCH_IMAGE)" | sed 's|registry:5000/||')
+              
+              if echo "$MANIFEST_CONTENT" | grep -q "$ARCH_IMAGE_NAME"; then
+                echo "SUCCESS: Architecture-specific image found in manifest list"
+                exit 0
+              else
+                echo "FAILED: Architecture-specific image not found in manifest list"
+                echo "Expected to find: $ARCH_IMAGE_NAME"
+                echo "Manifest content: $MANIFEST_CONTENT"
+                exit 1
+              fi
+
+  workspaces:
+  - name: shared-workspace
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Mi
+  - name: sslcertdir
+    configMap:
+      name: sslcert
+      defaultMode: 420
+      items:
+      - key: ca.crt
+        path: ca.crt

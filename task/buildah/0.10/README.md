@@ -5,18 +5,19 @@ This Task builds source into a container image using Project Atomic's
 Buildah's support for building from
 [`Dockerfile`](https://docs.docker.com/engine/reference/builder/)s, using its
 `buildah bud` command. This command executes the directives in the `Dockerfile`
-to assemble a container image, then pushes that image to a container registry.
+to assemble a container image, then pushes that image to a container registry. optionally 
+as a manifest list.
 
 ## Install the Task
 
 ```
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/buildah/0.9/raw
+kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/buildah/0.10/raw
 ```
 
 ## Parameters
 
 * **IMAGE**: The name (reference) of the image to build.
-* **BUILDER_IMAGE:**: The name of the image containing the Buildah tool. See
+* **BUILDER_IMAGE**: The name of the image containing the Buildah tool. See
   note below.  (_default:_ `quay.io/buildah/stable:v1`)
 * **DOCKERFILE**: The path to the `Dockerfile` to execute (_default:_
   `./Dockerfile`)
@@ -33,12 +34,14 @@ kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/buildah/0.9/
   pushing images. WARNING - must be sanitized to avoid command injection
   (_default:_ `""`)
 * **SKIP_PUSH**: Skip pushing the built image (_default:_ `false`)
-* **BUILD_ARGS**: Dockerfile build arguments, array of key=value (_default:_ [""])
+* **BUILD_ARGS**: Dockerfile build arguments, array of key=value (_default:_ `[""]`)
+* **MANIFEST_LIST**: Build a manifest list image instead of single image. Architecture auto-detected from node. (_default:_ `false`)
 
 ## Results
 
-* **IMAGE_URL**: Image repository where the built image would be pushed to
+* **IMAGE_URL**: Image repository where the built image would be pushed to (includes architecture suffix like "-amd64" when MANIFEST_LIST is true)
 * **IMAGE_DIGEST**: Digest of the image just built
+* **MANIFEST_LIST_DIGEST**: Digest of the manifest list (when MANIFEST_LIST=true)
 
 ## Workspaces
 
@@ -74,3 +77,28 @@ spec:
 
 In this example, the Git repo being built is expected to have a `Dockerfile` at
 the root of the repository.
+
+### Multi-Architecture Build
+
+To build a manifest list of the image and add the architecture-specific image to the manifest list:
+
+```yaml
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  generateName: buildah-multiarch-
+spec:
+  taskRef:
+    name: buildah
+  params:
+  - name: IMAGE
+    value: registry.example.com/myapp:latest
+  - name: MANIFEST_LIST
+    value: "true"
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
+```
+
+For a multiarch example of  Matrix builds with podTemplate parameter substitution, see [samples/multiarch-matrix-build.yaml](./samples/multiarch-matrix-build.yaml).
