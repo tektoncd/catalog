@@ -10,6 +10,7 @@ metadata:
     tekton.dev/tags: deployment
     tekton.dev/displayName: "blue green deployment"
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/deprecated: "true"
 spec:
   description: >-
     This task can be used to do Blue-Green deployment

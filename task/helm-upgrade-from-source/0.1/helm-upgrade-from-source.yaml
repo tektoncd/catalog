@@ -9,6 +9,7 @@ metadata:
     tekton.dev/categories: Deployment
     tekton.dev/tags: helm
     tekton.dev/platforms: "linux/amd64"
+    tekton.dev/deprecated: "true"
 spec:
   description: >-
     These tasks will install / upgrade a helm chart into your Kubernetes /

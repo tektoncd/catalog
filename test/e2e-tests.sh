@@ -15,9 +15,10 @@
 # limitations under the License.
 
 # Configure the number of parallel tests running at the same time, start from 0
-MAX_NUMBERS_OF_PARALLEL_TASKS=7 # => 8
+MAX_NUMBERS_OF_PARALLEL_TASKS=3 # => 8
 
-export RELEASE_YAML=https://github.com/tektoncd/pipeline/releases/download/v1.1.0/release.yaml
+export PIPELINE_VERSION=${PIPELINE_VERSION:-v1.1.0}
+export RELEASE_YAML=https://github.com/tektoncd/pipeline/releases/download/${PIPELINE_VERSION}/release.yaml
 
 source $(dirname $0)/../vendor/github.com/tektoncd/plumbing/scripts/e2e-tests.sh
 source $(dirname $0)/e2e-common.sh
@@ -63,7 +64,7 @@ all_stepactions=$(echo stepaction/*/*/tests)
 all_tests=$(echo task/*/*/tests)
 function detect_changed_e2e_test() {
     # detect for changes in e2e tests dir
-    git --no-pager diff --name-only "${PULL_BASE_SHA}".."${PULL_PULL_SHA}"|grep "^test/[^/]*"
+    git --no-pager diff --name-only "${PULL_BASE_SHA}".."${PULL_PULL_SHA}"|egrep "^(hack/setup-kind.sh|test/[^/]*)"
 }
 
 [[ -z ${TEST_RUN_ALL_TESTS} ]] && [[ ! -z $(detect_changed_e2e_test) ]] && TEST_RUN_ALL_TESTS=1
