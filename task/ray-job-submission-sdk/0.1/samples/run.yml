@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: ray-job-from-configmap
+spec:
+  taskRef:
+    name: ray-job-submit
+  workspaces:
+    - name: source
+      configMap:
+        name: ray-python-script
+  params:
+    - name: rayAddress
+      value: "http://raycluster-kuberay-head-svc:8265"
+    - name: entrypoint
+      value: "python script.py"
+    - name: workingDir
+      value: "."
