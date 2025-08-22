@@ -1,0 +1,55 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: ray-job-submit
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: '0.12.1'
+    tekton.dev/categories: "Batch,AI"
+    tekton.dev/tags: ray, ai, python, cluster
+    tekton.dev/displayName: "Ray Job Submit"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: "Submit a Python job (inline or file) to a RayCluster"
+  workspaces:
+    - name: source
+      description: "Workspace containing Python files to run on Ray"
+  params:
+    - name: rayAddress
+      description: "Ray head address (e.g., http://raycluster-kuberay-head-svc:8265)"
+      default: "http://raycluster-kuberay-head-svc:8265"
+    - name: entrypoint
+      description: "Python command. Can be inline (-c '...') or a file (script.py)"
+      default: "python -c \"import ray; ray.init(); print(ray.cluster_resources())\""
+    - name: workingDir
+      description: "Working directory inside workspace (sent to Ray as --working-dir)"
+      default: "."
+  results:
+    - name: jobId
+      description: Ray Job ID
+    - name: jobStatus
+      description: Final job status
+  steps:
+    - name: submit
+      image: rayproject/ray:latest
+      workingDir: /workspace/source
+      script: |
+        #!/bin/sh
+        set -e
+
+        echo "Submitting Ray job to $(params.rayAddress)..."
+        ray job submit \
+          --address $(params.rayAddress) \
+          --working-dir $(params.workingDir) \
+          -- $(params.entrypoint) | tee /tmp/ray-output.log
+
+        # Extract Job ID
+        job_id=$(grep -oE "Job '[^']+'" /tmp/ray-output.log | head -n1 | sed "s/Job '\(.*\)'/\1/")
+        echo "Detected Job ID: $job_id"
+        echo -n "$job_id" > $(results.jobId.path)
+
+        # Get final status
+        status=$(ray job status "$job_id" --address $(params.rayAddress) | tail -n1)
+        echo "Final Job Status: $status"
+        echo -n "$status" > $(results.jobStatus.path)
