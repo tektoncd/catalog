@@ -1,0 +1,95 @@
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: buildah-manifest-create
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/categories: Image Build
+    tekton.dev/pipelines.minVersion: "0.50.0"
+    tekton.dev/tags: image-build, manifest-list, multiarch
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le,linux/arm64"
+    tekton.dev/displayName: "Buildah Manifest Create"
+spec:
+  description: >-
+    This task creates a manifest list (also known as an image index) from pre-built architecture-specific images.
+    This task should be run after building individual architecture-specific images
+    and creates a unified manifest list locally. It supports both full image references and bare digests
+    from local storage. Use buildah-manifest-push to push the created manifest list to a registry.
+
+  params:
+  - name: MANIFEST_IMAGE
+    description: Reference of the manifest list image to create (e.g., registry.io/myimage:latest)
+  - name: IMAGE_REFS
+    description: Array of image references to include in the manifest list. Can be tag-based (e.g., registry.io/myimage:latest-amd64), digest-based (e.g., registry.io/myimage:latest-amd64@sha256:abc123), or bare digests (e.g., sha256:abc123) for local storage
+    type: array
+  - name: BUILDER_IMAGE
+    description: The location of the buildah builder image
+    default: quay.io/buildah/stable:v1
+  - name: STORAGE_DRIVER
+    description: Set buildah storage driver
+    default: overlay
+
+  workspaces:
+  - name: buildah-storage
+    description: >-
+      Buildah storage workspace for manifest lists. This workspace should be shared
+      between buildah-manifest-create and buildah-manifest-push tasks to persist
+      the created manifest list.
+    mountPath: /var/lib/containers
+  - name: dockerconfig
+    description: >-
+      An optional workspace that allows providing a .docker/config.json file
+      for Buildah to access the container registry.
+      The file should be placed at the root of the Workspace with name config.json.
+    optional: true
+  results:
+  - name: MANIFEST_IMAGE
+    description: Local manifest list reference that was created
+  steps:
+  - name: create-manifest-list
+    image: $(params.BUILDER_IMAGE)
+    env:
+    - name: PARAM_MANIFEST_IMAGE
+      value: $(params.MANIFEST_IMAGE)
+    - name: PARAM_STORAGE_DRIVER
+      value: $(params.STORAGE_DRIVER)
+    args:
+    - $(params.IMAGE_REFS[*])
+    script: |
+      #!/usr/bin/env bash
+      set -e
+
+      [ "$(workspaces.dockerconfig.bound)" = "true" ] && DOCKER_CONFIG="$(workspaces.dockerconfig.path)" && export DOCKER_CONFIG
+
+      echo "Creating manifest list: ${PARAM_MANIFEST_IMAGE}"
+
+      # Create the manifest list
+      buildah "--storage-driver=${PARAM_STORAGE_DRIVER}" manifest create \
+        "${PARAM_MANIFEST_IMAGE}"
+
+      # Add each image reference to the manifest list
+      for image_ref in "$@"; do
+        if [ -n "${image_ref}" ] && [ "${image_ref}" != '""' ]; then
+          echo "Adding image to manifest list: ${image_ref}"
+
+          # Check if image_ref is a bare digest (starts with sha256: and has 64 hex chars)
+          if [[ "${image_ref}" =~ ^sha256:[a-f0-9]{64}$ ]]; then
+            # Use containers-storage transport for bare digests
+            echo "Detected bare digest, using containers-storage transport"
+            buildah "--storage-driver=${PARAM_STORAGE_DRIVER}" manifest add \
+              "${PARAM_MANIFEST_IMAGE}" "containers-storage:${image_ref}"
+          else
+            # Use docker transport for full registry references
+            buildah "--storage-driver=${PARAM_STORAGE_DRIVER}" manifest add \
+              "${PARAM_MANIFEST_IMAGE}" "docker://${image_ref}"
+          fi
+        fi
+      done
+
+      printf '%s' "${PARAM_MANIFEST_IMAGE}" | tee "$(results.MANIFEST_IMAGE.path)"
+
+      echo "Manifest list created successfully."
+    securityContext:
+      privileged: true
