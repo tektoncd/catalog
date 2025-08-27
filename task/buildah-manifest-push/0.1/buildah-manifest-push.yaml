@@ -1,0 +1,101 @@
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: buildah-manifest-push
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/categories: Image Build
+    tekton.dev/pipelines.minVersion: "0.50.0"
+    tekton.dev/tags: image-build, manifest-list, multiarch
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le,linux/arm64"
+    tekton.dev/displayName: "Buildah Manifest Push"
+spec:
+  description: >-
+    This task pushes a locally created manifest list (also known as an image index) to a 
+    container registry using Buildah.
+    This task should be run after creating a manifest list with buildah-manifest-create
+    and pushes the unified manifest list to the specified registry.
+
+  params:
+  - name: MANIFEST_IMAGE
+    description: Reference of the manifest list image to push (e.g., registry.io/myimage:latest)
+  - name: BUILDER_IMAGE
+    description: The location of the buildah builder image
+    default: quay.io/buildah/stable:v1
+  - name: STORAGE_DRIVER
+    description: Set buildah storage driver
+    default: overlay
+  - name: TLSVERIFY
+    description: Verify the TLS on the registry endpoint (for push/pull to a non-TLS registry)
+    default: "true"
+  - name: PUSH_EXTRA_ARGS
+    description: Extra parameters passed for the push command when pushing the manifest list
+    type: string
+    default: ""
+  - name: FORMAT
+    description: Manifest list type (oci or v2s2) to use when pushing the manifest list
+    default: "oci"
+  workspaces:
+  - name: buildah-storage
+    description: >-
+      Buildah storage workspace for manifest lists. This workspace should be shared
+      between buildah-manifest-create and buildah-manifest-push tasks to access
+      the created manifest list.
+    mountPath: /var/lib/containers
+  - name: sslcertdir
+    optional: true
+  - name: dockerconfig
+    description: >-
+      An optional workspace that allows providing a .docker/config.json file
+      for Buildah to access the container registry.
+      The file should be placed at the root of the Workspace with name config.json.
+    optional: true
+  results:
+  - name: MANIFEST_DIGEST
+    description: Digest of the manifest list that was pushed
+  - name: MANIFEST_URL
+    description: Image repository where the manifest list was pushed
+  steps:
+  - name: push-manifest-list
+    image: $(params.BUILDER_IMAGE)
+    env:
+    - name: PARAM_MANIFEST_IMAGE
+      value: $(params.MANIFEST_IMAGE)
+    - name: PARAM_STORAGE_DRIVER
+      value: $(params.STORAGE_DRIVER)
+    - name: PARAM_TLSVERIFY
+      value: $(params.TLSVERIFY)
+    - name: PARAM_FORMAT
+      value: $(params.FORMAT)
+    - name: PARAM_PUSH_EXTRA_ARGS
+      value: $(params.PUSH_EXTRA_ARGS)
+    script: |
+      #!/usr/bin/env bash
+      set -e
+
+      [ "$(workspaces.sslcertdir.bound)" = "true" ] && CERT_DIR_FLAG="--cert-dir=$(workspaces.sslcertdir.path)"
+      [ "$(workspaces.dockerconfig.bound)" = "true" ] && DOCKER_CONFIG="$(workspaces.dockerconfig.path)" && export DOCKER_CONFIG
+
+      echo "Pushing manifest list: ${PARAM_MANIFEST_IMAGE}"
+
+      # Verify the manifest list exists
+      if ! buildah ${CERT_DIR_FLAG} "--storage-driver=${PARAM_STORAGE_DRIVER}" manifest inspect "${PARAM_MANIFEST_IMAGE}" >/dev/null 2>&1; then
+        echo "Error: Manifest list '${PARAM_MANIFEST_IMAGE}' not found."
+        exit 1
+      fi
+
+      # Push the manifest list to the registry
+      # shellcheck disable=SC2046,SC2086
+      buildah ${CERT_DIR_FLAG} "--storage-driver=${PARAM_STORAGE_DRIVER}" manifest push \
+        "--format=${PARAM_FORMAT}" "--tls-verify=${PARAM_TLSVERIFY}" --digestfile /tmp/manifest-digest ${PARAM_PUSH_EXTRA_ARGS} \
+        "${PARAM_MANIFEST_IMAGE}" "docker://${PARAM_MANIFEST_IMAGE}"
+
+      tee "$(results.MANIFEST_DIGEST.path)" < /tmp/manifest-digest
+      printf '%s' "${PARAM_MANIFEST_IMAGE}" | tee "$(results.MANIFEST_URL.path)"
+
+      echo "Manifest list pushed successfully."
+      echo "Manifest digest: $(cat /tmp/manifest-digest)"
+    securityContext:
+      privileged: true
