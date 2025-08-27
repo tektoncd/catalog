@@ -1,0 +1,117 @@
+---
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  generateName: buildah-multiarch-matrix-
+spec:
+  taskRunSpecs:
+  - pipelineTaskName: fetch-repository
+    podTemplate:
+      securityContext:
+        fsGroup: 65532
+  - pipelineTaskName: build-multiarch
+    podTemplate:
+      securityContext:
+        fsGroup: 65532
+      nodeSelector:
+        kubernetes.io/arch: $(params.ARCH)
+
+  pipelineSpec:
+    workspaces:
+    - name: shared-workspace
+    - name: buildah-storage
+    - name: dockerconfig
+      optional: true
+
+    tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+      - name: output
+        workspace: shared-workspace
+      params:
+      - name: url
+        value: https://github.com/kelseyhightower/nocode
+      - name: subdirectory
+        value: ""
+      - name: deleteExisting
+        value: "true"
+
+    - name: build-multiarch
+      matrix:
+        include:
+         - name: build-amd64
+           params:
+            - name: ARCH
+              value: amd64
+            - name: IMAGE
+              value: registry.example.com/example/nocode-multiarch:latest-amd64
+         - name: build-arm64
+           params:
+            - name: ARCH
+              value: arm64
+            - name: IMAGE
+              value: registry.example.com/example/nocode-multiarch:latest-arm64
+      taskRef:
+        name: buildah
+      runAfter:
+      - fetch-repository
+      workspaces:
+      - name: source
+        workspace: shared-workspace
+      - name: dockerconfig
+        workspace: dockerconfig
+
+    - name: create-manifest-list
+      runAfter:
+      - build-multiarch
+      taskRef:
+        name: buildah-manifest-create
+      params:
+      - name: MANIFEST_IMAGE
+        value: registry.example.com/example/nocode-multiarch:latest
+      - name: IMAGE_REFS
+        value: $(tasks.build-multiarch.results.IMAGE_URL[*])
+      workspaces:
+      - name: buildah-storage
+        workspace: buildah-storage
+      - name: dockerconfig
+        workspace: dockerconfig
+
+    - name: push-manifest-list
+      runAfter:
+      - create-manifest-list
+      taskRef:
+        name: buildah-manifest-push
+      params:
+      - name: MANIFEST_IMAGE
+        value: $(tasks.create-manifest-list.results.MANIFEST_IMAGE)
+      workspaces:
+      - name: buildah-storage
+        workspace: buildah-storage
+      - name: dockerconfig
+        workspace: dockerconfig
+
+  workspaces:
+  - name: shared-workspace
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Mi
+        storageClassName: gp3
+  - name: buildah-storage
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 2Gi
+        storageClassName: gp3
+  - name: dockerconfig
+    secret:
+      secretName: docker-credentials
