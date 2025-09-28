@@ -22,7 +22,7 @@ spec:
         - name: upgrade_extra_params
           value: "--force"
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   name: helm-upgrade-test-pipeline-run
