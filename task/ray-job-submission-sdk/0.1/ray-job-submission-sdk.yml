@@ -1,12 +1,12 @@
 apiVersion: tekton.dev/v1
 kind: Task
 metadata:
-  name: ray-job-submit
+  name: ray-job-submission-sdk
   labels:
-    app.kubernetes.io/version: "0.1"
+    app.kubernetes.io/version: "0.3"
   annotations:
-    tekton.dev/pipelines.minVersion: '0.12.1'
-    tekton.dev/categories: "Batch,AI"
+    tekton.dev/pipelines.minVersion: '0.26.0'
+    tekton.dev/categories: "Developer+Tools"
     tekton.dev/tags: ray, ai, python, cluster
     tekton.dev/displayName: "Ray Job Submit"
     tekton.dev/platforms: "linux/amd64"
