@@ -41,18 +41,18 @@ spec:
     - name: build-multiarch
       matrix:
         include:
-         - name: build-amd64
-           params:
-            - name: ARCH
-              value: amd64
-            - name: IMAGE
-              value: registry.example.com/example/nocode-multiarch:latest-amd64
-         - name: build-arm64
-           params:
-            - name: ARCH
-              value: arm64
-            - name: IMAGE
-              value: registry.example.com/example/nocode-multiarch:latest-arm64
+          - name: build-amd64
+            params:
+              - name: ARCH
+                value: amd64
+              - name: IMAGE
+                value: registry.example.com/example/nocode-multiarch:latest-amd64
+          - name: build-arm64
+            params:
+              - name: ARCH
+                value: arm64
+              - name: IMAGE
+                value: registry.example.com/example/nocode-multiarch:latest-arm64
       taskRef:
         name: buildah
       runAfter:

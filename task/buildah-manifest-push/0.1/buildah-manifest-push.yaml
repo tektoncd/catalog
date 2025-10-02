@@ -13,7 +13,7 @@ metadata:
     tekton.dev/displayName: "Buildah Manifest Push"
 spec:
   description: >-
-    This task pushes a locally created manifest list (also known as an image index) to a 
+    This task pushes a locally created manifest list (also known as an image index) to a
     container registry using Buildah.
     This task should be run after creating a manifest list with buildah-manifest-create
     and pushes the unified manifest list to the specified registry.
