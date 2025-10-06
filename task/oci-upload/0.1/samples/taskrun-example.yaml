@@ -1,0 +1,147 @@
+# TaskRun with sample file creation and upload
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: oci-upload-with-sample-files
+  labels:
+    app: ci-pipeline
+    version: v1.0.0
+spec:
+  taskSpec:
+    workspaces:
+    - name: source
+      description: Workspace for files to upload
+    - name: credentials
+      description: OCI credentials
+    params:
+    - name: bucketName
+      type: string
+    - name: tenancyOcid
+      type: string
+    - name: userOcid
+      type: string
+    - name: region
+      type: string
+    - name: namespace
+      type: string
+    - name: objectPrefix
+      type: string
+      default: ""
+    steps:
+    - name: create-sample-files
+      image: busybox
+      script: |
+        #!/bin/sh
+        echo "Creating sample files for upload test..."
+        mkdir -p $(workspaces.source.path)/sample-data
+        echo "Sample build artifact 1" > $(workspaces.source.path)/sample-data/app.jar
+        echo "Sample build artifact 2" > $(workspaces.source.path)/sample-data/config.yaml
+        echo "Build completed at $(date)" > $(workspaces.source.path)/sample-data/build-info.txt
+        echo "Files created:"
+        ls -la $(workspaces.source.path)/sample-data/
+    - name: upload-files
+      image: ghcr.io/oracle/oci-cli:sha-b324bd6
+      env:
+      - name: TENANCY_OCID
+        value: "$(params.tenancyOcid)"
+      - name: USER_OCID
+        value: "$(params.userOcid)"
+      - name: REGION
+        value: "$(params.region)"
+      - name: NAMESPACE
+        value: "$(params.namespace)"
+      - name: BUCKET_NAME
+        value: "$(params.bucketName)"
+      - name: OBJECT_PREFIX
+        value: "$(params.objectPrefix)"
+      - name: OCI_CLI_SUPPRESS_FILE_PERMISSIONS_WARNING
+        value: "True"
+      script: |
+        #!/bin/bash
+        set -e
+
+        export OCI_CONFIG_DIR="/tmp/.oci"
+        mkdir -p "$OCI_CONFIG_DIR"
+
+        cp "$(workspaces.credentials.path)/oci_api_key.pem" "$OCI_CONFIG_DIR/oci_api_key.pem"
+        chmod 600 "$OCI_CONFIG_DIR/oci_api_key.pem"
+
+        FINGERPRINT=$(cat "$(workspaces.credentials.path)/fingerprint")
+
+        cat <<EOF > "$OCI_CONFIG_DIR/config"
+        [DEFAULT]
+        tenancy=${TENANCY_OCID}
+        user=${USER_OCID}
+        fingerprint=${FINGERPRINT}
+        key_file=${OCI_CONFIG_DIR}/oci_api_key.pem
+        region=${REGION}
+        EOF
+
+        chmod 600 "$OCI_CONFIG_DIR/config"
+        export OCI_CLI_CONFIG_FILE="$OCI_CONFIG_DIR/config"
+
+        echo "Uploading files from $(workspaces.source.path)/sample-data/"
+        if [[ -n "$OBJECT_PREFIX" ]]; then
+          oci os object bulk-upload --bucket-name "$BUCKET_NAME" --namespace "$NAMESPACE" --src-dir "$(workspaces.source.path)/sample-data" --object-prefix "$OBJECT_PREFIX"
+        else
+          oci os object bulk-upload --bucket-name "$BUCKET_NAME" --namespace "$NAMESPACE" --src-dir "$(workspaces.source.path)/sample-data"
+        fi
+  params:
+  - name: bucketName
+    value: "example-bucket-name"
+  - name: objectPrefix
+    value: "my-app/builds/v1.0.0"
+  - name: tenancyOcid
+    value: "ocid1.tenancy.oc1..aaaaaaaab1c2d3e4f5g6h7i8j9k0l1m2n3o4p5q6r7s8t9u0v1w2x3y4z5"
+  - name: userOcid
+    value: "ocid1.user.oc1..aaaaaaaab1c2d3e4f5g6h7i8j9k0l1m2n3o4p5q6r7s8t9u0v1w2x3y4z5"
+  - name: region
+    value: "us-phoenix-1"
+  - name: namespace
+    value: "example-namespace"
+  workspaces:
+  - name: credentials
+    secret:
+      secretName: oci-credentials
+  - name: source
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+---
+# Simple TaskRun using the oci-upload task
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: oci-upload-simple
+spec:
+  taskRef:
+    name: oci-upload
+  params:
+  - name: path
+    value: "."
+  - name: bucketName
+    value: "example-bucket-name"
+  - name: objectPrefix
+    value: "uploads/20251006"
+  - name: tenancyOcid
+    value: "ocid1.tenancy.oc1..aaaaaaaab1c2d3e4f5g6h7i8j9k0l1m2n3o4p5q6r7s8t9u0v1w2x3y4z5"
+  - name: userOcid
+    value: "ocid1.user.oc1..aaaaaaaab1c2d3e4f5g6h7i8j9k0l1m2n3o4p5q6r7s8t9u0v1w2x3y4z5"
+  - name: region
+    value: "us-phoenix-1"
+  - name: namespace
+    value: "example-namespace"
+  - name: recursive
+    value: "true"
+  - name: replaceExistingFiles
+    value: "true"
+  workspaces:
+  - name: credentials
+    secret:
+      secretName: oci-credentials
+  - name: source
+    emptyDir: {}
