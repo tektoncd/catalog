@@ -1,0 +1,119 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: generate-sample-file
+spec:
+  workspaces:
+  - name: output
+    description: "Workspace to write output file."
+  params:
+  - name: fileName
+    type: string
+    default: "hello.txt"
+  - name: content
+    type: string
+    default: "Hello from Tekton!"
+  steps:
+  - name: write-file
+    image: alpine:3.19
+    script: |
+      #!/bin/sh
+      set -e
+      echo "$(params.content)" > "$(workspaces.output.path)/$(params.fileName)"
+      echo "Generated file at $(workspaces.output.path)/$(params.fileName)"
+      cat "$(workspaces.output.path)/$(params.fileName)"
+---
+
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: upload-to-oci-pipeline
+spec:
+  description: A simple pipeline that generates a text file and uploads it to Oracle Cloud Object Storage.
+  workspaces:
+  - name: shared-data
+    description: "Shared workspace between tasks."
+  - name: credentials
+    description: "Workspace containing OCI credentials secret."
+
+  params:
+  - name: bucketName
+    type: string
+    description: "Target OCI bucket name."
+  - name: objectPrefix
+    type: string
+    default: ""
+    description: "Path prefix in the bucket."
+  - name: replaceExistingFiles
+    type: string
+    default: "true"
+  - name: extraArgs
+    type: array
+    default: []
+    description: "Additional arguments to pass to OCI CLI"
+  tasks:
+  - name: generate-file
+    taskRef:
+      name: generate-sample-file
+    workspaces:
+    - name: output
+      workspace: shared-data
+    params:
+    - name: fileName
+      value: "hello.txt"
+    - name: content
+      value: "Hello from Tekton to Oracle Cloud Object Storage!"
+
+  - name: upload-to-oci
+    runAfter: ["generate-file"]
+    taskRef:
+      name: oracle-cloud-storage-upload
+    workspaces:
+    - name: source
+      workspace: shared-data
+    - name: credentials
+      workspace: credentials
+    params:
+    - name: path
+      value: "hello.txt"
+    - name: bucketName
+      value: "$(params.bucketName)"
+    - name: objectPrefix
+      value: "$(params.objectPrefix)"
+    - name: replaceExistingFiles
+      value: "$(params.replaceExistingFiles)"
+    - name: extraArgs
+      value: ["$(params.extraArgs[*])"]
+
+---
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: upload-to-oci-pipeline-run-no-prompt
+spec:
+  pipelineRef:
+    name: upload-to-oci-pipeline
+  params:
+    - name: bucketName
+      value: "my-bucket"
+    - name: objectPrefix
+      value: "tekton-demo"
+    - name: replaceExistingFiles
+      value: "true"
+    - name: extraArgs
+      value:
+        - "--metadata"
+        - '{"description":"Build artifacts from CI/CD pipeline","tags":"production;v1.2.3","pipeline":"tekton"}'
+  workspaces:
+    - name: shared-data
+      volumeClaimTemplate:
+        metadata:
+          name: shared-data-pvc
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 1Gi
+    - name: credentials
+      secret:
+        secretName: oci-credentials

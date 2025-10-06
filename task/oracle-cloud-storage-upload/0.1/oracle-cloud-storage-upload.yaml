@@ -1,0 +1,375 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: oracle-cloud-storage-upload
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.50.0"
+    tekton.dev/categories: Cloud, Storage
+    tekton.dev/tags: cloud, oracle-cloud, oracle
+    tekton.dev/displayName: "Upload to Oracle Cloud Storage"
+    tekton.dev/platforms: "linux/amd64,linux/arm64"
+spec:
+  description: >-
+    Uploads files or directories from a Tekton workspace to an Oracle Cloud Infrastructure
+    (OCI) Object Storage bucket using the OCI CLI.
+
+  workspaces:
+  - name: credentials
+    description: Secret workspace containing OCI credentials (API key, fingerprint, etc.)
+  - name: source
+    description: Workspace containing files or directories to upload.
+
+  params:
+  - name: path
+    description: Path relative to source workspace to upload.
+    type: string
+  - name: bucketName
+    description: Target OCI Object Storage bucket name.
+    type: string
+  - name: objectPrefix
+    description: Object prefix/path within the bucket.
+    type: string
+    default: ""
+  - name: tenancyOcid
+    description: OCI tenancy OCID (optional if provided via credentials secret).
+    type: string
+    default: ""
+  - name: userOcid
+    description: OCI user OCID (optional if provided via credentials secret).
+    type: string
+    default: ""
+  - name: region
+    description: OCI region identifier (e.g., us-ashburn-1).
+    type: string
+    default: ""
+  - name: namespace
+    description: OCI Object Storage namespace (optional, auto-detectable).
+    type: string
+    default: ""
+  - name: replaceExistingFiles
+    description: Overwrite existing files in the bucket. When false, skip files if they already exist. Default is true.
+    default: "true"
+    type: string
+  - name: recursive
+    description: Upload directories recursively. Default is true
+    default: "true"
+    type: string
+  - name: deleteExtraFiles
+    description: |
+      Delete extra remote files not found locally (uses "oci os object sync").
+      WARNING: Use carefully.
+    default: "false"
+    type: string
+  - name: privateKeyPath
+    description: Path inside credentials workspace to API private key file.
+    type: string
+    default: oci_api_key.pem
+  - name: fingerprintPath
+    description: Path inside credentials workspace to fingerprint file.
+    type: string
+    default: fingerprint
+  - name: enableMd5Validation
+    description: |
+      Enable MD5 checksum validation for file uploads.
+      When enabled, calculates and sends MD5 hash for data integrity verification.
+      Only applies to single file uploads, ignored for directory uploads.
+    type: string
+    default: "true"
+  - name: extraArgs
+    description: |
+      Additional arguments to pass to OCI CLI.
+      Example: ["--parallel-operations-count", "5"]
+    type: array
+    default: []
+
+  steps:
+  - name: upload
+    image: ghcr.io/oracle/oci-cli:sha-b324bd6 # released 2025-10-01
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: false
+      capabilities:
+        drop:
+        - ALL
+    env:
+      - name: TENANCY_OCID
+        value: "$(params.tenancyOcid)"
+      - name: USER_OCID
+        value: "$(params.userOcid)"
+      - name: REGION
+        value: "$(params.region)"
+      - name: NAMESPACE
+        value: "$(params.namespace)"
+      - name: BUCKET_NAME
+        value: "$(params.bucketName)"
+      - name: OBJECT_PREFIX
+        value: "$(params.objectPrefix)"
+      - name: SOURCE_PATH
+        value: "$(workspaces.source.path)/$(params.path)"
+      - name: REPLACE_EXISTING_FILES
+        value: "$(params.replaceExistingFiles)"
+      - name: RECURSIVE
+        value: "$(params.recursive)"
+      - name: DELETE_EXTRA_FILES
+        value: "$(params.deleteExtraFiles)"
+      - name: PRIVATE_KEY_PATH
+        value: "$(workspaces.credentials.path)/$(params.privateKeyPath)"
+      - name: FINGERPRINT_PATH
+        value: "$(workspaces.credentials.path)/$(params.fingerprintPath)"
+      - name: ENABLE_MD5_VALIDATION
+        value: "$(params.enableMd5Validation)"
+      - name: OCI_CLI_SUPPRESS_FILE_PERMISSIONS_WARNING
+        value: "True"
+      - name: SUPPRESS_LABEL_WARNING
+        value: "True"
+    args:
+      - "$(params.extraArgs[*])"
+    script: |
+      #!/bin/bash
+      set -euo pipefail
+
+      # Function for logging with timestamps
+      log() {
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
+      }
+
+      log "=== Oracle Cloud Storage Upload Task ==="
+
+      # Prepare OCI config directory
+      export OCI_CONFIG_DIR="/tmp/.oci"
+      mkdir -p "$OCI_CONFIG_DIR"
+
+      # Read fingerprint and private key
+      cp "$PRIVATE_KEY_PATH" "$OCI_CONFIG_DIR/oci_api_key.pem"
+      chmod 600 "$OCI_CONFIG_DIR/oci_api_key.pem"
+      FINGERPRINT=$(cat "$FINGERPRINT_PATH")
+
+      # Resolve credentials from params or workspace
+      TENANCY_OCID_FILE="$(workspaces.credentials.path)/tenancy_ocid"
+      USER_OCID_FILE="$(workspaces.credentials.path)/user_ocid"
+      REGION_FILE="$(workspaces.credentials.path)/region"
+      NAMESPACE_FILE="$(workspaces.credentials.path)/namespace"
+
+      if [[ -z "$TENANCY_OCID" && -f "$TENANCY_OCID_FILE" ]]; then
+        TENANCY_OCID=$(cat "$TENANCY_OCID_FILE")
+        log "Using tenancy OCID from credentials secret"
+      elif [[ -n "$TENANCY_OCID" ]]; then
+        log "Using tenancy OCID from parameter"
+      else
+        log "ERROR: tenancy OCID must be provided"
+        exit 1
+      fi
+
+      if [[ -z "$USER_OCID" && -f "$USER_OCID_FILE" ]]; then
+        USER_OCID=$(cat "$USER_OCID_FILE")
+        log "Using user OCID from credentials secret"
+      elif [[ -n "$USER_OCID" ]]; then
+        log "Using user OCID from parameter"
+      else
+        log "ERROR: user OCID must be provided"
+        exit 1
+      fi
+
+      if [[ -z "$REGION" && -f "$REGION_FILE" ]]; then
+        REGION=$(cat "$REGION_FILE")
+        log "Using region from credentials secret"
+      elif [[ -n "$REGION" ]]; then
+        log "Using region from parameter"
+      else
+        log "ERROR: region must be provided"
+        exit 1
+      fi
+
+      # Write OCI config after required values are resolved
+      cat <<EOF > "$OCI_CONFIG_DIR/config"
+      [DEFAULT]
+      tenancy=${TENANCY_OCID}
+      user=${USER_OCID}
+      fingerprint=${FINGERPRINT}
+      key_file=${OCI_CONFIG_DIR}/oci_api_key.pem
+      region=${REGION}
+      EOF
+      chmod 600 "$OCI_CONFIG_DIR/config"
+      export OCI_CLI_CONFIG_FILE="$OCI_CONFIG_DIR/config"
+
+      # Validate OCI configuration before proceeding
+      log "Validating OCI configuration..."
+      if ! oci iam user get --user-id "$USER_OCID" --query 'data.id' --raw-output >/dev/null 2>&1; then
+        log "ERROR: OCI configuration validation failed"
+        log "Please verify your tenancy OCID, user OCID, API key, fingerprint, and region are correct and have necessary permissions"
+        exit 1
+      fi
+      log "OCI configuration validated successfully"
+
+      if [[ -z "$NAMESPACE" && -f "$NAMESPACE_FILE" ]]; then
+        NAMESPACE=$(cat "$NAMESPACE_FILE")
+        log "Using namespace from credentials secret"
+      elif [[ -z "$NAMESPACE" ]]; then
+        log "No namespace provided, retrieving automatically..."
+
+        log "Attempting to detect Object Storage namespace..."
+        if NAMESPACE=$(oci os ns get --query 'data' --raw-output 2>/dev/null); then
+          log "Using auto-detected namespace: $NAMESPACE"
+        else
+          log "ERROR: Failed to detect Object Storage namespace"
+          log "Please provide namespace parameter or add it to credentials secret"
+          exit 1
+        fi
+      else
+        log "Using namespace from parameter"
+      fi
+
+      log "OCI Config prepared for region=$REGION, namespace=$NAMESPACE"
+
+      # Validate compatibility of deleteExtraFiles and replaceExistingFiles
+      if [[ "$DELETE_EXTRA_FILES" == "true" && "$REPLACE_EXISTING_FILES" == "false" ]]; then
+        log "ERROR: deleteExtraFiles can only be used when replaceExistingFiles is true"
+        exit 1
+      fi
+
+      # Check source path
+      if [[ ! -e "$SOURCE_PATH" ]]; then
+        log "ERROR: Source path $SOURCE_PATH does not exist"
+        exit 1
+      fi
+
+      log "Uploading from $SOURCE_PATH to bucket $BUCKET_NAME (namespace: $NAMESPACE, prefix: $OBJECT_PREFIX)"
+
+      # Extra arguments are passed as script arguments via Tekton args
+      EXTRA_ARGS_ARRAY=("${@}")
+      log "Expanded extra arguments: ${EXTRA_ARGS_ARRAY[*]}"
+      if [[ ${#EXTRA_ARGS_ARRAY[@]} -gt 0 ]]; then
+        log "Using extra arguments: ${EXTRA_ARGS_ARRAY[*]}"
+      fi
+
+      if [[ -d "$SOURCE_PATH" ]]; then
+        # Directory upload
+        log "Starting directory upload..."
+        if [[ "$DELETE_EXTRA_FILES" == "true" ]]; then
+          SYNC_PARAMS="--delete"
+          if [[ -n "$OBJECT_PREFIX" ]]; then
+            SYNC_PARAMS="$SYNC_PARAMS --prefix $OBJECT_PREFIX"
+          fi
+          log "Running sync with delete option..."
+          if [[ ${#EXTRA_ARGS_ARRAY[@]} -gt 0 ]]; then
+            oci os object sync --bucket-name "$BUCKET_NAME" --namespace "$NAMESPACE" \
+              --src-dir "$SOURCE_PATH" $SYNC_PARAMS "${EXTRA_ARGS_ARRAY[@]}"
+            log "Directory sync completed successfully"
+          else
+            oci os object sync --bucket-name "$BUCKET_NAME" --namespace "$NAMESPACE" \
+              --src-dir "$SOURCE_PATH" $SYNC_PARAMS
+            log "Directory sync completed successfully"
+          fi
+        else
+          UPLOAD_PARAMS=()
+          if [[ "$REPLACE_EXISTING_FILES" == "false" ]]; then
+            UPLOAD_PARAMS+=("--no-overwrite")
+          else
+            # Use --overwrite to prevent interactive prompts when files exist
+            UPLOAD_PARAMS+=("--overwrite")
+          fi
+
+          log "Running bulk upload..."
+          if [[ -n "$OBJECT_PREFIX" ]]; then
+            if [[ ${#EXTRA_ARGS_ARRAY[@]} -gt 0 ]]; then
+              oci os object bulk-upload --bucket-name "$BUCKET_NAME" --namespace "$NAMESPACE" \
+                --src-dir "$SOURCE_PATH" --object-prefix "$OBJECT_PREFIX" "${UPLOAD_PARAMS[@]}" "${EXTRA_ARGS_ARRAY[@]}"
+              log "Bulk upload completed successfully"
+            else
+              oci os object bulk-upload --bucket-name "$BUCKET_NAME" --namespace "$NAMESPACE" \
+                --src-dir "$SOURCE_PATH" --object-prefix "$OBJECT_PREFIX" "${UPLOAD_PARAMS[@]}"
+              log "Bulk upload completed successfully"
+            fi
+          else
+            if [[ ${#EXTRA_ARGS_ARRAY[@]} -gt 0 ]]; then
+              oci os object bulk-upload --bucket-name "$BUCKET_NAME" --namespace "$NAMESPACE" \
+                --src-dir "$SOURCE_PATH" "${UPLOAD_PARAMS[@]}" "${EXTRA_ARGS_ARRAY[@]}"
+              log "Bulk upload completed successfully"
+            else
+              oci os object bulk-upload --bucket-name "$BUCKET_NAME" --namespace "$NAMESPACE" \
+                --src-dir "$SOURCE_PATH" "${UPLOAD_PARAMS[@]}"
+              log "Bulk upload completed successfully"
+            fi
+          fi
+        fi
+      elif [[ -f "$SOURCE_PATH" ]]; then
+        # Single file upload
+        log "Starting single file upload..."
+        [[ "$DELETE_EXTRA_FILES" == "true" ]] && log "WARNING: deleteExtraFiles ignored for single file uploads"
+
+        FILENAME=$(basename "$SOURCE_PATH")
+        OBJECT_NAME="${OBJECT_PREFIX:+${OBJECT_PREFIX}/}$FILENAME"
+        UPLOAD_PARAMS=()
+        if [[ "$REPLACE_EXISTING_FILES" == "false" ]]; then
+          UPLOAD_PARAMS+=("--no-overwrite")
+        else
+          UPLOAD_PARAMS+=("--force")
+        fi
+
+        # Calculate MD5 hash for data integrity verification (if enabled and available)
+        MD5_HASH=""
+        if [[ "$ENABLE_MD5_VALIDATION" == "true" ]]; then
+          log "MD5 validation enabled, calculating hash..."
+          if command -v python3 >/dev/null 2>&1; then
+            log "Calculating MD5 hash using python3..."
+            if MD5_HASH=$(python3 -c "import hashlib, base64; print(base64.b64encode(hashlib.md5(open('$SOURCE_PATH', 'rb').read()).digest()).decode())"); then
+              log "MD5 calculation completed"
+            else
+              log "WARNING: MD5 calculation failed"
+              MD5_HASH=""
+            fi
+          elif command -v openssl >/dev/null 2>&1; then
+            log "Calculating MD5 hash using openssl..."
+            if MD5_HASH=$(openssl md5 -binary "$SOURCE_PATH" | base64); then
+              log "MD5 calculation completed"
+            else
+              log "WARNING: MD5 calculation failed"
+              MD5_HASH=""
+            fi
+          elif command -v md5sum >/dev/null 2>&1 && command -v python3 >/dev/null 2>&1; then
+            log "Calculating MD5 hash using md5sum + python3..."
+            if HEX_MD5=$(md5sum "$SOURCE_PATH" | cut -d' ' -f1); then
+              if MD5_HASH=$(python3 -c "import binascii, base64; print(base64.b64encode(binascii.unhexlify('$HEX_MD5')).decode())"); then
+                log "MD5 calculation completed"
+              else
+                log "WARNING: MD5 base64 conversion failed"
+                MD5_HASH=""
+              fi
+            else
+              log "WARNING: MD5 calculation failed"
+              MD5_HASH=""
+            fi
+          else
+            log "WARNING: No suitable MD5 utility found. Uploading without content-md5 verification."
+          fi
+
+          if [[ -n "$MD5_HASH" ]]; then
+            log "MD5 hash: $MD5_HASH"
+            UPLOAD_PARAMS+=("--content-md5" "$MD5_HASH")
+          else
+            log "Uploading without content-md5 verification."
+          fi
+        else
+          log "MD5 validation disabled, skipping hash calculation."
+        fi
+
+        log "Uploading file to object: $OBJECT_NAME..."
+        if [[ ${#EXTRA_ARGS_ARRAY[@]} -gt 0 ]]; then
+          oci os object put --bucket-name "$BUCKET_NAME" --namespace "$NAMESPACE" \
+            --file "$SOURCE_PATH" --name "$OBJECT_NAME" "${UPLOAD_PARAMS[@]}" "${EXTRA_ARGS_ARRAY[@]}"
+          log "Single file upload completed successfully"
+        else
+          oci os object put --bucket-name "$BUCKET_NAME" --namespace "$NAMESPACE" \
+            --file "$SOURCE_PATH" --name "$OBJECT_NAME" "${UPLOAD_PARAMS[@]}"
+          log "Single file upload completed successfully"
+        fi
+      else
+        log "ERROR: Source path $SOURCE_PATH is neither a file nor a directory"
+        exit 1
+      fi
+
+      log "Upload completed successfully"
