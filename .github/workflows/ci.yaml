@@ -92,12 +92,12 @@ jobs:
           --e2e-env ./test/e2e-tests-kind-gha.env
 
     - name: Upload test results
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:
         name: ${{ matrix.pipeline-version }}
         path: ${{ env.ARTIFACTS }}
 
-    - uses: chainguard-dev/actions/kind-diag@main
+    - uses: chainguard-dev/actions/kind-diag@6f4f4de7549514e7b659741b30f6476f245600dd # v1.5.3
       if: ${{ failure() }}
       with:
         artifact-name: ${{ matrix.pipeline-version }}-logs
