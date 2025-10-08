@@ -1,0 +1,132 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: oci-upload-pipeline
+spec:
+  description: |
+    A pipeline that prepares data and uploads it to OCI Object Storage
+  workspaces:
+  - name: shared-data
+    description: Workspace for sharing data between tasks
+  - name: oci-credentials
+    description: OCI credentials for authentication
+  params:
+  - name: bucketName
+    description: The OCI Object Storage bucket name
+    type: string
+  - name: tenancyOcid
+    description: The OCID of the OCI tenancy
+    type: string
+  - name: userOcid
+    description: The OCID of the OCI user
+    type: string
+  - name: region
+    description: The OCI region identifier
+    type: string
+  - name: namespace
+    description: The OCI Object Storage namespace
+    type: string
+  - name: objectPrefix
+    description: Object prefix in the bucket
+    type: string
+    default: "pipeline-uploads"
+  tasks:
+  - name: prepare-data
+    taskSpec:
+      workspaces:
+      - name: output
+        description: The workspace to write files to
+      steps:
+      - name: create-sample-files
+        image: ubuntu:latest
+        script: |
+          #!/bin/bash
+          set -xe
+
+          # Create some sample files
+          mkdir -p $(workspaces.output.path)/sample-data
+
+          echo "Sample content $(date)" > $(workspaces.output.path)/sample-data/file1.txt
+          echo "Another file $(date)" > $(workspaces.output.path)/sample-data/file2.txt
+
+          # Create a subdirectory
+          mkdir -p $(workspaces.output.path)/sample-data/subdir
+          echo "Nested file $(date)" > $(workspaces.output.path)/sample-data/subdir/nested.txt
+
+          # Create a JSON report
+          cat <<EOF > $(workspaces.output.path)/sample-data/report.json
+          {
+            "timestamp": "$(date -Iseconds)",
+            "status": "success",
+            "files_created": 3,
+            "pipeline_run": "$(context.pipelineRun.name)"
+          }
+          EOF
+
+          echo "Files prepared successfully!"
+          ls -la $(workspaces.output.path)/sample-data/
+    workspaces:
+    - name: output
+      workspace: shared-data
+
+  - name: upload-to-oci
+    runAfter: ["prepare-data"]
+    taskRef:
+      name: oci-upload
+    params:
+    - name: path
+      value: "sample-data/"
+    - name: bucketName
+      value: "$(params.bucketName)"
+    - name: objectPrefix
+      value: "$(params.objectPrefix)/$(context.pipelineRun.name)"
+    - name: tenancyOcid
+      value: "$(params.tenancyOcid)"
+    - name: userOcid
+      value: "$(params.userOcid)"
+    - name: region
+      value: "$(params.region)"
+    - name: namespace
+      value: "$(params.namespace)"
+    - name: recursive
+      value: "true"
+    - name: replaceExistingFiles
+      value: "true"
+    workspaces:
+    - name: source
+      workspace: shared-data
+    - name: credentials
+      workspace: oci-credentials
+---
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: oci-upload-pipeline-run
+spec:
+  pipelineRef:
+    name: oci-upload-pipeline
+  params:
+  - name: bucketName
+    value: "example-bucket-name"
+  - name: tenancyOcid
+    value: "ocid1.tenancy.oc1..aaaaaaaab1c2d3e4f5g6h7i8j9k0l1m2n3o4p5q6r7s8t9u0v1w2x3y4z5"
+  - name: userOcid
+    value: "ocid1.user.oc1..aaaaaaaab1c2d3e4f5g6h7i8j9k0l1m2n3o4p5q6r7s8t9u0v1w2x3y4z5"
+  - name: region
+    value: "us-phoenix-1"
+  - name: namespace
+    value: "example-namespace"
+  - name: objectPrefix
+    value: "example-uploads"
+  workspaces:
+  - name: shared-data
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+  - name: oci-credentials
+    secret:
+      secretName: oci-credentials

@@ -1,0 +1,156 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: oci-upload
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.50.0"
+    tekton.dev/categories: Cloud, Storage
+    tekton.dev/tags: cloud, oci, oracle
+    tekton.dev/displayName: "Upload to OCI Object Storage"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    A Task that uploads files to an OCI Object Storage bucket.
+
+    This task uploads files or directories from a Workspace to an OCI Object Storage bucket
+    using the OCI CLI.
+
+  workspaces:
+  - name: credentials
+    description: A secret with OCI credentials including API key, fingerprint, and config.
+  - name: source
+    description: A workspace where files will be uploaded from.
+  params:
+  - name: path
+    description: The path to files or directories relative to the source workspace that you'd like to upload.
+    type: string
+  - name: bucketName
+    description: The name of the OCI Object Storage bucket (without oci:// prefix).
+    type: string
+  - name: objectPrefix
+    description: The object prefix/path within the bucket where files should be uploaded.
+    type: string
+    default: ""
+  - name: tenancyOcid
+    description: The OCID of the OCI tenancy.
+    type: string
+  - name: userOcid
+    description: The OCID of the OCI user.
+    type: string
+  - name: region
+    description: The OCI region identifier (e.g., us-ashburn-1).
+    type: string
+  - name: namespace
+    description: The OCI Object Storage namespace (typically your tenancy name).
+    type: string
+  - name: replaceExistingFiles
+    description: |
+      When "false", files that already exist are skipped. Default: "true"
+    default: "true"
+    type: string
+  - name: recursive
+    description: |
+      When "true", upload directories recursively. Default: "true"
+    default: "true"
+    type: string
+  - name: privateKeyPath
+    description: The path inside the credentials workspace to the OCI API private key file.
+    type: string
+    default: oci_api_key.pem
+  - name: fingerprintPath
+    description: The path inside the credentials workspace to the file containing the fingerprint.
+    type: string
+    default: fingerprint
+  steps:
+  - name: upload
+    env:
+      - name: TENANCY_OCID
+        value: "$(params.tenancyOcid)"
+      - name: USER_OCID
+        value: "$(params.userOcid)"
+      - name: REGION
+        value: "$(params.region)"
+      - name: NAMESPACE
+        value: "$(params.namespace)"
+      - name: BUCKET_NAME
+        value: "$(params.bucketName)"
+      - name: OBJECT_PREFIX
+        value: "$(params.objectPrefix)"
+      - name: SOURCE_PATH
+        value: "$(workspaces.source.path)/$(params.path)"
+      - name: REPLACE_EXISTING_FILES
+        value: "$(params.replaceExistingFiles)"
+      - name: RECURSIVE
+        value: "$(params.recursive)"
+      - name: PRIVATE_KEY_PATH
+        value: "$(workspaces.credentials.path)/$(params.privateKeyPath)"
+      - name: FINGERPRINT_PATH
+        value: "$(workspaces.credentials.path)/$(params.fingerprintPath)"
+      # Environment variables to suppress OCI CLI warnings
+      - name: OCI_CLI_SUPPRESS_FILE_PERMISSIONS_WARNING
+        value: "True"
+      - name: SUPPRESS_LABEL_WARNING
+        value: "True"
+    image: ghcr.io/oracle/oci-cli:sha-b324bd6  # tag: latest published: 2025-10-01
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: false
+      capabilities:
+        drop:
+        - ALL
+    script: |
+      #!/bin/bash
+      set -e
+
+      export OCI_CONFIG_DIR="/tmp/.oci"
+      mkdir -p "$OCI_CONFIG_DIR"
+
+      cp "$PRIVATE_KEY_PATH" "$OCI_CONFIG_DIR/oci_api_key.pem"
+      chmod 600 "$OCI_CONFIG_DIR/oci_api_key.pem"
+
+      FINGERPRINT=$(cat "$FINGERPRINT_PATH")
+
+      cat <<EOF > "$OCI_CONFIG_DIR/config"
+      [DEFAULT]
+      tenancy=${TENANCY_OCID}
+      user=${USER_OCID}
+      fingerprint=${FINGERPRINT}
+      key_file=${OCI_CONFIG_DIR}/oci_api_key.pem
+      region=${REGION}
+      EOF
+
+      chmod 600 "$OCI_CONFIG_DIR/config"
+      export OCI_CLI_CONFIG_FILE="$OCI_CONFIG_DIR/config"
+
+      UPLOAD_PARAMS=""
+      if [[ "$REPLACE_EXISTING_FILES" == "false" ]]; then
+        UPLOAD_PARAMS="--no-overwrite"
+      fi
+
+      if [[ -d "$SOURCE_PATH" ]]; then
+        if [[ "$RECURSIVE" == "true" ]]; then
+          if [[ -n "$OBJECT_PREFIX" ]]; then
+            oci os object bulk-upload --bucket-name "$BUCKET_NAME" --namespace "$NAMESPACE" --src-dir "$SOURCE_PATH" --object-prefix "$OBJECT_PREFIX" $UPLOAD_PARAMS
+          else
+            oci os object bulk-upload --bucket-name "$BUCKET_NAME" --namespace "$NAMESPACE" --src-dir "$SOURCE_PATH" $UPLOAD_PARAMS
+          fi
+        else
+          echo "ERROR: Source is a directory but recursive upload is disabled"
+          exit 1
+        fi
+      elif [[ -f "$SOURCE_PATH" ]]; then
+        FILENAME=$(basename "$SOURCE_PATH")
+        if [[ -n "$OBJECT_PREFIX" ]]; then
+          OBJECT_NAME="${OBJECT_PREFIX}/${FILENAME}"
+        else
+          OBJECT_NAME="$FILENAME"
+        fi
+        oci os object put --bucket-name "$BUCKET_NAME" --namespace "$NAMESPACE" --file "$SOURCE_PATH" --name "$OBJECT_NAME" $UPLOAD_PARAMS
+      else
+        echo "ERROR: Source path $SOURCE_PATH does not exist"
+        exit 1
+      fi
