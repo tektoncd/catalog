@@ -1,6 +1,6 @@
 # Oracle Cloud Storage Upload
 
-This Task uploads files or directories from a Tekton workspace to an Oracle Cloud Infrastructure (OCI) Object Storage bucket using the OCI CLI. It leverages the [`oci os object put`](https://docs.oracle.com/en-us/iaas/tools/oci-cli/3.68.0/oci_cli_docs/cmdref/os/object.html) and [`oci os object bulk-upload`](https://docs.oracle.com/en-us/iaas/tools/oci-cli/3.68.0/oci_cli_docs/cmdref/os/object.html) commands.
+This Task uploads files or directories from a Tekton workspace to an Oracle Cloud Infrastructure (OCI) Object Storage bucket using the OCI CLI. It leverages the [`oci os object put`](https://docs.oracle.com/en-us/iaas/tools/oci-cli/latest/oci_cli_docs/cmdref/os/object.html) and [`oci os object bulk-upload`](https://docs.oracle.com/en-us/iaas/tools/oci-cli/latest/oci_cli_docs/cmdref/os/object.html) commands.
 
 ## Install the Task
 
@@ -32,7 +32,7 @@ kubectl apply -f oracle-cloud-storage-upload.yaml
 
 ## Platforms
 
-The Task can be run on `linux/amd64` platform.
+The Task can be run on `linux/amd64` and `linux/arm64` platforms.
 
 ## Usage
 
