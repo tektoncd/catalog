@@ -1,0 +1,300 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: oracle-cloud-storage-download
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.50.0"
+    tekton.dev/categories: Cloud, Storage
+    tekton.dev/tags: cloud, oracle-cloud, oracle
+    tekton.dev/displayName: "Download from Oracle Cloud Storage"
+    tekton.dev/platforms: "linux/amd64,linux/arm64"
+spec:
+  description: >-
+    Downloads files or directories from an Oracle Cloud Infrastructure (OCI)
+    Object Storage bucket to a Tekton workspace using the OCI CLI.
+
+  workspaces:
+  - name: credentials
+    description: Secret workspace containing OCI credentials (API key, fingerprint, etc.)
+  - name: output
+    description: Workspace where downloaded files or directories will be placed.
+
+  params:
+  - name: path
+    description: Path relative to output workspace where files will be downloaded.
+    type: string
+  - name: bucketName
+    description: Source OCI Object Storage bucket name.
+    type: string
+  - name: objectPrefix
+    description: Object prefix/path within the bucket to download from.
+    type: string
+    default: ""
+  - name: tenancyOcid
+    description: OCI tenancy OCID (optional if provided via credentials secret).
+    type: string
+    default: ""
+  - name: userOcid
+    description: OCI user OCID (optional if provided via credentials secret).
+    type: string
+    default: ""
+  - name: region
+    description: OCI region identifier (e.g., us-ashburn-1).
+    type: string
+    default: ""
+  - name: namespace
+    description: OCI Object Storage namespace (optional, auto-detectable).
+    type: string
+    default: ""
+  - name: typeDir
+    description: Set this to "true" if downloading a directory (will use bulk-download). Default is false for single file download.
+    type: string
+    default: "false"
+  - name: recursive
+    description: Download directories recursively (only applies when typeDir is true). Default is true.
+    type: string
+    default: "true"
+  - name: overwrite
+    description: Overwrite existing files in the output workspace. Default is true.
+    type: string
+    default: "true"
+  - name: privateKeyPath
+    description: Path inside credentials workspace to API private key file.
+    type: string
+    default: oci_api_key.pem
+  - name: fingerprintPath
+    description: Path inside credentials workspace to fingerprint file.
+    type: string
+    default: fingerprint
+  - name: extraArgs
+    description: |
+      Additional arguments to pass to OCI CLI.
+      Example: ["--parallel-operations-count", "5"]
+    type: array
+    default: []
+
+  steps:
+  - name: download
+    image: ghcr.io/oracle/oci-cli:sha-b324bd6  # released 2025-10-01
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: false
+      capabilities:
+        drop:
+        - ALL
+    env:
+      - name: TENANCY_OCID
+        value: "$(params.tenancyOcid)"
+      - name: USER_OCID
+        value: "$(params.userOcid)"
+      - name: REGION
+        value: "$(params.region)"
+      - name: NAMESPACE
+        value: "$(params.namespace)"
+      - name: BUCKET_NAME
+        value: "$(params.bucketName)"
+      - name: OBJECT_PREFIX
+        value: "$(params.objectPrefix)"
+      - name: OUTPUT_PATH
+        value: "$(workspaces.output.path)/$(params.path)"
+      - name: TYPE_DIR
+        value: "$(params.typeDir)"
+      - name: RECURSIVE
+        value: "$(params.recursive)"
+      - name: OVERWRITE
+        value: "$(params.overwrite)"
+      - name: PRIVATE_KEY_PATH
+        value: "$(workspaces.credentials.path)/$(params.privateKeyPath)"
+      - name: FINGERPRINT_PATH
+        value: "$(workspaces.credentials.path)/$(params.fingerprintPath)"
+      - name: OCI_CLI_SUPPRESS_FILE_PERMISSIONS_WARNING
+        value: "True"
+      - name: SUPPRESS_LABEL_WARNING
+        value: "True"
+    args:
+      - "$(params.extraArgs[*])"
+    script: |
+      #!/bin/bash
+      set -euo pipefail
+
+      # Function for logging with timestamps
+      log() {
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
+      }
+
+      log "=== Oracle Cloud Storage Download Task ==="
+
+      # Prepare OCI config directory
+      export OCI_CONFIG_DIR="/tmp/.oci"
+      mkdir -p "$OCI_CONFIG_DIR"
+
+      # Read fingerprint and private key
+      cp "$PRIVATE_KEY_PATH" "$OCI_CONFIG_DIR/oci_api_key.pem"
+      chmod 600 "$OCI_CONFIG_DIR/oci_api_key.pem"
+      FINGERPRINT=$(cat "$FINGERPRINT_PATH")
+
+      # Resolve credentials from params or workspace
+      TENANCY_OCID_FILE="$(workspaces.credentials.path)/tenancy_ocid"
+      USER_OCID_FILE="$(workspaces.credentials.path)/user_ocid"
+      REGION_FILE="$(workspaces.credentials.path)/region"
+      NAMESPACE_FILE="$(workspaces.credentials.path)/namespace"
+
+      if [[ -z "$TENANCY_OCID" && -f "$TENANCY_OCID_FILE" ]]; then
+        TENANCY_OCID=$(cat "$TENANCY_OCID_FILE")
+        log "Using tenancy OCID from credentials secret"
+      elif [[ -n "$TENANCY_OCID" ]]; then
+        log "Using tenancy OCID from parameter"
+      else
+        log "ERROR: tenancy OCID must be provided"
+        exit 1
+      fi
+
+      if [[ -z "$USER_OCID" && -f "$USER_OCID_FILE" ]]; then
+        USER_OCID=$(cat "$USER_OCID_FILE")
+        log "Using user OCID from credentials secret"
+      elif [[ -n "$USER_OCID" ]]; then
+        log "Using user OCID from parameter"
+      else
+        log "ERROR: user OCID must be provided"
+        exit 1
+      fi
+
+      if [[ -z "$REGION" && -f "$REGION_FILE" ]]; then
+        REGION=$(cat "$REGION_FILE")
+        log "Using region from credentials secret"
+      elif [[ -n "$REGION" ]]; then
+        log "Using region from parameter"
+      else
+        log "ERROR: region must be provided"
+        exit 1
+      fi
+
+      # Write OCI config after required values are resolved
+      cat <<EOF > "$OCI_CONFIG_DIR/config"
+      [DEFAULT]
+      tenancy=${TENANCY_OCID}
+      user=${USER_OCID}
+      fingerprint=${FINGERPRINT}
+      key_file=${OCI_CONFIG_DIR}/oci_api_key.pem
+      region=${REGION}
+      EOF
+      chmod 600 "$OCI_CONFIG_DIR/config"
+      export OCI_CLI_CONFIG_FILE="$OCI_CONFIG_DIR/config"
+
+      # Validate OCI configuration before proceeding
+      log "Validating OCI configuration..."
+      if ! oci iam user get --user-id "$USER_OCID" --query 'data.id' --raw-output >/dev/null 2>&1; then
+        log "ERROR: OCI configuration validation failed"
+        log "Please verify your tenancy OCID, user OCID, API key, fingerprint, and region are correct and have necessary permissions"
+        exit 1
+      fi
+      log "OCI configuration validated successfully"
+
+      if [[ -z "$NAMESPACE" && -f "$NAMESPACE_FILE" ]]; then
+        NAMESPACE=$(cat "$NAMESPACE_FILE")
+        log "Using namespace from credentials secret"
+      elif [[ -z "$NAMESPACE" ]]; then
+        log "No namespace provided, retrieving automatically..."
+
+        log "Attempting to detect Object Storage namespace..."
+        if NAMESPACE=$(oci os ns get --query 'data' --raw-output 2>/dev/null); then
+          log "Using auto-detected namespace: $NAMESPACE"
+        else
+          log "ERROR: Failed to detect Object Storage namespace"
+          log "Please provide namespace parameter or add it to credentials secret"
+          exit 1
+        fi
+      else
+        log "Using namespace from parameter"
+      fi
+
+      log "OCI Config prepared for region=$REGION, namespace=$NAMESPACE"
+
+      # Create output directory
+      mkdir -p "$OUTPUT_PATH"
+      log "Output directory prepared: $OUTPUT_PATH"
+
+      # Extra arguments are passed as script arguments via Tekton args
+      EXTRA_ARGS_ARRAY=("${@}")
+      log "Expanded extra arguments: ${EXTRA_ARGS_ARRAY[*]}"
+      if [[ ${#EXTRA_ARGS_ARRAY[@]} -gt 0 ]]; then
+        log "Using extra arguments: ${EXTRA_ARGS_ARRAY[*]}"
+      fi
+
+      log "Downloading from bucket $BUCKET_NAME (namespace: $NAMESPACE, prefix: $OBJECT_PREFIX) to $OUTPUT_PATH"
+
+      if [[ "$TYPE_DIR" == "true" ]]; then
+        # Directory download using bulk-download
+        log "Starting directory download (bulk-download)..."
+
+        DOWNLOAD_PARAMS=()
+        if [[ "$OVERWRITE" == "false" ]]; then
+          DOWNLOAD_PARAMS+=("--no-overwrite")
+        else
+          DOWNLOAD_PARAMS+=("--overwrite")
+        fi
+
+        if [[ -n "$OBJECT_PREFIX" ]]; then
+          log "Downloading with prefix: $OBJECT_PREFIX"
+          if [[ ${#EXTRA_ARGS_ARRAY[@]} -gt 0 ]]; then
+            oci os object bulk-download --bucket-name "$BUCKET_NAME" --namespace "$NAMESPACE" \
+              --download-dir "$OUTPUT_PATH" --prefix "$OBJECT_PREFIX" "${DOWNLOAD_PARAMS[@]}" "${EXTRA_ARGS_ARRAY[@]}"
+            log "Bulk download completed successfully"
+          else
+            oci os object bulk-download --bucket-name "$BUCKET_NAME" --namespace "$NAMESPACE" \
+              --download-dir "$OUTPUT_PATH" --prefix "$OBJECT_PREFIX" "${DOWNLOAD_PARAMS[@]}"
+            log "Bulk download completed successfully"
+          fi
+        else
+          log "Downloading entire bucket contents"
+          if [[ ${#EXTRA_ARGS_ARRAY[@]} -gt 0 ]]; then
+            oci os object bulk-download --bucket-name "$BUCKET_NAME" --namespace "$NAMESPACE" \
+              --download-dir "$OUTPUT_PATH" "${DOWNLOAD_PARAMS[@]}" "${EXTRA_ARGS_ARRAY[@]}"
+            log "Bulk download completed successfully"
+          else
+            oci os object bulk-download --bucket-name "$BUCKET_NAME" --namespace "$NAMESPACE" \
+              --download-dir "$OUTPUT_PATH" "${DOWNLOAD_PARAMS[@]}"
+            log "Bulk download completed successfully"
+          fi
+        fi
+      else
+        # Single file download
+        log "Starting single file download..."
+
+        if [[ -z "$OBJECT_PREFIX" ]]; then
+          log "ERROR: objectPrefix must be specified for single file download"
+          exit 1
+        fi
+
+        OBJECT_NAME="$OBJECT_PREFIX"
+        # Determine filename from object name
+        FILENAME=$(basename "$OBJECT_NAME")
+        FILE_PATH="$OUTPUT_PATH/$FILENAME"
+
+        # Handle overwrite by removing existing file if needed
+        if [[ "$OVERWRITE" == "false" && -f "$FILE_PATH" ]]; then
+          log "File already exists and overwrite is false, skipping download: $FILE_PATH"
+        else
+          if [[ "$OVERWRITE" == "true" && -f "$FILE_PATH" ]]; then
+            log "Removing existing file to allow overwrite: $FILE_PATH"
+            rm -f "$FILE_PATH"
+          fi
+
+          log "Downloading object: $OBJECT_NAME to $FILE_PATH..."
+          if [[ ${#EXTRA_ARGS_ARRAY[@]} -gt 0 ]]; then
+            oci os object get --bucket-name "$BUCKET_NAME" --namespace "$NAMESPACE" \
+              --name "$OBJECT_NAME" --file "$FILE_PATH" "${EXTRA_ARGS_ARRAY[@]}"
+            log "Single file download completed successfully"
+          else
+            oci os object get --bucket-name "$BUCKET_NAME" --namespace "$NAMESPACE" \
+              --name "$OBJECT_NAME" --file "$FILE_PATH"
+            log "Single file download completed successfully"
+          fi
+        fi
+      fi
+
+      log "Download completed successfully"

@@ -1,0 +1,83 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: workspace-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: download-and-process
+spec:
+  params:
+  - name: bucket
+    description: OCI bucket name
+    type: string
+  - name: release-tag
+    description: Release tag to download
+    type: string
+  workspaces:
+  - name: shared
+    description: Workspace shared between tasks
+  - name: credentials
+    description: OCI credentials
+  tasks:
+  - name: download-from-oci
+    taskRef:
+      name: oracle-cloud-storage-download
+    params:
+      - name: path
+        value: .
+      - name: bucketName
+        value: $(params.bucket)
+      - name: objectPrefix
+        value: previous/$(params.release-tag)
+      - name: typeDir
+        value: "true"
+    workspaces:
+      - name: output
+        workspace: shared
+        subPath: release
+      - name: credentials
+        workspace: credentials
+  - name: list-files
+    runAfter:
+      - download-from-oci
+    taskSpec:
+      workspaces:
+      - name: source
+      steps:
+      - name: list
+        image: ubuntu
+        script: |
+          #!/bin/bash
+          echo "Downloaded files:"
+          ls -lR $(workspaces.source.path)/release
+    workspaces:
+      - name: source
+        workspace: shared
+---
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: download-and-process-run
+spec:
+  pipelineRef:
+    name: download-and-process
+  params:
+  - name: bucket
+    value: "my-releases-bucket"
+  - name: release-tag
+    value: "v1.0.0"
+  workspaces:
+  - name: credentials
+    secret:
+      secretName: oci-credentials
+  - name: shared
+    persistentVolumeClaim:
+      claimName: workspace-pvc
