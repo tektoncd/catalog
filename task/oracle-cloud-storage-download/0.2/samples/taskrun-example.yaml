@@ -1,0 +1,28 @@
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: oracle-cloud-storage-download-example
+spec:
+  taskRef:
+    name: oracle-cloud-storage-download
+  params:
+  - name: path
+    value: "downloaded-files"
+  - name: bucketName
+    value: "my-bucket"
+  - name: objectPrefix
+    value: "artifacts/build-123"
+  - name: typeDir
+    value: "true"
+  - name: tenancyOcid
+    value: "ocid1.tenancy.oc1..aaaaaaaexampletenancyocid"
+  - name: userOcid
+    value: "ocid1.user.oc1..aaaaaaaexampleuserocid"
+  - name: region
+    value: "us-phoenix-1"
+  workspaces:
+  - name: credentials
+    secret:
+      secretName: oci-credentials
+  - name: output
+    emptyDir: {}
