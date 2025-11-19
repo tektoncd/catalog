@@ -3,7 +3,7 @@ kind: Task
 metadata:
   name: oracle-cloud-storage-upload
   labels:
-    app.kubernetes.io/version: "0.1"
+    app.kubernetes.io/version: "0.2"
   annotations:
     tekton.dev/pipelines.minVersion: "0.50.0"
     tekton.dev/categories: Cloud, Storage
@@ -89,7 +89,7 @@ spec:
     image: ghcr.io/oracle/oci-cli:sha-b324bd6  # released 2025-10-01
     securityContext:
       runAsNonRoot: true
-      runAsUser: 1000
+      runAsUser: 65532
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: false
       capabilities:

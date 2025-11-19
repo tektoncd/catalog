@@ -5,7 +5,7 @@ This Task downloads files or directories from an Oracle Cloud Infrastructure (OC
 ## Install the Task
 
 ```bash
-kubectl apply -f https://github.com/tektoncd/catalog/raw/main/task/oracle-cloud-storage-download/0.1/oracle-cloud-storage-download.yaml
+kubectl apply -f https://github.com/tektoncd/catalog/raw/main/task/oracle-cloud-storage-download/0.2/oracle-cloud-storage-download.yaml
 ```
 
 ## Parameters
@@ -35,42 +35,16 @@ The Task can be run on `linux/amd64` and `linux/arm64` platforms.
 
 ## Usage
 
-### Basic File Download
+See the [samples](samples/) directory for complete, runnable examples including:
+- **taskrun-example.yaml**: Basic directory download
+- **taskrun-single-file.yaml**: Single file download
+- **pipeline-download-directory.yaml**: Complete pipeline example with bundle resolver
 
-Download a single file from OCI Object Storage:
+For detailed usage instructions, see [samples/README.md](samples/README.md).
 
-```yaml
-apiVersion: tekton.dev/v1
-kind: TaskRun
-metadata:
-  name: download-file
-spec:
-  taskRef:
-    name: oracle-cloud-storage-download
-  params:
-  - name: path
-    value: "."
-  - name: bucketName
-    value: "my-bucket"
-  - name: objectPrefix
-    value: "uploads/hello.txt"
-  - name: tenancyOcid
-    value: "ocid1.tenancy.oc1..example_tenancy_id"
-  - name: userOcid
-    value: "ocid1.user.oc1..example_user_id"
-  - name: region
-    value: "us-phoenix-1"
-  workspaces:
-  - name: credentials
-    secret:
-      secretName: oci-credentials
-  - name: output
-    emptyDir: {}
-```
+### Quick Example
 
-### Directory Download
-
-Download a directory (with all files under a prefix):
+Download a directory from OCI Object Storage:
 
 ```yaml
 apiVersion: tekton.dev/v1
@@ -86,7 +60,7 @@ spec:
   - name: bucketName
     value: "my-bucket"
   - name: objectPrefix
-    value: "previous/v1.0.0"
+    value: "data/"
   - name: typeDir
     value: "true"
   workspaces:
@@ -94,113 +68,41 @@ spec:
     secret:
       secretName: oci-credentials
   - name: output
-    persistentVolumeClaim:
-      claimName: workspace-pvc
-```
-
-### Download with Secret Configuration
-
-Use a secret that contains all OCI configuration:
-
-```yaml
-apiVersion: tekton.dev/v1
-kind: TaskRun
-metadata:
-  name: download-with-secret
-spec:
-  taskRef:
-    name: oracle-cloud-storage-download
-  params:
-  - name: path
-    value: "downloaded-artifacts"
-  - name: bucketName
-    value: "my-bucket"
-  - name: objectPrefix
-    value: "artifacts"
-  - name: typeDir
-    value: "true"
-  workspaces:
-  - name: credentials
-    secret:
-      secretName: oci-credentials-complete  # Contains all config in secret
-  - name: output
     emptyDir: {}
 ```
 
-### Using in a Pipeline
+### Using with Bundle Resolver
 
-```yaml
-apiVersion: tekton.dev/v1
-kind: Pipeline
-metadata:
-  name: clone-from-oci
-spec:
-  params:
-  - name: bucket
-    description: OCI bucket name
-  - name: release-tag
-    description: Release tag to download
-  workspaces:
-  - name: shared
-  - name: credentials
-  tasks:
-  - name: clone-bucket
-    taskRef:
-      resolver: bundles
-      params:
-        - name: bundle
-          value: ghcr.io/tektoncd/catalog/upstream/oracle-cloud-storage-download:0.1
-        - name: name
-          value: oracle-cloud-storage-download
-        - name: kind
-          value: task
-    params:
-      - name: path
-        value: .
-      - name: bucketName
-        value: $(params.bucket)
-      - name: objectPrefix
-        value: previous/$(params.release-tag)
-      - name: typeDir
-        value: "true"
-    workspaces:
-      - name: output
-        workspace: shared
-        subPath: release
-      - name: credentials
-        workspace: credentials
-```
-
-### Advanced Download with Extra Arguments
+Reference the task directly without installation:
 
 ```yaml
 apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
-  name: download-with-extra-args
+  name: download-with-bundle
 spec:
   taskRef:
-    name: oracle-cloud-storage-download
+    resolver: bundles
+    params:
+      - name: bundle
+        value: ghcr.io/tektoncd/catalog/upstream/oracle-cloud-storage-download:0.2
+      - name: name
+        value: oracle-cloud-storage-download
+      - name: kind
+        value: task
   params:
   - name: path
     value: "."
   - name: bucketName
     value: "my-bucket"
   - name: objectPrefix
-    value: "large-dataset"
-  - name: typeDir
-    value: "true"
-  - name: extraArgs
-    value:
-    - "--parallel-operations-count"
-    - "10"
+    value: "data/file.txt"
   workspaces:
   - name: credentials
     secret:
       secretName: oci-credentials
   - name: output
-    persistentVolumeClaim:
-      claimName: workspace-pvc
+    emptyDir: {}
 ```
 
 ## Credentials Setup

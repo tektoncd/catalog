@@ -1,0 +1,22 @@
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: download-single-file-example
+spec:
+  taskRef:
+    name: oracle-cloud-storage-download
+  params:
+  - name: path
+    value: "."
+  - name: bucketName
+    value: "my-bucket"
+  - name: objectPrefix
+    value: "data/important-file.txt"
+  - name: typeDir
+    value: "false"  # Single file download
+  workspaces:
+  - name: credentials
+    secret:
+      secretName: oci-credentials
+  - name: output
+    emptyDir: {}

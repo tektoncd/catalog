@@ -5,7 +5,7 @@ This Task uploads files or directories from a Tekton workspace to an Oracle Clou
 ## Install the Task
 
 ```bash
-kubectl apply -f oracle-cloud-storage-upload.yaml
+kubectl apply -f https://github.com/tektoncd/catalog/raw/main/task/oracle-cloud-storage-upload/0.1/oracle-cloud-storage-upload.yaml
 ```
 
 ## Parameters
