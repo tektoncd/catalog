@@ -40,20 +40,23 @@ jobs:
       fail-fast: false # Keep running if one leg fails.
       matrix:
         tekton-version:
+        - latest
         - lts-latest
         - lts-latest-minus-one
         - lts-latest-minus-two
         - lts-latest-minus-three
 
         include:
+        - tekton-version: latest
+          pipeline-version: v1.7.0
         - tekton-version: lts-latest
-          pipeline-version: v1.0.0
+          pipeline-version: v1.6.0
         - tekton-version: lts-latest-minus-one
-          pipeline-version: v0.68.1
+          pipeline-version: v1.3.0
         - tekton-version: lts-latest-minus-two
-          pipeline-version: v0.65.6
+          pipeline-version: v1.0.0
         - tekton-version: lts-latest-minus-three
-          pipeline-version: v0.62.8
+          pipeline-version: v0.68.1
 
     env:
       KO_DOCKER_REPO: registry.local:5000/tekton
