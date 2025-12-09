@@ -26,7 +26,7 @@ spec:
       default: redhat-dependency-analytics-report.json
     - name: trustify-cli-image
       description: Image where Trustify Dependency Analytics Javascript Client and required dependencies are installed.
-      default: ghcr.io/guacsec/trustify-da-javascript-client:0.2.4
+      default: ghcr.io/guacsec/trustify-da-javascript-client:0.3.0@sha256:e5bee1acb7289a8c7ea0bdf3c3089b7000f443adb004675c8473b51eaa445268
     - name: python-image
       description: Image with installed Python interpreter and associated tools (such as pip, pip3, etc.).
       default: python:3.11

@@ -25,7 +25,7 @@ spec:
       value: redhat-dependency-analytics-report.json
     # Replace with base image where Trustify JavaScript CLI and required dependencies are installed.
     - name: trustify-cli-image
-      value: ghcr.io/guacsec/trustify-da-javascript-client:0.2.4
+      value: ghcr.io/guacsec/trustify-da-javascript-client:0.3.0@sha256:e5bee1acb7289a8c7ea0bdf3c3089b7000f443adb004675c8473b51eaa445268
     # Replace with base image including the desired Python version.
     - name: python-image
       value: python:3.11
