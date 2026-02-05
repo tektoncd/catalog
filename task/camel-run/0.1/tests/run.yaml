@@ -1,0 +1,97 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: camel-run-basic-test
+spec:
+  workspaces:
+    - name: shared-workspace
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: https://github.com/apache/camel-jbang-examples/
+    - name: camel-run
+      taskRef:
+        name: camel-run
+      runAfter:
+        - fetch-repository
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: filename
+          value: circuit-breaker/route.camel.yaml
+        - name: max-seconds
+          value: "30"
+        - name: logging-level
+          value: "INFO"
+    - name: verify-logs
+      runAfter:
+        - camel-run
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: exit-code
+          value: "$(tasks.camel-run.results.exit-code)"
+      taskSpec:
+        params:
+          - name: exit-code
+        workspaces:
+          - name: source
+        steps:
+          - name: verify
+            image: fedora
+            workingDir: $(workspaces.source.path)
+            script: |
+              #!/usr/bin/env bash
+              set -e
+
+              exit_code=$(echo "$(params.exit-code)" | tr -d '[:space:]')
+              if [ "$exit_code" != "0" ]; then
+                echo "Expected exit code 0 (was $exit_code)"
+                exit 1
+              fi
+
+              if [ ! -f camel-run.log ]; then
+                echo "Log file not found: camel-run.log"
+                exit 1
+              fi
+
+              if ! grep -q "Forced error" camel-run.log; then
+                echo "Expected 'Forced error' in logs"
+                cat camel-run.log
+                exit 1
+              fi
+
+              if ! grep -q "CircuitBreaker is open: true" camel-run.log; then
+                echo "Expected 'CircuitBreaker is open: true' in logs"
+                cat camel-run.log
+                exit 1
+              fi
+
+              exit 0
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: camel-run-basic-test-run
+spec:
+  pipelineRef:
+    name: camel-run-basic-test
+  workspaces:
+    - name: shared-workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi

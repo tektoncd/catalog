@@ -1,0 +1,174 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: camel-run
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/categories: Deployment
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/tags: cli
+    tekton.dev/platforms: "linux/amd64"
+    tekton.dev/displayName: "camel run"
+spec:
+  description: >-
+    Run a Camel Integration using Camel JBang
+
+    Camel-run task executes Camel routes using Camel JBang, which provides a lightweight way to run Camel integrations
+    without requiring any operator installation. This task supports running Camel routes with various runtimes
+    (camel-main, spring-boot, quarkus) and configuration options.
+  params:
+    - name: camel-jbang-image
+      description: The location of Camel JBang image.
+      default: docker.io/apache/camel-jbang:4.17.0
+    - name: filename
+      description: |
+        The Camel file(s) to run. Can be multiple files separated by space.
+        Format: "file1.yaml file2.yaml" or "route.yaml"
+      default: ""
+    - name: runtime
+      description: |
+        Runtime to use. Valid values: camel-main, spring-boot, quarkus
+      default: camel-main
+    - name: dependencies
+      description: |
+        Additional dependencies to add. Comma-separated list.
+        Format: "org.apache.camel:camel-http,org.apache.camel:camel-jackson"
+      default: ""
+    - name: properties
+      description: |
+        Comma separated list of properties files.
+        Format: "application.properties,custom.properties"
+      default: ""
+    - name: property
+      description: |
+        Additional properties in key=value format. Multiple properties separated by space.
+        Format: "key1=value1 key2=value2"
+      default: ""
+    - name: port
+      description: Embeds a local HTTP server on this port (0 to dynamic assign, -1 to disable)
+      default: "-1"
+    - name: max-seconds
+      description: Max seconds to run before stopping (0 for unlimited)
+      default: "0"
+    - name: logging-level
+      description: Logging level (ERROR, WARN, INFO, DEBUG, TRACE)
+      default: info
+    - name: dev
+      description: Enables dev mode (live reload when source files are updated)
+      default: "false"
+    - name: console
+      description: Enable developer console at /q/dev
+      default: "false"
+    - name: observe
+      description: Enable observability services (health, metrics)
+      default: "false"
+    - name: extra-args
+      description: |
+        Additional camel run arguments. Space-separated list.
+        Format: "--flag1 value1 --flag2"
+      default: ""
+    - name: output-log
+      description: |
+        Path to save camel run output log. If empty, no log file will be generated.
+        Format: Absolute or workspace-relative path
+      default: "$(workspaces.source.path)/camel-run.log"
+  results:
+    - name: exit-code
+      description: The exit code of the camel run command
+  workspaces:
+  - name: source
+  steps:
+  - name: execute
+    image: $(params.camel-jbang-image)
+    workingDir: $(workspaces.source.path)
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+    env:
+      - name: PARAM_FILENAME
+        value: $(params.filename)
+      - name: PARAM_RUNTIME
+        value: $(params.runtime)
+      - name: PARAM_DEPENDENCIES
+        value: $(params.dependencies)
+      - name: PARAM_PROPERTIES
+        value: $(params.properties)
+      - name: PARAM_PROPERTY
+        value: $(params.property)
+      - name: PARAM_PORT
+        value: $(params.port)
+      - name: PARAM_MAX_SECONDS
+        value: $(params.max-seconds)
+      - name: PARAM_LOGGING_LEVEL
+        value: $(params.logging-level)
+      - name: PARAM_DEV
+        value: $(params.dev)
+      - name: PARAM_CONSOLE
+        value: $(params.console)
+      - name: PARAM_OBSERVE
+        value: $(params.observe)
+      - name: PARAM_EXTRA_ARGS
+        value: $(params.extra-args)
+      - name: PARAM_OUTPUT_LOG
+        value: $(params.output-log)
+    script: |
+      #!/usr/bin/env bash
+      set -e
+
+      CAMEL_RUN_ARGS=()
+
+      # Add files to run
+      [[ ! "$PARAM_FILENAME" == "" ]] && CAMEL_RUN_ARGS+=("$PARAM_FILENAME")
+
+      # Add runtime
+      [[ ! "$PARAM_RUNTIME" == "camel-main" ]] && CAMEL_RUN_ARGS+=(--runtime "$PARAM_RUNTIME")
+
+      # Add dependencies
+      [[ ! "$PARAM_DEPENDENCIES" == "" ]] && CAMEL_RUN_ARGS+=(--dep "$PARAM_DEPENDENCIES")
+
+      # Add properties files
+      [[ ! "$PARAM_PROPERTIES" == "" ]] && CAMEL_RUN_ARGS+=(--properties "$PARAM_PROPERTIES")
+
+      # Add individual properties
+      if [[ ! "$PARAM_PROPERTY" == "" ]]; then
+        for prop in $PARAM_PROPERTY; do
+          CAMEL_RUN_ARGS+=(--prop "$prop")
+        done
+      fi
+
+      # Add port
+      [[ ! "$PARAM_PORT" == "-1" ]] && CAMEL_RUN_ARGS+=(--port "$PARAM_PORT")
+
+      # Add max-seconds
+      [[ ! "$PARAM_MAX_SECONDS" == "0" ]] && CAMEL_RUN_ARGS+=(--max-seconds "$PARAM_MAX_SECONDS")
+
+      # Add logging level
+      CAMEL_RUN_ARGS+=(--logging-level "$PARAM_LOGGING_LEVEL")
+
+      # Add dev mode
+      [[ "$PARAM_DEV" == "true" ]] && CAMEL_RUN_ARGS+=(--dev)
+
+      # Add console
+      [[ "$PARAM_CONSOLE" == "true" ]] && CAMEL_RUN_ARGS+=(--console)
+
+      # Add observe
+      [[ "$PARAM_OBSERVE" == "true" ]] && CAMEL_RUN_ARGS+=(--observe)
+
+      # Add extra args
+      [[ ! "$PARAM_EXTRA_ARGS" == "" ]] && CAMEL_RUN_ARGS+=("$PARAM_EXTRA_ARGS")
+
+      echo "Running: camel run" "${CAMEL_RUN_ARGS[@]}"
+
+      # Execute camel run and conditionally capture output
+      if [[ ! "$PARAM_OUTPUT_LOG" == "" ]]; then
+        echo "Logging output to $PARAM_OUTPUT_LOG"
+        camel run "${CAMEL_RUN_ARGS[@]}" 2>&1 | tee "$PARAM_OUTPUT_LOG"
+        exit_code=$?
+      else
+        camel run "${CAMEL_RUN_ARGS[@]}"
+        exit_code=$?
+      fi
+
+      echo "$exit_code" | tr -d '\n' | tee "$(results.exit-code.path)"
+      exit $exit_code
