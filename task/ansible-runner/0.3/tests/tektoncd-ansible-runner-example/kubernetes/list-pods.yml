@@ -1,0 +1,16 @@
+- hosts: localhost
+  connection: local
+  collections:
+    - kubernetes.core
+  tasks:
+    - name: List Pods in namespace
+      kubernetes.core.k8s_info:
+        kind: Pod
+        namespace: kube-system
+      register: kube_system_pods_list
+    - name: Show the list of pods
+      debug:
+        msg: "{{ item | json_query('metadata.name') }}"
+      loop: '{{kube_system_pods_list.resources}}'
+      loop_control:
+        label: "Pod(Namespace: {{item | json_query('metadata.namespace') }})"

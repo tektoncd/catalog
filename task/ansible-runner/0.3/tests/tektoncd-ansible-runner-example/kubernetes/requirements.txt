@@ -1,0 +1,4 @@
+kubernetes>=24.2.0
+requests-oauthlib
+jsonpatch
+jmespath
