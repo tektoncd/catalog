@@ -1,0 +1,45 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: notify-matrix
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Messaging
+    tekton.dev/tags: messaging
+    tekton.dev/platforms: "linux/386,linux/amd64,linux/s390x,linux/ppc64le"
+    tekton.dev/displayName: "Notify Matrix Room"
+spec:
+  description: >-
+    These tasks post a simple message to a matrix room.
+    This task uses Matrix's Client-Server REST api to send the message.
+  params:
+  - name: matrix-secret
+    type: string
+    description: secret name containing matrix access token (key is token)
+  - name: room
+    type: string
+    description: room id (in the format !<ROOM_ID>:<SERVER_NAME>)
+  - name: endpoint
+    type: string
+    description: Matrix server URL to which to send the message
+  - name: message
+    type: string
+    description: plain text message
+  steps:
+  - name: post
+    image: docker.io/curlimages/curl:7.70.0@sha256:031df77a11e5edded840bc761a845eab6e3c2edee22669fb8ad6d59484b6a1c4 #tag: 7.70.0
+    script: |
+      #!/usr/bin/env bash
+      if [[ -z "$(params.room)" || -z "$(params.endpoint)" ]]; then
+        echo "No Matrix parameters found - no notification sent"
+      else
+        /usr/bin/curl -X POST -H 'Content-type: application/json' --data "{\"msgtype\":\"m.text\", \"body\":\"$(params.message)\"}" "https://$(params.endpoint)/_matrix/client/r0/rooms/$(params.room)/send/m.room.message?access_token=$TOKEN"
+      fi
+    env:
+    - name: TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: $(params.matrix-secret)
+          key: token
