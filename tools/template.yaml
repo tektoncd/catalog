@@ -1,0 +1,30 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: ''
+  labels:
+    app.kubernetes.io/version: ''
+  annotations:
+    tekton.dev/pipelines.minVersion: ''
+    tekton.dev/tags: ''
+    tekton.dev/displayName: ''
+spec:
+  description: ''
+
+  workspaces:
+    - name: '' # Name of the workspace
+      description: '' # Description of the workspace
+      optional: true # Optional value of the workspace
+
+  params:
+    - name: '' # Name of parms
+      description: '' # Description of the params
+      default: '' # Default value of the params
+
+  steps:
+    - name: '' # Name of steps
+      image: '' # Name of the image to be used for the resource
+      script: | # Actions resource performs
+
+      args: [] # Arguments to execute
