@@ -1,0 +1,23 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: catlin-run-success
+spec:
+  taskRef:
+    name: catlin-validate
+  params:
+    - name: inputFile
+      # file in catlin input workspace that contains newline delimited paths to task yaml files on which catlin validate will be applied
+      value: input.txt
+  workspaces:
+    - name: catlin-output
+      emptyDir: {}
+    - name: catlin-input
+      configmap:
+        name: catlin-input
+    - name: source
+      configmap:
+        name: source-success
+        items:
+        - key: "hello.yaml"
+          path: "task/hello/0.1/hello.yaml"
