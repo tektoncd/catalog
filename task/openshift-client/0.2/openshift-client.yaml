@@ -43,7 +43,7 @@ spec:
     - name: RESULT
       description: Can be used to store output in order to be used by following tasks (with tasks.taskname.results.RESULT). Default value is empty string
       type: string
-      
+
   steps:
     - name: oc
       image: quay.io/openshift/origin-cli:$(params.VERSION)
@@ -56,7 +56,7 @@ spec:
         [[ "$(workspaces.kubeconfig-dir.bound)" == "true" ]] && \
         [[ -f $(workspaces.kubeconfig-dir.path)/kubeconfig ]] && \
         export KUBECONFIG=$(workspaces.kubeconfig-dir.path)/kubeconfig
-        
+
         echo "" > $(results.RESULT.path)
-        
+
         $(params.SCRIPT)
