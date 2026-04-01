@@ -86,17 +86,15 @@ jobs:
           echo "No file changes detected in task directories"
           exit 0
         fi
-        has_errors=0
+        # Script linting is informational (matching previous Prow behavior)
+        # catlin validate above is the hard gate
         for dir in $changed_tasks; do
           [[ ! -d "$dir" ]] && continue
           # Skip deprecated tasks
           grep -q 'tekton.dev/deprecated: "true"' ${dir}/*.yaml 2>/dev/null && continue
           echo "Linting scripts in $dir"
-          if ! catlin lint script ${dir}/*.yaml; then
-            has_errors=1
-          fi
+          catlin lint script ${dir}/*.yaml || echo "::warning::catlin lint script found issues in $dir"
         done
-        exit $has_errors
   e2e-tests:
     concurrency:
       group: ${{ github.workflow }}-${{ matrix.tekton-version }}-${{ github.event.pull_request.number || github.ref }}
