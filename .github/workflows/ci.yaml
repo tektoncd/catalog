@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
+      with:
+        fetch-depth: 0
     - uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5  # v5.5.0
       with:
         go-version-file: "go.mod"
@@ -39,6 +41,62 @@ jobs:
             failed=1
         fi
         echo "$gofmt_out"
+    - name: Install catlin
+      run: |
+        go install github.com/tektoncd/catlin/cmd/catlin@latest
+        echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+    - name: catlin validate
+      env:
+        PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      run: |
+        # Detect changed task directories
+        changed_tasks=$(
+          git --no-pager diff --name-only ${PULL_BASE_SHA}..HEAD | \
+          { grep 'task/[^/]*/[^/]*/' || true; } | \
+          xargs -I {} dirname {} | \
+          sort -u
+        )
+        if [[ -z "$changed_tasks" ]]; then
+          echo "No file changes detected in task directories"
+          exit 0
+        fi
+        # Filter out removed directories
+        existing_tasks=""
+        for task in $changed_tasks; do
+          [[ -d "$task" ]] && existing_tasks="$existing_tasks $task"
+        done
+        if [[ -z "$existing_tasks" ]]; then
+          echo "Changed task directories no longer exist (removed)"
+          exit 0
+        fi
+        echo "Validating:$existing_tasks"
+        catlin validate $existing_tasks
+    - name: catlin lint scripts
+      env:
+        PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      run: |
+        # Detect changed task directories
+        changed_tasks=$(
+          git --no-pager diff --name-only ${PULL_BASE_SHA}..HEAD | \
+          { grep 'task/[^/]*/[^/]*/' || true; } | \
+          xargs -I {} dirname {} | \
+          sort -u
+        )
+        if [[ -z "$changed_tasks" ]]; then
+          echo "No file changes detected in task directories"
+          exit 0
+        fi
+        has_errors=0
+        for dir in $changed_tasks; do
+          [[ ! -d "$dir" ]] && continue
+          # Skip deprecated tasks
+          grep -q 'tekton.dev/deprecated: "true"' ${dir}/*.yaml 2>/dev/null && continue
+          echo "Linting scripts in $dir"
+          if ! catlin lint script ${dir}/*.yaml; then
+            has_errors=1
+          fi
+        done
+        exit $has_errors
   e2e-tests:
     concurrency:
       group: ${{ github.workflow }}-${{ matrix.tekton-version }}-${{ github.event.pull_request.number || github.ref }}
