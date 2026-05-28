@@ -173,6 +173,14 @@ spec:
       claimName: my-source
 ```
 
+## Quick Start (Development)
+
+```bash
+make setup  # one-command setup: installs pre-commit hooks and linters
+make lint   # run all linters (yamllint + gofmt)
+make test TASK=git-clone VERSION=0.9  # run e2e test for a single task
+```
+
 ## Contributing and Support
 
 If you want to contribute to this repository, please see our [contributing](./CONTRIBUTING.md) guidelines.
