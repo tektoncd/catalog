@@ -19,6 +19,15 @@ jobs:
     - uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5  # v5.5.0
       with:
         go-version-file: "go.mod"
+    - name: AGENTS.md line limit
+      run: |
+        max_lines=60
+        actual=$(wc -l < AGENTS.md)
+        if [ "$actual" -gt "$max_lines" ]; then
+          echo "::error::AGENTS.md has $actual lines (limit: $max_lines)"
+          exit 1
+        fi
+        echo "AGENTS.md: $actual lines (limit: $max_lines) — OK"
     - name: yamllint
       run: |
         sudo apt-get update && sudo apt-get install -y yamllint

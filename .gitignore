@@ -7,3 +7,10 @@ venv
 
 # IDEs
 **/.idea
+**/.vscode
+*.swp
+*.swo
+*~
+
+# AgentReady reports
+.agentready/
