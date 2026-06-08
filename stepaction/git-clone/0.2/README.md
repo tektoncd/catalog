@@ -1,5 +1,12 @@
 # `git-clone`
 
+> [!WARNING]
+> **Deprecated.** This StepAction is no longer actively maintained here. It now
+> lives in its own repository with proper releases:
+> [tektoncd-catalog/git-clone](https://github.com/tektoncd-catalog/git-clone)
+> ([browse on Artifact Hub](https://artifacthub.io/packages/search?kind=11&repo=git-clone-stepaction)).
+> Please migrate to that version.
+
 **Note: this StepAction is only compatible with Tekton Pipelines versions 0.54.0 and greater!**
 
 **Note: this StepAction is not backwards compatible with the previous versions as it is now run as a non-root user!**

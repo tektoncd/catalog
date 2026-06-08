@@ -1,5 +1,12 @@
 # Golang Build
 
+> [!WARNING]
+> **Deprecated.** This Task is no longer actively maintained here. It now lives
+> in the consolidated Golang repository with proper releases:
+> [tektoncd-catalog/golang](https://github.com/tektoncd-catalog/golang)
+> ([browse on Artifact Hub](https://artifacthub.io/packages/search?kind=7&repo=golang)).
+> Please migrate to that version.
+
 This Task is Golang task to build Go projects.
 
 ## Install the task
