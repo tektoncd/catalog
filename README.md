@@ -8,8 +8,8 @@ is synced with
 [`v1beta1`](https://github.com/tektoncd/catalog/tree/v1beta1) since
 2020, 19th June.**
 
-This repository contains a catalog of `Task` resources (and someday
-`Pipeline`s and `Resource`s), which are designed to be reusable in many
+This repository contains a catalog of `Task` and `Pipeline` resources
+(and `StepAction`s), which are designed to be reusable in many
 pipelines.
 
 Each `Task` is provided in a separate directory along with a README.md and a
@@ -18,7 +18,22 @@ cluster. A directory can hold one task and multiple versions.
 
 _See [our project roadmap](roadmap.md)._
 
-#### [Hub](https://hub.tekton.dev/) provides an easy way to search and discover all Tekton resources
+## Discovering resources
+
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/tekton-catalog-tasks)](https://artifacthub.io/packages/search?repo=tekton-catalog-tasks)
+
+The recommended way to search and discover Tekton resources is
+[**Artifact Hub**](https://artifacthub.io/packages/search?kind=7). The tasks
+in this catalog are published there under the
+[`tekton-catalog-tasks`](https://artifacthub.io/packages/search?repo=tekton-catalog-tasks)
+repository, and individual maintained tasks (e.g.
+[`git-clone`](https://artifacthub.io/packages/tekton-task/git-clone/git-clone))
+are increasingly published from their own repositories.
+
+> [!WARNING]
+> The previous [Tekton Hub](https://hub.tekton.dev/) (`hub.tekton.dev`) is
+> **deprecated** and the hosted service is **no longer running**. Use
+> [Artifact Hub](https://artifacthub.io/packages/search?kind=7) instead.
 
 ## Catalog Structure
 
@@ -70,20 +85,7 @@ _See [our project roadmap](roadmap.md)._
 
   ```
 
-**Note** : Categories are a generalized list and are maintained by Hub. To add new categories, please follow the procedure mentioned [here](https://github.com/tektoncd/hub/blob/main/docs/ADD_NEW_CATEGORY.md).
-
-## `Task` Kinds
-
-There are two kinds of `Task`s:
-
- 1. `ClusterTask` with a Cluster scope, which can be installed by a cluster
-    operator and made available to users in all namespaces
- 2. `Task` with a Namespace scope, which is designed to be installed and used
-    only within that namespace.
-
-`Task`s in this repo are namespace-scoped `Task`s, but can be installed as
-`ClusterTask`s by changing the `kind`.
-
+**Note** : Categories are a generalized list. The historical list and the procedure to add new categories are documented in the (now archived) [`tektoncd/hub`](https://github.com/tektoncd/hub/blob/main/docs/ADD_NEW_CATEGORY.md) repository.
 
 ## Using `Task`s
 
@@ -106,7 +108,7 @@ With the `Task` installed, you can define a `TaskRun` that runs that `Task`,
 being sure to provide values for required input parameters and resources:
 
 ```yaml
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   name: example-run
@@ -133,7 +135,7 @@ You can check the status of the `TaskRun` using `kubectl`:
 
 ```sh
 $ kubectl get taskrun example-run -oyaml
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   name: example-run
@@ -150,20 +152,26 @@ status:
 
 ### Using `Task`s through Bundles
 
-[Tekton Bundles](https://tekton.dev/docs/pipelines/pipelines/#tekton-bundles) are an alpha feature of Tekton pipelines that allows storing `Tasks` as bundles in a container registry, instead of as custom resources in etcd in a Kubernetes cluster.
-With Tekton Bundles are enabled, it is possible to reference any task in the catalog without installing it first.
+[Tekton Bundles](https://tekton.dev/docs/pipelines/pipelines/#tekton-bundles) allow storing `Task`s as bundles in a container registry, instead of as custom resources in a Kubernetes cluster.
+With bundles, it is possible to reference any task in the catalog without installing it first, using the [bundle resolver](https://tekton.dev/docs/pipelines/bundle-resolver/).
 Tasks are available at [`ghcr.io/tektoncd/catalog/upstream/tasks/<task-name>:<task-version>`](https://github.com/orgs/tektoncd/packages?q=&tab=packages&q=).
 For example:
 
 ```yaml
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   name: example-run
 spec:
   taskRef:
-    name: golang-build
-    bundle: ghcr.io/tektoncd/catalog/upstream/tasks/golang-build:0.1
+    resolver: bundles
+    params:
+    - name: bundle
+      value: ghcr.io/tektoncd/catalog/upstream/tasks/golang-build:0.1
+    - name: name
+      value: golang-build
+    - name: kind
+      value: task
   params:
   - name: package
     value: github.com/tektoncd/pipeline
@@ -189,9 +197,22 @@ If you are looking for support, enter an [issue](https://github.com/tektoncd/cat
 
 ## Status of the Project
 
-This project is still under active development, so you might run into
-[issues](https://github.com/tektoncd/catalog/issues). If you do,
-please don't be shy about letting us know, or better yet, contribute a
-fix or feature. Its folder structure is not yet set in stone either.
+> [!NOTE]
+> This catalog is **not deprecated**, but it is **in the process of
+> changing**. The project is moving toward a **distributed catalog** model
+> — individual resources published from their own repositories (see
+> [`tektoncd-catalog`](https://github.com/tektoncd-catalog)) and discovered
+> through [Artifact Hub](https://artifacthub.io/packages/search?kind=7),
+> rather than a single monolithic repository. A TEP formalizing this
+> direction and the associated migration path is being prepared, and the
+> [roadmap](roadmap.md) is being refreshed accordingly. Expect changes to
+> how resources are versioned, maintained, and contributed. Follow along
+> (or get involved) via the
+> [issues](https://github.com/tektoncd/catalog/issues) and the
+> [Tekton community meetings](https://github.com/tektoncd/community/blob/main/contact.md).
+
+You might run into [issues](https://github.com/tektoncd/catalog/issues) — if
+you do, please don't be shy about letting us know, or better yet, contribute a
+fix or feature.
 
 _See [our project roadmap](roadmap.md)._
