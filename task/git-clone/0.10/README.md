@@ -1,5 +1,12 @@
 # `git-clone`
 
+> [!WARNING]
+> **Deprecated.** This Task is no longer actively maintained here. It now lives
+> in its own repository with proper releases:
+> [tektoncd-catalog/git-clone](https://github.com/tektoncd-catalog/git-clone)
+> ([browse on Artifact Hub](https://artifacthub.io/packages/search?kind=7&repo=git-clone)).
+> Please migrate to that version.
+
 **Note: this Task is only compatible with Tekton Pipelines versions 0.38.0 and greater!**
 
 **Note: this Task is not backwards compatible with the previous versions as it is now run as a non-root user!**
