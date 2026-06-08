@@ -181,3 +181,35 @@ jobs:
             echo '::endgroup::'
           done
         fi
+
+  ci-summary:
+    name: CI summary
+    needs: [linting, e2e-tests]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+    - name: Check CI results
+      run: |
+        results=(
+          "linting=${NEEDS_LINTING_RESULT}"
+          "e2e-tests=${NEEDS_E2E_TESTS_RESULT}"
+        )
+        failed=0
+        for r in "${results[@]}"; do
+          name="${r%%=*}"
+          result="${r#*=}"
+          echo "${name}: ${result}"
+          if [ "$result" != "success" ] && [ "$result" != "skipped" ]; then
+            failed=1
+          fi
+        done
+        if [ "$failed" -eq 1 ]; then
+          echo ""
+          echo "Some CI jobs failed or were cancelled"
+          exit 1
+        fi
+        echo ""
+        echo "All CI checks passed"
+      env:
+        NEEDS_LINTING_RESULT: ${{ needs.linting.result }}
+        NEEDS_E2E_TESTS_RESULT: ${{ needs.e2e-tests.result }}
