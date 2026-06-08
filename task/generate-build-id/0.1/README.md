@@ -87,7 +87,7 @@ In the task to build the service api, we then pass the generated build from the 
 For the sake of completeness, here is what the task to build the service api (`build-service-api.yaml`) looks like:
 
 ```
-apiVersion: tekton.dev/v1betal
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: build-service-api
