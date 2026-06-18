@@ -7,7 +7,7 @@ The catalog is a key piece of
 
 In 2019 we got a solid start on a catalog of reusable `Tasks` and in 2020 our ecosystem grew and
 a lot many `Tasks` were added in the catalog. Also our catalog was restructured so that `Tasks` present
-in the catalog could be versioned and tools like [`hub`](https://hub.tekton.dev) was able to display
+in the catalog could be versioned and tools like [`hub`](https://artifacthub.io) was able to display
 those tasks in a clean and better way. In 2021 we want to keep this momentum going and make the catalog
 even more useful by adding:
 

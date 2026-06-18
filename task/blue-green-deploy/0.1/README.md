@@ -8,7 +8,7 @@ The following task can help you to deploy an application using the Blue-Green de
 ## Installing the Task
 
 ```
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/blue-green-deploy/0.1/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/blue-green-deploy/0.1/blue-green-deploy.yaml
 ```
 
 ## Installing the ClusterRoleBinding

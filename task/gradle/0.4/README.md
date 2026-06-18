@@ -6,7 +6,7 @@ If the project contains a gradle wrapper, the wrapper will be invoked instead of
 ## Install the Task
 
 ```bash
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/gradle/0.4/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gradle/0.4/gradle.yaml
 ```
 
 ## Parameters

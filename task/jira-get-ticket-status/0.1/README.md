@@ -5,7 +5,7 @@ This task helps you to get the current status of a Jira ticket.
 ## Install the Task
 
 ```
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/jira-get-ticket-status/0.1/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/jira-get-ticket-status/0.1/jira-get-ticket-status.yaml
 ```
 
 ## Parameters

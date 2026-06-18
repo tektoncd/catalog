@@ -5,7 +5,7 @@ This Tekton task acquires a lease from the [Jumpstarter](https://github.com/jump
 ## Install the Task
 
 ```bash
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/jumpstarter-get-lease/0.1/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/jumpstarter-get-lease/0.1/jumpstarter-get-lease.yaml
 ```
 
 ## Parameters

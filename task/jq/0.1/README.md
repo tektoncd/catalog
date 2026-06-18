@@ -5,7 +5,7 @@ The following task is used to execute a given JQ script and expose its result. I
 ## Installing the Task
 
 ```bash
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/jq/0.1/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/jq/0.1/jq.yaml
 ```
 
 ## Parameters

@@ -6,7 +6,7 @@ This task deploys a given image to a Knative Service using
 ## Install the Task
 
 ```
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/kn-apply/0.2/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kn-apply/0.2/kn-apply.yaml
 ```
 
 ## Parameters

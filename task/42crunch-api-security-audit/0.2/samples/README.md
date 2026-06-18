@@ -15,9 +15,9 @@
 Run these commands to create and execute the pipeline:
 
 ```sh
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/git-clone/0.6/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.6/git-clone.yaml
 
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/42crunch-api-security-audit/0.1/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/42crunch-api-security-audit/0.1/42crunch-api-security-audit.yaml
 
 
 kubectl apply -f secret.yaml

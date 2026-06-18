@@ -9,7 +9,7 @@ See more details from https://github.com/linuxsuren/gogit
 ## Install the task
 
 ```
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/gogit/0.1/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gogit/0.1/gogit.yaml
 ```
 
 ## Platforms

@@ -5,7 +5,7 @@ This Task pushes a locally created manifest list to a container registry using [
 ## Install the Task
 
 ```bash
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/buildah-manifest-push/0.1/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildah-manifest-push/0.1/buildah-manifest-push.yaml
 ```
 
 ## Parameters

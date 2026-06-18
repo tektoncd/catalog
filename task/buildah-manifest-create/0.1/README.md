@@ -5,7 +5,7 @@ This Task creates a manifest list (also known as an image index) from pre-built 
 ## Install the Task
 
 ```bash
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/buildah-manifest-create/0.1/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/buildah-manifest-create/0.1/buildah-manifest-create.yaml
 ```
 
 ## Parameters

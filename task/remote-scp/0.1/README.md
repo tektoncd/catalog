@@ -3,7 +3,7 @@ Remote SCP is a simple tool to copy files from a remote local machine to your se
 
 ## Install the Task
 ```
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/remote-scp/0.1/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/remote-scp/0.1/remote-scp.yaml
 ```
 ## Parameters
 HOST: The server host to which you want to connect. (Required)
