@@ -1,6 +1,6 @@
 # ⛔️ DEPRECATED
 
-THIS TEKTON TASK IS NOW DEPRECATED. Please consider using the [redhat-dependency-analytics](https://hub.tekton.dev/tekton/task/redhat-dependency-analytics) Tekton Task instead.
+THIS TEKTON TASK IS NOW DEPRECATED. Please consider using the [redhat-dependency-analytics](https://artifacthub.io/packages/tekton-task/tekton-catalog-tasks/redhat-dependency-analytics) Tekton Task instead.
 
 # `redhat-codeready-dependency-analysis`
 
@@ -109,7 +109,7 @@ The link to detailed report will take users to a browser window having similar f
 
 ## Install the Task
 ```
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/redhat-codeready-dependency-analysis/0.1/raw -n <NAMESPACE>
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/redhat-codeready-dependency-analysis/0.1/redhat-codeready-dependency-analysis.yaml -n <NAMESPACE>
 ```
 
 ## Platforms

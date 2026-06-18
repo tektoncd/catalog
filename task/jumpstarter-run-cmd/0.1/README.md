@@ -5,7 +5,7 @@ This Tekton task runs one or more commands on a remote device using the [Jumpsta
 ## Install the Task
 
 ```bash
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/jumpstarter-run-command/0.1/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/jumpstarter-run-command/0.1/jumpstarter-run-command.yaml
 ```
 
 ## Parameters

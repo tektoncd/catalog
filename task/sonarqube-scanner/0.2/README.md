@@ -9,7 +9,7 @@ For creating your own `sonar-project.properties` please follow the guide [here](
 ## Install the Task
 
 ```
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/sonarqube-scanner/0.2/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/sonarqube-scanner/0.2/sonarqube-scanner.yaml
 ```
 
 ## Pre-requisite
@@ -17,7 +17,7 @@ kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/sonarqube-sc
 Install the `git-clone` task from the catalog
 
 ```
-https://api.hub.tekton.dev/v1/resource/tekton/task/git-clone/0.5/raw
+https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.5/git-clone.yaml
 ```
 
 ## Parameters

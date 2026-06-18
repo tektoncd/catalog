@@ -21,7 +21,7 @@ an authorization token with at least CI privileges.
 ## Install the Task
 
 ```bash
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/rhacs-deployment-check/4.0/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/rhacs-deployment-check/4.0/rhacs-deployment-check.yaml
 ```
 
 ## Parameters

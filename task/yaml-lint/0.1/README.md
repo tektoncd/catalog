@@ -5,7 +5,7 @@ The following task is used to provide static analysis on YAML files mounted usin
 ## Installing the Task
 
 ```bash
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/yaml-lint/0.1/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/yaml-lint/0.1/yaml-lint.yaml
 ```
 
 ## Parameters
@@ -25,7 +25,7 @@ The Task can be run on `linux/amd64` platform.
 1. Create the `git-clone` task
 
 ```bash
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/git-clone/0.1/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.1/git-clone.yaml
 ```
 
 2. Create the PVC

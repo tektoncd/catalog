@@ -9,7 +9,7 @@ and data coming in and going out.
 Install `42crunch-api-security-audit` task:
 
 ```
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/42crunch-api-security-audit/0.3/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/42crunch-api-security-audit/0.3/42crunch-api-security-audit.yaml
 ```
 
 ## Prerequisites

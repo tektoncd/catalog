@@ -7,7 +7,7 @@ If you have installed Camel K operator, you can configure the `kamel-run` task t
 ## Install the Task
 
 ```shell
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/kamel-run/0.1/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kamel-run/0.1/kamel-run.yaml
 ```
 
 ## Parameters

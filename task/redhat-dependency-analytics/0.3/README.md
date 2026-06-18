@@ -142,7 +142,7 @@ An example PipelineRun and TaskRun are provided in the `samples` directory in or
 
 #### For PipelineRun Example:
 
-1. Deploy the [git-clone](https://hub.tekton.dev/tekton/task/git-clone) Tekton Task to your environment. Refer to the `git-clone` documentation for instructions on setting up the pipeline with the appropriate parameters to align with your GitHub repository.
+1. Deploy the [git-clone](https://artifacthub.io/packages/tekton-task/tekton-catalog-tasks/git-clone) Tekton Task to your environment. Refer to the `git-clone` documentation for instructions on setting up the pipeline with the appropriate parameters to align with your GitHub repository.
 
     **NOTE** that the sample pipeline has been pre-configured to facilitate the cloning of public repositories in a straightforward manner. In this setup, simply providing an HTTPS URL for a public repository is adequate to ensure the functionality of the pipeline.
 

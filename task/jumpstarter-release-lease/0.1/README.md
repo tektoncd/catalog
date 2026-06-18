@@ -5,7 +5,7 @@ This Tekton task releases an existing lease in the [Jumpstarter](https://github.
 ## Install the Task
 
 ```bash
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/jumpstarter-release-lease/0.1/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/jumpstarter-release-lease/0.1/jumpstarter-release-lease.yaml
 ```
 
 ## Parameters

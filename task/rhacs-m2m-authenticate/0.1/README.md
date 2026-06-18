@@ -17,7 +17,7 @@ machine-to-machine integration.
 ## Install the Task
 
 ```bash
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/rhacs-m2m-authenticate/0.1/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/rhacs-m2m-authenticate/0.1/rhacs-m2m-authenticate.yaml
 ```
 
 ## Parameters

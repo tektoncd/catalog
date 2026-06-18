@@ -23,7 +23,7 @@ an authorization token with at least CI privileges.
 ## Install the Task
 
 ```bash
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/rhacs-image-check/4.0/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/rhacs-image-check/4.0/rhacs-image-check.yaml
 ```
 
 ## Parameters

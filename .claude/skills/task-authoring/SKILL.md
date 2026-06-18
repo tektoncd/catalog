@@ -120,7 +120,7 @@ One-line description of what this task does.
 
 ## Install the Task
 
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/<task-name>/0.1/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/<task-name>/0.1/<task-name>.yaml
 
 ## Parameters
 
