@@ -1,0 +1,77 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: github-add-comment-test
+spec:
+  params:
+    - name: API_PATH_PREFIX
+      type: string
+      default: ""
+    - name: EXPECTED_OLD_COMMENT
+      type: string
+      default: "Comment on GH public"
+  workspaces:
+    - name: comment-file
+      optional: true
+  tasks:
+    - name: add-comment
+      taskRef:
+        name: github-add-comment
+      workspaces:
+        - name: comment-file
+          workspace: comment-file
+      params:
+        - name: GITHUB_HOST_URL
+          value: http://127.0.0.1:8080
+        - name: API_PATH_PREFIX
+          value: $(params.API_PATH_PREFIX)
+        - name: COMMENT_OR_FILE
+          value: "Hello from TektonCD test"
+        - name: REQUEST_URL
+          value: https://github.com/tektoncd/catalog/issues/1
+        - name: REPLACE
+          value: "true"
+        - name: COMMENT_TAG
+          value: TEST_TAG123
+    - name: verify-result
+      runAfter:
+        - add-comment
+      params:
+        - name: EXPECTED_OLD_COMMENT
+          value: $(params.EXPECTED_OLD_COMMENT)
+        - name: ACTUAL_OLD_COMMENT
+          value: $(tasks.add-comment.results.OLD_COMMENT)
+      taskSpec:
+        params:
+          - name: EXPECTED_OLD_COMMENT
+            type: string
+          - name: ACTUAL_OLD_COMMENT
+            type: string
+        steps:
+          - image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
+            script: |
+              #!/usr/libexec/platform-python
+
+              assert "$(params.EXPECTED_OLD_COMMENT)" in "$(params.ACTUAL_OLD_COMMENT)"
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: github-add-comment-test-run
+spec:
+  pipelineRef:
+    name: github-add-comment-test
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: github-add-comment-test-run-ghe
+spec:
+  pipelineRef:
+    name: github-add-comment-test
+  params:
+    - name: API_PATH_PREFIX
+      value: "/api/v3"
+    - name: EXPECTED_OLD_COMMENT
+      value: "Comment on GHE"
