@@ -4,7 +4,7 @@ kind: Task
 metadata:
   name: github-add-comment
   labels:
-    app.kubernetes.io/version: "0.7"
+    app.kubernetes.io/version: "0.8"
   annotations:
     tekton.dev/categories: Git
     tekton.dev/pipelines.minVersion: "0.17.0"
@@ -24,11 +24,11 @@ spec:
       description: The optional workspace containing comment file to be posted.
 
   results:
-    - name: OLD_COMMENT
-      description: The old text of the comment, if any.
+    - name: COMMENT_ID
+      description: The numeric id of the comment that was added or updated.
 
-    - name: NEW_COMMENT
-      description: The new text of the comment, if any.
+    - name: COMMENT_URL
+      description: The html_url of the comment that was added or updated.
 
   params:
     - name: GITHUB_HOST_URL
@@ -162,8 +162,6 @@ spec:
           # If more than one comment is found take the last one
           matching_comment = [x for x in comments if '$(params.COMMENT_TAG)' in x['body']][-1:]
           if matching_comment:
-              with open("$(results.OLD_COMMENT.path)", "w") as result_old:
-                result_old.write(str(matching_comment[0]))
               matching_comment = matching_comment[0]['url']
 
         if matching_comment:
@@ -189,7 +187,14 @@ spec:
             print(resp.read())
             sys.exit(1)
         else:
-            with open("$(results.NEW_COMMENT.path)", "wb") as result_new:
-              result_new.write(resp.read())
+            # Only write small, bounded values to the results to avoid
+            # exceeding the 4096 byte termination message limit shared by all
+            # step results. Writing the full API response (as previous
+            # versions did) can easily overflow that limit for large comments.
+            comment = json.loads(resp.read())
+            with open("$(results.COMMENT_ID.path)", "w") as result_id:
+              result_id.write(str(comment.get("id", "")))
+            with open("$(results.COMMENT_URL.path)", "w") as result_url:
+              result_url.write(str(comment.get("html_url", "")))
             print("a GitHub comment has been {} to $(params.REQUEST_URL)".format(
               "updated" if matching_comment else "added"))

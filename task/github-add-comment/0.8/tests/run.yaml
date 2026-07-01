@@ -8,9 +8,9 @@ spec:
     - name: API_PATH_PREFIX
       type: string
       default: ""
-    - name: EXPECTED_OLD_COMMENT
+    - name: EXPECTED_COMMENT_ID
       type: string
-      default: "Comment on GH public"
+      default: "2222222222"
   workspaces:
     - name: comment-file
       optional: true
@@ -38,22 +38,27 @@ spec:
       runAfter:
         - add-comment
       params:
-        - name: EXPECTED_OLD_COMMENT
-          value: $(params.EXPECTED_OLD_COMMENT)
-        - name: ACTUAL_OLD_COMMENT
-          value: $(tasks.add-comment.results.OLD_COMMENT)
+        - name: EXPECTED_COMMENT_ID
+          value: $(params.EXPECTED_COMMENT_ID)
+        - name: ACTUAL_COMMENT_ID
+          value: $(tasks.add-comment.results.COMMENT_ID)
+        - name: ACTUAL_COMMENT_URL
+          value: $(tasks.add-comment.results.COMMENT_URL)
       taskSpec:
         params:
-          - name: EXPECTED_OLD_COMMENT
+          - name: EXPECTED_COMMENT_ID
             type: string
-          - name: ACTUAL_OLD_COMMENT
+          - name: ACTUAL_COMMENT_ID
+            type: string
+          - name: ACTUAL_COMMENT_URL
             type: string
         steps:
           - image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
             script: |
               #!/usr/libexec/platform-python
 
-              assert "$(params.EXPECTED_OLD_COMMENT)" in "$(params.ACTUAL_OLD_COMMENT)"
+              assert "$(params.EXPECTED_COMMENT_ID)" == "$(params.ACTUAL_COMMENT_ID)"
+              assert "$(params.ACTUAL_COMMENT_URL)".startswith("https://")
 ---
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
@@ -73,5 +78,5 @@ spec:
   params:
     - name: API_PATH_PREFIX
       value: "/api/v3"
-    - name: EXPECTED_OLD_COMMENT
-      value: "Comment on GHE"
+    - name: EXPECTED_COMMENT_ID
+      value: "2222222222"

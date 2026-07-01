@@ -6,7 +6,7 @@ issue.
 ## Install the Task
 
 ```
-kubectl apply -f https://api.hub.tekton.dev/v1/resource/tekton/task/github-add-comment/0.7/raw
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-add-comment/0.8/github-add-comment.yaml
 ```
 
 ## Secrets
@@ -42,8 +42,13 @@ See GitHub's documentation on [Understanding scopes for OAuth Apps](https://deve
 
 ## Results
 
-- **OLD_COMMENT:**: The old text of the comment, if any.
-- **NEW_COMMENT:**: The new text of the comment, if any.
+- **COMMENT_ID:**: The numeric id of the comment that was added or updated.
+- **COMMENT_URL:**: The `html_url` of the comment that was added or updated.
+
+> **Note:** In versions `0.4`–`0.7` the results (`OLD_COMMENT`/`NEW_COMMENT`)
+> contained the full GitHub API response object, which frequently exceeded the
+> 4096 byte task result (termination message) limit and caused the TaskRun to
+> fail. Starting with `0.8` only small, bounded values are written to results.
 
 ## Workspaces
 

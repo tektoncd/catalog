@@ -5,7 +5,7 @@ headers:
   path: /repos/{repo:[^/]+/[^/]+}/issues/comments/{comment:[0-9]+}
 response:
   status: 200
-  output: '{"status": 200}'
+  output: '{"id": 2222222222, "html_url": "https://github.com/tektoncd/catalog/issues/1#issuecomment-2222222222", "body": "Hello from TektonCD test<!-- TEST_TAG123 -->"}'
   content-type: text/json
 ---
 headers:
@@ -23,7 +23,7 @@ headers:
   path: /api/v3/repos/{repo:[^/]+/[^/]+}/issues/comments/{comment:[0-9]+}
 response:
   status: 200
-  output: '{"status": 200}'
+  output: '{"id": 2222222222, "html_url": "https://github.com/tektoncd/catalog/issues/1#issuecomment-2222222222", "body": "Hello from TektonCD test<!-- TEST_TAG123 -->"}'
   content-type: text/json
 ---
 headers:
