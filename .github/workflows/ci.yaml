@@ -49,11 +49,14 @@ jobs:
       env:
         PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
       run: |
-        # Detect changed task directories
+        # Detect changed task version directories (task/<name>/<version>).
+        # Reduce every changed file to its version directory so that catlin
+        # only validates the catalog resource itself, never the test
+        # manifests under tests/ (TaskRun/Pipeline) or files under samples/,
+        # which are not catalog resources and would fail validation.
         changed_tasks=$(
           git --no-pager diff --name-only ${PULL_BASE_SHA}..HEAD | \
-          { grep 'task/[^/]*/[^/]*/' || true; } | \
-          xargs -I {} dirname {} | \
+          { grep -oE '^task/[^/]+/[^/]+' || true; } | \
           sort -u
         )
         if [[ -z "$changed_tasks" ]]; then
@@ -75,11 +78,11 @@ jobs:
       env:
         PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
       run: |
-        # Detect changed task directories
+        # Detect changed task version directories (task/<name>/<version>).
+        # See the note in the "catlin validate" step above.
         changed_tasks=$(
           git --no-pager diff --name-only ${PULL_BASE_SHA}..HEAD | \
-          { grep 'task/[^/]*/[^/]*/' || true; } | \
-          xargs -I {} dirname {} | \
+          { grep -oE '^task/[^/]+/[^/]+' || true; } | \
           sort -u
         )
         if [[ -z "$changed_tasks" ]]; then
