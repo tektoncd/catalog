@@ -49,18 +49,21 @@ jobs:
       env:
         PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
       run: |
-        # Detect changed task version directories (task/<name>/<version>).
-        # Reduce every changed file to its version directory so that catlin
-        # only validates the catalog resource itself, never the test
-        # manifests under tests/ (TaskRun/Pipeline) or files under samples/,
-        # which are not catalog resources and would fail validation.
+        # Detect task version directories (task/<name>/<version>) whose
+        # resource manifest changed. Only consider YAML files that live
+        # directly in the version directory (task/<name>/<version>/*.yaml);
+        # this excludes README/OWNERS-only changes as well as the test
+        # manifests under tests/ (TaskRun/Pipeline) and files under samples/,
+        # none of which are catalog resources. Reducing to the version
+        # directory means catlin only ever validates the catalog resource.
         changed_tasks=$(
           git --no-pager diff --name-only ${PULL_BASE_SHA}..HEAD | \
+          { grep -E '^task/[^/]+/[^/]+/[^/]+\.yaml$' || true; } | \
           { grep -oE '^task/[^/]+/[^/]+' || true; } | \
           sort -u
         )
         if [[ -z "$changed_tasks" ]]; then
-          echo "No file changes detected in task directories"
+          echo "No changed task resource manifests detected"
           exit 0
         fi
         # Filter out removed directories
@@ -78,15 +81,16 @@ jobs:
       env:
         PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
       run: |
-        # Detect changed task version directories (task/<name>/<version>).
+        # Detect task version directories whose resource manifest changed.
         # See the note in the "catlin validate" step above.
         changed_tasks=$(
           git --no-pager diff --name-only ${PULL_BASE_SHA}..HEAD | \
+          { grep -E '^task/[^/]+/[^/]+/[^/]+\.yaml$' || true; } | \
           { grep -oE '^task/[^/]+/[^/]+' || true; } | \
           sort -u
         )
         if [[ -z "$changed_tasks" ]]; then
-          echo "No file changes detected in task directories"
+          echo "No changed task resource manifests detected"
           exit 0
         fi
         # Script linting is informational (matching previous Prow behavior)
