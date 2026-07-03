@@ -1,0 +1,33 @@
+- hosts: localhost
+  connection: local
+  collections:
+    - community.kubernetes
+  tasks:
+    - name: Create a new Service
+      k8s:
+        state: present
+        resource_definition: |
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: helloworld
+            namespace: funstuff
+          spec:
+            selector:
+              app: helloworld
+            ports:
+            - port: 8080
+              targetPort: 8080
+        wait: yes
+      register: helloworld_svc
+    - name: Get the Service
+      k8s_info:
+        kind: Service
+        namespace: funstuff
+      register: funstuff_service_list
+    - name: Log Service Details
+      debug:
+        msg: "{{ item | json_query('metadata.name') }}"
+      loop: '{{funstuff_service_list.resources}}'
+      loop_control:
+        label: "Service (Namespace: {{item | json_query('metadata.namespace')}})"
