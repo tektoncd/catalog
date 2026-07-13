@@ -32,6 +32,8 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/bu
 * **PUSH_EXTRA_ARGS**: Extra parameters passed for the push command when
   pushing images. WARNING - must be sanitized to avoid command injection
   (_default:_ `""`)
+* **ADDITIONAL_TAGS**: Additional tags for the newly built image, like a date or
+  a commit hash. Must be plain text, no commands allowed (_default:_ empty)
 * **SKIP_PUSH**: Skip pushing the built image (_default:_ `false`)
 * **BUILD_ARGS**: Dockerfile build arguments, array of key=value (_default:_ [""])
 
