@@ -53,6 +53,11 @@ spec:
   - name: SKIP_PUSH
     description: Skip pushing the built image
     default: "false"
+  - name: ADDITIONAL_TAGS
+    type: string
+    default: ""
+    description: |
+      Additional tags for pushing the image.
   - name: BUILD_ARGS
     description: Dockerfile build arguments, array of key=value
     type: array
@@ -96,6 +101,8 @@ spec:
       value: $(params.PUSH_EXTRA_ARGS)
     - name: PARAM_SKIP_PUSH
       value: $(params.SKIP_PUSH)
+    - name: PARAMS_ADDITIONAL_TAGS
+      value: $(params.ADDITIONAL_TAGS)
     args:
     - $(params.BUILD_ARGS[*])
     script: |
@@ -117,6 +124,15 @@ spec:
       buildah ${CERT_DIR_FLAG} "--storage-driver=${PARAM_STORAGE_DRIVER}" push \
         "--tls-verify=${PARAM_TLSVERIFY}" --digestfile /tmp/image-digest ${PARAM_PUSH_EXTRA_ARGS} \
         "${PARAM_IMAGE}" "docker://${PARAM_IMAGE}"
+      # push additional tags, if PARAMS_ADDITIONAL_TAGS is not empty
+      # shellcheck disable=SC2046,SC2086
+      if [ -n "${PARAMS_ADDITIONAL_TAGS}" ]; then
+          for tag in ${PARAMS_ADDITIONAL_TAGS};do
+          buildah ${CERT_DIR_FLAG} "--storage-driver=${PARAM_STORAGE_DRIVER}" push \
+            "--tls-verify=${PARAM_TLSVERIFY}" --digestfile /tmp/image-digest ${PARAM_PUSH_EXTRA_ARGS} \
+            "${PARAM_IMAGE}" "docker://${PARAM_IMAGE}":${tag}
+          done
+      fi
       tee "$(results.IMAGE_DIGEST.path)" < /tmp/image-digest
       printf '%s' "${PARAM_IMAGE}" | tee "$(results.IMAGE_URL.path)"
     volumeMounts:
