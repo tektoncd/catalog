@@ -14,7 +14,7 @@ Openshift-client runs commands against the cluster provided by the user via opti
 ## Install the Task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/openshift-client/0.2/openshift-client.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/openshift-client/0.3/openshift-client.yaml
 ```
 
 ## Parameters

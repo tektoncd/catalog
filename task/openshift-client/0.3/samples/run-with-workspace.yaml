@@ -35,7 +35,7 @@ roleRef:
   name: openshift-client-role
   apiGroup: rbac.authorization.k8s.io
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   name: openshift-client-run-ws
