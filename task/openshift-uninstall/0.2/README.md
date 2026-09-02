@@ -13,7 +13,7 @@ Guide to provision a cluster on AWS can be found [here](https://docs.openshift.c
 ### **Install the Task**
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/openshift-uninstall/0.1/openshift-uninstall.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/openshift-uninstall/0.2/openshift-uninstall.yaml
 ```
 
 ### **Workspaces**
@@ -85,7 +85,7 @@ stringData:
 3. Creating `TaskRun` for the OpenShift Create:
 
 ```
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   name: install-run
