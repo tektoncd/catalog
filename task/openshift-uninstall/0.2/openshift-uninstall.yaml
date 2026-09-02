@@ -1,0 +1,38 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: openshift-uninstall
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Openshift
+    tekton.dev/tags: openshift
+    tekton.dev/displayName: "openshift uninstall"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    This task is used to destroy the cluster.
+
+    The following task helps you to provision the Openshift cluster using the
+    Installer Provided Infrastructure on the desired cloud platform.
+
+  workspaces:
+    - name: install-dir
+      mountPath: "/tekton/home/"
+  params:
+    - name: OPENSHIFT_INSTALLER_IMAGE
+      type: string
+      description: OpenShift installer base image for UPI installation
+      default: quay.io/openshift/origin-upi-installer:4.6
+  steps:
+    - name: remove-cluster
+      image: $(params.OPENSHIFT_INSTALLER_IMAGE)
+      workingDir: $(workspaces.install-dir.path)
+      script: |
+        #!/usr/bin/env bash
+
+        echo "Trying to delete the cluster"
+        timeout 30m /bin/openshift-install destroy cluster --log-level=debug || true
+      securityContext:
+        runAsUser: 0
