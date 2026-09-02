@@ -1,13 +1,13 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: openshift-client
   labels:
-    app.kubernetes.io/version: "0.2"
+    app.kubernetes.io/version: "0.3"
   annotations:
     tekton.dev/categories: Openshift
-    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/pipelines.minVersion: "0.50.0"
     tekton.dev/tags: cli
     tekton.dev/displayName: "openshift client"
     tekton.dev/platforms: "linux/amd64"
