@@ -1,0 +1,84 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: openshift-client-sa
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: openshift-client-role
+rules:
+  # Core API
+  - apiGroups: [""]
+    resources: ["services", "pods", "deployments", "configmaps", "secrets"]
+    verbs: ["get", "list", "create", "update", "delete", "patch", "watch"]
+  # Apps API
+  - apiGroups: ["apps"]
+    resources: ["deployments", "daemonsets", "jobs"]
+    verbs: ["get", "list", "create", "update", "delete", "patch", "watch"]
+  # Tekton API
+  - apiGroups: ["tekton.dev"]
+    resources: ["*"]
+    verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: openshift-client-binding
+subjects:
+  - kind: ServiceAccount
+    name: openshift-client-sa
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: openshift-client-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: openshift-client-run-ws
+spec:
+  serviceAccountName: openshift-client-sa
+  workspaces:
+    - name: shared-workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
+  pipelineSpec:
+    workspaces:
+      - name: shared-workspace
+    tasks:
+      - name: fetch-repo
+        taskRef:
+          name: git-clone
+        workspaces:
+          - name: output
+            workspace: shared-workspace
+        params:
+          - name: url
+            value: https://github.com/openshift/pipelines-vote-api
+          - name: subdirectory
+            value: ""
+          - name: deleteExisting
+            value: "true"
+      - name: oc-deploy
+        runAfter:
+          - "fetch-repo"
+        taskRef:
+          name: openshift-client
+        workspaces:
+          - name: manifest-dir
+            workspace: shared-workspace
+        params:
+          - name: SCRIPT
+            value: |
+              oc apply --filename k8s/
+              oc wait --for=condition=available --timeout=600s deployment/pipelines-vote-api
+              echo "-----------Displaying all the pods-----------"
+              oc get pods
