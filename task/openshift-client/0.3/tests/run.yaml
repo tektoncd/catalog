@@ -1,0 +1,14 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: openshift-client-test-run
+spec:
+  pipelineSpec:
+    tasks:
+      - name: oc-version
+        taskRef:
+          name: openshift-client
+        params:
+          - name: SCRIPT
+            value: oc version
