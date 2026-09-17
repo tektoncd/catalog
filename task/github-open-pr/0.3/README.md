@@ -22,7 +22,7 @@ to open pull requests on Github. It is able to fill in a title and body of the p
 ### Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-open-pr/0.2/github-open-pr.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-open-pr/0.3/github-open-pr.yaml
 ```
 
 ### Parameters
@@ -56,7 +56,7 @@ This TaskRun opens a pull request on GitHub.
 
 ```yaml
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   name: github-open-pr-from-develop-to-main
@@ -97,7 +97,7 @@ The following TaskRun shows the usage of Basic authentication. Adding the `AUTH_
 
 ```yaml
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   generateName: github-open-pr-from-develop-to-main
