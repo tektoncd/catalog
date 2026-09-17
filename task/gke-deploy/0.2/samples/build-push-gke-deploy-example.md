@@ -122,7 +122,7 @@ Install the Tekton Pipelines CLI to view your logs by following the instructions
   DEPLOY_CLUSTER_PROJECT=[PROJECT_ID]
 
   cat >build-push-gke-deploy-run.yaml <<EOF
-  apiVersion: tekton.dev/v1beta1
+  apiVersion: tekton.dev/v1
   kind: PipelineRun
   metadata:
     name: build-push-gke-deploy-run

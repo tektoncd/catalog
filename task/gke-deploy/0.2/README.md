@@ -5,7 +5,7 @@ This Task deploys an application to a Google Kubernetes Engine cluster using [`g
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gke-deploy/0.1/gke-deploy.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gke-deploy/0.2/gke-deploy.yaml
 ```
 
 ## Parameters
@@ -50,7 +50,7 @@ You can invoke `gke-deploy` to deploy manifests in a Git repository by
 providing a TaskRun:
 
 ```yaml
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   name: gke-deploy-repo
