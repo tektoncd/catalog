@@ -1,13 +1,13 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: github-request-reviewers
   labels:
-    app.kubernetes.io/version: "0.1"
+    app.kubernetes.io/version: "0.2"
   annotations:
     tekton.dev/categories: Git
-    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/pipelines.minVersion: "0.50.0"
     tekton.dev/tags: github
     tekton.dev/displayName: "request github reviewers"
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
