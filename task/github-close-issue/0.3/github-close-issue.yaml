@@ -1,13 +1,13 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: github-close-issue
   labels:
-    app.kubernetes.io/version: "0.2"
+    app.kubernetes.io/version: "0.3"
   annotations:
     tekton.dev/categories: Git
-    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/pipelines.minVersion: "0.50.0"
     tekton.dev/tags: github
     tekton.dev/displayName: "close github issue"
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
@@ -55,7 +55,7 @@ spec:
               name: $(params.GITHUB_TOKEN_SECRET_NAME)
               key: $(params.GITHUB_TOKEN_SECRET_KEY)
 
-      image: registry.access.redhat.com/ubi8/ubi:8.2
+      image: registry.access.redhat.com/ubi8/ubi:8.2@sha256:d748c21a55796827da82c61f162b505c59451cba24f1874e5185f21275b6bddc
       script: |
         #!/usr/libexec/platform-python
         import json
