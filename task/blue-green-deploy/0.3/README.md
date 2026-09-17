@@ -8,13 +8,13 @@ The following task can help you to deploy an application using the Blue-Green de
 ## Installing the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/blue-green-deploy/0.2/blue-green-deploy.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/blue-green-deploy/0.3/blue-green-deploy.yaml
 ```
 
 ## Installing the ClusterRoleBinding
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/blue-green-deploy/0.2/support/clusterrolebinding.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/blue-green-deploy/0.3/support/clusterrolebinding.yaml
 ```
 
 ## Optional Workspaces
@@ -26,7 +26,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/bl
 
 - **SERVICE_NAME**: The service name pointing to the existing deployment. (_Note_: The service name for the new deployment should be same)
 - **NEW_VERSION**: The version of the deployment to be deployed in the green/blue zone
-- **MANIFEST**: The deployment manifest URL file path provided in case the manifest is present on Github. (_Example_: "https://raw.githubusercontent.com/tektoncd/catalog/main/task/blue-green-deploy/0.2/samples/v1-deploy/blue-deployment.yaml")
+- **MANIFEST**: The deployment manifest URL file path provided in case the manifest is present on Github. (_Example_: "https://raw.githubusercontent.com/tektoncd/catalog/main/task/blue-green-deploy/0.3/samples/v1-deploy/blue-deployment.yaml")
 - **NAMESPACE**: Target namespace in which operation needs to be performed
 - **IMAGE**: Image which has kubectl binary present (_Default_: `quay.io/openshift/origin-cli:4.9`)
 
@@ -43,7 +43,7 @@ This TaskRun runs the Task to deploy the given Kubernetes resource in the green/
 TaskRun :-
 
 ```yaml
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   name: blue-green-deploy-run
@@ -56,7 +56,7 @@ spec:
     - name: NEW_VERSION
       value: v2
     - name: MANIFEST
-      value: "https://raw.githubusercontent.com/tektoncd/catalog/main/task/blue-green-deploy/0.2/samples/v2-deploy/green-deployment.yaml"
+      value: "https://raw.githubusercontent.com/tektoncd/catalog/main/task/blue-green-deploy/0.3/samples/v2-deploy/green-deployment.yaml"
 ```
 
 ## Using ConfigMap
@@ -70,7 +70,7 @@ kubectl create configmap manifests --from-file="green-deployment.yaml"
 2. TaskRun:-
 
 ```yaml
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   name: blue-green-deploy-run

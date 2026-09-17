@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   name: blue-green-deploy-run
@@ -14,4 +14,4 @@ spec:
     - name: MANIFEST
       value: "https://raw.githubusercontent.com/vinamra28/blue-green-deployment-k8s/master/deployment%2Bservice/green-deployment.yaml"
     - name: NAMESPACE
-      value: blue-green-deploy-0-2
+      value: blue-green-deploy-0-3

@@ -1,11 +1,11 @@
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: blue-green-deploy
   labels:
-    app.kubernetes.io/version: "0.2"
+    app.kubernetes.io/version: "0.3"
   annotations:
-    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/pipelines.minVersion: "0.50.0"
     tekton.dev/categories: Deployment
     tekton.dev/tags: deployment
     tekton.dev/displayName: "blue green deployment"
