@@ -6,7 +6,7 @@ and outputs the raw url as the result.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-add-gist/0.2/github-add-gist.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-add-gist/0.3/github-add-gist.yaml
 ```
 
 ## Secrets
@@ -57,7 +57,7 @@ data:
   test.txt: |
     This is the sample input comment via file.
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   generateName: github-add-gist-
