@@ -6,7 +6,7 @@ issue.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-add-comment/0.7/github-add-comment.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-add-comment/0.8/github-add-comment.yaml
 ```
 
 ## Secrets
@@ -59,7 +59,7 @@ This TaskRun add a comment to an issue.
 
 ```yaml
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   labels:
@@ -95,7 +95,7 @@ data:
   input.txt: |
     This is the sample input comment via file.
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   labels:
@@ -120,7 +120,7 @@ spec:
 
 ```yaml
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   name: github-add-comment-to-pr-22
