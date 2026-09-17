@@ -1,11 +1,11 @@
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: istio-canary-release
   labels:
-    app.kubernetes.io/version: "0.1"
+    app.kubernetes.io/version: "0.2"
   annotations:
-    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/pipelines.minVersion: "0.50.0"
     tekton.dev/categories: Deployment
     tekton.dev/tags: canary deployment, istio
     tekton.dev/displayName: "istio canary release"
@@ -40,7 +40,7 @@ spec:
       default: ""
   steps:
     - name: canary-deploy
-      image: quay.io/openshift/origin-cli:4.6
+      image: quay.io/openshift/origin-cli:4.6@sha256:6722d5041b472ac61a294647f7fa02fb432a948835bb780cc73cd221a9291a2c
       workingDir: $(workspaces.istio-manifest-dir.path)
       script: |
         #!/usr/bin/env bash

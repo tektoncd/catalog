@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: canary-deployment
@@ -31,7 +31,7 @@ spec:
         - name: istio-manifest-dir
           workspace: istio-manifest-dir
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   name: canary-deployment-run

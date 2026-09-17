@@ -19,13 +19,13 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/ku
 2. For Istio Services
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/istio-canary-release/0.1/istio-canary-release.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/istio-canary-release/0.2/istio-canary-release.yaml
 ```
 
 ## Installing the ClusterRoleBinding
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/istio-canary-release/0.1/support/clusterrolebinding.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/istio-canary-release/0.2/support/clusterrolebinding.yaml
 ```
 
 ## Workspaces
