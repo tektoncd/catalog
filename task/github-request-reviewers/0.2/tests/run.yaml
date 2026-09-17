@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: github-request-reviewers
@@ -25,7 +25,7 @@ spec:
         - name: TEAM_REVIEWERS
           value: "team1,team2"
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   name: github-request-reviewers-test-run

@@ -9,7 +9,7 @@ The `github-request-reviewers` task lets one request reviewers on a pull request
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-request-reviewers/0.1/github-request-reviewers.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-request-reviewers/0.2/github-request-reviewers.yaml
 ```
 
 ## Secrets
@@ -52,7 +52,7 @@ This TaskRun requests both users and teams as reviewers:
 
 ```yaml
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   generateName: github-request-reviewers-
