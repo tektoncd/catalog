@@ -7,7 +7,7 @@ See GitHub's deployment API on [Create a deployment status](https://docs.github.
 ### Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-create-deployment-status/0.1/github-create-deployment-status.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-create-deployment-status/0.2/github-create-deployment-status.yaml
 ```
 
 ### Secrets
@@ -51,7 +51,7 @@ This TaskRun creates a status for the given GitHub deployment.
 
 ```yaml
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   labels:
