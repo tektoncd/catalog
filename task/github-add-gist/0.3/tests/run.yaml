@@ -1,0 +1,45 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: github-add-gist-test
+spec:
+  workspaces:
+    - name: input
+  tasks:
+    - name: upload-gist
+      taskRef:
+        name: github-add-gist
+      params:
+        - name: GITHUB_HOST_URL
+          value: http://127.0.0.1:8080
+        - name: FILE_NAME
+          value: "input.txt"
+      workspaces:
+        - name: input
+          workspace: input
+    - name: echo-result
+      params:
+        - name: raw-url
+          value: $(tasks.upload-gist.results.gist_url)
+      taskSpec:
+        params:
+          - name: raw-url
+        steps:
+          - name: test-url
+            image: ubuntu
+            script: |
+              #!/usr/bin/env bash
+              [[ "$(params.raw-url)" == "http://127.0.0.1:8080" ]] && exit 0 || exit 1
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: github-add-gist-test-run
+spec:
+  pipelineRef:
+    name: github-add-gist-test
+  workspaces:
+    - name: input
+      configMap:
+        name: sample-input
