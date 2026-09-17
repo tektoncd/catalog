@@ -5,7 +5,7 @@
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/argocd-task-connect-repo/0.1/argocd-task-connect-repo.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/argocd-task-connect-repo/0.2/argocd-task-connect-repo.yaml
 ```
 
 ## Parameters
@@ -42,7 +42,7 @@ data:
   ARGOCD_PASSWORD: <password>
   ARGOCD_AUTH_TOKEN: <token>
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: argocd-pipeline-test
