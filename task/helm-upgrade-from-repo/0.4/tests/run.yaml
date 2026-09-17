@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: helm-upgrade-test-pipeline
@@ -20,7 +20,7 @@ spec:
         - name: overwrite_values
           value: autoscaling.enabled=false,autoscaling.maxReplicas=3
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   name: helm-upgrade-test-pipeline-run
