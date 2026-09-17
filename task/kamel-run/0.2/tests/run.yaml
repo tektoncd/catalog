@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: kamel-run-basic-test
@@ -52,7 +52,7 @@ spec:
               exit 0
 
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   name: kamel-run-basic-test-run
@@ -73,7 +73,7 @@ spec:
               storage: 1Gi
 
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: kamel-run-image-test
@@ -128,7 +128,7 @@ spec:
               exit 0
 
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   name: kamel-run-image-test-run

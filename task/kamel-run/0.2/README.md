@@ -7,7 +7,7 @@ If you have installed Camel K operator, you can configure the `kamel-run` task t
 ## Install the Task
 
 ```shell
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kamel-run/0.1/kamel-run.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kamel-run/0.2/kamel-run.yaml
 ```
 
 ## Parameters
@@ -40,13 +40,13 @@ The Task can be used in several ways to accomodate the different build and deplo
 As we will do delegate the task, the creation of an Integration, we need to provide a `ServiceAccount` with the privileges required by the tasks:
 
 ```shell
-kubectl apply -f  https://raw.githubusercontent.com/tektoncd/catalog/main/task/kamel-run/0.1/support/camel-k-tekton.yaml
+kubectl apply -f  https://raw.githubusercontent.com/tektoncd/catalog/main/task/kamel-run/0.2/support/camel-k-tekton.yaml
 ```
 
 ### Delegate build to operator
 
-Use the [Tekton Camel K operator builder sample](../0.1/samples/run-operator-build.yaml) in order to fetch a Git repository and run a Camel K Integration delegating the build to the Camel K operator.
+Use the [Tekton Camel K operator builder sample](../0.2/samples/run-operator-build.yaml) in order to fetch a Git repository and run a Camel K Integration delegating the build to the Camel K operator.
 
 ### Full pipeline with custom build
 
-Use the [Tekton Camel K external builder sample](../0.1/samples/run-external-build.yaml) as a reference for a full pipeline where you define your own process of building the Camel application and using the `kamel-run` Task as last step in order to deploy the Integration and let Camel K operator managing it.
+Use the [Tekton Camel K external builder sample](../0.2/samples/run-external-build.yaml) as a reference for a full pipeline where you define your own process of building the Camel application and using the `kamel-run` Task as last step in order to deploy the Integration and let Camel K operator managing it.
