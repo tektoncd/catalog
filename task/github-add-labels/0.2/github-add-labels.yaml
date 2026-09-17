@@ -1,11 +1,11 @@
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: github-add-labels
   labels:
-    app.kubernetes.io/version: "0.1"
+    app.kubernetes.io/version: "0.2"
   annotations:
-    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/pipelines.minVersion: "0.50.0"
     tekton.dev/categories: Git
     tekton.dev/tags: github
     tekton.dev/displayName: "add github label"
@@ -49,7 +49,7 @@ spec:
     default: token
   steps:
     - name: add-labels
-      image: registry.access.redhat.com/ubi8/ubi:8.2
+      image: registry.access.redhat.com/ubi8/ubi:8.2@sha256:d748c21a55796827da82c61f162b505c59451cba24f1874e5185f21275b6bddc
       args:
         - "$(params.LABELS)"
       script: |
