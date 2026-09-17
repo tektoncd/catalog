@@ -7,7 +7,7 @@ issue.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-close-issue/0.2/github-close-issue.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-close-issue/0.3/github-close-issue.yaml
 ```
 
 ## Secrets
@@ -44,7 +44,7 @@ This TaskRun close an issue on a task.
 
 ```yaml
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   labels:
