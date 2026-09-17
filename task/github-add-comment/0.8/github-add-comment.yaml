@@ -1,13 +1,13 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: github-add-comment
   labels:
-    app.kubernetes.io/version: "0.7"
+    app.kubernetes.io/version: "0.8"
   annotations:
     tekton.dev/categories: Git
-    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/pipelines.minVersion: "0.50.0"
     tekton.dev/tags: github
     tekton.dev/displayName: "add github comment"
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
@@ -97,7 +97,7 @@ spec:
               name: $(params.GITHUB_TOKEN_SECRET_NAME)
               key: $(params.GITHUB_TOKEN_SECRET_KEY)
 
-      image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
+      image: registry.access.redhat.com/ubi8/ubi-minimal:8.2@sha256:5cfbaf45ca96806917830c183e9f37df2e913b187aadb32e89fd83fa455ebaa6
       script: |
         #!/usr/libexec/platform-python
         import json
