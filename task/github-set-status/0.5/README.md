@@ -65,7 +65,7 @@ This TaskRun sets a commit on GitHub to `pending` getting tested by the CI.
 
 ```yaml
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   labels:
@@ -107,7 +107,7 @@ The following TaskRun shows the usage of Basic authentication. Adding the `AUTH_
 
 ```yaml
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   labels:
