@@ -1,0 +1,61 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: catlin-linter
+spec:
+  workspaces:
+    - name: store-changed-files
+  resources:
+    - name: source
+      type: git
+  params:
+    - name: gitCloneDepth
+    - name: gitHubCommand
+    - name: checkName
+    - name: pullRequestUrl
+  tasks:
+    - name: catalog-lint
+      taskRef:
+        name: catlin
+      workspaces:
+        - name: store-changed-files
+          workspace: store-changed-files
+      resources:
+        inputs:
+          - name: source
+            resource: source
+      params:
+        - name: gitCloneDepth
+          value: $(params.gitCloneDepth)
+    - name: post-gist
+      taskRef:
+        name: github-add-gist
+      params:
+        - name: FILE_NAME
+          value: "catlin.txt"
+        - name: GITHUB_TOKEN_SECRET_NAME
+          value: bot-token-github
+        - name: GITHUB_TOKEN_SECRET_KEY
+          value: bot-token
+      workspaces:
+        - name: input
+          workspace: store-changed-files
+      runAfter:
+        - catalog-lint
+    - name: post-comment
+      taskRef:
+        name: github-add-comment
+      params:
+        - name: COMMENT_OR_FILE
+          value: "$(tasks.post-gist.results.gist_url)"
+        - name: GITHUB_TOKEN_SECRET_NAME
+          value: bot-token-github
+        - name: GITHUB_TOKEN_SECRET_KEY
+          value: bot-token
+        - name: REQUEST_URL
+          value: $(params.pullRequestUrl)
+      workspaces:
+        - name: comment-file
+          workspace: store-changed-files
+      runAfter:
+        - post-gist
