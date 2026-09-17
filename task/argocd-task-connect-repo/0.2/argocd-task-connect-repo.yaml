@@ -1,0 +1,54 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: argocd-task-connect-repo
+  namespace: argocd
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Deployment
+    tekton.dev/tags: generic
+    tekton.dev/displayName: "argocd-repository"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    This task adds an http repo in Argo CD.
+
+    To do so, it requires the address of the Argo CD server and some form of
+    authentication either a username/password or an authentication token,
+    as well as the desired repository to connect to.
+  params:
+    - name: repository-url
+      description: url of the repository you want to add
+      type: string
+    - name: repository-type
+      description: repository type (helm or git)
+      type: string
+    - name: repository-name
+      description: name you want to give to the repository
+      type: string
+    - name: flags
+      default: --
+      type: string
+    - name: argocd-version
+      default: v2.3.4
+      type: string
+  stepTemplate:
+    envFrom:
+      - configMapRef:
+          name: argocd-env-configmap  # used for server address
+      - secretRef:
+          name: argocd-env-secret  # used for authentication (username/password or auth token)
+  steps:
+    - name: connect-repo
+      image: quay.io/argoproj/argocd:$(params.argocd-version)
+      script: |
+        if [ -z "$ARGOCD_AUTH_TOKEN" ]; then
+          yes | argocd login "$ARGOCD_SERVER" --username="$ARGOCD_USERNAME" --password="$ARGOCD_PASSWORD" --insecure;
+        fi
+        if [ "$(params.repository-type)" != "helm" ]; then
+          argocd repo add "$(params.repository-url)" "$(params.flags)";
+        else
+          argocd repo add "$(params.repository-url)" --type helm --name "$(params.repository-name)" "$(params.flags)";
+        fi
