@@ -1,0 +1,37 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: blue-green-account
+  namespace: blue-green-deploy-0-2
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: blue-green-cluster-role
+rules:
+  # Core API
+  - apiGroups: [""]
+    resources: ["services", "pods", "deployments", "configmaps", "secrets"]
+    verbs: ["get", "list", "create", "update", "delete", "patch", "watch"]
+  # Apps API
+  - apiGroups: ["apps"]
+    resources: ["deployments", "daemonsets", "jobs"]
+    verbs: ["get", "list", "create", "update", "delete", "patch", "watch"]
+  # Tekton API
+  - apiGroups: ["tekton.dev"]
+    resources: ["*"]
+    verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: blue-green-binding
+subjects:
+  - kind: ServiceAccount
+    name: blue-green-account
+    namespace: blue-green-deploy-0-2
+roleRef:
+  kind: ClusterRole
+  name: blue-green-cluster-role
+  apiGroup: rbac.authorization.k8s.io
