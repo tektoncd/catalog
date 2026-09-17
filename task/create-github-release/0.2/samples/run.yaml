@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: create-github-release-pipeline
@@ -45,7 +45,7 @@ spec:
         - name: release-notes
           workspace: release-notes
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   name: create-github-release-pipeline-run
