@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: github-add-gist-test
@@ -32,7 +32,7 @@ spec:
               #!/usr/bin/env bash
               [[ "$(params.raw-url)" == "http://127.0.0.1:8080" ]] && exit 0 || exit 1
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   name: github-add-gist-test-run
