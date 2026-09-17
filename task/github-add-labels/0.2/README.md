@@ -6,7 +6,7 @@ This `task` can be used to add labels to a github `pull request` or an `issue`.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-add-labels/0.1/github-add-labels.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-add-labels/0.2/github-add-labels.yaml
 ```
 
 ## Parameters
@@ -63,4 +63,4 @@ params:
         - kind/feature
 ```
 
-[This](../0.1/samples/run.yaml) can be referred to create a Taskrun.
+[This](../0.2/samples/run.yaml) can be referred to create a Taskrun.
