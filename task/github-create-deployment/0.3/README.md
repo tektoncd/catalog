@@ -7,7 +7,7 @@ See GitHub's deployment API on [Create a deployment](https://docs.github.com/res
 ### Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-create-deployment/0.2/github-create-deployment.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-create-deployment/0.3/github-create-deployment.yaml
 ```
 
 ### Secrets
@@ -57,7 +57,7 @@ This TaskRun creates a GitHub deployment for the given repository.
 
 ```yaml
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   labels:
