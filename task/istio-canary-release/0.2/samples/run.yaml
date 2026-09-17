@@ -1,0 +1,49 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: canary-deployment
+spec:
+  workspaces:
+    - name: deployment-manifest-dir
+    - name: istio-manifest-dir
+    - name: kubeconfig-dir
+  tasks:
+    - name: app-deploy
+      taskRef:
+        name: kubernetes-actions
+      params:
+        - name: args
+          value:
+            - apply
+            - -f
+            - "."
+      workspaces:
+        - name: manifest-dir
+          workspace: deployment-manifest-dir
+        - name: kubeconfig-dir
+          workspace: kubeconfig-dir
+    - name: deploy-istio-service
+      taskRef:
+        name: istio-canary-release
+      runAfter:
+        - app-deploy
+      workspaces:
+        - name: istio-manifest-dir
+          workspace: istio-manifest-dir
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: canary-deployment-run
+spec:
+  pipelineRef:
+    name: canary-deployment
+  workspaces:
+    - name: deployment-manifest-dir
+      configMap:
+        name: deployment
+    - name: istio-manifest-dir
+      configMap:
+        name: istio
+    - name: kubeconfig-dir
+      emptyDir: {}
