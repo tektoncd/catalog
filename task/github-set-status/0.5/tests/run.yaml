@@ -1,0 +1,27 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: github-set-status-test
+spec:
+  pipelineSpec:
+    tasks:
+      - name: github-set-status
+        taskRef:
+          name: github-set-status
+        params:
+          - name: GITHUB_HOST_URL
+            value: http://localhost:8080
+          - name: REPO_FULL_NAME
+            value: tektoncd/catalog
+          - name: SHA
+            value: 1234567890abcdef
+          - name: TARGET_URL
+            value: http://localhost:8080/this-could-be-your-pipeline-dashboard
+          - name: DESCRIPTION
+            value: An update to GitHub about our pipeline status
+          - name: STATE
+            value: success
+          - name: GITHUB_TOKEN_SECRET_NAME
+            value: github-secret
+          - name: GITHUB_TOKEN_SECRET_KEY
+            value: token

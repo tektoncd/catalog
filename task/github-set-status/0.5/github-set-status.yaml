@@ -1,0 +1,194 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: github-set-status
+  labels:
+    app.kubernetes.io/version: "0.4"
+  annotations:
+    tekton.dev/categories: Git
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: github
+    tekton.dev/displayName: "set github status"
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le"
+spec:
+  description: >-
+    This task will set the status of the CI job to the specified value along
+    with a link to the specified target URL where developers can follow the
+    progress of the CI job.
+
+    The `github-set-status` task allows external services to mark GitHub commits
+    with an `error`, `failure`, `pending`, or `success` state, which is then
+    reflected in pull requests involving those commits. Statuses include as well a
+    `description` and a `target_url`, to give the user informations about the CI
+    statuses or a direct link to the full log.
+
+  params:
+  - name: GITHUB_HOST_URL
+    description: |
+      The GitHub host, adjust this if you run a GitHub enteprise.
+    default: "api.github.com"
+    type: string
+
+  - name: API_PATH_PREFIX
+    description: |
+      The API path prefix, GitHub Enterprise has a prefix e.g. /api/v3
+    default: ""
+    type: string
+
+  - name: REPO_FULL_NAME
+    description: |
+      The GitHub repository full name, e.g.: tektoncd/catalog
+    type: string
+
+  - name: GITHUB_TOKEN_SECRET_NAME
+    description: |
+      The name of the kubernetes secret that contains the GitHub token, default: github
+    type: string
+    default: github
+
+  - name: GITHUB_TOKEN_SECRET_KEY
+    description: |
+      The key within the kubernetes secret that contains the GitHub token, default: token
+    type: string
+    default: token
+
+  - name: SHA
+    description: |
+      Commit SHA to set the status for.
+    type: string
+
+  - name: TARGET_URL
+    description: |
+      The target URL to associate with this status. This URL will be linked
+      from the GitHub UI to allow users to easily see the source of the
+      status.
+    type: string
+
+  - name: DESCRIPTION
+    description: |
+      A short description of the status.
+    type: string
+
+  - name: CONTEXT
+    description: |
+      The GitHub context, A string label to differentiate this status from
+      the status of other systems. ie: "continuous-integration/tekton"
+    default: "continuous-integration/tekton"
+    type: string
+
+  - name: STATE
+    description: |
+      The state of the status. Can be one of the following `error`,
+      `failure`, `pending`, or `success`.
+    type: string
+
+  - name: AUTH_TYPE
+    description: |
+      The type of authentication to use. You could use the less secure "Basic" for example
+    type: string
+    default: Bearer
+
+  - name: IMAGE
+    description: |
+      Image providing the python binary which this task uses.
+    type: string
+    default: python:3.10.1-alpine3.15
+
+  - name: SHEBANG
+    description: |
+      Python path. Depends on the image.
+    type: string
+    default: /usr/bin/env python
+
+  volumes:
+    - name: githubtoken
+      secret:
+        secretName: $(params.GITHUB_TOKEN_SECRET_NAME)
+
+  steps:
+    - name: set-status
+      volumeMounts:
+        - name: githubtoken
+          mountPath: /etc/github-set-status
+      env:
+        - name: GITHUB_HOST_URL
+          value: $(params.GITHUB_HOST_URL)
+        - name: API_PATH_PREFIX
+          value: $(params.API_PATH_PREFIX)
+        - name: REPO_FULL_NAME
+          value: $(params.REPO_FULL_NAME)
+        - name: GITHUB_TOKEN_SECRET_NAME
+          value: $(params.GITHUB_TOKEN_SECRET_NAME)
+        - name: GITHUB_TOKEN_SECRET_KEY
+          value: $(params.GITHUB_TOKEN_SECRET_KEY)
+        - name: SHA
+          value: $(params.SHA)
+        - name: TARGET_URL
+          value: $(params.TARGET_URL)
+        - name: DESCRIPTION
+          value: $(params.DESCRIPTION)
+        - name: CONTEXT
+          value: $(params.CONTEXT)
+        - name: STATE
+          value: $(params.STATE)
+        - name: AUTH_TYPE
+          value: $(params.AUTH_TYPE)
+        - name: SHEBANG
+          value: $(params.SHEBANG)
+
+      image: $(params.IMAGE)
+      script: |
+        #!$(params.SHEBANG)
+
+        """This script will set the CI status on GitHub PR"""
+
+        import json
+        import os
+        import sys
+        import http.client
+
+        github_token_filename = "/etc/github-set-status/" + \
+            os.getenv("GITHUB_TOKEN_SECRET_KEY")
+        github_token = open(github_token_filename, "r").read()
+
+        status_url = os.getenv("API_PATH_PREFIX") + "/repos/" + \
+            os.getenv("REPO_FULL_NAME") + "/statuses/" + os.getenv("SHA")
+
+        data = {
+            "state": os.getenv("STATE"),
+            "target_url": os.getenv("TARGET_URL"),
+            "description": os.getenv("DESCRIPTION"),
+            "context": os.getenv("CONTEXT")
+        }
+        print("Sending this data to GitHub@{url}: ".format(
+          url=os.getenv("GITHUB_HOST_URL")))
+        print(data)
+
+        authHeader = os.getenv("AUTH_TYPE") + " " + github_token
+
+        # This is for our fake github server
+        if "$(params.GITHUB_HOST_URL)".startswith("http://"):
+          conn = http.client.HTTPConnection("$(params.GITHUB_HOST_URL)".replace("http://", ""))
+        else:
+          conn = http.client.HTTPSConnection("$(params.GITHUB_HOST_URL)")
+
+        conn.request(
+            "POST",
+            status_url,
+            body=json.dumps(data),
+            headers={
+                "User-Agent": "TektonCD, the peaceful cat",
+                "Authorization": authHeader,
+                "Accept": "application/vnd.github.v3+json ",
+            })
+        resp = conn.getresponse()
+        if not str(resp.status).startswith("2"):
+            print("Error: %d" % (resp.status))
+            print(resp.read())
+            sys.exit(1)
+        else:
+            print("GitHub status '{state}' has been set on {repo}#{sha} ".format(
+                state=os.getenv("STATE"),
+                repo=os.getenv("REPO_FULL_NAME"),
+                sha=os.getenv("SHA")))
