@@ -10,7 +10,7 @@ A task to get a user token from a github application
 
 This GitHub applications needs a private key to sign your request with JWT. 
 
-[This](../0.2/samples/secret.yaml) example can be referred to create the secret
+[This](../0.3/samples/secret.yaml) example can be referred to create the secret
 
 Refer [this](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/setup-credentials.html) guide for setting up AWS Credentials and Region.
 
@@ -29,7 +29,7 @@ Refer [this](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/setup-c
 ### Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-app-token/0.2/github-app-token.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/github-app-token/0.3/github-app-token.yaml
 ```
 
 ## Platforms
@@ -41,5 +41,5 @@ The Task can be run on `linux/amd64` platform.
 After creating the task with the parameters, you should have the token as result in the task which can
 be used in your pipeline to do github operations from the app as the target user.
 
-See [this](../0.2/samples/run.yaml) taskrun example on how to start the task directly.
+See [this](../0.3/samples/run.yaml) taskrun example on how to start the task directly.
 
