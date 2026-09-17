@@ -1,0 +1,26 @@
+---
+headers:
+  method: POST
+  path: /repos/{repo:[^/]+/[^/]+}/deployments/{deployment:[0-9]+}/statuses
+response:
+  status: 201
+  output: |
+    {
+      "id": 2,
+      "environment": "staging",
+      "state": "in_progress"
+    }
+  content-type: application/json
+---
+headers:
+  method: POST
+  path: /api/v3/repos/{repo:[^/]+/[^/]+}/deployments/{deployment:[0-9]+}/statuses
+response:
+  status: 201
+  output: |
+    {
+      "id": 2,
+      "environment": "staging",
+      "state": "in_progress"
+    }
+  content-type: application/json

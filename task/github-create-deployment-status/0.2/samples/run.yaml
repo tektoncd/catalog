@@ -1,0 +1,14 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: github-create-deployment-status-run
+spec:
+  taskRef:
+    name: github-create-deployment-status
+  params:
+    - name: REPO_FULL_NAME
+      value: tektoncd/catalog
+    - name: DEPLOYMENT_ID
+      value: "1"
+    - name: STATE
+      value: in_progress
