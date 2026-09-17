@@ -1,0 +1,8 @@
+---
+headers:
+  method: POST
+  path: /repos/{repo:[^/]+/[^/]+}/pulls/{[0-9]+}/requested_reviewers
+response:
+  status: 201
+  output: '{"status": 201}'
+  content-type: text/json

@@ -1,0 +1,38 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: github-request-reviewers
+spec:
+  workspaces:
+    - name: github
+  tasks:
+    - name: github-request-reviewers
+      taskRef:
+        name: github-request-reviewers
+      workspaces:
+        - name: github
+          workspace: github
+      params:
+        - name: GITHUB_HOST_URL
+          value: http://127.0.0.1:8080
+        - name: PACKAGE
+          value: tektoncd/catalog
+        - name: PULL_REQUEST_NUMBER
+          value: "1234"
+        - name: REVIEWERS
+          value: "user1,user2"
+        - name: TEAM_REVIEWERS
+          value: "team1,team2"
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: github-request-reviewers-test-run
+spec:
+  pipelineRef:
+    name: github-request-reviewers
+  workspaces:
+    - name: github
+      secret:
+        secretName: "github"
