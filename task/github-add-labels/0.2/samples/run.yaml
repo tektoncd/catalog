@@ -1,0 +1,14 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: github-add-labels-run
+spec:
+  taskRef:
+    name: github-add-labels
+  params:
+    - name: REQUEST_URL
+      value: https://github.com/Divyansh42/aws-cli/pull/1
+    - name: LABELS
+      value:
+        - approve
+        - kind/feature
