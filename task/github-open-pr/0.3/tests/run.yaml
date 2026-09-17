@@ -1,0 +1,41 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: github-open-pr
+spec:
+  pipelineSpec:
+    tasks:
+      - name: github
+        taskRef:
+          name: github-open-pr
+        params:
+        - name: GITHUB_HOST_URL
+          value: http://localhost:8080
+        - name: REPO_FULL_NAME
+          value: tektoncd/catalog
+        - name: HEAD
+          value: develop
+        - name: BASE
+          value: main
+        - name: TITLE
+          value: "title"
+        - name: BODY
+          value: "body"
+      - name: github-enterprise
+        taskRef:
+          name: github-open-pr
+        params:
+        - name: GITHUB_HOST_URL
+          value: http://localhost:8080
+        - name: API_PATH_PREFIX
+          value: /api/v3
+        - name: REPO_FULL_NAME
+          value: tektoncd/catalog
+        - name: HEAD
+          value: develop
+        - name: BASE
+          value: main
+        - name: TITLE
+          value: "title"
+        - name: BODY
+          value: "body"

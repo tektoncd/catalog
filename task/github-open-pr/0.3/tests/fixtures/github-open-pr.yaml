@@ -1,0 +1,24 @@
+---
+headers:
+  method: POST
+  path: /repos/{repo:[^/]+/[^/]+}/pulls
+response:
+  status: 201
+  output: |
+    {
+      "html_url": "https://github.com/octocat/Hello-World/pull/1347",
+      "number": 1
+    }
+  content-type: application/json
+---
+headers:
+  method: POST
+  path: /api/v3/repos/{repo:[^/]+/[^/]+}/pulls
+response:
+  status: 201
+  output: |
+    {
+      "html_url": "https://github.com/octocat/Hello-World/pull/1347",
+      "number": 1
+    }
+  content-type: application/json
