@@ -1,0 +1,14 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: kubernetes-actions-run
+spec:
+  serviceAccountName: kubernetes-actions-account
+  taskRef:
+    name: kubernetes-actions
+  params:
+    - name: script
+      value: |
+        kubectl get pods
+        echo "---------"
+        kubectl get deploy
