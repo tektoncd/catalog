@@ -27,4 +27,4 @@ The Task can be run on `linux/amd64` platform.
 
 ## Usage
 
-See [samples/create-eks-cluster.yaml](https://github.com/tektoncd/catalog/tree/main/task/eks-cluster-create/0.1/samples/create-eks-cluster.yaml) for an example of a TaskRun that creates a EKS cluster and writes the kubeconfig to a PVC.
+See [samples/create-eks-cluster.yaml](https://github.com/tektoncd/catalog/tree/main/task/eks-cluster-create/0.2/samples/create-eks-cluster.yaml) for an example of a TaskRun that creates a EKS cluster and writes the kubeconfig to a PVC.

@@ -11,7 +11,7 @@ spec:
     - ReadWriteOnce
   storageClassName: gp2
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   generateName: create-eks-cluster-
