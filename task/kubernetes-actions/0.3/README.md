@@ -5,7 +5,7 @@ This is a generic task used to perform kubernetes actions such as `kubectl get d
 ## Install the task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kubernetes-actions/0.2/kubernetes-actions.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kubernetes-actions/0.3/kubernetes-actions.yaml
 ```
 
 ## Inputs
@@ -34,7 +34,7 @@ The Task can be run on `linux/amd64` platform.
 In case no manifests are mounted
 
 ```yaml
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   name: kubectl-run
@@ -52,7 +52,7 @@ spec:
 In case manifest is present on `GitHub` :
 
 ```yaml
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   name: kubectl-run
@@ -77,7 +77,7 @@ Running `kubectl` commands on other cluster
 
 2. Create the `TaskRun`
    ```yaml
-   apiVersion: tekton.dev/v1beta1
+   apiVersion: tekton.dev/v1
    kind: TaskRun
    metadata:
      name: kubectl-run
