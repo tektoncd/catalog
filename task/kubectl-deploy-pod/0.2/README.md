@@ -6,7 +6,7 @@ This Task deploys (or delete) a Kubernetes resource (pod). It uses
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kubectl-deploy-pod/0.1/kubectl-deploy-pod.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kubectl-deploy-pod/0.2/kubectl-deploy-pod.yaml
 ```
 
 ## Install ClusterRole
@@ -14,13 +14,13 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/ku
 **CAUTION:** The `clusterrole.yaml` is just a sample, should be modified based on real requirements to avoid potential security issues.
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kubectl-deploy-pod/0.1/support/clusterrole.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kubectl-deploy-pod/0.2/support/clusterrole.yaml
 ```
 
 ## Install ClusterRolebinding
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kubectl-deploy-pod/0.1/support/clusterrolebinding.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/kubectl-deploy-pod/0.2/support/clusterrolebinding.yaml
 ```
 
 ## Inputs
@@ -55,7 +55,7 @@ The Task can be run on `linux/amd64` platform.
 This TaskRun runs the Task to deploy the given Kubernetes resource.
 
 ```yaml
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   name: kubectl-deploy-pod
