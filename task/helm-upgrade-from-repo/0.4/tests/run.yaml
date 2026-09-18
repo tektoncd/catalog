@@ -25,6 +25,7 @@ kind: PipelineRun
 metadata:
   name: helm-upgrade-test-pipeline-run
 spec:
-  serviceAccountName: helm-pipeline-run-sa
+  taskRunTemplate:
+    serviceAccountName: helm-pipeline-run-sa
   pipelineRef:
     name: helm-upgrade-test-pipeline
