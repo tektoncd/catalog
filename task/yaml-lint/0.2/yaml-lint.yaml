@@ -1,0 +1,31 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: yaml-lint
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Code Quality
+    tekton.dev/tags: linter
+    tekton.dev/displayName: "YAML linter"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    This task can be used to perform lint check on YAML files
+  workspaces:
+    - name: shared-workspace
+      description: A workspace that contains the fetched git repository.
+  params:
+    - name: args
+      type: array
+      description: extra args needs to append
+      default: ["--help"]
+  steps:
+    - name: lint-yaml-files
+      image: docker.io/cytopia/yamllint:1.23@sha256:e9deea51bbdc35950cacf6594dab94100d9bbf5c987540b8874167d58e6bdce2 #tag: 1.23
+      workingDir: $(workspaces.shared-workspace.path)
+      command:
+        - yamllint
+      args:
+        - $(params.args)
