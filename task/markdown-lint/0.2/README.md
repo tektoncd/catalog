@@ -5,7 +5,7 @@ The following task is used to provide static analysis on README files mounted us
 ## Installing the Task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/markdown-lint/0.1/markdown-lint.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/markdown-lint/0.2/markdown-lint.yaml
 ```
 
 ## Parameters
@@ -34,7 +34,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gi
 4. Create the Pipeline and PipelineRun for `Markdown` linter
 
 ```yaml
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: linter-pipeline
@@ -70,7 +70,7 @@ spec:
           value: ["."]
 
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   name: linter-pipeline-run
