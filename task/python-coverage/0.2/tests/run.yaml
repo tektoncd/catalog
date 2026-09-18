@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: python-coverage-pipeline
@@ -35,7 +35,7 @@ spec:
         - name: ARGS
           value: "-rfs"
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   name: python-coverage-pipeline-run
