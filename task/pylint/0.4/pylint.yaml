@@ -1,13 +1,13 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: pylint
   labels:
-    app.kubernetes.io/version: "0.3"
+    app.kubernetes.io/version: "0.4"
   annotations:
     tekton.dev/categories: Code Quality
-    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/pipelines.minVersion: "0.50.0"
     tekton.dev/tags: python, pylint
     tekton.dev/displayName: pylint
     tekton.dev/platforms: "linux/amd64"

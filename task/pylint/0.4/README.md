@@ -11,7 +11,7 @@ The task provides linting based on [pylint](https://pypi.org/project/pylint/) fo
 ### Install the pylint task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/pylint/0.3/pylint.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/pylint/0.4/pylint.yaml
 ```
 
 ## Parameters
@@ -31,7 +31,7 @@ The Task can be run on `linux/amd64` platform.
 This `TaskRun` runs `pylint` in a python module directory called `module/`.
 
 ```yaml
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   name: lint
