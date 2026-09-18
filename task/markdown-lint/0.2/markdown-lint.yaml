@@ -1,0 +1,31 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: markdown-lint
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Code Quality
+    tekton.dev/tags: linter
+    tekton.dev/displayName: "Markdown linter"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    This task can be used to perform lint check on Markdown files
+  workspaces:
+    - name: shared-workspace
+      description: A workspace that contains the fetched git repository.
+  params:
+    - name: args
+      type: array
+      description: extra args needs to append
+      default: ["--help"]
+  steps:
+    - name: lint-markdown-files
+      image: docker.io/markdownlint/markdownlint:0.11.0@sha256:399a199c92f89f42cf3a0a1159bd86ca5cdc293fcfd39f87c0669ddee9767724 #tag: 0.11.0
+      workingDir: $(workspaces.shared-workspace.path)
+      command:
+        - mdl
+      args:
+        - $(params.args)
