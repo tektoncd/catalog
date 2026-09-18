@@ -5,7 +5,7 @@ The following task is used to provide static analysis on YAML files mounted usin
 ## Installing the Task
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/shellcheck/0.1/shellcheck.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/shellcheck/0.2/shellcheck.yaml
 ```
 
 ## Parameters
@@ -34,7 +34,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/gi
 4. Create the Pipeline and PipelineRun for `Shell` linter
 
 ```yaml
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: linter-pipeline
@@ -70,7 +70,7 @@ spec:
           value: ["myscript.sh"]
 
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   name: linter-pipeline-run
