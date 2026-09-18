@@ -1,0 +1,35 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: kubectl-deploy-pod
+spec:
+  taskRef:
+    name: kubectl-deploy-pod
+  params:
+  - name: action
+    value: create
+  - name: success-condition
+    value: status.phase == Running
+  - name: failure-condition
+    value: status.phase in (Failed, Error)
+  - name: output
+    value: |
+      - name: job-name
+        valueFrom: '{.metadata.name}'
+      - name: job-namespace
+        valueFrom: '{.metadata.namespace}'
+  - name: set-ownerreference
+    value: "true"
+  - name: manifest
+    value: |
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: myapp-pod
+        labels:
+          app: myapp
+      spec:
+        containers:
+        - name: myapp-container
+          image: docker
+          command: ['sh', '-c', 'echo Hello Kubernetes! && sleep 30']
