@@ -7,7 +7,7 @@ See https://kind.sigs.k8s.io for more details.
 ## Install the Task
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/kind/0.1/kind.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/master/task/kind/0.2/kind.yaml
 ```
 
 ## Workspaces
