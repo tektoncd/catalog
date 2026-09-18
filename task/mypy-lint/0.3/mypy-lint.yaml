@@ -1,0 +1,42 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: mypy-lint
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Code Quality
+    tekton.dev/tags: linter, mypy
+    tekton.dev/displayName: "Mypy(Python) linter"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    This task can be used to perform lint check on python files
+  workspaces:
+    - name: shared-workspace
+      description: A workspace containing files that we want to check
+  params:
+    - name: image
+      description: The container image to use mypy in
+      default: docker.io/cytopia/mypy:latest-0.4@sha256:0d5e1a97ce68c4aeececc818c8bf19301b396edbe36a6f83eca8248d7d84a05c
+    - name: requirements_file
+      description: The name of the requirements file inside the source location
+      default: requirements.txt
+    - name: args
+      type: array
+      description: extra args that need to be appended
+      default: ["--help"]
+  steps:
+    - name: lint-python-files
+      image: $(params.image)
+      workingDir: $(workspaces.shared-workspace.path)
+      script: |
+        export HOME=/tmp/python
+        export PATH=$PATH:/tmp/python/.local/bin
+        if [ -n "$(params.requirements_file)" ] && [ -e "$(params.requirements_file)" ];then
+            python -mpip install --user -r $(params.requirements_file)
+        fi
+        mypy $@
+      args:
+        - $(params.args)
