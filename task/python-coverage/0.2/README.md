@@ -13,7 +13,7 @@ The task provides code coverage based on [coverage](https://coverage.readthedocs
 ### Install pytest
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/python-coverage/0.1/python-coverage.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/python-coverage/0.2/python-coverage.yaml
 ```
 
 ## Parameters
@@ -32,7 +32,7 @@ The Task can be run on `linux/amd64`, `linux/s390x`, and `linux/ppc64le` platfor
 This `TaskRun` runs `pytest` and `coverage` on a repository.
 
 ```yaml
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TaskRun
 metadata:
   name: python-coverage-run
