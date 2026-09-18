@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: linter-pipeline
@@ -36,7 +36,7 @@ spec:
         - name: image
           value: docker.io/cytopia/mypy:latest-0.2@sha256:12d01d8b3cb146daca62c561734270a1c3df16036bb5b486f3d8c992c48af69b
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   name: linter-pipeline-run

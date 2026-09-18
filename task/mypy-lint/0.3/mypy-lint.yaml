@@ -1,11 +1,11 @@
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: mypy-lint
   labels:
-    app.kubernetes.io/version: "0.2"
+    app.kubernetes.io/version: "0.3"
   annotations:
-    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/pipelines.minVersion: "0.50.0"
     tekton.dev/categories: Code Quality
     tekton.dev/tags: linter, mypy
     tekton.dev/displayName: "Mypy(Python) linter"
