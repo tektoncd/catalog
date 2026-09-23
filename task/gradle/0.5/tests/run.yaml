@@ -1,0 +1,85 @@
+---
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: gradle-test-pipeline
+spec:
+  workspaces:
+    - name: shared-workspace
+    - name: gradle-config
+  tasks:
+    - name: fetch-code
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: https://github.com/crshnburn/simple-gradle
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+    - name: gradle-run
+      taskRef:
+        name: gradle
+      runAfter:
+        - fetch-code
+      params:
+        - name: TASKS
+          value:
+            - build
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: gradle-config
+          workspace: gradle-config
+    - name: fetch-wrapper-code
+      taskRef:
+        name: git-clone
+      runAfter:
+        - gradle-run
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: https://github.com/BastiaanN/simple-gradle-wrapper
+        - name: subdirectory
+          value: "wrapper-test"
+        - name: deleteExisting
+          value: "true"
+    - name: gradle-wrapper-run
+      taskRef:
+        name: gradle
+      runAfter:
+        - fetch-wrapper-code
+      params:
+        - name: TASKS
+          value:
+            - build
+        - name: PROJECT_DIR
+          value: "wrapper-test"
+        - name: GRADLE_IMAGE
+          value: docker.io/library/eclipse-temurin:17-ubi9-minimal@sha256:19c66566a0a802df5674301b223683ffbcf56cf18488a37a21d53e3d09df57d1
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: gradle-config
+          workspace: gradle-config
+---
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: gradle-test-pipeline-rune
+spec:
+  pipelineRef:
+    name: gradle-test-pipeline
+  workspaces:
+    - name: shared-workspace
+      persistentVolumeClaim:
+        claimName: gradle-source-pvc
+    - name: gradle-config
+      configMap:
+        name: gradle-config
