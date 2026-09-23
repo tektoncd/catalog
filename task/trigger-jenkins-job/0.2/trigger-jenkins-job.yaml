@@ -1,0 +1,120 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: trigger-jenkins-job
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.50.0"
+    tekton.dev/categories: Automation, Continuous Integration
+    tekton.dev/tags: jenkins, build
+    tekton.dev/displayName: "trigger jenkins job"
+spec:
+  description: >-
+    The following task can be used to trigger a Jenkins job using
+    CURL request from a Tekton Task.
+  workspaces:
+    - name: source
+      description: >-
+        The workspace which can be used to mount files which can be
+        send via CURL request to Jenkins job.
+  params:
+    - name: JENKINS_HOST_URL
+      type: string
+      description: Server URL on which Jenkins is running
+    - name: JOB_NAME
+      type: string
+      description: Jenkins Job which needs to be triggered
+    - name: JENKINS_SECRETS
+      type: string
+      description: Jenkins secret containing credentials
+      default: jenkins-credentials
+    - name: JOB_PARAMS
+      type: array
+      description: Extra arguments to append as a part of CURL request
+      default: [""]
+  steps:
+    - name: trigger-pipeline
+      image: registry.access.redhat.com/ubi8/ubi:8.2@sha256:d748c21a55796827da82c61f162b505c59451cba24f1874e5185f21275b6bddc
+      workingDir: $(workspaces.source.path)
+      args:
+        - $(params.JOB_PARAMS)
+      script: |
+        #!/usr/libexec/platform-python
+        import base64
+        import http.cookiejar
+        import os
+        import sys
+        import urllib.request
+
+        JENKINS_URL = """$(params.JENKINS_HOST_URL)"""
+        JOB_NAME = """$(params.JOB_NAME)"""
+        USERNAME = os.getenv("USERNAME")
+        APITOKEN = os.getenv("API_TOKEN")
+
+        def build_args(args):
+            data = {}
+            filename = ""
+            for params in args:
+                if "@" in params:
+                    filename += params.split("=")[1][1:]
+                elif "=" in params:
+                    key_value = params.split("=")
+                    data[key_value[0]] = key_value[1]
+            if data:
+                data = urllib.parse.urlencode(data).encode("utf-8")
+            return (data, filename)
+
+
+        def get_crumb(headers, cookiejar):
+            url = f"{JENKINS_URL}/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,%22:%22,//crumb)"
+            opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cookiejar))
+            opener.addheaders = headers
+            return opener.open(url)
+
+
+        def main():
+            data, filename = build_args(sys.argv[1:])
+
+            if data:
+                query_type = "buildWithParameters"
+            else:
+                query_type = "build"
+            job_url = f"{JENKINS_URL}/job/{JOB_NAME}/{query_type}"
+
+            jarhead = http.cookiejar.CookieJar()
+            base64string = base64.b64encode(f"{USERNAME}:{APITOKEN}".encode("utf-8"))
+            headers = [("Authorization", f"Basic {base64string.decode('utf-8')}")]
+
+            crumb = get_crumb(headers, jarhead).read().decode().replace("Jenkins-Crumb:", "")
+            headers.append(("Jenkins-Crumb", crumb))
+
+            request = urllib.request.Request(job_url, data=data)
+            if filename:
+                headers.append(("Content-Type", "multipart/form-data"))
+                headers.append(("Content-Length", os.stat(filename).st_size))
+                request = urllib.request.Request(job_url, open(filename, "rb"))
+
+            opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jarhead))
+            opener.addheaders = headers
+            with opener.open(request) as handle:
+                print(f"Job has started, status: {handle.status}")
+                handle.read().decode("utf-8")
+        main()
+
+      env:
+        - name: USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: $(params.JENKINS_SECRETS)
+              key: username
+        - name: API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: $(params.JENKINS_SECRETS)
+              key: apitoken
+        - name: JENKINS_CRUMB
+          valueFrom:
+            secretKeyRef:
+              name: $(params.JENKINS_SECRETS)
+              key: crumb
