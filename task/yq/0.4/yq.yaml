@@ -45,8 +45,14 @@ spec:
         /usr/bin/env sh
         set -e
 
+        SCRIPT=$(cat <<'EOF'
+        $(params.SCRIPT)
+
+        EOF
+        )
+
         # For backwards compatibility with previous versions
-        if [ "$(params.SCRIPT)" = "" ]; then
+        if [ -z "$SCRIPT" ]; then
           for var in "$@"
           do
               /usr/bin/yq eval -i "$(params.expression)" "$var"
@@ -54,4 +60,4 @@ spec:
           exit $?
         fi
 
-        $(params.SCRIPT)
+        eval "$SCRIPT"
