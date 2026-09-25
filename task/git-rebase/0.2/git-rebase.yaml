@@ -1,0 +1,126 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: git-rebase
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.50.0"
+    tekton.dev/categories: Git
+    tekton.dev/tags: git
+    tekton.dev/displayName: "git rebase"
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le,linux/arm64"
+spec:
+  description: >-
+    These Tasks are Git tasks to work with repositories used by other tasks
+    in your Pipeline.
+
+    This task will rebase the branch based on the user input. Before rebase,
+    if squashing of the commits is required, then it can be done by providing
+    the squash count i.e number of commits to squash.
+
+  workspaces:
+    - name: source
+      description: A workspace that contains the fetched git repository.
+  params:
+    - name: SQUASH_COUNT
+      type: string
+      description: |
+        Number of commits to squash in the branch.
+      default: "0"
+
+    - name: COMMIT_MSG
+      type: string
+      description: |
+        Commit message after the squash is done.
+      default: ""
+
+    - name: GIT_USER_NAME
+      type: string
+      description: |
+        Git user name to use for rebase.
+
+    - name: GIT_USER_EMAIL
+      type: string
+      description: |
+        Git user email to use for rebase.
+
+    - name: PULL_REMOTE_NAME
+      type: string
+      description: |
+        Git remote name from which we have to pull and rebase.
+      default: origin
+
+    - name: PULL_REMOTE_URL
+      type: string
+      description: |
+        Git remote URL from which we have to pull and rebase.
+
+    - name: PULL_BRANCH_NAME
+      type: string
+      description: |
+        Git branch name from which we have to pull and rebase.
+
+    - name: PUSH_REMOTE_NAME
+      type: string
+      description: |
+        Git remote name to push after rebase.
+      default: origin
+
+    - name: PUSH_REMOTE_URL
+      type: string
+      description: |
+        Git remote URL to push after rebase.
+
+    - name: PUSH_BRANCH_NAME
+      type: string
+      description: |
+        Git branch to push after rebase.
+  results:
+    - name: commit
+      description: The precise commit SHA after the rebase.
+  steps:
+    - name: rebase
+      workingDir: $(workspaces.source.path)
+      image: cgr.dev/chainguard/git:2.39@sha256:fdaef225e3fd5cf190520553ff765f186a4363390af3f19912897b0b28f87aeb
+      script: |
+
+        # Setting up the config for the git.
+        git config user.email "$(params.GIT_USER_EMAIL)"
+        git config user.name "$(params.GIT_USER_NAME)"
+
+        # Squashing the commits if required.
+        if [ "$(params.SQUASH_COUNT)" != 0 ] ; then
+
+          git reset --soft HEAD~$(params.SQUASH_COUNT)
+          git add .
+          git commit -m "$(params.COMMIT_MSG)"
+
+        fi
+
+        # Checking if remote is already set up or not.
+        git ls-remote --exit-code $(params.PULL_REMOTE_NAME)
+
+        # Setting up remote url for pull.
+        if test $? != 0; then
+          git remote add $(params.PULL_REMOTE_NAME) $(params.PULL_REMOTE_URL)
+        fi
+
+        # Pull and rebase
+        git pull --rebase $(params.PULL_REMOTE_NAME) $(params.PULL_BRANCH_NAME)
+
+        # Checking if remote is already set up or not.
+        git ls-remote --exit-code $(params.PUSH_REMOTE_NAME)
+
+        # Setting up remote url for push.
+        if test $? != 0; then
+          git remote add $(params.PUSH_REMOTE_NAME) $(params.PUSH_REMOTE_URL)
+        fi
+
+        # Force push after the rebase.
+        git push $(params.PUSH_REMOTE_NAME) $(params.PUSH_BRANCH_NAME) -f
+
+        RESULT_SHA="$(git rev-parse HEAD | tr -d '\n')"
+
+        # Make sure we don't add a trailing newline to the result!
+        echo -n "$RESULT_SHA" > $(results.commit.path)
