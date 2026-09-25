@@ -1,0 +1,50 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: registry
+spec:
+  selector:
+    matchLabels:
+      run: registry
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: registry
+    spec:
+      containers:
+      - name: registry
+        image: docker.io/registry:2
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+          - name: sslcert
+            mountPath: /certs
+        env:
+          - name: REGISTRY_HTTP_TLS_CERTIFICATE
+            value: "/certs/ca.crt"
+          - name: REGISTRY_HTTP_TLS_KEY
+            value: "/certs/ca.key"
+          - name: REGISTRY_HTTP_SECRET
+            value: "tekton"
+      volumes:
+        - name: sslcert
+          configMap:
+            defaultMode: 420
+            items:
+            - key: ca.crt
+              path: ca.crt
+            - key: ca.key
+              path: ca.key
+            name: sslcert
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: registry
+spec:
+  ports:
+  - port: 5000
+  selector:
+    run: registry
