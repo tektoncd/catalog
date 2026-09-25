@@ -21,6 +21,7 @@ _See [our project roadmap](roadmap.md)._
 ## Discovering resources
 
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/tekton-catalog-tasks)](https://artifacthub.io/packages/search?repo=tekton-catalog-tasks)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Ftektoncd%2Fcatalog.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Ftektoncd%2Fcatalog?ref=badge_shield)
 
 The recommended way to search and discover Tekton resources is
 [**Artifact Hub**](https://artifacthub.io/packages/search?kind=7). The tasks
@@ -216,3 +217,7 @@ you do, please don't be shy about letting us know, or better yet, contribute a
 fix or feature.
 
 _See [our project roadmap](roadmap.md)._
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Ftektoncd%2Fcatalog.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Ftektoncd%2Fcatalog?ref=badge_large)
