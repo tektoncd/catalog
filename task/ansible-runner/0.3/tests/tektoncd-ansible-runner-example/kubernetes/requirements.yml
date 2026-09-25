@@ -1,0 +1,6 @@
+---
+collections:
+  - name: kubernetes.core
+    version: 2.0.1
+  - name: community.general
+    version: 10.7.0
