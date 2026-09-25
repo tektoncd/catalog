@@ -1,0 +1,30 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: pluto
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.50.0"
+    tekton.dev/categories: Developer Tools
+    tekton.dev/tags: pluto
+    tekton.dev/displayName: "Fairwinds Pluto"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    Pluto is a utility to help users find deprecated Kubernetes apiVersions in their code repositories and their helm releases.
+  workspaces:
+    - name: source
+  params:
+    - name: ARGS
+      description: The pluto commands to run
+      type: array
+      default:
+        - help
+  steps:
+    - name: pluto
+      workingDir: $(workspaces.source.path)
+      image: quay.io/fairwinds/pluto:v5@sha256:90eb1a33b99c72d1306318a958d53d101562911138040ee415210e7725a73c22 #tag: v5
+      command: ["/pluto"]
+      args:
+        - "$(params.ARGS)"
