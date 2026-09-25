@@ -1,0 +1,8 @@
+---
+headers:
+  method: POST
+  path: /api/v1/repos/tektoncd/catalog/statuses/d87daf015916c89cc65817cc9d2ccd90d3406746
+response:
+  status: 201
+  output: '{"status": 201}'
+  content-type: application/json

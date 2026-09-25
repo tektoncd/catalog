@@ -1,0 +1,11 @@
+---
+headers:
+  method: POST
+  path: /api/v4/projects/{repo:.+}/statuses/{[^/]+}
+response:
+  status: 201
+  output: |
+    {
+      "some": "data"
+    }
+  content-type: application/json
