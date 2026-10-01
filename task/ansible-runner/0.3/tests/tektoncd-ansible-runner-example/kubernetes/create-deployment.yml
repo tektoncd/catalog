@@ -1,0 +1,45 @@
+- hosts: localhost
+  connection: local
+  collections:
+    - community.kubernetes
+  tasks:
+    - name: Create a new deployment
+      k8s:
+        state: present
+        resource_definition: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: helloworld
+            namespace: funstuff
+          spec:
+            selector:
+              matchLabels:
+                app: helloworld
+            template:
+              metadata:
+                labels:
+                  app: helloworld
+              spec:
+                containers:
+                - name: helloworld
+                  image: quay.io/kameshsampath/quarkus-helloworld
+                  resources:
+                    limits:
+                      memory: "150Mi"
+                      cpu: "500m"
+                  ports:
+                  - containerPort: 8080
+        wait: yes
+      register: helloworld_deployment
+    - name: Get the Deployment
+      k8s_info:
+        kind: Deployment
+        namespace: funstuff
+      register: funstuff_deployments_list
+    - name: Log Deployment Details
+      debug:
+        msg: "{{ item | json_query('metadata.name') }}"
+      loop: '{{funstuff_deployments_list.resources}}'
+      loop_control:
+        label: "Deployment (Namespace: {{item | json_query('metadata.namespace')}},Replicas:{{ item | json_query('spec.replicas')}})"
