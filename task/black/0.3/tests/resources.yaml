@@ -1,0 +1,8 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: black-python-configmap
+data:
+  requirements.txt: |
+    black==22.3.0
