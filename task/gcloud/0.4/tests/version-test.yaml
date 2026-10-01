@@ -1,0 +1,19 @@
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: version-test
+spec:
+  taskRef:
+    name: gcloud
+  params:
+    - name: version
+      value: "371.0.0"
+    - name: SCRIPT
+      value: |-
+          #!/bin/bash
+          set -e
+          gcloud version
+          gcloud version | grep 'Google Cloud SDK 371.0.0'
+          gsutil version
+          gsutil version | grep 'gsutil version: 5.6'
+          echo "Found expected versions."
