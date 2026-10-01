@@ -1,0 +1,20 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: notify-matrix-run
+spec:
+  params:
+  - name: matrix-secret
+    value: matrix-access-token
+  - name: room
+    value: "!yKXXPqFwfCOTipZMxp:matrix.org"
+  - name: endpoint
+    value: matrix.org
+  - name: message
+    value: hello
+  resources: {}
+  serviceAccountName: default
+  taskRef:
+    kind: Task
+    name: notify-matrix
+  timeout: 1h0m0s
