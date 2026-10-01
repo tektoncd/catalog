@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gke-deploy-tekton-demo
+  labels:
+    app: gke-deploy-tekton-demo
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: gke-deploy-tekton-demo
+  template:
+    metadata:
+      labels:
+        app: gke-deploy-tekton-demo
+    spec:
+      containers:
+      - name: gke-deploy-tekton-demo
+        image: gcr.io/@IMAGE_REGISTRY_PROJECT@/gke-deploy-tekton-demo
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: gke-deploy-tekton-demo-hpa
+  labels:
+    app: gke-deploy-tekton-demo
+spec:
+  scaleTargetRef:
+    kind: Deployment
+    name: gke-deploy-tekton-demo
+    apiVersion: apps/v1
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gke-deploy-tekton-demo-service
+  labels:
+    app: gke-deploy-tekton-demo
+spec:
+  selector:
+    app: gke-deploy-tekton-demo
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: LoadBalancer
