@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: python-source-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 200Mi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: python-config
+data:
+  # possibility to add your own settings
+  custom-pip.conf: |-
+    [global]
