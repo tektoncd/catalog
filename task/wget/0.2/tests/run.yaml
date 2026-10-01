@@ -1,0 +1,16 @@
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: wget-run
+spec:
+  params:
+    - name: url
+      value: "www.google.com"
+    - name: diroptions
+      value:
+        - "-P"
+  taskRef:
+    name: wget
+  workspaces:
+    - name: wget-workspace
+      emptyDir: {}
