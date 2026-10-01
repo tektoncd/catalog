@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ray-python-script
+data:
+  script.py: |
+    #!/usr/bin/env python3
+    import ray
+    ray.init()
+    print("Ray cluster resources:", ray.cluster_resources())
