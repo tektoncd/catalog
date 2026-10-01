@@ -1,0 +1,28 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: apko-test
+  annotations:
+    # This test requires access to a container registry
+    tekton.dev/pipelines.skip: "true"
+spec:
+  taskRef:
+    name: apko
+  workspaces:
+    - name: source
+      configMap:
+        name: apko-test-config
+        items:
+          - key: apko.yaml
+            path: apko.yaml
+  params:
+    - name: REGISTRY
+      value: ""  # Must be set to a valid registry
+    - name: PASSWORD
+      value: ""  # Must be set to a valid password
+    - name: USERNAME
+      value: "testuser"
+    - name: IMAGE
+      value: "test-image:latest"
+    - name: CONFIGFILE
+      value: "apko.yaml"
