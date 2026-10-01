@@ -1,0 +1,32 @@
+---
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: pipeline-syft-test
+spec:
+  params:
+    - name: ARGS
+      type: array
+      description: The Arguments to be passed to Syft command for config image.
+  description: Test Pipeline for Syft
+  tasks:
+    - name: syft-image-sbom
+      taskRef:
+        name: syft
+        kind: Task
+      params:
+        - name: ARGS
+          value: ["$(params.ARGS[*])"]
+---
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  generateName: pipelinerun-syft-test-
+spec:
+  params:
+    - name: ARGS
+      value:
+      - ghcr.io/tektoncd/plumbing/tkn
+  pipelineRef:
+    name: pipeline-syft-test
+  timeout: 10m
