@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tokens-configmap
+data:
+  tokens.json: |
+    { "name": "token-replace", "image": "ubuntu" }
