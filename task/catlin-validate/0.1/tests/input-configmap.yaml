@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: catlin-input
+data:
+  input.txt: |
+    task/hello/0.1/hello.yaml

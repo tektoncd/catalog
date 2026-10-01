@@ -1,0 +1,107 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: catlin-validate
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/categories: Testing
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/tags: "tekton task yaml validation"
+    tekton.dev/platforms: "linux/amd64"
+    tekton.dev/displayName: catlin
+spec:
+  description: >-
+    Catlin(https://github.com/tektoncd/catlin) is a command-line tool that Lints Tekton Resources and Catalogs.
+    Catlin Validate task supports running catlin validate for
+      1. An isolated task yaml that you want to submit to tekton catalog
+      2. A set of tasks that you want to submit to tekton catalog
+  params:
+    - name: outputFile
+      description: File that contains final catlin output. Catlin output will be stored in /workspaces/catlin-output/$(params.outputFile)
+      type: string
+      default: catlin-output.txt
+    - name: inputFile
+      description: |
+        File that contains catlin input. This file contains relative paths to the task yaml's delimited by newline
+        this file will be read from /workspaces/catlin-input/$(params.inputFile) and catlin validate will be applied to each file
+        example if file contains below paths (as you can see the paths are separated by newlines)
+        task/git-clone/0.9/git-clone.yaml
+        task/git-clone/0.1/git-comment.yaml
+        it will run catlin on the above paths in the source workspace one after another and store its output in catlin-output workspace
+        final command run will be
+        'catlin validate $(workspaces.source.path)/task/git-clone/0.9/git-clone.yaml >> $(workspaces.catlin-output.path)/output.txt'
+        'catlin validate $(workspaces.source.path)/task/git-clone/0.1/git-comment.yaml >> $(workspaces.catlin-output.path)/output.txt'
+      type: string
+    - name: ignoreWarnings
+      description: |
+        Ignores any warnings in catlin output.
+        If catlin output has only success and warnings, all warnings are ignored and final catlin output will be success
+      type: string
+      default: "false"
+  results:
+    - name: catlin-status
+      description: |
+        final status of catlin command. If all catlin validate command succeeds status will be set to 'success', if any one command validate command fails
+        status will be set to 'failure', If there is no failure and atleast one catline validate command is warning the status will be set to 'warning'
+  workspaces:
+  - name: source
+    description: |
+      This workspace contains files on which catlin will be run. task yamls in this folder should have a path that follows tekton-catalog folder structure.
+      example of folder structure: task/git-clone/0.9/git-clone.yaml
+      refer https://github.com/tektoncd/catalog for more details
+  - name: catlin-input
+    description: |
+      This workspace contains a file $(params.inputFile) delimited by newline containing paths to task yaml's on which catlin validate will be applied
+  - name: catlin-output
+    description: This workspace is where catlin output will be stored
+  steps:
+    - name: catlin-validate
+      image: gcr.io/tekton-releases/dogfooding/catlin:v20230721-0755082305@sha256:8db5e290b9a1b7794c536dbc826bb9cf3eeb82c41b251b7caee12204bcfb6664
+      env:
+      - name: OUTPUT_FILE
+        value: $(params.outputFile)
+      - name: INPUT_FILE
+        value: $(params.inputFile)
+      - name: CATLIN_OUTPUT_WORKSPACE_PATH
+        value: $(workspaces.catlin-output.path)
+      - name: IGNORE_WARNINGS
+        value: $(params.ignoreWarnings)
+      workingDir: $(workspaces.catlin-input.path)
+      script: |
+        #!/usr/bin/env bash
+        rm -rf "${CATLIN_OUTPUT_WORKSPACE_PATH:?}"/"$OUTPUT_FILE"
+        while IFS="" read -r p || [ -n "$p" ]
+        do
+          catlin validate "$(workspaces.source.path)"/"$p" >> "$CATLIN_OUTPUT_WORKSPACE_PATH"/"$OUTPUT_FILE" 2>&1
+          echo "" >> "$CATLIN_OUTPUT_WORKSPACE_PATH"/"$OUTPUT_FILE"
+        done < "$INPUT_FILE"
+
+        echo ""
+        echo "--------------------------------CATLIN OUTPUT START------------------------------------------"
+        echo ""
+        cat "$CATLIN_OUTPUT_WORKSPACE_PATH"/"$OUTPUT_FILE"
+        echo "--------------------------------CATLIN OUTPUT END--------------------------------------------"
+        echo ""
+
+        STR=$(cat "$CATLIN_OUTPUT_WORKSPACE_PATH"/"$OUTPUT_FILE")
+        ERROR='ERROR'
+        WARN='WARN'
+        if [[ "$IGNORE_WARNINGS" == "true" ]]; then
+          echo "Ignore Warnings is set to true, any warnings in catlin output will be ignored"
+        fi
+
+        if [[ "$STR" == *"$ERROR"* || "$STR" == *"Error"* ]]; then
+          echo "failure" | tr -d "\n" > "$(results.catlin-status.path)"
+          echo ""
+          echo "Final output of catlin validate is failed since one of the files Errored out."
+          exit 1
+        elif [[ "$STR" == *"$WARN"* && "$IGNORE_WARNINGS" == "false" ]]; then
+          echo "warning" | tr -d "\n" > "$(results.catlin-status.path)"
+          echo ""
+          echo "Final output of catlin validate is warning since one of the files has WARNING in its output."
+        else
+          echo "success" | tr -d "\n" > "$(results.catlin-status.path)"
+          echo ""
+          echo "Final output of catlin validate is success."
+        fi
